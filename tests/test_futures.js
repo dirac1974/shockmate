@@ -3,31 +3,122 @@
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
-const vm = require("vm");
 const futures = require("../web/futures.js");
+
 function loadEncounters() {
   const src = fs.readFileSync(path.join(__dirname, "../web/encounters.js"), "utf8");
   const sandbox = { window: {}, console };
+  const vm = require("vm");
   vm.runInNewContext(src, sandbox);
   return sandbox.window.SHOCKMATE_ENCOUNTERS;
 }
+
+function kinds(events) {
+  return events.map((e) => e.kind);
+}
+
 function run() {
   const list = loadEncounters();
-  assert.strictEqual(list.length, 12);
+  assert.strictEqual(list.length, 12, "12 encounters");
+
   list.forEach((e) => {
+    assert.ok(e.pieces && e.pieces.length, e.id + " pieces");
+    assert.ok(e.bestLineUci && e.bestLineUci[0] === e.best, e.id + " best line starts with best");
+    assert.ok(e.temptingLineUci && e.temptingLineUci[0] === e.tempting, e.id + " temp line starts with tempting");
     const start = futures.piecesFromList(e.pieces);
-    const best = e.bestLineUci || [e.best];
-    const temp = e.temptingLineUci || [e.tempting];
-    assert.strictEqual(futures.applyLine(start, best).length, best.length);
-    assert.strictEqual(futures.applyLine(start, temp).length, temp.length);
+    const bestSteps = futures.applyLine(start, e.bestLineUci);
+    assert.strictEqual(bestSteps.length, e.bestLineUci.length, e.id + " best steps");
+    const tempSteps = futures.applyLine(start, e.temptingLineUci);
+    assert.strictEqual(tempSteps.length, e.temptingLineUci.length, e.id + " temp steps");
+    const first = bestSteps[0];
+    assert.strictEqual(first.from, e.best.slice(0, 2));
+    assert.strictEqual(first.to, e.best.slice(2, 4));
+    assert.ok(!first.pieces[first.from], e.id + " origin vacated");
+    assert.ok(first.pieces[first.to], e.id + " dest occupied");
   });
+
   const snack = list[0];
   const miss = futures.buildPlan(snack, snack.tempting);
   assert.strictEqual(miss.hit, false);
-  assert.ok(miss.acts.some((a) => a.label === "weak"));
-  assert.ok(miss.acts.some((a) => a.label === "best"));
+  const missKinds = miss.acts.map((a) => a.kind);
+  assert.deepStrictEqual(missKinds.slice(0, 3), ["banner", "reset", "line"]);
+  assert.ok(missKinds.includes("card"));
+  assert.ok(missKinds.includes("finisher"));
+  const weak = miss.acts.find((a) => a.label === "weak");
+  const strong = miss.acts.find((a) => a.label === "best");
+  assert.deepStrictEqual(weak.ucis, snack.temptingLineUci);
+  assert.deepStrictEqual(strong.ucis, snack.bestLineUci);
+
   const hit = futures.buildPlan(snack, snack.best);
   assert.strictEqual(hit.hit, true);
-  console.log("OK futures tests");
+  const rest = hit.acts.find((a) => a.label === "best-rest");
+  assert.ok(rest);
+  assert.deepStrictEqual(rest.ucis, snack.bestLineUci.slice(1));
+
+  const mate = list[7];
+  const hitMate = futures.buildPlan(mate, mate.best);
+  assert.strictEqual(hitMate.hit, true);
+  assert.ok(!hitMate.acts.find((a) => a.label === "best-rest"), "mate in one has no rest");
+
+  const poison = list[3];
+  const steps = futures.applyLine(futures.piecesFromList(poison.pieces), poison.temptingLineUci);
+  assert.ok(steps[0].captured && steps[0].captured.role === "b");
+  assert.ok(steps[1].captured && steps[1].captured.role === "q", "pawn eats the poisoned queen");
+
+  assert.throws(() => futures.applyUci({}, "a1a2"));
+
+  list.forEach((e) => {
+    const missSim = futures.simulatePlan(e, e.tempting);
+    assert.strictEqual(missSim.hit, false, e.id + " miss is a miss");
+    const mk = kinds(missSim.events);
+    assert.ok(mk.includes("reset"), e.id + " miss resets to show the weak line from the start");
+    assert.ok(mk.includes("finisher"), e.id + " miss ends with a motif finisher");
+    assert.strictEqual(mk[mk.length - 1], "card", e.id + " miss ends on the why card");
+    const resets = missSim.events.filter((ev) => ev.kind === "reset");
+    assert.ok(resets.length >= 2, e.id + " miss shows weak then best (two resets)");
+    resets.forEach((r) => assert.ok(r.matchesStart, e.id + " reset returns to the start position"));
+    const weakMoves = missSim.events.filter((ev) => ev.label === "weak").map((ev) => ev.uci);
+    const bestMoves = missSim.events.filter((ev) => ev.label === "best").map((ev) => ev.uci);
+    assert.deepStrictEqual(weakMoves, Array.from(e.temptingLineUci), e.id + " weak future plays the snack line");
+    assert.deepStrictEqual(bestMoves, Array.from(e.bestLineUci), e.id + " better future plays the best line");
+
+    const hitSim = futures.simulatePlan(e, e.best);
+    assert.strictEqual(hitSim.hit, true, e.id + " hit is a hit");
+    const hk = kinds(hitSim.events);
+    assert.ok(!hk.includes("reset"), e.id + " hit does not rewind the kid's good move");
+    assert.ok(hk.includes("finisher"), e.id + " hit still gets a finisher");
+    assert.strictEqual(hk[hk.length - 1], "card");
+    const restMoves = hitSim.events.filter((ev) => ev.label === "best-rest").map((ev) => ev.uci);
+    assert.deepStrictEqual(restMoves, Array.from(e.bestLineUci).slice(1), e.id + " hit only animates the rest of the why");
+
+    const fin = futures.finisherFor(e);
+    assert.ok(fin.targets && fin.targets.length, e.id + " finisher has targets");
+    fin.targets.forEach((sq) => assert.match(sq, /^[a-h][1-8]$/, e.id + " target " + sq));
+    const decoy = futures.decoyWhy(list, e);
+    assert.ok(decoy && decoy !== e.why, e.id + " palace walk decoy is a different why");
+  });
+
+  const forkT = futures.motifTargets(list[1]);
+  assert.ok(forkT.includes("g8") && forkT.includes("d5"), "fork bites king and rook: " + forkT);
+  const pawnT = futures.motifTargets(list[2]);
+  assert.ok(pawnT.includes("b6") && pawnT.includes("d6"), "pawn fork bites king and rook: " + pawnT);
+  const royalT = futures.motifTargets(list[11]);
+  assert.ok(royalT.includes("e8") && royalT.includes("a8"), "royal fork: " + royalT);
+  const pinT = futures.motifTargets(list[4]);
+  assert.ok(pinT.includes("c6") && pinT.includes("e8"), "pin glue knight + king: " + pinT);
+  const skewerT = futures.motifTargets(list[6]);
+  assert.ok(skewerT.includes("e8") && skewerT.includes("a8"), "skewer king then rook: " + skewerT);
+  const doorT = futures.motifTargets(list[7]);
+  assert.ok(doorT.includes("a8"), "basement door slams a8: " + doorT);
+  const laserT = futures.motifTargets(list[10]);
+  assert.ok(laserT.includes("d6") && laserT.includes("e8"), "discovery eats queen and checks king: " + laserT);
+
+  const snackMiss = futures.simulatePlan(snack, snack.tempting);
+  const lastWeak = snackMiss.events.filter((ev) => ev.label === "weak").pop();
+  assert.strictEqual(lastWeak.uci, "a5e1");
+  assert.strictEqual(lastWeak.captured, null, "Qe1# is mate on an empty door, not a capture");
+
+  console.log("OK futures: 12 lines apply, 12 hit+miss plans simulate, motif finishers, palace decoys.");
 }
+
 run();
