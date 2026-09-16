@@ -19,23 +19,25 @@
         <div class="stat" title="Current streak">
           <span class="lbl">Streak</span><span id="stat-streak">0</span>
         </div>
+        <div class="stat" title="Reasons you still hold">
+          <span class="lbl">Reasons</span><span id="stat-reasons">0</span>
+        </div>
         <div class="stat" title="Palace figurines">
           <span class="lbl">Palace</span><span id="stat-palace">0</span>
         </div>
       </div>
+      <button id="btn-history" class="ghost">History</button>
       <button id="btn-palace" class="ghost">Palace</button>
       <button id="btn-settings" class="ghost">Settings</button>
     </header>
 
     <section id="screen-title" class="screen active">
       <h1>The reason explodes.</h1>
-      <p class="lead">
-        Pick a move. Watch two futures. Keep the one that is
-        <em>significantly better</em> — and remember why.
-      </p>
+      <p class="lead">Pick a move. Watch two futures. Keep the one that is <em>significantly better</em> — and remember why.</p>
       <p class="sub">Built for restless, sharp kids around 400. No lectures. One crunchy why per fight.</p>
       <button id="btn-start" class="cta">Open the basement</button>
-      <p class="hint">Sessions are short on purpose. Leaving is allowed.</p>
+      <button id="btn-due" class="ghost">Walk rooms that are due</button>
+      <p class="hint" id="title-due">Sessions are short on purpose. Leaving is allowed.</p>
     </section>
 
     <section id="screen-play" class="screen">
@@ -56,13 +58,25 @@
       <div class="future-title" id="future-title">Two futures</div>
       <div class="why-card" id="why-card">
         <div class="mascot" id="why-mascot">TWO HEADS</div>
-        <p id="why-text"></p>
-        <p class="why-long" id="why-long"></p>
+        <p id="why-text">Say the reason. One tap. A guess that is wrong means watch again.</p>
+        <p class="why-long" id="why-long" hidden></p>
+        <div class="actions stack" id="why-choices">
+          <button id="why-a" class="ghost walk-choice"></button>
+          <button id="why-b" class="ghost walk-choice"></button>
+        </div>
       </div>
       <div class="actions">
+        <button id="btn-retry" class="cta">Retry this fight</button>
         <button id="btn-replay" class="ghost">Replay both futures</button>
-        <button id="btn-next" class="cta">What happens next?</button>
+        <button id="btn-next" class="ghost" disabled>Keep the reason first</button>
       </div>
+    </section>
+
+    <section id="screen-history" class="screen">
+      <h2>Your reasons</h2>
+      <p class="sub" id="history-summary">Play a fight. The ledger remembers the why.</p>
+      <div id="history-rows" class="history-list"></div>
+      <button id="btn-history-back" class="cta">Back to the fights</button>
     </section>
 
     <section id="screen-palace" class="screen">
@@ -100,12 +114,9 @@
       <label>Session cap (encounters)
         <input id="opt-cap" type="number" min="3" max="20" value="8" />
       </label>
-      <label class="check">
-        <input id="opt-sound" type="checkbox" checked /> Sound
-      </label>
-      <label class="check">
-        <input id="opt-coords" type="checkbox" /> Show coordinates
-      </label>
+      <label class="check"><input id="opt-sound" type="checkbox" checked /> Sound</label>
+      <label class="check"><input id="opt-coords" type="checkbox" /> Show coordinates</label>
+      <label class="check"><input id="opt-hurry" type="checkbox" /> Hurry the palace clock (1 / 3 / 7 minutes instead of days)</label>
       <button id="btn-reset" class="ghost danger">Reset palace (keeps nothing)</button>
       <button id="btn-close-settings" class="cta">Done</button>
     </section>
@@ -121,6 +132,7 @@
   </div>
   <script src="encounters.js"></script>
   <script src="futures.js"></script>
+  <script src="score.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
