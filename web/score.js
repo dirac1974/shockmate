@@ -1,4 +1,4 @@
-/* Hits only after move + why. Palace due on 1d/3d/7d (or hurry minutes). */
+/* Hits only after move + why. Palace due 1d/3d/7d. Sibling duel verdict. */
 (function (root) {
   const LEDGER_MAX = 40;
   const DAY = 24 * 60 * 60 * 1000;
@@ -111,7 +111,25 @@
       return { id: e.id, title: e.title, motif: e.motif, why: e.why, bestSan: e.bestSan, attempts: c ? c.attempts : 0, hits: c ? c.hits : 0, misses: c ? c.misses : 0, lastCorrect: c ? c.lastCorrect : null, lastSan: c ? c.lastSan : "", mastered: !!(c && c.mastered), needsRetry: !!(c && c.lastCorrect !== true && c.attempts > 0), status: !c ? "new" : c.mastered ? "kept" : kept ? "hot" : "retry" };
     });
   }
-  const api = { emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX };
+  function emptyDuel(nameA, nameB, encId) {
+    const a = String(nameA || "Kid A").trim() || "Kid A";
+    const b = String(nameB || "Kid B").trim() || "Kid B";
+    return { names: [a, b], encId: encId || null, turn: 0, seats: [{ name: a, found: null, kept: null, san: "" }, { name: b, found: null, kept: null, san: "" }] };
+  }
+  function recordDuelSeat(duel, result) {
+    const next = { names: duel.names.slice(), encId: duel.encId, turn: duel.turn, seats: duel.seats.map((s) => Object.assign({}, s)) };
+    const seat = next.seats[next.turn];
+    seat.found = !!result.found; seat.kept = !!result.kept; seat.san = result.san || "";
+    return next;
+  }
+  function duelVerdict(duel) {
+    const a = duel.seats[0]; const b = duel.seats[1];
+    if (a.kept && b.kept) return { winner: "both", line: a.name + " and " + b.name + " both kept the why. Rematch the snack." };
+    if (a.kept && !b.kept) return { winner: a.name, line: a.name + " kept the reason. " + b.name + " ate the snack story." };
+    if (b.kept && !a.kept) return { winner: b.name, line: b.name + " kept the reason. " + a.name + " ate the snack story." };
+    return { winner: "basement", line: "The basement wins. Neither kept the why. Try the same board again." };
+  }
+  const api = { emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
