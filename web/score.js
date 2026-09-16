@@ -1,5 +1,4 @@
-/* Pure history + scoring. No DOM. Testable in Node.
-   Score is "reasons kept", not coins. A miss is a ticket to retry. */
+/* Pure history + scoring. Hits only after move + why. */
 (function (root) {
   const LEDGER_MAX = 40;
   function emptyStats() {
@@ -8,38 +7,53 @@
   function cardOf(stats, id) {
     const c = (stats.cards || {})[id];
     if (c) return c;
-    return { id: id, attempts: 0, hits: 0, misses: 0, lastCorrect: null, lastSan: "", why: "", mastered: false };
+    return { id: id, attempts: 0, founds: 0, misses: 0, whys: 0, hits: 0, lastFound: null, lastCorrect: null, lastSan: "", why: "", mastered: false };
   }
-  function recordAttempt(stats, enc, attempt) {
+  function touchFigurine(next, enc, mastered) {
+    const fig = next.figurines.find((f) => f.id === enc.id);
+    if (fig) { fig.seen = (fig.seen || 0) + 1; fig.mastered = !!mastered; fig.why = enc.why; }
+    else next.figurines.push({ id: enc.id, title: enc.title, room: enc.palaceRoom, mascot: enc.mascot, why: enc.why, mastered: !!mastered, seen: 1 });
+  }
+  function pushLedger(next, row) {
+    next.ledger.push(row);
+    if (next.ledger.length > LEDGER_MAX) next.ledger = next.ledger.slice(-LEDGER_MAX);
+  }
+  function recordMove(stats, enc, attempt) {
     const next = Object.assign({}, stats);
     next.cards = Object.assign({}, stats.cards || {});
     next.figurines = (stats.figurines || []).slice();
     next.ledger = (stats.ledger || []).slice();
     const correct = !!attempt.correct;
     const card = Object.assign({}, cardOf(next, enc.id));
-    card.attempts += 1;
-    card.lastSan = attempt.san || "";
-    card.why = enc.why;
-    card.title = enc.title;
-    card.motif = enc.motif;
-    card.bestSan = enc.bestSan;
-    if (correct) {
-      card.hits += 1; card.lastCorrect = true;
-      next.hits = (next.hits || 0) + 1;
-      next.streak = (next.streak || 0) + 1;
+    card.attempts += 1; card.lastSan = attempt.san || ""; card.why = enc.why;
+    card.title = enc.title; card.motif = enc.motif; card.bestSan = enc.bestSan; card.lastFound = correct;
+    if (correct) card.founds = (card.founds || 0) + 1;
+    else { card.misses += 1; card.lastCorrect = false; card.mastered = false; next.misses = (next.misses || 0) + 1; next.streak = 0; }
+    next.cards[enc.id] = card; touchFigurine(next, enc, card.mastered);
+    pushLedger(next, { id: enc.id, title: enc.title, motif: enc.motif, san: attempt.san || "", bestSan: enc.bestSan, correct: correct, kind: "move", why: enc.why, t: attempt.t || 0 });
+    return { stats: next, card: card, correct: correct };
+  }
+  function recordAttempt(stats, enc, attempt) { return recordMove(stats, enc, attempt); }
+  function recordWhy(stats, enc, result) {
+    const next = Object.assign({}, stats);
+    next.cards = Object.assign({}, stats.cards || {});
+    next.figurines = (stats.figurines || []).slice();
+    next.ledger = (stats.ledger || []).slice();
+    const card = Object.assign({}, cardOf(next, enc.id));
+    const found = card.lastFound === true; const ok = !!result.ok;
+    if (ok && found) {
+      card.whys = (card.whys || 0) + 1; card.hits += 1; card.lastCorrect = true;
+      next.hits = (next.hits || 0) + 1; next.streak = (next.streak || 0) + 1;
       next.bestStreak = Math.max(next.bestStreak || 0, next.streak);
       if (card.hits >= 2) card.mastered = true;
     } else {
-      card.misses += 1; card.lastCorrect = false; card.mastered = false;
-      next.misses = (next.misses || 0) + 1; next.streak = 0;
+      card.lastCorrect = false;
+      if (found && !ok) card.copied = (card.copied || 0) + 1;
+      next.streak = 0;
     }
-    next.cards[enc.id] = card;
-    const fig = next.figurines.find((f) => f.id === enc.id);
-    if (fig) { fig.seen = (fig.seen || 0) + 1; fig.mastered = !!card.mastered; fig.why = enc.why; }
-    else next.figurines.push({ id: enc.id, title: enc.title, room: enc.palaceRoom, mascot: enc.mascot, why: enc.why, mastered: !!card.mastered, seen: 1 });
-    next.ledger.push({ id: enc.id, title: enc.title, motif: enc.motif, san: attempt.san || "", bestSan: enc.bestSan, correct: correct, why: enc.why, t: attempt.t || 0 });
-    if (next.ledger.length > LEDGER_MAX) next.ledger = next.ledger.slice(-LEDGER_MAX);
-    return { stats: next, card: card, correct: correct };
+    next.cards[enc.id] = card; touchFigurine(next, enc, card.mastered);
+    pushLedger(next, { id: enc.id, title: enc.title, kind: "why", ok: ok, found: found, why: enc.why, t: result.t || 0 });
+    return { stats: next, card: card, kept: !!(ok && found) };
   }
   function reasonsKept(stats) {
     const cards = stats.cards || {};
@@ -47,17 +61,16 @@
   }
   function needsRetry(stats, id) {
     const c = (stats.cards || {})[id];
-    return !!(c && c.lastCorrect === false);
+    return !!(c && c.lastCorrect !== true && c.attempts > 0);
   }
+  function canAdvance(card) { return !!(card && card.lastCorrect === true); }
   function pickNextIndex(encounters, stats, currentIndex) {
-    const list = encounters || [];
-    if (!list.length) return 0;
-    const cards = stats.cards || {};
-    const missed = []; const unseen = [];
+    const list = encounters || []; if (!list.length) return 0;
+    const cards = stats.cards || {}; const missed = []; const unseen = [];
     for (let i = 0; i < list.length; i++) {
       if (i === currentIndex) continue;
       const c = cards[list[i].id];
-      if (c && c.lastCorrect === false) missed.push(i);
+      if (c && c.lastCorrect !== true && c.attempts > 0) missed.push(i);
       else if (!c) unseen.push(i);
     }
     if (missed.length) return missed[0];
@@ -67,17 +80,11 @@
   function historyRows(encounters, stats) {
     const cards = stats.cards || {};
     return (encounters || []).map((e) => {
-      const c = cards[e.id] || null;
-      return {
-        id: e.id, title: e.title, motif: e.motif, why: e.why, bestSan: e.bestSan,
-        attempts: c ? c.attempts : 0, hits: c ? c.hits : 0, misses: c ? c.misses : 0,
-        lastCorrect: c ? c.lastCorrect : null, lastSan: c ? c.lastSan : "",
-        mastered: !!(c && c.mastered), needsRetry: !!(c && c.lastCorrect === false),
-        status: !c ? "new" : c.mastered ? "kept" : c.lastCorrect ? "hot" : "retry",
-      };
+      const c = cards[e.id] || null; const kept = !!(c && c.lastCorrect === true);
+      return { id: e.id, title: e.title, motif: e.motif, why: e.why, bestSan: e.bestSan, attempts: c ? c.attempts : 0, hits: c ? c.hits : 0, misses: c ? c.misses : 0, lastCorrect: c ? c.lastCorrect : null, lastSan: c ? c.lastSan : "", mastered: !!(c && c.mastered), needsRetry: !!(c && c.lastCorrect !== true && c.attempts > 0), status: !c ? "new" : c.mastered ? "kept" : kept ? "hot" : "retry" };
     });
   }
-  const api = { emptyStats, cardOf, recordAttempt, reasonsKept, needsRetry, pickNextIndex, historyRows, LEDGER_MAX };
+  const api = { emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, LEDGER_MAX };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
