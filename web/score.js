@@ -1,6 +1,31 @@
-/* Pure history + scoring. Hits only after move + why. */
+/* Hits only after move + why. Palace due on 1d/3d/7d (or hurry minutes). */
 (function (root) {
   const LEDGER_MAX = 40;
+  const DAY = 24 * 60 * 60 * 1000;
+  const INTERVALS = { real: [1 * DAY, 3 * DAY, 7 * DAY], hurry: [60 * 1000, 3 * 60 * 1000, 7 * 60 * 1000] };
+  function intervalList(hurry) { return hurry ? INTERVALS.hurry : INTERVALS.real; }
+  function scheduleAfterKeep(card, now, hurry) {
+    const steps = intervalList(hurry);
+    const step = Math.max(0, Math.min(card.reviewStep || 0, steps.length - 1));
+    card.nextReview = now + steps[step];
+    card.reviewStep = Math.min(step + 1, steps.length - 1);
+    return card;
+  }
+  function scheduleAfterFail(card, now) { card.reviewStep = 0; card.nextReview = now; return card; }
+  function dueReviews(encounters, stats, now) {
+    const cards = (stats && stats.cards) || {};
+    return (encounters || []).filter((e) => {
+      const c = cards[e.id];
+      return !!(c && typeof c.nextReview === "number" && c.nextReview <= now);
+    });
+  }
+  function pickWalkTarget(encounters, stats, now) {
+    const due = dueReviews(encounters, stats, now);
+    if (due.length) return due[0];
+    const retry = (encounters || []).find((e) => needsRetry(stats, e.id));
+    if (retry) return retry;
+    return (encounters || []).find((e) => (stats.cards || {})[e.id]) || null;
+  }
   function emptyStats() {
     return { hits: 0, misses: 0, streak: 0, bestStreak: 0, session: 0, figurines: [], cards: {}, ledger: [] };
   }
@@ -28,7 +53,7 @@
     card.attempts += 1; card.lastSan = attempt.san || ""; card.why = enc.why;
     card.title = enc.title; card.motif = enc.motif; card.bestSan = enc.bestSan; card.lastFound = correct;
     if (correct) card.founds = (card.founds || 0) + 1;
-    else { card.misses += 1; card.lastCorrect = false; card.mastered = false; next.misses = (next.misses || 0) + 1; next.streak = 0; }
+    else { card.misses += 1; card.lastCorrect = false; card.mastered = false; scheduleAfterFail(card, attempt.t || 0); next.misses = (next.misses || 0) + 1; next.streak = 0; }
     next.cards[enc.id] = card; touchFigurine(next, enc, card.mastered);
     pushLedger(next, { id: enc.id, title: enc.title, motif: enc.motif, san: attempt.san || "", bestSan: enc.bestSan, correct: correct, kind: "move", why: enc.why, t: attempt.t || 0 });
     return { stats: next, card: card, correct: correct };
@@ -43,12 +68,14 @@
     const found = card.lastFound === true; const ok = !!result.ok;
     if (ok && found) {
       card.whys = (card.whys || 0) + 1; card.hits += 1; card.lastCorrect = true;
+      scheduleAfterKeep(card, result.t || 0, !!result.hurry);
       next.hits = (next.hits || 0) + 1; next.streak = (next.streak || 0) + 1;
       next.bestStreak = Math.max(next.bestStreak || 0, next.streak);
       if (card.hits >= 2) card.mastered = true;
     } else {
       card.lastCorrect = false;
       if (found && !ok) card.copied = (card.copied || 0) + 1;
+      scheduleAfterFail(card, result.t || 0);
       next.streak = 0;
     }
     next.cards[enc.id] = card; touchFigurine(next, enc, card.mastered);
@@ -84,7 +111,7 @@
       return { id: e.id, title: e.title, motif: e.motif, why: e.why, bestSan: e.bestSan, attempts: c ? c.attempts : 0, hits: c ? c.hits : 0, misses: c ? c.misses : 0, lastCorrect: c ? c.lastCorrect : null, lastSan: c ? c.lastSan : "", mastered: !!(c && c.mastered), needsRetry: !!(c && c.lastCorrect !== true && c.attempts > 0), status: !c ? "new" : c.mastered ? "kept" : kept ? "hot" : "retry" };
     });
   }
-  const api = { emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, LEDGER_MAX };
+  const api = { emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
