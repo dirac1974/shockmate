@@ -2,44 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>Shockmate — Why that move explodes</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="app">
     <header class="topbar">
-      <div class="brand">
-        <span class="boom">SHOCK</span><span class="mate">MATE</span>
-      </div>
+      <div class="brand"><span class="boom">SHOCK</span><span class="mate">MATE</span></div>
       <div class="hud">
-        <div class="stat" title="Correct reasons">
-          <span class="lbl">Hits</span><span id="stat-hits">0</span>
-        </div>
-        <div class="stat" title="Current streak">
-          <span class="lbl">Streak</span><span id="stat-streak">0</span>
-        </div>
-        <div class="stat" title="Reasons you still hold">
-          <span class="lbl">Reasons</span><span id="stat-reasons">0</span>
-        </div>
-        <div class="stat" title="Palace figurines">
-          <span class="lbl">Palace</span><span id="stat-palace">0</span>
-        </div>
+        <div class="stat"><span class="lbl">Hits</span><span id="stat-hits">0</span></div>
+        <div class="stat"><span class="lbl">Streak</span><span id="stat-streak">0</span></div>
+        <div class="stat"><span class="lbl">Reasons</span><span id="stat-reasons">0</span></div>
+        <div class="stat"><span class="lbl">Palace</span><span id="stat-palace">0</span></div>
       </div>
       <button id="btn-history" class="ghost">History</button>
       <button id="btn-palace" class="ghost">Palace</button>
       <button id="btn-settings" class="ghost">Settings</button>
     </header>
-
     <section id="screen-title" class="screen active">
       <h1>The reason explodes.</h1>
-      <p class="lead">Pick a move. Watch two futures. Keep the one that is <em>significantly better</em> — and remember why.</p>
-      <p class="sub">Built for restless, sharp kids around 400. No lectures. One crunchy why per fight.</p>
+      <p class="lead">Pick a move. Watch two futures. Keep the one that is <em>significantly better</em>.</p>
       <button id="btn-start" class="cta">Open the basement</button>
+      <button id="btn-duel" class="ghost">Sibling duel</button>
       <button id="btn-due" class="ghost">Walk rooms that are due</button>
-      <p class="hint" id="title-due">Sessions are short on purpose. Leaving is allowed.</p>
+      <p class="hint" id="title-due">Sessions are short on purpose.</p>
     </section>
-
+    <section id="screen-duel-setup" class="screen">
+      <h2>Same board. Two brains.</h2>
+      <label>First player <input id="duel-name-a" type="text" maxlength="16" value="Sam" /></label>
+      <label>Second player <input id="duel-name-b" type="text" maxlength="16" value="Rio" /></label>
+      <div class="actions">
+        <button id="btn-duel-go" class="cta">Fight the same future</button>
+        <button id="btn-duel-cancel" class="ghost">Back</button>
+      </div>
+    </section>
+    <section id="screen-duel-result" class="screen">
+      <h2 id="duel-verdict-title">The basement is chewing</h2>
+      <p class="lead" id="duel-verdict-line"></p>
+      <p class="sub" id="duel-verdict-detail"></p>
+      <div class="actions">
+        <button id="btn-duel-again" class="cta">Same fight again</button>
+        <button id="btn-duel-next" class="ghost">Next fight, both of you</button>
+        <button id="btn-duel-home" class="ghost">Done</button>
+      </div>
+    </section>
     <section id="screen-play" class="screen">
       <div class="hook" id="hook">The queen is daydreaming.</div>
       <div class="banner" id="banner" hidden></div>
@@ -53,12 +60,11 @@
         <button id="btn-skip" class="ghost">Skip this fight</button>
       </div>
     </section>
-
     <section id="screen-futures" class="screen">
       <div class="future-title" id="future-title">Two futures</div>
       <div class="why-card" id="why-card">
         <div class="mascot" id="why-mascot">TWO HEADS</div>
-        <p id="why-text">Say the reason. One tap. A guess that is wrong means watch again.</p>
+        <p id="why-text">Say the reason. One tap.</p>
         <p class="why-long" id="why-long" hidden></p>
         <div class="actions stack" id="why-choices">
           <button id="why-a" class="ghost walk-choice"></button>
@@ -71,29 +77,24 @@
         <button id="btn-next" class="ghost" disabled>Keep the reason first</button>
       </div>
     </section>
-
     <section id="screen-history" class="screen">
       <h2>Your reasons</h2>
-      <p class="sub" id="history-summary">Play a fight. The ledger remembers the why.</p>
+      <p class="sub" id="history-summary">The ledger remembers the why.</p>
       <div id="history-rows" class="history-list"></div>
       <button id="btn-history-back" class="cta">Back to the fights</button>
     </section>
-
     <section id="screen-palace" class="screen">
       <h2>Memory Palace</h2>
-      <p class="sub">Walk the rooms. The weird picture is the reason.</p>
       <div id="palace-rooms" class="rooms"></div>
       <div class="actions">
         <button id="btn-walk" class="cta">Walk a room</button>
         <button id="btn-back-play" class="ghost">Back to the fights</button>
       </div>
     </section>
-
     <section id="screen-walk" class="screen">
       <p class="sub" id="walk-room">Fork Hall</p>
       <div class="mascot" id="walk-mascot">TWO HEADS</div>
       <h2 id="walk-ask">Why was that the better future?</h2>
-      <p class="sub">Say it out loud. Then tap the sentence you would tell in the car.</p>
       <div class="actions stack">
         <button id="walk-a" class="ghost walk-choice"></button>
         <button id="walk-b" class="ghost walk-choice"></button>
@@ -101,26 +102,22 @@
       <p class="prompt" id="walk-result"></p>
       <button id="btn-walk-back" class="ghost">Back to the rooms</button>
     </section>
-
     <section id="screen-settings" class="screen">
       <h2>Parent / kid settings</h2>
       <label>Violence flavor
         <select id="opt-intensity">
-          <option value="silly">Silly — pies and glitter</option>
-          <option value="messy" selected>Messy — ketchup and sparks</option>
-          <option value="intense">Intense — still cartoon</option>
+          <option value="silly">Silly</option>
+          <option value="messy" selected>Messy</option>
+          <option value="intense">Intense</option>
         </select>
       </label>
-      <label>Session cap (encounters)
-        <input id="opt-cap" type="number" min="3" max="20" value="8" />
-      </label>
+      <label>Session cap <input id="opt-cap" type="number" min="3" max="20" value="8" /></label>
       <label class="check"><input id="opt-sound" type="checkbox" checked /> Sound</label>
-      <label class="check"><input id="opt-coords" type="checkbox" /> Show coordinates</label>
-      <label class="check"><input id="opt-hurry" type="checkbox" /> Hurry the palace clock (1 / 3 / 7 minutes instead of days)</label>
-      <button id="btn-reset" class="ghost danger">Reset palace (keeps nothing)</button>
+      <label class="check"><input id="opt-coords" type="checkbox" /> Coordinates</label>
+      <label class="check"><input id="opt-hurry" type="checkbox" /> Hurry palace clock</label>
+      <button id="btn-reset" class="ghost danger">Reset palace</button>
       <button id="btn-close-settings" class="cta">Done</button>
     </section>
-
     <div id="toast" class="toast" hidden></div>
     <div id="session-end" class="modal" hidden>
       <div class="modal-card">
@@ -132,6 +129,7 @@
   </div>
   <script src="encounters.js"></script>
   <script src="futures.js"></script>
+  <script src="pieces.js"></script>
   <script src="score.js"></script>
   <script src="game.js"></script>
 </body>
