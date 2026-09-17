@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>Shockmate — Beat Glitch</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="theme-color" content="#0b1030" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Shockmate" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="icon" href="./icon-192.png" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
@@ -120,6 +128,30 @@
       <label class="check"><input id="opt-blitz-0" type="checkbox" /> Blitz mode for the first player</label>
       <label class="check"><input id="opt-blitz-1" type="checkbox" /> Blitz mode for the second player</label>
       <label class="check"><input id="opt-hurry" type="checkbox" /> Hurry rematch clock (testing)</label>
+      <h3 class="step-label">Backup</h3>
+      <p class="hint">Progress lives on this device only. iOS clears it after about a week
+        without a visit, so add Shockmate to the home screen and keep a backup file.</p>
+      <div class="actions">
+        <button id="btn-export" class="ghost">Save backup file</button>
+        <button id="btn-import" class="ghost">Restore from file</button>
+      </div>
+      <input id="file-import" type="file" accept="application/json,.json" hidden />
+
+      <h3 class="step-label">Same cards on another device</h3>
+      <div id="sync-on" hidden>
+        <label>Family code <input id="opt-code" type="text" maxlength="19" autocapitalize="characters"
+          spellcheck="false" placeholder="not set" /></label>
+        <p class="hint">Type this code on the other device to pick up the same cards. Anyone with
+          the code can see the progress, so keep it in the family and use first names only.</p>
+        <div class="actions">
+          <button id="btn-code" class="ghost">Make a code</button>
+          <button id="btn-sync" class="ghost">Sync now</button>
+        </div>
+        <p class="hint" id="sync-state">Not synced yet.</p>
+      </div>
+      <p class="hint" id="sync-off">Cross-device sync is off in this build — fill in
+        <code>web/sync-config.js</code> with the Supabase URL and anon key, then redeploy.</p>
+
       <button id="btn-reset" class="ghost danger">Reset this player</button>
       <button id="btn-close-settings" class="cta">Done</button>
     </section>
@@ -150,6 +182,15 @@
   <script src="glitch.js"></script>
   <script src="motifs.js"></script>
   <script src="score.js"></script>
+  <script src="sync-config.js"></script>
+  <script src="sync.js"></script>
   <script src="game.js"></script>
+  <script>
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("./sw.js").catch(function () {});
+      });
+    }
+  </script>
 </body>
 </html>

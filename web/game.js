@@ -4,6 +4,7 @@
 (function () {
   const F = window.ShockmateFutures, S = window.ShockmateScore;
   const FILES = "abcdefgh", KEY = "shockmate-v2";
+  const Y = window.ShockmateSync;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
   const T = (ms) => (FAST ? Math.min(ms, 20) : ms);
@@ -21,7 +22,7 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", seats: 1 },
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", seats: 1, familyCode: "", syncedAt: 0 },
     mode: "solo", pack: "tactics", active: 0, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
   };
@@ -34,6 +35,74 @@
     catch (e) { return freshStats(); }
   }
   function useProfile(i) { state.active = i; state.stats = state.profiles[i]; }
+
+  function syncCfg() { return window.SHOCKMATE_SYNC || null; }
+  function syncOn() { return !!(Y && Y.configured(syncCfg()) && Y.validCode(state.settings.familyCode)); }
+
+  function applyMerged(profiles, names) {
+    state.profiles = [0, 1].map((i) => Object.assign(freshStats(), profiles[i]));
+    if (names && names[0]) state.settings.names = [names[0], names[1] || state.settings.names[1]];
+    useProfile(state.settings.profile); save(); renderPath(); hud();
+  }
+
+  // One round trip per profile: pull the other device's copy, merge both ways, push the result.
+  // Merging (never overwriting) means an old device coming back online cannot delete a new card.
+  function syncNow(quiet) {
+    if (!syncOn()) return Promise.resolve(false);
+    const code = state.settings.familyCode;
+    const jobs = [0, 1].map((i) => Y.pull(syncCfg(), code, i)
+      .then((remote) => {
+        const merged = Y.mergeStats(state.profiles[i], remote || {});
+        state.profiles[i] = Object.assign(freshStats(), merged);
+        return Y.push(syncCfg(), code, i, state.profiles[i]);
+      }));
+    return Promise.all(jobs).then(() => {
+      state.settings.syncedAt = Date.now(); useProfile(state.settings.profile); save(); renderPath(); hud(); renderSyncState();
+      if (!quiet) toast("Cards synced.", 1800);
+      return true;
+    }).catch((err) => {
+      renderSyncState(String(err && err.message || err));
+      if (!quiet) toast("Sync could not finish. Cards are safe on this device.", 2600);
+      return false;
+    });
+  }
+
+  let syncTimer = null;
+  function syncSoon() {   // after a card is earned; coalesced so a fast session makes one call
+    if (!syncOn() || syncTimer) return;
+    syncTimer = setTimeout(() => { syncTimer = null; syncNow(true); }, 4000);
+  }
+
+  function renderSyncState(problem) {
+    const off = $("sync-off"), on = $("sync-on");
+    if (!off || !on) return;
+    const ready = !!(Y && Y.configured(syncCfg()));
+    off.hidden = ready; on.hidden = !ready;
+    if (!ready) return;
+    const el = $("sync-state");
+    if (problem) el.textContent = problem;
+    else if (!Y.validCode(state.settings.familyCode)) el.textContent = "No code yet. Make one, or type the code from the other device.";
+    else if (!state.settings.syncedAt) el.textContent = "Code set. Nothing synced yet.";
+    else el.textContent = "Last synced " + new Date(state.settings.syncedAt).toLocaleString() + ".";
+  }
+
+  function exportBackup() {
+    const blob = new Blob([JSON.stringify(Y.exportBlob(state.settings, state.profiles), null, 1)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "shockmate-cards-" + new Date().toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast("Backup file saved.", 1800);
+  }
+
+  function importBackup(text) {
+    try {
+      const merged = Y.importBlob(text, state.profiles);
+      applyMerged(merged.profiles, merged.names);
+      renderSettings(); toast("Cards restored and merged.", 2200);
+    } catch (err) { toast(String(err && err.message || err), 2600); }
+  }
   function loadStats() { state.profiles = [readProfile(0), readProfile(1)]; useProfile(state.settings.profile); }
   function load() {
     try { Object.assign(state.settings, JSON.parse(localStorage.getItem(KEY + ":settings") || "{}")); } catch (e) {}
@@ -42,6 +111,7 @@
     setSeats(state.settings.seats === 2 ? 2 : 1);
     setPack(state.settings.pack);
     loadStats();
+    if (syncOn()) syncNow(true);
   }
   function save() {
     try {
@@ -273,6 +343,7 @@
     state.stats = S.recordWhy(state.stats, enc, { ok: true, t: now(), hurry: state.settings.hurry }).stats;
     const earned = state.stats.cardsEarned[enc.id] || { critical: false, tries: 0 };
     earned.critical = earned.critical || crit; earned.tries = state.tries + 1; earned.t = now(); state.stats.cardsEarned[enc.id] = earned;
+    syncSoon();
     state.stats.won = (state.stats.won || 0) + 1; state.session.won += 1;
     if (state.mode !== "solo") { state.session.rage = Math.min(RAGE_TARGET, state.session.rage + 1); renderTeam(); }
     save(); hud();
@@ -445,6 +516,13 @@
   }
 
   /* ---------- bindings ---------- */
+  function renderSettings() {
+    $("opt-name-0").value = state.settings.names[0]; $("opt-name-1").value = state.settings.names[1]; $("opt-cap").value = state.settings.cap;
+    $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry;
+    $("opt-blitz-0").checked = !!state.settings.blitz[0]; $("opt-blitz-1").checked = !!state.settings.blitz[1];
+    if ($("opt-code")) $("opt-code").value = Y.prettyCode(state.settings.familyCode);
+    renderSyncState();
+  }
   function switchProfile(i) { state.settings.profile = i; useProfile(i); save(); hud(); }
   function bind() {
     $("prof-0").onclick = () => switchProfile(0); $("prof-1").onclick = () => switchProfile(1);
@@ -472,17 +550,35 @@
     };
     $("btn-collection").onclick = function () { renderCollection(); show("screen-collection"); };
     $("btn-back-play").onclick = function () { show(state.phase === "card" ? "screen-card" : state.phase === "duel" ? "screen-duel" : state.phase === "think" || state.phase === "gate" ? "screen-play" : "screen-title"); };
-    $("btn-settings").onclick = function () {
-      $("opt-name-0").value = state.settings.names[0]; $("opt-name-1").value = state.settings.names[1]; $("opt-cap").value = state.settings.cap;
-      $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry;
-      $("opt-blitz-0").checked = !!state.settings.blitz[0]; $("opt-blitz-1").checked = !!state.settings.blitz[1]; show("screen-settings");
+    $("btn-settings").onclick = function () { renderSettings(); show("screen-settings"); };
+    $("btn-export").onclick = exportBackup;
+    $("btn-import").onclick = function () { $("file-import").click(); };
+    $("file-import").onchange = function (ev) {
+      const file = ev.target.files && ev.target.files[0]; if (!file) return;
+      const r = new FileReader();
+      r.onload = function () { importBackup(String(r.result)); };
+      r.onerror = function () { toast("Could not read that file.", 2400); };
+      r.readAsText(file); ev.target.value = "";
+    };
+    $("btn-code").onclick = function () {
+      if (Y.validCode(state.settings.familyCode) && !confirm("Replace the current family code? The other device will need the new one.")) return;
+      state.settings.familyCode = Y.makeCode(); state.settings.syncedAt = 0;
+      $("opt-code").value = Y.prettyCode(state.settings.familyCode); save(); renderSyncState();
+    };
+    $("btn-sync").onclick = function () {
+      state.settings.familyCode = Y.normaliseCode($("opt-code").value);
+      $("opt-code").value = Y.prettyCode(state.settings.familyCode); save();
+      if (!Y.validCode(state.settings.familyCode)) { renderSyncState("That code is too short."); return; }
+      renderSyncState("Syncing…"); syncNow(false);
     };
     $("btn-close-settings").onclick = function () {
       state.settings.names = [$("opt-name-0").value.trim() || "Player 1", $("opt-name-1").value.trim() || "Player 2"];
+      state.settings.familyCode = Y.normaliseCode($("opt-code") ? $("opt-code").value : state.settings.familyCode);
       state.settings.cap = Math.max(3, Math.min(12, Number($("opt-cap").value) || 6));
       state.settings.sound = $("opt-sound").checked; state.settings.coords = $("opt-coords").checked; state.settings.hurry = $("opt-hurry").checked;
       state.settings.blitz = [$("opt-blitz-0").checked, $("opt-blitz-1").checked];
-      save(); hud(); show("screen-title");
+      save(); hud(); setSeats(state.settings.seats); show("screen-title");
+      if (syncOn()) syncNow(true);
     };
     $("btn-reset").onclick = function () {
       if (!confirm("Reset " + state.settings.names[state.settings.profile] + "'s cards and progress?")) return;
@@ -509,5 +605,5 @@
     else console.log("Shockmate self-test passed: " + ALL.length + " fights across " + PACKS.length + " packs.");
   }
   load(); bind(); hud(); selfTest();
-  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, setPack, setSeats, all: ALL };
+  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, setPack, setSeats, syncNow, exportBackup, importBackup, all: ALL };
 })();
