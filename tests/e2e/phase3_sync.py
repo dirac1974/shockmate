@@ -47,16 +47,42 @@ async def run():
             ctx = await browser.new_context(viewport={"width": 390, "height": 844}, accept_downloads=True)
             pg = await ctx.new_page()
             errors = []
-            pg.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+            def note(m):
+                if m.type == "error" and "ERR_NAME_NOT_RESOLVED" not in m.text:
+                    errors.append(m.text)   # the fake project below is meant to fail to resolve
+            pg.on("console", note)
 
             await pg.goto(url)
             await pg.wait_for_function("() => !!window.__shockmate")
 
-            # Sync is off until sync-config.js is filled in — the controls say so instead of failing.
+            # With no API details on the device, the login fields stay hidden and the backup still works.
             await pg.click("#btn-settings")
-            assert await pg.is_visible("#sync-off"), "unconfigured build explains that sync is off"
-            assert await pg.is_hidden("#sync-on"), "no code field offered without a project"
+            assert await pg.is_visible("#sync-off"), "an unconfigured device asks for the API details"
+            assert await pg.is_hidden("#sync-on"), "no family login offered until then"
             assert await pg.is_visible("#btn-export"), "the backup file works regardless"
+
+            # Saving API details reveals the family login; a bound slot is code + username + 4-digit PIN.
+            await pg.fill("#opt-url", "https://example.supabase.co")
+            await pg.fill("#opt-key", "test-anon-key")
+            await pg.click("#btn-save-api")
+            assert await pg.is_visible("#sync-on"), "family login appears once the device is configured"
+            await pg.fill("#opt-code", "abcd 1234")
+            await pg.fill("#opt-user-0", "Mia_B")
+            await pg.fill("#opt-pin-0", "1234")  # the field caps at 4; stripping non-digits is unit-tested
+            await pg.click("#btn-sync")
+            await pg.wait_for_timeout(400)
+            login = await pg.evaluate("window.__shockmate.state.settings.sync")
+            assert login["code"] == "ABCD1234", login
+            assert login["players"][0] == {"username": "mia_b", "pin": "1234"}, login
+            assert not login["players"][1]["username"], "an unbound second slot stays device-local"
+            # The fake project cannot answer, so the state line must report it and keep the cards.
+            state_line = await pg.inner_text("#sync-state")
+            assert "synced" not in state_line.lower() or "Last synced" not in state_line, state_line
+
+            await pg.evaluate("""() => {
+                const s = window.__shockmate.state.settings;
+                s.sync = { url: "", anonKey: "", code: "", players: [{username:"",pin:""},{username:"",pin:""}] };
+            }""")
             await pg.click("#btn-close-settings")
 
             # Win a card, then save a backup file.

@@ -22,7 +22,8 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", seats: 1, familyCode: "", syncedAt: 0 },
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", seats: 1, syncedAt: 0,
+      sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
     mode: "solo", pack: "tactics", active: 0, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
   };
@@ -36,8 +37,17 @@
   }
   function useProfile(i) { state.active = i; state.stats = state.profiles[i]; }
 
-  function syncCfg() { return window.SHOCKMATE_SYNC || null; }
-  function syncOn() { return !!(Y && Y.configured(syncCfg()) && Y.validCode(state.settings.familyCode)); }
+  // API details come from this device's settings first, then any baked-in sync-config.js.
+  function syncCfg() {
+    const s = state.settings.sync || {};
+    if (s.url && s.anonKey) return { url: s.url, anonKey: s.anonKey };
+    return window.SHOCKMATE_SYNC && window.SHOCKMATE_SYNC.url ? window.SHOCKMATE_SYNC : null;
+  }
+  function syncSlots() { return (state.settings.sync && state.settings.sync.players) || [{}, {}]; }
+  function syncOn() {
+    const s = state.settings.sync || {};
+    return !!(Y && Y.configured(syncCfg()) && Y.validCode(s.code) && syncSlots().some(Y.boundSlot));
+  }
 
   function applyMerged(profiles, names) {
     state.profiles = [0, 1].map((i) => Object.assign(freshStats(), profiles[i]));
@@ -49,12 +59,13 @@
   // Merging (never overwriting) means an old device coming back online cannot delete a new card.
   function syncNow(quiet) {
     if (!syncOn()) return Promise.resolve(false);
-    const code = state.settings.familyCode;
-    const jobs = [0, 1].map((i) => Y.pull(syncCfg(), code, i)
+    const code = state.settings.sync.code, slots = syncSlots();
+    // Only a slot with a username and PIN syncs; an unbound slot stays device-local.
+    const jobs = [0, 1].filter((i) => Y.boundSlot(slots[i])).map((i) => Y.pull(syncCfg(), code, slots[i])
       .then((remote) => {
         const merged = Y.mergeStats(state.profiles[i], remote || {});
         state.profiles[i] = Object.assign(freshStats(), merged);
-        return Y.push(syncCfg(), code, i, state.profiles[i]);
+        return Y.push(syncCfg(), code, slots[i], state.profiles[i]);
       }));
     return Promise.all(jobs).then(() => {
       state.settings.syncedAt = Date.now(); useProfile(state.settings.profile); save(); renderPath(); hud(); renderSyncState();
@@ -79,10 +90,11 @@
     const ready = !!(Y && Y.configured(syncCfg()));
     off.hidden = ready; on.hidden = !ready;
     if (!ready) return;
-    const el = $("sync-state");
+    const el = $("sync-state"), s = state.settings.sync;
     if (problem) el.textContent = problem;
-    else if (!Y.validCode(state.settings.familyCode)) el.textContent = "No code yet. Make one, or type the code from the other device.";
-    else if (!state.settings.syncedAt) el.textContent = "Code set. Nothing synced yet.";
+    else if (!Y.validCode(s.code)) el.textContent = "Type the family code from the spelling or maths app.";
+    else if (!syncSlots().some(Y.boundSlot)) el.textContent = "Add a username and 4-digit PIN for at least one player.";
+    else if (!state.settings.syncedAt) el.textContent = "Ready. Nothing synced yet.";
     else el.textContent = "Last synced " + new Date(state.settings.syncedAt).toLocaleString() + ".";
   }
 
@@ -108,6 +120,8 @@
     try { Object.assign(state.settings, JSON.parse(localStorage.getItem(KEY + ":settings") || "{}")); } catch (e) {}
     if (!Array.isArray(state.settings.blitz)) state.settings.blitz = [false, false];
     if (PACKS.indexOf(state.settings.pack) < 0) state.settings.pack = "tactics";
+    const sy = state.settings.sync = Object.assign({ url: "", anonKey: "", code: "", players: [] }, state.settings.sync);
+    sy.players = [0, 1].map((i) => Object.assign({ username: "", pin: "" }, sy.players[i]));
     setSeats(state.settings.seats === 2 ? 2 : 1);
     setPack(state.settings.pack);
     loadStats();
@@ -516,11 +530,28 @@
   }
 
   /* ---------- bindings ---------- */
+  function readLogin() {
+    if (!$("opt-code")) return;
+    const s = state.settings.sync;
+    s.code = Y.normaliseCode($("opt-code").value);
+    s.players = [0, 1].map((i) => ({ username: Y.normaliseUser($("opt-user-" + i).value), pin: Y.normalisePin($("opt-pin-" + i).value) }));
+    $("opt-code").value = s.code;
+    [0, 1].forEach((i) => { $("opt-user-" + i).value = s.players[i].username; $("opt-pin-" + i).value = s.players[i].pin; });
+    save();
+  }
   function renderSettings() {
     $("opt-name-0").value = state.settings.names[0]; $("opt-name-1").value = state.settings.names[1]; $("opt-cap").value = state.settings.cap;
     $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry;
     $("opt-blitz-0").checked = !!state.settings.blitz[0]; $("opt-blitz-1").checked = !!state.settings.blitz[1];
-    if ($("opt-code")) $("opt-code").value = Y.prettyCode(state.settings.familyCode);
+    const s = state.settings.sync || {};
+    if ($("opt-code")) {
+      $("opt-code").value = Y.normaliseCode(s.code);
+      $("opt-url").value = s.url || ""; $("opt-key").value = s.anonKey || "";
+      [0, 1].forEach((i) => {
+        $("opt-user-" + i).value = (s.players && s.players[i] && s.players[i].username) || "";
+        $("opt-pin-" + i).value = (s.players && s.players[i] && s.players[i].pin) || "";
+      });
+    }
     renderSyncState();
   }
   function switchProfile(i) { state.settings.profile = i; useProfile(i); save(); hud(); }
@@ -560,20 +591,38 @@
       r.onerror = function () { toast("Could not read that file.", 2400); };
       r.readAsText(file); ev.target.value = "";
     };
-    $("btn-code").onclick = function () {
-      if (Y.validCode(state.settings.familyCode) && !confirm("Replace the current family code? The other device will need the new one.")) return;
-      state.settings.familyCode = Y.makeCode(); state.settings.syncedAt = 0;
-      $("opt-code").value = Y.prettyCode(state.settings.familyCode); save(); renderSyncState();
+    $("btn-save-api").onclick = function () {
+      state.settings.sync.url = $("opt-url").value.trim().replace(/\/+$/, "");
+      state.settings.sync.anonKey = $("opt-key").value.trim();
+      save(); renderSettings();
+      toast(Y.configured(syncCfg()) ? "API details saved on this device." : "Both fields are needed.", 2200);
+    };
+    $("btn-roster").onclick = function () {
+      readLogin();
+      if (!Y.validCode(state.settings.sync.code)) { $("roster-state").textContent = "That family code is too short."; return; }
+      $("roster-state").textContent = "Looking up the family…";
+      Y.roster(syncCfg(), state.settings.sync.code).then((rows) => {
+        const list = $("roster-list"); list.innerHTML = "";
+        (rows || []).forEach((r) => { const o = document.createElement("option"); o.value = r.username; o.label = r.display_name || r.username; list.appendChild(o); });
+        if (!rows || !rows.length) { $("roster-state").textContent = "No players found for that code."; return; }
+        $("roster-state").textContent = "Found: " + rows.map((r) => (r.display_name || r.username)).join(", ") + ". Pick two and add their PINs.";
+        // Names follow the other apps, so the cards say what the kids are used to seeing.
+        [0, 1].forEach((i) => {
+          const match = (rows || []).filter((r) => r.username === Y.normaliseUser($("opt-user-" + i).value))[0];
+          if (match && match.display_name) { state.settings.names[i] = match.display_name; $("opt-name-" + i).value = match.display_name; }
+        });
+        save(); hud();
+      }).catch((err) => { $("roster-state").textContent = String(err && err.message || err); });
     };
     $("btn-sync").onclick = function () {
-      state.settings.familyCode = Y.normaliseCode($("opt-code").value);
-      $("opt-code").value = Y.prettyCode(state.settings.familyCode); save();
-      if (!Y.validCode(state.settings.familyCode)) { renderSyncState("That code is too short."); return; }
+      readLogin();
+      if (!Y.validCode(state.settings.sync.code)) { renderSyncState("That family code is too short."); return; }
+      if (!syncSlots().some(Y.boundSlot)) { renderSyncState("Add a username and 4-digit PIN for at least one player."); return; }
       renderSyncState("Syncing…"); syncNow(false);
     };
     $("btn-close-settings").onclick = function () {
       state.settings.names = [$("opt-name-0").value.trim() || "Player 1", $("opt-name-1").value.trim() || "Player 2"];
-      state.settings.familyCode = Y.normaliseCode($("opt-code") ? $("opt-code").value : state.settings.familyCode);
+      readLogin();
       state.settings.cap = Math.max(3, Math.min(12, Number($("opt-cap").value) || 6));
       state.settings.sound = $("opt-sound").checked; state.settings.coords = $("opt-coords").checked; state.settings.hurry = $("opt-hurry").checked;
       state.settings.blitz = [$("opt-blitz-0").checked, $("opt-blitz-1").checked];

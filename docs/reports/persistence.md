@@ -10,21 +10,23 @@
 
 **Backup file.** Parent settings gained *Save backup file* and *Restore from file*. The file holds both kids' profiles and their names. Restoring **merges** rather than replaces, so restoring last month's file can never delete a card won since.
 
-**Family-code sync.** One code, twelve characters from a 32-symbol alphabet with no `0/O/1/I` to misread, shown grouped (`ABCD-EFGH-JKMN`). Make it on one device, type it on the other, and both pick up the same cards. Sync runs on load, a few seconds after each card is earned, and on leaving settings; every failure is silent and non-destructive.
+**Family login — the same one the other apps use.** Identity lives where it already lives: `hop_families.family_code` plus a `hop_players` row per child (lowercase username, 4-digit PIN), exactly as `garden_players`, `bloom_players`, `star_players` and `field_players` use it. Shockmate adds `chess_players` with that same column shape and stores no second copy of the PIN. Parent settings take the family code, then *Load family* lists the children on that code and their display names carry over, so the cards say what the kids already see in the spelling and maths apps. Each of the two slots binds to a username and PIN; an unbound slot stays device-local. Sync runs on load, a few seconds after each card is earned, and on leaving settings, and every failure is silent and non-destructive.
 
 ### Merge rules, because last-write-wins would lose cards
 
 Counters take the **larger** side, never the sum — summing would double-count fights both devices saw. Cards union; a critical stays a critical; `mastered` is never un-mastered; the side with more finds carries the review schedule; ledger rows dedupe, sort oldest-first and trim to 40; the tier window keeps the most recent 8. The merge is order-independent and idempotent, which `tests/test_sync.js` asserts directly.
 
-### Security model
+### Access, and a finding about the sibling tables
 
-The anon key ships in a public page, so the table is closed to it: RLS on, no policies, privileges revoked. All access goes through two `security definer` functions that require the family code, with a payload size cap. The code is the only secret — about 60 bits, generated on the device. Anyone holding it can see that progress, which is why the field warns to keep it in the family and use first names only. No date of birth, no email, no account: the payload is counters, card ids and a display name.
+Shockmate's table is closed to anon: RLS on, no policies, privileges revoked. The only way in is three `security definer` functions — `chess_roster` (code only, and it never returns a PIN), `chess_pull` and `chess_push` (both verify the PIN against `hop_players` before touching anything, with a payload size cap).
+
+The older sibling tables are not closed. `hop_families`, `hop_players`, `garden_players` and `bloom_players` all carry blanket `SELECT true` / `UPDATE true` policies, so anyone holding the anon key can read and rewrite every family's rows — display names and 4-digit PINs in plaintext. That is why the anon key is **not** committed here: it goes into parent settings once per device and is kept in `localStorage`. Tightening those policies to the same function-only pattern would make the key safe to bake into the page; that is a change to the other apps, so it is your call rather than something done in passing.
 
 ## Set-up, in order
 
-1. Apply `supabase/migrations/0001_shockmate_sync.sql` to a Supabase project.
-2. Put that project's URL and anon key into `web/sync-config.js` and redeploy. With those blank, the sync controls explain they are off and the backup file still works — verified in the e2e suite.
-3. On the first device: Settings → *Make a code* → *Sync now*. On the second: type the code → *Sync now*.
+1. Already done: `supabase/migrations/0001_chess_players.sql` is applied to the project holding the other kid apps (`digcgqltrlmhgmzgmvwc`). Verified server-side — push/pull round trip against a real identity, wrong PIN rejected, short code rejected, test row removed, table left empty.
+2. On each device: Settings → paste the Supabase URL and anon key → *Save API details*. Blank means no sync and the backup file still works, which the e2e suite checks.
+3. Settings → type the family code → *Load family* → pick each child's username and enter their PIN → *Sync now*.
 4. On each device, add the page to the home screen.
 
 ## Verification
@@ -33,4 +35,4 @@ The anon key ships in a public page, so the table is closed to it: RLS on, no po
 
 ## Not done
 
-Live end-to-end against a real project — the migration has not been applied anywhere yet, so the Supabase path is tested against a stubbed transport only. That needs your say-so on which project.
+The browser half of the sync has not run against the live project: the client is tested against a stubbed transport and the SQL half was exercised directly in the database. The first real *Sync now* on a phone is still an untested step, so do it while you can watch it, with a backup file saved first. PINs are held in `localStorage` on the device, which matches how the sibling apps treat them.

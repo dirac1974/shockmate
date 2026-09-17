@@ -57,15 +57,15 @@
     return out;
   }
 
-  function makeCode(rand) {
-    const r = rand || function () { return Math.random(); };
-    let s = "";
-    for (let i = 0; i < 12; i++) s += CODE_ALPHABET[Math.floor(r() * CODE_ALPHABET.length)];
-    return s;
-  }
+  // Identity is the family login the other kid apps already use: an uppercase family code,
+  // a lowercase username and a 4-digit pin. Shockmate never invents its own account.
   function normaliseCode(text) { return String(text || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); }
-  function prettyCode(code) { return normaliseCode(code).replace(/(.{4})(?=.)/g, "$1-"); }
-  function validCode(code) { return normaliseCode(code).length >= 8; }
+  function normaliseUser(text) { return String(text || "").toLowerCase().replace(/[^a-z0-9._-]/g, ""); }
+  function normalisePin(text) { return String(text || "").replace(/[^0-9]/g, "").slice(0, 4); }
+  function validCode(code) { return normaliseCode(code).length >= 6; }
+  function validPin(pin) { return normalisePin(pin).length === 4; }
+  function validUser(name) { return normaliseUser(name).length >= 3; }
+  function boundSlot(slot) { return !!(slot && validUser(slot.username) && validPin(slot.pin)); }
 
   function exportBlob(settings, profiles) {
     return { app: "shockmate", version: 2, savedAt: Date.now(), names: (settings || {}).names || [], profiles: profiles || [] };
@@ -79,6 +79,7 @@
   }
 
   function configured(cfg) { return !!(cfg && cfg.url && cfg.anonKey); }
+  function prettyCode(code) { return normaliseCode(code); }  // the family code is read out as-is
 
   function rpc(cfg, name, body, fetchImpl) {
     const f = fetchImpl || (typeof fetch === "function" ? fetch : null);
@@ -94,14 +95,18 @@
     });
   }
 
+  function roster(cfg, code, fetchImpl) {
+    return rpc(cfg, "chess_roster", { p_code: normaliseCode(code) }, fetchImpl);
+  }
   function pull(cfg, code, slot, fetchImpl) {
-    return rpc(cfg, "shockmate_pull", { p_code: normaliseCode(code), p_slot: slot }, fetchImpl);
+    return rpc(cfg, "chess_pull", { p_code: normaliseCode(code), p_username: normaliseUser(slot.username), p_pin: normalisePin(slot.pin) }, fetchImpl);
   }
   function push(cfg, code, slot, stats, fetchImpl) {
-    return rpc(cfg, "shockmate_push", { p_code: normaliseCode(code), p_slot: slot, p_data: stats }, fetchImpl);
+    return rpc(cfg, "chess_push", { p_code: normaliseCode(code), p_username: normaliseUser(slot.username), p_pin: normalisePin(slot.pin), p_progress: stats }, fetchImpl);
   }
 
-  const api = { mergeStats, mergeCard, makeCode, normaliseCode, prettyCode, validCode, exportBlob, importBlob, configured, pull, push, LEDGER_MAX, TIERS_MAX };
+  const api = { mergeStats, mergeCard, normaliseCode, normaliseUser, normalisePin, validCode, validPin, validUser,
+    boundSlot, exportBlob, importBlob, configured, roster, pull, push, LEDGER_MAX, TIERS_MAX };
   root.ShockmateSync = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

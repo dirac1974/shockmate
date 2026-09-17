@@ -6,13 +6,15 @@ function card(over) {
 }
 
 function run() {
-  // --- codes ---
-  const code = Y.makeCode();
-  assert.strictEqual(code.length, 12, "codes are 12 characters");
-  assert.ok(/^[A-HJ-NP-Z2-9]+$/.test(code), "no 0/O/1/I in a code kids have to read out");
-  assert.strictEqual(Y.prettyCode(code), code.slice(0, 4) + "-" + code.slice(4, 8) + "-" + code.slice(8), "grouped for reading");
-  assert.strictEqual(Y.normaliseCode("abcd-efgh jkmn"), "ABCDEFGHJKMN", "typed however, stored one way");
-  assert.ok(!Y.validCode("ABC"), "short codes rejected");
+  // --- the family login shared with the other kid apps ---
+  assert.strictEqual(Y.normaliseCode("abcd 1234"), "ABCD1234", "codes are read out in caps");
+  assert.strictEqual(Y.normaliseUser("  Mia_B "), "mia_b", "usernames are lowercase");
+  assert.strictEqual(Y.normalisePin("12a345"), "1234", "pins are four digits");
+  assert.ok(Y.validCode("ABCD1234") && !Y.validCode("ABC"), "short codes rejected");
+  assert.ok(Y.validPin("1234") && !Y.validPin("123"), "a pin must be four digits");
+  assert.ok(Y.boundSlot({ username: "mia", pin: "1234" }), "a slot with a name and pin syncs");
+  assert.ok(!Y.boundSlot({ username: "mia", pin: "" }), "no pin, no sync");
+  assert.ok(!Y.boundSlot({ username: "", pin: "1234" }), "no name, no sync");
 
   // --- merge: a card won on either device survives ---
   const phone = { won: 3, criticals: 1, hits: 5, bestStreak: 3, session: 4,
@@ -69,35 +71,39 @@ function run() {
   assert.throws(() => Y.importBlob('{"app":"something-else"}', []), /not a Shockmate backup/, "a stray json file is refused");
   assert.throws(() => Y.importBlob("not json at all", []), /not a Shockmate backup/);
 
-  // --- transport: right endpoint, right headers, code normalised, nothing leaks without config ---
+  // --- transport: the three chess_* rpcs, with the code, name and pin the other apps use ---
   assert.ok(!Y.configured({ url: "", anonKey: "" }), "empty config is off");
   assert.ok(Y.configured({ url: "https://x.supabase.co", anonKey: "k" }));
   const calls = [];
-  const fakeFetch = (url, opts) => { calls.push([url, opts]); return Promise.resolve({ ok: true, json: () => Promise.resolve({}) }); };
+  const fakeFetch = (url, opts) => { calls.push([url, opts]); return Promise.resolve({ ok: true, json: () => Promise.resolve([]) }); };
   const cfg = { url: "https://proj.supabase.co/", anonKey: "anon-key" };
+  const slot = { username: "Mia_B", pin: "1234" };
 
-  return Y.pull(cfg, "abcd-efgh-jkmn", 1, fakeFetch)
-    .then(() => Y.push(cfg, "abcd-efgh-jkmn", 0, { won: 1 }, fakeFetch))
+  return Y.roster(cfg, "abcd 1234", fakeFetch)
+    .then(() => Y.pull(cfg, "abcd1234", slot, fakeFetch))
+    .then(() => Y.push(cfg, "abcd1234", slot, { won: 1 }, fakeFetch))
     .then(() => {
-      assert.strictEqual(calls[0][0], "https://proj.supabase.co/rest/v1/rpc/shockmate_pull", "pull endpoint, no double slash");
-      assert.strictEqual(calls[1][0], "https://proj.supabase.co/rest/v1/rpc/shockmate_push");
+      assert.strictEqual(calls[0][0], "https://proj.supabase.co/rest/v1/rpc/chess_roster", "roster endpoint, no double slash");
+      assert.strictEqual(calls[1][0], "https://proj.supabase.co/rest/v1/rpc/chess_pull");
+      assert.strictEqual(calls[2][0], "https://proj.supabase.co/rest/v1/rpc/chess_push");
       assert.strictEqual(calls[0][1].headers.apikey, "anon-key");
       assert.strictEqual(calls[0][1].headers.Authorization, "Bearer anon-key");
-      assert.deepStrictEqual(JSON.parse(calls[0][1].body), { p_code: "ABCDEFGHJKMN", p_slot: 1 });
-      assert.deepStrictEqual(JSON.parse(calls[1][1].body), { p_code: "ABCDEFGHJKMN", p_slot: 0, p_data: { won: 1 } });
-      return Y.pull({ url: "", anonKey: "" }, "ABCDEFGHJKMN", 0, fakeFetch).then(
+      assert.deepStrictEqual(JSON.parse(calls[0][1].body), { p_code: "ABCD1234" }, "roster asks by code alone — it must never carry a pin");
+      assert.deepStrictEqual(JSON.parse(calls[1][1].body), { p_code: "ABCD1234", p_username: "mia_b", p_pin: "1234" });
+      assert.deepStrictEqual(JSON.parse(calls[2][1].body), { p_code: "ABCD1234", p_username: "mia_b", p_pin: "1234", p_progress: { won: 1 } });
+      return Y.pull({ url: "", anonKey: "" }, "ABCD1234", slot, fakeFetch).then(
         () => { throw new Error("unconfigured sync should refuse"); },
         (err) => assert.ok(/not set up/.test(err.message), "unconfigured sync refuses instead of calling out")
       );
     })
     .then(() => {
       const failing = () => Promise.resolve({ ok: false, status: 401, text: () => Promise.resolve("no key") });
-      return Y.push(cfg, "ABCDEFGHJKMN", 0, {}, failing).then(
+      return Y.push(cfg, "ABCD1234", slot, {}, failing).then(
         () => { throw new Error("a 401 should reject"); },
         (err) => assert.ok(/401/.test(err.message), "server errors surface with their status")
       );
     })
-    .then(() => console.log("OK sync: codes, merge (order-free, idempotent, capped), backup round trip, rpc shape, failure paths"));
+    .then(() => console.log("OK sync: family login, merge (order-free, idempotent, capped), backup round trip, chess_* rpc shape, failure paths"));
 }
 
 run().catch((err) => { console.error(err); process.exit(1); });

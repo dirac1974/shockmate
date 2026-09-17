@@ -137,20 +137,31 @@
       </div>
       <input id="file-import" type="file" accept="application/json,.json" hidden />
 
-      <h3 class="step-label">Same cards on another device</h3>
+      <h3 class="step-label">Family login (same as the other apps)</h3>
       <div id="sync-on" hidden>
-        <label>Family code <input id="opt-code" type="text" maxlength="19" autocapitalize="characters"
-          spellcheck="false" placeholder="not set" /></label>
-        <p class="hint">Type this code on the other device to pick up the same cards. Anyone with
-          the code can see the progress, so keep it in the family and use first names only.</p>
-        <div class="actions">
-          <button id="btn-code" class="ghost">Make a code</button>
-          <button id="btn-sync" class="ghost">Sync now</button>
-        </div>
+        <label>Family code <input id="opt-code" type="text" maxlength="12" autocapitalize="characters"
+          spellcheck="false" placeholder="e.g. ABCD1234" /></label>
+        <div class="actions"><button id="btn-roster" class="ghost">Load family</button></div>
+        <p class="hint" id="roster-state">The same code and 4-digit PINs the spelling and maths apps use.</p>
+        <label>First player <input id="opt-user-0" type="text" list="roster-list" maxlength="15"
+          autocapitalize="none" spellcheck="false" placeholder="username" /></label>
+        <label>First PIN <input id="opt-pin-0" type="text" inputmode="numeric" maxlength="4" placeholder="4 digits" /></label>
+        <label>Second player <input id="opt-user-1" type="text" list="roster-list" maxlength="15"
+          autocapitalize="none" spellcheck="false" placeholder="username" /></label>
+        <label>Second PIN <input id="opt-pin-1" type="text" inputmode="numeric" maxlength="4" placeholder="4 digits" /></label>
+        <datalist id="roster-list"></datalist>
+        <div class="actions"><button id="btn-sync" class="ghost">Sync now</button></div>
         <p class="hint" id="sync-state">Not synced yet.</p>
       </div>
-      <p class="hint" id="sync-off">Cross-device sync is off in this build — fill in
-        <code>web/sync-config.js</code> with the Supabase URL and anon key, then redeploy.</p>
+      <div id="sync-off">
+        <p class="hint">Paste this project's API details once per device. They are kept on the
+          device, never in the repo.</p>
+        <label>Supabase URL <input id="opt-url" type="text" autocapitalize="none" spellcheck="false"
+          placeholder="https://xxxx.supabase.co" /></label>
+        <label>Anon key <input id="opt-key" type="password" autocapitalize="none" spellcheck="false"
+          placeholder="paste key" /></label>
+        <div class="actions"><button id="btn-save-api" class="ghost">Save API details</button></div>
+      </div>
 
       <button id="btn-reset" class="ghost danger">Reset this player</button>
       <button id="btn-close-settings" class="cta">Done</button>
