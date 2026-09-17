@@ -29,10 +29,11 @@
   // Glitch's bragged rating. It is HIS number, so it can fall — the kid's own numbers never do.
   // Monotonic in cards earned, so it never creeps back up, and adding a pack later just gives
   // him further to fall. The joke is that his claim never changes while the truth slides.
-  // Each card knocks a slice off whatever brag he has left, rather than a flat amount: the
-  // first win moves the needle 140 points, the movement stays visible all the way down, and
-  // adding a fourth pack later needs no rebalancing because the floor is an asymptote.
-  const BRAG = 2400, FLOOR = 400, KEEP = 0.93, CRIT_WEIGHT = 0.5;
+  // Glitch's brag is pitched at the kids' own world, not at Stockfish: a 450 player dragging a
+  // 1500 braggart down to their own level is a story they can read off any chess app. Each card
+  // knocks a slice off whatever brag is left, so the movement stays visible and the floor is an
+  // asymptote — later packs push him below the kids without any rebalancing.
+  const BRAG = 1500, FLOOR = 300, KEEP = 0.93, CRIT_WEIGHT = 0.5;
   function glitchRating(stats) {
     const earned = (stats && stats.cardsEarned) || {};
     const ids = Object.keys(earned);
@@ -41,13 +42,14 @@
     const real = Math.max(FLOOR, Math.round((FLOOR + left) / 5) * 5);
     return { claimed: BRAG, real: real, drop: BRAG - real, floor: FLOOR,
       cards: ids.length, criticals: crits,
-      fraction: (real - FLOOR) / (BRAG - FLOOR), floored: real <= FLOOR + 50 };
+      fraction: (real - FLOOR) / (BRAG - FLOOR), floored: real <= FLOOR + 40 };
   }
   function ratingTaunt(r) {
     if (!r.cards) return "Glitch says he is " + r.claimed + ". He has not been tested yet.";
-    if (r.floored) return "Glitch still says " + r.claimed + ". Nobody believes him now.";
-    if (r.real <= 1200) return "Glitch still says " + r.claimed + ". The scoreboard disagrees.";
-    if (r.real <= 1800) return "Glitch says " + r.claimed + " a bit more quietly now.";
+    if (r.floored) return "Glitch still says " + r.claimed + ". He is a 300 in a trench coat.";
+    if (r.real <= 600) return "Glitch still says " + r.claimed + ". Nobody believes him now.";
+    if (r.real <= 900) return "Glitch says " + r.claimed + ". The scoreboard disagrees.";
+    if (r.real <= 1200) return "Glitch says " + r.claimed + " a bit more quietly now.";
     return "Glitch says he is " + r.claimed + ".";
   }
 

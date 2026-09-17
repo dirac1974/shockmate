@@ -4,6 +4,9 @@
 (function () {
   const F = window.ShockmateFutures, S = window.ShockmateScore;
   const FILES = "abcdefgh", KEY = "shockmate-v2";
+  // Read this off the home screen to tell what a phone actually loaded — Pages and the
+  // service worker both cache, so "I don't see the new screen" is usually a stale copy.
+  const BUILD = "v0.5";
   const Y = window.ShockmateSync;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -212,6 +215,7 @@
     // During play the board never flips, so the note doubles as "whose go is it" in co-op.
     if ($("turn-note")) $("turn-note").textContent = activeName() + " is White.";  // the co-op turn banner already says whose go it is
     [0, 1].forEach((i) => { const b = $("prof-" + i); b.textContent = state.settings.names[i]; b.classList.toggle("active", (state.mode === "solo" ? state.settings.profile : state.active) === i); });
+    if ($("build-tag")) $("build-tag").textContent = BUILD + " \u00b7 " + ALL.length + " fights \u00b7 " + PACKS.length + " packs";
     renderBrag(); renderPath(); renderTeam();
   }
 
