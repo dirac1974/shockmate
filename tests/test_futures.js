@@ -19,7 +19,7 @@ function kinds(events) {
 
 function run() {
   const list = loadEncounters();
-  assert.strictEqual(list.length, 12, "12 encounters");
+  assert.strictEqual(list.filter((e) => e.pack === "tactics").length, 12, "12 tactics fights");
 
   list.forEach((e) => {
     assert.ok(e.pieces && e.pieces.length, e.id + " pieces");
@@ -118,6 +118,7 @@ function run() {
   assert.strictEqual(lastWeak.uci, "a5a1");
   assert.strictEqual(lastWeak.captured, "r", "Qxa1+ eats the rook the queen abandoned");
 
+  assert.ok(list.filter((e) => e.pack === "openings").length >= 5, "openings pack ships");
   list.forEach((e) => {
     assert.ok(e.moves && e.moves[e.best] && e.moves[e.best].tier === "best", e.id + " best move is tier best");
     assert.strictEqual(e.moves[e.tempting].tier, "bait", e.id + " bait move is tier bait");
@@ -125,7 +126,7 @@ function run() {
     assert.ok(e.whyTargets && e.whyTargets.squares.length >= 1 && e.whyTargets.prompt.split(" ").length <= 12, e.id + " why targets");
     assert.ok(e.candidates && e.candidates.length >= 2 && e.candidates.includes(e.best.slice(0, 2)), e.id + " candidates include the best origin");
   });
-  console.log("OK futures: 12 lines apply, 12 hit+miss plans simulate, motif finishers, palace decoys.");
+  console.log("OK futures: " + list.length + " fights apply, hit+miss plans simulate, motif finishers, palace decoys.");
 }
 
 run();

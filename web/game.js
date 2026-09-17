@@ -15,12 +15,14 @@
   function skipAhead() { const w = Array.from(state.waiters); state.waiters.clear(); w.forEach((f) => f()); }
   const $ = (id) => document.getElementById(id);
 
+  const ALL = window.SHOCKMATE_ENCOUNTERS || [];
+  const PACKS = ["tactics", "openings"];
   const state = {
-    encounters: window.SHOCKMATE_ENCOUNTERS || [], index: 0, pieces: {}, selected: null, phase: "home",
+    encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false] },
-    mode: "solo", active: 0, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics" },
+    mode: "solo", pack: "tactics", active: 0, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
   };
   const RAGE_TARGET = 4;
@@ -36,6 +38,8 @@
   function load() {
     try { Object.assign(state.settings, JSON.parse(localStorage.getItem(KEY + ":settings") || "{}")); } catch (e) {}
     if (!Array.isArray(state.settings.blitz)) state.settings.blitz = [false, false];
+    if (PACKS.indexOf(state.settings.pack) < 0) state.settings.pack = "tactics";
+    setPack(state.settings.pack);
     loadStats();
   }
   function save() {
@@ -45,6 +49,12 @@
     } catch (e) {}
   }
   function activeName() { return state.settings.names[state.active]; }
+  function setPack(name) {
+    state.pack = PACKS.indexOf(name) >= 0 ? name : "tactics";
+    state.encounters = ALL.filter((e) => e.pack === state.pack);
+    state.settings.pack = state.pack; state.index = 0;
+    PACKS.forEach((p) => { const b = $("pack-" + p); if (b) b.classList.toggle("active", p === state.pack); });
+  }
   /* adaptive: rolling tier history decides whether the next fight opens with candidates lit */
   function needsHelp(stats) {
     const t = (stats.tiers || []).slice(-2);
@@ -374,7 +384,7 @@
     stopBlitz();
     $("end-title").textContent = state.session.won ? (state.mode === "solo" ? "Mission complete" : "Team mission complete") : "Mission paused";
     const cards = state.mode === "solo"
-      ? Object.keys(state.stats.cardsEarned).length + "/" + state.encounters.length
+      ? Object.keys(state.stats.cardsEarned).length + "/" + ALL.length
       : state.settings.names.map((n, i) => n + " " + Object.keys(state.profiles[i].cardsEarned).length).join(" · ");
     $("session-summary").textContent = "Fights won: " + state.session.won + " · Criticals: " + state.session.crits + " · Cards: " + cards;
     $("session-next").textContent = "Next time: " + nxt.hook + " Glitch says: \"You got lucky. I have a new trap ready.\"";
@@ -401,10 +411,10 @@
 
   /* ---------- collection ---------- */
   function renderCollection() {
-    const rooms = {}; state.encounters.forEach((e) => { (rooms[e.palaceRoom] = rooms[e.palaceRoom] || []).push(e); });
+    const rooms = {}; ALL.forEach((e) => { (rooms[e.palaceRoom] = rooms[e.palaceRoom] || []).push(e); });
     const root = $("palace-rooms"); root.innerHTML = "";
     const earned = state.stats.cardsEarned || {};
-    $("collection-summary").textContent = state.settings.names[state.settings.profile] + ": " + Object.keys(earned).length + " of " + state.encounters.length + " cards.";
+    $("collection-summary").textContent = activeName() + ": " + Object.keys(earned).length + " of " + ALL.length + " cards.";
     Object.keys(rooms).forEach((name) => {
       const div = document.createElement("div"); div.className = "room"; div.innerHTML = "<h3>" + name + "</h3>";
       rooms[name].forEach((e) => {
@@ -422,6 +432,7 @@
   function switchProfile(i) { state.settings.profile = i; useProfile(i); save(); hud(); }
   function bind() {
     $("prof-0").onclick = () => switchProfile(0); $("prof-1").onclick = () => switchProfile(1);
+    PACKS.forEach((p) => { const b = $("pack-" + p); if (b) b.onclick = () => { setPack(p); save(); hud(); }; });
     $("btn-start").onclick = () => startSession("solo");
     $("btn-coop").onclick = () => { startSession("coop"); toast(state.settings.names[0] + " starts. Take turns.", 2000); };
     $("btn-duel").onclick = startDuel;
@@ -467,15 +478,17 @@
     document.querySelector(".board-wrap").addEventListener("click", function () { if (state.phase === "busy") skipAhead(); }, true);
   }
   function selfTest() {
-    const errors = []; const list = state.encounters;
-    if (list.length !== 12) errors.push("expected 12, got " + list.length);
+    const errors = []; const list = ALL;
+    if (ALL.filter((e) => e.pack === "tactics").length !== 12) errors.push("tactics pack should hold 12 fights");
+    if (!ALL.filter((e) => e.pack === "openings").length) errors.push("openings pack is empty");
     list.forEach((e) => {
       if (!(e.legal[e.best.slice(0, 2)] || []).some((m) => m.uci === e.best)) errors.push(e.id + " best not legal");
       if (!e.moves || !e.moves[e.best] || e.moves[e.best].tier !== "best") errors.push(e.id + " best not tiered");
       if (!e.whyTargets || !e.whyTargets.squares.length) errors.push(e.id + " no why targets");
     });
-    if (errors.length) console.error("self-test failed", errors); else console.log("Shockmate self-test passed: 12 fights, tiers, why targets.");
+    if (errors.length) console.error("self-test failed", errors);
+    else console.log("Shockmate self-test passed: " + ALL.length + " fights across " + PACKS.length + " packs.");
   }
   load(); bind(); hud(); selfTest();
-  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel };
+  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, setPack, all: ALL };
 })();

@@ -200,3 +200,5 @@ select, input[type=number], input[type=text] { display: block; width: 100%; marg
 .fig .txt small { font-size: 12px; }
 .fig.crit .art { border-color: var(--gold); color: var(--gold); }
 .fig.locked .art { color: var(--line); }
+
+.pack.active { border-color: var(--mag); color: var(--mag); box-shadow: 0 0 0 2px #ff4fa344; }

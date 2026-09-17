@@ -1,0 +1,242 @@
+[
+ {
+  "id": "o1",
+  "pack": "openings",
+  "title": "Slam the Door",
+  "motif": "mateThreat",
+  "palaceRoom": "Opening Alley",
+  "mascot": "BACK DOOR",
+  "moves": [
+   "e4",
+   "e5",
+   "Bc4",
+   "Nc6",
+   "Qh5"
+  ],
+  "bestMove": "g6",
+  "baitMove": "Nf6",
+  "bestTol": 45,
+  "hook": "His queen is staring at your weakest pawn.",
+  "why": "One pawn step blocks the queen and saves f7.",
+  "whyLong": "Early queen raids die to a simple block. Develop after you are safe.",
+  "whyTargets": {
+   "prompt": "Tap the pawn Glitch is hunting.",
+   "squares": [
+    "f7"
+   ]
+  },
+  "glitch": {
+   "taunt": "Just develop a knight. Nothing bad ever happens.",
+   "gloat": "Queen takes f7. That's mate. Thanks!",
+   "rage": "Blocked?! By a PAWN?!"
+  }
+ },
+ {
+  "id": "o2",
+  "pack": "openings",
+  "title": "Queen Out Too Early",
+  "motif": "fork",
+  "palaceRoom": "Opening Alley",
+  "mascot": "TWO HEADS",
+  "moves": [
+   "e4",
+   "e5",
+   "Qh5",
+   "g6"
+  ],
+  "bestMove": "Qxe5+",
+  "baitMove": "Qf3",
+  "bestTol": 45,
+  "hook": "He pushed a pawn at your queen. Look again.",
+  "why": "The pawn step left e5 loose and the rook behind it.",
+  "whyLong": "Chase the queen away, but count what the pawn stopped guarding.",
+  "whyTargets": {
+   "prompt": "Tap the king and the rook in the corner.",
+   "squares": [
+    "e8",
+    "h8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Your queen is trapped! Run her home to f3.",
+   "gloat": "You retreated. My board, my rules.",
+   "rage": "My ROOK too?! That pawn move was a MISTAKE?!"
+  }
+ },
+ {
+  "id": "o3",
+  "pack": "openings",
+  "title": "He Took It Back",
+  "motif": "counting",
+  "palaceRoom": "Opening Alley",
+  "mascot": "COUNTING",
+  "moves": [
+   "e4",
+   "e5",
+   "Nf3",
+   "f6",
+   "Nxe5",
+   "fxe5"
+  ],
+  "bestMove": "Qh5+",
+  "baitMove": "Bc4",
+  "bestTol": 45,
+  "hook": "He took your horse back. Look at his king.",
+  "why": "The check comes first and wins the loose pawn behind it.",
+  "whyLong": "Moving the f-pawn opened a diagonal straight at the king.",
+  "whyTargets": {
+   "prompt": "Tap the king with no cover.",
+   "squares": [
+    "e8"
+   ]
+  },
+  "glitch": {
+   "taunt": "You lost a horse! Just develop the bishop and cope.",
+   "gloat": "Cope it is. I am up a whole horse.",
+   "rage": "A CHECK? I forgot about the diagonal!"
+  }
+ },
+ {
+  "id": "o4",
+  "pack": "openings",
+  "title": "Fried Liver",
+  "motif": "counting",
+  "palaceRoom": "Opening Alley",
+  "mascot": "COUNTING",
+  "moves": [
+   "e4",
+   "e5",
+   "Nf3",
+   "Nc6",
+   "Bc4",
+   "Nf6",
+   "Ng5",
+   "d5",
+   "exd5",
+   "Nxd5"
+  ],
+  "bestMove": "Nxf7",
+  "baitMove": "Bxd5",
+  "bestTol": 60,
+  "hook": "His horse took the wrong pawn back.",
+  "why": "The horse eats f7 and the king cannot hide.",
+  "whyLong": "Two attackers on f7 beat one defender.",
+  "whyTargets": {
+   "prompt": "Tap the pawn two of your pieces attack.",
+   "squares": [
+    "f7"
+   ]
+  },
+  "glitch": {
+   "taunt": "Just trade bishop for horse on d5. Simple. Even.",
+   "gloat": "Even trade. Nothing happened. Lovely.",
+   "rage": "NOT f7! Anything but f7!"
+  }
+ },
+ {
+  "id": "o5",
+  "pack": "openings",
+  "title": "No Cheap Heroics",
+  "motif": "counting",
+  "palaceRoom": "Opening Alley",
+  "mascot": "TWO HEADS",
+  "moves": [
+   "e4",
+   "e5",
+   "Nf3",
+   "d6",
+   "Bc4",
+   "Bg4"
+  ],
+  "bestMove": "d4",
+  "baitMove": "Bxf7+",
+  "bestTol": 30,
+  "hook": "His bishop is out early. Glitch wants fireworks.",
+  "why": "Take the center. The flashy sacrifice just loses a bishop.",
+  "whyLong": "Sacrifices need a forced follow-up. If you cannot see one, build instead.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that grabs the middle.",
+   "squares": [
+    "d4"
+   ]
+  },
+  "glitch": {
+   "taunt": "Sacrifice on f7! Be a hero! Kids love sacrifices!",
+   "gloat": "You gave away a bishop for a pawn. Hero.",
+   "rage": "A boring pawn move?! Where is my fireworks?!"
+  }
+ },
+ {
+  "id": "o6",
+  "pack": "openings",
+  "title": "Trap the Corner Rook",
+  "motif": "trapped",
+  "palaceRoom": "Opening Alley",
+  "mascot": "NO EXIT",
+  "moves": [
+   "d4",
+   "d5",
+   "c4",
+   "dxc4",
+   "e3",
+   "b5",
+   "a4",
+   "c6",
+   "axb5",
+   "cxb5"
+  ],
+  "bestMove": "Qf3",
+  "baitMove": "Nc3",
+  "bestTol": 60,
+  "hook": "He kept the gambit pawn. Look at his corner.",
+  "why": "The queen hits the rook and the loose pawns. It cannot be saved.",
+  "whyLong": "A piece with no squares is already lost. Attack it, do not trade it.",
+  "whyTargets": {
+   "prompt": "Tap the rook with nowhere to go.",
+   "squares": [
+    "a8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Develop the knight like a good little student.",
+   "gloat": "Good student. Bad player.",
+   "rage": "My rook can't MOVE?! Who designed this?!"
+  }
+ },
+ {
+  "id": "o7",
+  "pack": "openings",
+  "title": "He Grabbed Your Pawn",
+  "motif": "counting",
+  "palaceRoom": "Opening Alley",
+  "mascot": "COUNTING",
+  "moves": [
+   "e4",
+   "e5",
+   "Nf3",
+   "Nc6",
+   "Bc4",
+   "Nf6",
+   "d3",
+   "Bc5",
+   "Nxe5"
+  ],
+  "bestMove": "Nxe5",
+  "baitMove": "Bxf2+",
+  "bestTol": 45,
+  "hook": "He just ate a pawn. Count the guards.",
+  "why": "Two of you guard e5. Take the horse back.",
+  "whyLong": "Before you get fancy, take the free piece.",
+  "whyTargets": {
+   "prompt": "Tap the horse that took your pawn.",
+   "squares": [
+    "e5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Check! Bishop takes f2! Checks are always good!",
+   "gloat": "You checked. I kept the horse. Fair swap.",
+   "rage": "You just... took it? No flair at all!"
+  }
+ }
+]

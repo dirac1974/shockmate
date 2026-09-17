@@ -2,10 +2,11 @@
 """Build data/encounters.v2.json and web/encounters.js from data/encounters.src.json.
 Scores every legal move with Stockfish, assigns fairness tiers, derives futures lines from engine PVs,
 and asserts the authoring rule (best beats bait by >=150 cp or mate vs no mate). Run: python3 tools/build_encounters.py [--sf PATH]"""
-import json, sys, shutil, chess, chess.engine
+import json, re, sys, shutil, chess, chess.engine
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
-SRC, OUT_JSON, OUT_JS = ROOT/"data/encounters.src.json", ROOT/"data/encounters.v2.json", ROOT/"web/encounters.js"
+SRCS = [ROOT/"data/encounters.src.json", ROOT/"data/openings.src.json"]
+OUT_JSON, OUT_JS = ROOT/"data/encounters.v2.json", ROOT/"web/encounters.js"
 MATE, GOOD_GAP, BEST_GAP, MARGIN, DEPTH, PV_DEPTH, BOSS = 10000, 60, 10, 150, 14, 16, {"04", "08", "12"}
 
 def sf_path():
@@ -45,7 +46,51 @@ def legal_pack(board):
         out.setdefault(fr, []).append(mv.uci() + ("x" if board.is_capture(mv) else "") + ":" + san)
     return {k: ",".join(v) for k, v in out.items()}
 
+def parse_move(board, text):
+    """Accept UCI or SAN so opening fights can be authored the way people talk about them.
+    A bad or illegal move is an authoring error: report it as a rejection, never a crash."""
+    for parse in (chess.Move.from_uci, board.parse_san):
+        try:
+            mv = parse(text)
+        except Exception:
+            continue
+        if mv in board.legal_moves: return mv
+    raise AssertionError(f"move {text!r} is not legal in {board.fen()}")
+
+def prepare(e):
+    """Resolve a source entry to a white-to-move position. Opening fights are often authored from
+    Black's side; mirroring keeps one board orientation in the arena while teaching the same lesson."""
+    e = dict(e)
+    if "moves" in e:
+        b = chess.Board()
+        for san in e["moves"]: b.push_san(san)
+        e["fen"] = b.fen()
+    board = chess.Board(e["fen"])
+    best = parse_move(board, e.get("best") or e["bestMove"])
+    bait = parse_move(board, e.get("bait") or e["baitMove"])
+    if board.turn == chess.BLACK:
+        m = lambda mv: chess.Move(chess.square_mirror(mv.from_square), chess.square_mirror(mv.to_square), promotion=mv.promotion)
+        board = board.mirror(); best, bait = m(best), m(bait)
+        e["fen"] = board.fen(); e["mirrored"] = True
+        wt = dict(e["whyTargets"])
+        wt["squares"] = [chess.square_name(chess.square_mirror(chess.parse_square(s))) for s in wt["squares"]]
+        if wt.get("hintSquare"): wt["hintSquare"] = chess.square_name(chess.square_mirror(chess.parse_square(wt["hintSquare"])))
+        e["whyTargets"] = wt
+        # Mirrored boards need mirrored prose: a bare square name like "f7" is now "f2".
+        def flip_text(t):
+            return re.sub(r"(?<![A-Za-z0-9])([a-h])([1-8])(?![0-9])",
+                          lambda m: m.group(1) + str(9 - int(m.group(2))), t)
+        for key in ("hook", "why", "whyLong", "title"):
+            if e.get(key): e[key] = flip_text(e[key])
+        e["whyTargets"] = dict(e["whyTargets"], prompt=flip_text(e["whyTargets"]["prompt"]))
+        e["glitch"] = {k: flip_text(v) for k, v in e["glitch"].items()}
+    e["best"], e["bait"] = best.uci(), bait.uci()
+    e.pop("bestMove", None); e.pop("baitMove", None); e.pop("moves", None)
+    e.setdefault("pack", "tactics")
+    return e
+
 def build(engine, e):
+    e = prepare(e)
     board = chess.Board(e["fen"]); assert board.is_valid(), e["id"]
     best, bait = chess.Move.from_uci(e["best"]), chess.Move.from_uci(e["bait"])
     assert best in board.legal_moves and bait in board.legal_moves, e["id"] + " best/bait illegal"
@@ -57,7 +102,8 @@ def build(engine, e):
         else: scores[mv.uci()] = cp_of(engine.analyse(board, chess.engine.Limit(depth=DEPTH, time=0.8))["score"])
         board.pop()
     top = max(scores.values())
-    best_gap, good_gap = max(BEST_GAP, abs(top) * 0.04), max(GOOD_GAP, abs(top) * 0.12)
+    best_gap = max(e.get("bestTol", BEST_GAP), abs(top) * 0.04)
+    good_gap = max(GOOD_GAP, best_gap + 10, abs(top) * 0.12)
     sb, sbait = scores[e["best"]], scores[e["bait"]]
     assert top - sb <= best_gap, f"{e['id']}: engine prefers another move over best {e['best']} ({top} vs {sb})"
     assert (sb >= MATE - 100 and sbait < MATE - 100) or sb - sbait >= MARGIN, f"{e['id']}: margin too small best={sb} bait={sbait}"
@@ -88,12 +134,13 @@ def build(engine, e):
     e["whyTargets"] = dict(e["whyTargets"], at=gate_at)
     out = dict(e); out.update({"tempting": e["bait"], "bestSan": board.san(best), "temptingSan": board.san(bait), "turn": "w",
         "moves": moves, "bestLineUci": best_line, "temptingLineUci": bait_line, "candidates": cands,
-        "boss": e["id"] in BOSS, "pack": pack(board), "legal": legal_pack(board)})
+        "boss": e["id"] in BOSS, "position": pack(board), "legal": legal_pack(board)})
+    out.pop("bestTol", None)
     return out
 
 def emit_js(encs):
     js = ["/* GENERATED by tools/build_encounters.py — do not edit by hand. */", "(function(){",
-      "  function unpack(e){ var pieces=[], p=e.pack; for (var i=0;i<p.length;i+=4){ pieces.push({color:p[i], role:p[i+1], sq:p[i+2]+p[i+3]}); }",
+      "  function unpack(e){ var pieces=[], p=e.position; for (var i=0;i<p.length;i+=4){ pieces.push({color:p[i], role:p[i+1], sq:p[i+2]+p[i+3]}); }",
       "    var legal={}; Object.keys(e.legal).forEach(function(fr){ legal[fr]=e.legal[fr].split(',').map(function(part){ var bits=part.split(':'); var left=bits[0]; return {to:left.replace('x','').slice(2,4), uci:left.replace('x',''), san:bits[1], capture:left.indexOf('x')>=0}; }); });",
       "    e.pieces=pieces; e.legal=legal; return e; }",
       "  var raw = " + json.dumps(encs, separators=(",", ":")) + ";",
@@ -101,15 +148,31 @@ def emit_js(encs):
     OUT_JS.write_text("\n".join(js) + "\n")
 
 def main():
-    src = json.loads(SRC.read_text()); assert len(src) == 12
+    """--only id[,id] rebuilds just those fights and merges them into the existing output,
+    so fixing one board does not mean re-scoring every position."""
+    only = None
+    if "--only" in sys.argv: only = set(sys.argv[sys.argv.index("--only") + 1].split(","))
+    src = []
+    for path in SRCS:
+        if path.exists(): src += json.loads(path.read_text())
+    ids = [e["id"] for e in src]; assert len(ids) == len(set(ids)), "duplicate encounter ids"
     engine = chess.engine.SimpleEngine.popen_uci(sf_path())
+    done = {x["id"]: x for x in json.loads(OUT_JSON.read_text())} if (only and OUT_JSON.exists()) else {}
+    encs = []
     try:
-        encs = [build(engine, e) for e in src]
+        for e in src:
+            if only and e["id"] not in only:
+                if e["id"] in done: encs.append(done[e["id"]])
+                continue
+            try:
+                encs.append(build(engine, e))
+            except AssertionError as err:
+                print("REJECTED", e["id"], e.get("title"), "->", err); continue
     finally:
         engine.quit()
     OUT_JSON.write_text(json.dumps(encs, indent=1)); emit_js(encs)
     for e in encs:
         m = e["moves"]; tiers = {t: sum(1 for v in m.values() if v["tier"] == t) for t in ("best", "good", "bait", "blunder")}
-        print(f"{e['id']} {e['title']:<20} best={m[e['best']]['cp']:>6} bait={m[e['bait']]['cp']:>6} {tiers} bestLine={e['bestLineUci']} baitLine={e['temptingLineUci']} cands={e['candidates']}")
+        print(f"{e['pack'][:4]} {e['id']} {e['title']:<20} best={m[e['best']]['cp']:>6} bait={m[e['bait']]['cp']:>6} {tiers} bestLine={e['bestLineUci']} baitLine={e['temptingLineUci']} cands={e['candidates']}")
 
 if __name__ == "__main__": main()

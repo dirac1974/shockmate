@@ -10,6 +10,8 @@
     mateOverMaterial: '<rect x="4" y="6" width="24" height="32" rx="2"/><path d="M10 22 l4 5 l9 -11"/>',
     discovery: '<path d="M4 34 L28 10"/><path d="M28 10 l-2 7 l7 -2z"/><circle cx="9" cy="29" r="4"/>',
     counting: '<path d="M16 6 V34 M6 14 h20"/><path d="M6 14 l-4 9 h8z"/><path d="M26 14 l-4 9 h8z"/>',
+    trapped: '<rect x="5" y="9" width="24" height="26" rx="2"/><path d="M11 35 V9 M17 35 V9 M23 35 V9"/><circle cx="17" cy="22" r="4.6"/>',
+    mateThreat: '<path d="M17 5 V15 M12 9 h10"/><path d="M8 35 c0-8 4-14 9-17 5 3 9 9 9 17z"/><path d="M8 35 h18" stroke-width="3"/>',
     hanging: '<path d="M16 4 V16"/><circle cx="16" cy="24" r="8"/><path d="M11 29 l10 -10"/>',
   };
   function icon(motif, size) {

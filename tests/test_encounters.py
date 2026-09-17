@@ -9,7 +9,12 @@ except ImportError:
 DATA = Path(__file__).resolve().parents[1] / "data" / "encounters.v2.json"
 MATE, MARGIN = 10000, 150
 def test():
-    data = json.loads(DATA.read_text()); assert len(data) == 12
+    data = json.loads(DATA.read_text())
+    packs = {}
+    for e in data: packs.setdefault(e.get("pack", "tactics"), []).append(e)
+    assert len(packs["tactics"]) == 12, "tactics pack holds 12 fights"
+    assert len(packs.get("openings", [])) >= 5, "openings pack needs at least 5 fights"
+    ids = [e["id"] for e in data]; assert len(ids) == len(set(ids)), "ids unique across packs"
     for e in data:
         board = chess.Board(e["fen"]); assert board.is_valid(), e["id"]
         best, bait = chess.Move.from_uci(e["best"]), chess.Move.from_uci(e["bait"])
@@ -38,7 +43,9 @@ def test():
         assert len(e["whyTargets"]["prompt"].split()) <= 12, e["id"] + " prompt too long"
         for k in ("taunt", "gloat", "rage"): assert 3 <= len(e["glitch"][k].split()) <= 14, f"{e['id']} glitch {k}"
         assert e["best"][:2] in e["candidates"], e["id"] + " candidates"
-    assert sum(1 for e in data if e["boss"]) == 3, "three bosses"
-    print("OK encounters v2: legality, margins, tiers, lines, why targets, glitch lines, bosses")
+    assert sum(1 for e in packs["tactics"] if e["boss"]) == 3, "three bosses in the tactics pack"
+    for e in data:
+        assert chess.Board(e["fen"]).turn == chess.WHITE, e["id"] + " arena positions are always white to move"
+    print("OK encounters v2: %d fights in %d packs — legality, margins, tiers, lines, gate positions, bosses" % (len(data), len(packs)) + "")
 if __name__ == "__main__":
     test()

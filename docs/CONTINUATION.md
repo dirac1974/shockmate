@@ -20,6 +20,7 @@ Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the 
 - Fights 04, 05, 06, 11 were rebuilt so the chess is true. See `docs/reports/phase0.md`.
 - Phase 1 skin is in: Timeline Split colours, Glitch (`web/glitch.js`, five moods), charging timeline bars, critical zoom, path pips, next-board peek, tap-to-skip. See `docs/reports/phase1.md`.
 - Piece art is conventional Staunton (hand-authored paths in `web/pieces.js`); the why-gate rewinds to the position where the reason is on the board (`whyTargets.at`, decided by the build script).
+- Two packs now: `tactics` (12) and `openings` (6), chosen on the home screen. Openings are authored as SAN move lists in `data/openings.src.json` and mirrored to white-to-move when authored from Black's side. See `docs/reports/openings.md`.
 - Phase 2 is in: co-op (alternating turns, shared rage meter, separate collections), handicapped duel, per-player Blitz, silent adaptive difficulty, collection art (`web/motifs.js`). See `docs/reports/phase2.md`.
 
 ## Do not break

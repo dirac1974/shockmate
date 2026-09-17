@@ -35,8 +35,9 @@ async def run():
         pg = await ctx.new_page()
         pg.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
         pg.on("pageerror", lambda e: errors.append("PAGEERROR " + str(e)))
-        await pg.goto(URL); encs = await pg.evaluate("window.SHOCKMATE_ENCOUNTERS")
-        assert len(encs) == 12
+        await pg.goto(URL)
+        encs = [e for e in await pg.evaluate("window.SHOCKMATE_ENCOUNTERS") if e["pack"] == "tactics"]
+        assert len(encs) == 12, len(encs)
         # Path A: all 12 fights on the best move, straight through to the cliffhanger
         await pg.click("#btn-start")
         for i in range(12):
@@ -44,7 +45,7 @@ async def run():
             await move(pg, enc["best"]); await gate_and_next(pg, enc)
         await pg.wait_for_selector("#session-end:not([hidden])", timeout=5000)
         summary = await pg.text_content("#session-summary"); assert "Fights won: 12" in summary, summary
-        assert "12/12" in summary, summary
+        assert summary.endswith("/%d" % len(await pg.evaluate("window.SHOCKMATE_ENCOUNTERS"))), summary
         await pg.click("#btn-end-ok")
         # Path B: fresh profile, bait then blunder -> second try -> confession -> guided -> card still earned
         await pg.click("#prof-1"); await pg.click("#btn-start"); await phase(pg, "think")
