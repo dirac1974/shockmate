@@ -2,11 +2,11 @@
    States: home > think > tease > consequence > (secondTry | confession > guided) > gate > card > next | end.
    Engine is judge (pre-baked tiers). Animation is teacher. Nothing on screen goes down. Every fight is winnable. */
 (function () {
-  const F = window.ShockmateFutures, S = window.ShockmateScore;
+  const F = window.ShockmateFutures, S = window.ShockmateScore, D = window.ShockmateDays;
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.6";
+  const BUILD = "v0.7";
   const Y = window.ShockmateSync;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -25,7 +25,7 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", seats: 1, syncedAt: 0,
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", day: 1, seats: 1, syncedAt: 0,
       sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
     mode: "solo", pack: "tactics", active: 0, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
@@ -122,11 +122,11 @@
   function load() {
     try { Object.assign(state.settings, JSON.parse(localStorage.getItem(KEY + ":settings") || "{}")); } catch (e) {}
     if (!Array.isArray(state.settings.blitz)) state.settings.blitz = [false, false];
-    if (PACKS.indexOf(state.settings.pack) < 0) state.settings.pack = "tactics";
+    if (!(state.settings.day >= 1 && state.settings.day <= D.DAYS.length)) state.settings.day = 1;
     const sy = state.settings.sync = Object.assign({ url: "", anonKey: "", code: "", players: [] }, state.settings.sync);
     sy.players = [0, 1].map((i) => Object.assign({ username: "", pin: "" }, sy.players[i]));
     setSeats(state.settings.seats === 2 ? 2 : 1);
-    setPack(state.settings.pack);
+    setDay(state.settings.day);
     loadStats();
     if (syncOn()) syncNow(true);
   }
@@ -148,11 +148,27 @@
     $("two-hint").textContent = state.settings.names[0] + " and " + state.settings.names[1]
       + " take turns on this phone. You both play White.";
   }
-  function setPack(name) {
-    state.pack = PACKS.indexOf(name) >= 0 ? name : "tactics";
-    state.encounters = ALL.filter((e) => e.pack === state.pack);
-    state.settings.pack = state.pack; state.index = 0;
-    PACKS.forEach((p) => { const b = $("pack-" + p); if (b) b.classList.toggle("active", p === state.pack); });
+  function setDay(n) {
+    const day = D.dayByNumber(Number(n) || 1);
+    state.day = day.n; state.settings.day = day.n;
+    state.encounters = D.fightsForDay(ALL, day.n); state.index = 0;
+    renderDayStrip();
+  }
+  function renderDayStrip() {
+    const host = $("day-strip"); if (!host) return;
+    const cur = state.day || 1;
+    host.innerHTML = D.DAYS.map(function (d) {
+      const pr = D.dayProgress(state.stats, d.n), open = D.dayUnlocked(state.stats, d.n);
+      const cls = ["day-chip"];
+      if (pr.complete) cls.push("done"); else if (d.n === cur) cls.push("current");
+      if (!open) cls.push("locked");
+      return '<button class="' + cls.join(" ") + '" data-day="' + d.n + '"' + (open ? "" : " disabled") +
+        '><span class="n">Day ' + d.n + '</span>' + d.title + '</button>';
+    }).join("");
+    Array.prototype.forEach.call(host.querySelectorAll(".day-chip"), function (b) {
+      b.onclick = function () { setDay(Number(b.dataset.day)); renderPath(); hud(); };
+    });
+    if ($("day-blurb")) $("day-blurb").textContent = D.dayByNumber(cur).blurb;
   }
   /* adaptive: rolling tier history decides whether the next fight opens with candidates lit */
   function needsHelp(stats) {
@@ -172,7 +188,10 @@
     const b = $("banner"); b.className = "banner" + (tone ? " " + tone : ""); b.textContent = text || ""; b.hidden = !text;
   }
   function glitchSay(text, mood) {
-    if (window.ShockmateGlitch) return window.ShockmateGlitch.set(mood || "taunt", text || "");
+    if (window.ShockmateGlitch) {
+      const wilt = window.ShockmateGlitch.wiltTier(S.glitchRating(state.stats).fraction);
+      return window.ShockmateGlitch.set(mood || "taunt", text || "", wilt);
+    }
     const b = $("glitch-line"); b.textContent = text || ""; b.hidden = !text;
   }
   function renderTeam() {
@@ -205,17 +224,32 @@
       return '<div class="' + cls.join(" ") + '"></div>';
     }).join("");
   }
+  // Glitch's own rating never recovers. A different crony fronts for him each day, so there is
+  // always a fresh brag to knock down without taking yesterday's win away.
+  function renderCrony() {
+    const box = $("crony"); if (!box) return;
+    const c = S.dailyChallenger(state.stats, now());
+    box.hidden = false;
+    $("crony-name").textContent = "TODAY: " + c.name;
+    $("crony-real").textContent = c.real;
+    $("crony-fill").style.width = Math.round(c.fraction * 100) + "%";
+    $("crony-line").textContent = c.cardsToday
+      ? c.name + " claimed " + c.claimed + " this morning. You have taken " + c.drop + " off him today."
+      : c.name + " is standing in for Glitch today. He says he is " + c.claimed + ".";
+  }
   function prompt(text) { $("prompt").textContent = text; }
   function hud() {
     $("stat-won").textContent = state.stats.won || 0;
     $("stat-crit").textContent = state.stats.criticals || 0;
     $("stat-cards").textContent = Object.keys(state.stats.cardsEarned || {}).length;
+    if ($("stat-rank")) $("stat-rank").textContent = S.agentRank(state.stats).title;
+    renderCrony();
     if ($("two-hint")) $("two-hint").textContent = state.settings.names[0] + " and " + state.settings.names[1]
       + " take turns on this phone. You both play White.";
     // During play the board never flips, so the note doubles as "whose go is it" in co-op.
     if ($("turn-note")) $("turn-note").textContent = activeName() + " is White.";  // the co-op turn banner already says whose go it is
     [0, 1].forEach((i) => { const b = $("prof-" + i); b.textContent = state.settings.names[i]; b.classList.toggle("active", (state.mode === "solo" ? state.settings.profile : state.active) === i); });
-    if ($("build-tag")) $("build-tag").textContent = BUILD + " \u00b7 " + ALL.length + " fights \u00b7 " + PACKS.length + " packs";
+    if ($("build-tag")) $("build-tag").textContent = BUILD + " \u00b7 " + ALL.length + " fights \u00b7 " + D.DAYS.length + " days";
     renderBrag(); renderPath(); renderTeam();
   }
 
@@ -368,7 +402,7 @@
     save(); hud();
     await whyGate(enc);
     state.stats = S.recordWhy(state.stats, enc, { ok: true, t: now(), hurry: state.settings.hurry }).stats;
-    state.ratingBefore = S.glitchRating(state.stats).real;   // read before the card lands, shown on the card screen
+    state.ratingBefore = S.glitchRating(state.stats).real; state.rankBefore = S.agentRank(state.stats).index;   // read before the card lands, shown on the card screen
     const earned = state.stats.cardsEarned[enc.id] || { critical: false, tries: 0 };
     earned.critical = earned.critical || crit; earned.tries = state.tries + 1; earned.t = now(); state.stats.cardsEarned[enc.id] = earned;
     syncSoon();
@@ -434,6 +468,13 @@
     $("glitch-line-2").textContent = "Glitch: " + enc.glitch.rage;
     $("btn-peek").hidden = !(tier === "good" && state.lastUci !== enc.best);
     const before = state.ratingBefore, after = S.glitchRating(state.stats), fell = (before || after.real) - after.real;
+    const rankNow = S.agentRank(state.stats);
+    const rankLine = $("card-rank");
+    if (rankLine) {
+      const up = state.rankBefore != null && rankNow.index > state.rankBefore;
+      rankLine.hidden = !up;
+      rankLine.textContent = up ? "Promoted: " + rankNow.title : "";
+    }
     const tick = $("brag-tick");
     if (tick) {
       tick.hidden = fell <= 0;
@@ -496,24 +537,57 @@
   }
   function nextEncounter() {
     state.session.count += 1;
+    if (D.dayProgress(state.stats, state.day || 1).complete) return endSession();
     if (state.session.count >= state.settings.cap) return endSession();
     if (state.mode === "coop") { useProfile(state.active === 0 ? 1 : 0); toast(activeName() + "'s turn.", 1600); }
     state.index = pickNext(); startEncounter();
   }
   function endSession() {
-    const nxt = state.encounters[pickNext()];
     stopBlitz();
-    $("end-title").textContent = state.session.won ? (state.mode === "solo" ? "Mission complete" : "Team mission complete") : "Mission paused";
-    const cards = state.mode === "solo"
-      ? Object.keys(state.stats.cardsEarned).length + "/" + ALL.length
-      : state.settings.names.map((n, i) => n + " " + Object.keys(state.profiles[i].cardsEarned).length).join(" · ");
-    $("session-summary").textContent = "Fights won: " + state.session.won + " · Criticals: " + state.session.crits + " · Cards: " + cards;
-    $("session-next").textContent = "Next time: " + nxt.hook + " Glitch says: \"You got lucky. I have a new trap ready.\"";
-    renderMini(nxt);
+    const day = D.dayByNumber(state.day || 1);
+    const pr = D.dayProgress(state.stats, day.n);
+    const rank = S.agentRank(state.stats);
+    const c = S.dailyChallenger(state.stats, now());
+    const nxt = D.nextDay(day.n);
+    const who = state.mode === "solo" ? activeName() : state.settings.names.join(" and ");
+
+    $("end-title").textContent = pr.complete
+      ? "Day " + day.n + " done, " + who + "!"
+      : (state.session.won ? "Good run, " + who + "!" : "Paused");
+
+    const bits = ["Fights won: " + state.session.won, "Criticals: " + state.session.crits];
+    if (c.drop > 0) bits.push("Knocked " + c.drop + " off " + c.name + " today");
+    bits.push("Off Glitch for good: " + S.knockedOff(state.stats));
+    $("session-summary").textContent = bits.join("\u2009\u00b7\u2009");
+
+    $("end-rank").textContent = rank.top
+      ? "Rank: " + rank.title + ". The top one."
+      : "Rank: " + rank.title + ". " + rank.cardsToNext + " more card" + (rank.cardsToNext === 1 ? "" : "s") + " to " + rank.next + ".";
+
+    const btn = $("btn-next-day"), nudge = $("end-nudge");
+    if (btn) {
+      btn.hidden = !(pr.complete && nxt);
+      if (pr.complete && nxt) btn.textContent = "Start Day " + nxt + ": " + D.dayByNumber(nxt).title;
+    }
+    if (nudge) {
+      const second = (state.sitting || 0) >= 2;
+      nudge.hidden = !(pr.complete && second);
+      nudge.textContent = "Glitch will still be here tomorrow, and a new crony turns up with him.";
+    }
+
+    if (pr.complete && !nxt) {
+      $("session-next").textContent = "That is every day finished. " + c.name + " is out of excuses.";
+      const mini = $("next-mini"); if (mini) mini.innerHTML = "";
+    } else {
+      const peek = state.encounters[pickNext()] || D.fightsForDay(ALL, nxt || day.n)[0];
+      $("session-next").textContent = "Next: " + (peek ? peek.hook : "a new trap.");
+      if (peek) renderMini(peek);
+    }
     $("session-end").hidden = false; state.phase = "end";
   }
   function startSession(mode) {
     state.mode = mode || "solo";
+    state.settings.lastPlayed = now(); state.sitting = (state.sitting || 0) + 1;
     state.session = { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 };
     useProfile(state.mode === "solo" ? state.settings.profile : 0);
     state.index = pickNext(-1); startEncounter();
@@ -577,7 +651,6 @@
   function switchProfile(i) { state.settings.profile = i; useProfile(i); save(); hud(); }
   function bind() {
     $("prof-0").onclick = () => switchProfile(0); $("prof-1").onclick = () => switchProfile(1);
-    PACKS.forEach((p) => { const b = $("pack-" + p); if (b) b.onclick = () => { setPack(p); save(); hud(); }; });
     $("seat-1").onclick = () => { setSeats(1); save(); hud(); };
     $("seat-2").onclick = () => { setSeats(2); save(); hud(); };
     $("btn-names").onclick = () => { $("btn-settings").click(); };
@@ -659,6 +732,12 @@
     };
     $("btn-skip").onclick = function () { if (state.phase !== "think") return; nextEncounter(); };
     $("btn-end-ok").onclick = function () { $("session-end").hidden = true; goHome(); };
+    if ($("btn-next-day")) $("btn-next-day").onclick = function () {
+      const nxt = D.nextDay(state.day || 1);
+      $("session-end").hidden = true;
+      if (nxt) { setDay(nxt); save(); startSession(state.mode === "coop" ? "coop" : "solo"); }
+      else goHome();
+    };
     document.querySelector(".board-wrap").addEventListener("click", function () { if (state.phase === "busy") skipAhead(); }, true);
   }
   function selfTest() {
@@ -674,5 +753,5 @@
     else console.log("Shockmate self-test passed: " + ALL.length + " fights across " + PACKS.length + " packs.");
   }
   load(); bind(); hud(); selfTest();
-  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, setPack, setSeats, syncNow, exportBackup, importBackup, all: ALL };
+  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, setDay, setSeats, syncNow, exportBackup, importBackup, all: ALL };
 })();

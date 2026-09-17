@@ -24,6 +24,7 @@
         <div class="stat"><span class="lbl">Won</span><span id="stat-won">0</span></div>
         <div class="stat"><span class="lbl">Criticals</span><span id="stat-crit">0</span></div>
         <div class="stat"><span class="lbl">Cards</span><span id="stat-cards">0</span></div>
+        <div class="stat"><span class="lbl">Rank</span><span id="stat-rank">Rookie</span></div>
       </div>
       <button id="btn-collection" class="ghost">Cards</button>
       <button id="btn-settings" class="ghost">Settings</button>
@@ -37,6 +38,11 @@
         <div class="brag-row"><b>GLITCH'S RATING</b><span id="brag-real">2400</span></div>
         <div class="brag-bar"><i id="brag-fill"></i></div>
         <p class="hint" id="brag-line">Glitch says he is 2400. He has not been tested yet.</p>
+      </div>
+      <div class="brag crony" id="crony">
+        <div class="brag-row"><b id="crony-name">TODAY'S CRONY</b><span id="crony-real">800</span></div>
+        <div class="brag-bar"><i id="crony-fill"></i></div>
+        <p class="hint" id="crony-line"></p>
       </div>
 
       <p class="step-label">Who is here?</p>
@@ -67,9 +73,8 @@
 
       <p class="step-label">Practise</p>
       <div class="actions" id="packs">
-        <button id="pack-tactics" class="ghost pack active">Tactics</button>
-        <button id="pack-openings" class="ghost pack">Openings</button>
-        <button id="pack-endgames" class="ghost pack">Endgames</button>
+        <div class="days" id="day-strip"></div>
+        <p class="hint" id="day-blurb"></p>
       </div>
 
       <button id="btn-start" class="cta">Play</button>
@@ -110,6 +115,7 @@
         <p id="why-text"></p>
         <p class="why-long" id="why-long"></p>
         <p class="why-long" id="glitch-line-2"></p>
+        <p class="rank-line" id="card-rank" hidden></p>
         <p class="brag-tick" id="brag-tick" hidden></p>
       </div>
       <div class="actions">
@@ -190,7 +196,10 @@
         <h2 id="end-title">Mission complete</h2>
         <p id="session-summary"></p>
         <div class="next-peek"><div class="mini" id="next-mini"></div><p class="sub" id="session-next"></p></div>
-        <button id="btn-end-ok" class="cta">Done for today</button>
+        <p class="rank-line" id="end-rank"></p>
+        <p class="hint" id="end-nudge" hidden></p>
+        <button id="btn-next-day" class="cta" hidden>Start the next day</button>
+        <button id="btn-end-ok" class="ghost">Done for today</button>
       </div>
     </div>
   </div>
@@ -199,6 +208,7 @@
   <script src="pieces.js"></script>
   <script src="glitch.js"></script>
   <script src="motifs.js"></script>
+  <script src="days.js"></script>
   <script src="score.js"></script>
   <script src="sync-config.js"></script>
   <script src="sync.js"></script>

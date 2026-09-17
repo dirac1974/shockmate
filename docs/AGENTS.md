@@ -4,7 +4,7 @@ One Lead session in Claude Code (Opus) runs each phase and spawns subagents with
 
 ## Current assignment (2026-09-17)
 
-v0.6 is live at `1189ad0` and nothing is in flight. The next move is not a build task. It is gate 0: a real session with both kids, six fights each, on a phone. Do not open a phase branch until David reports it. The one job that does not wait is QA putting the suites into GitHub Actions, because `tests/e2e/` currently has no machine that can run it. See "Next places" in `docs/CONTINUATION.md`.
+v0.7 (lesson days, rank, daily crony) is the latest change. Nothing else is in flight. The next move is not a build task. It is gate 0: a real session with both kids, six fights each, on a phone. Do not open a phase branch until David reports it. The one job that does not wait is QA putting the suites into GitHub Actions, because `tests/e2e/` currently has no machine that can run it. See "Next places" in `docs/CONTINUATION.md`.
 
 ## Roles and ownership
 

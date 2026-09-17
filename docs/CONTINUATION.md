@@ -4,7 +4,7 @@ Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines 
 
 **Date:** 2026-09-17
 **Repo:** https://github.com/dirac1974/shockmate
-**Live:** https://dirac1974.github.io/shockmate/ — `1189ad0`, marker `v0.6 · 23 fights · 3 packs`
+**Live:** https://dirac1974.github.io/shockmate/ — `1189ad0`, marker `v0.7 · 23 fights · 6 days`
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
@@ -13,7 +13,7 @@ ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeli
 
 Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the future plays out on the board → why-gate (tap the pieces) → card earned → next fight or cliffhanger.
 
-## Actual state — v0.6 is live
+## Actual state — v0.7 is live
 
 Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistence and family sync landed on top of them, ahead of the plan.
 
@@ -21,7 +21,11 @@ Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistenc
 - Four suites green on the deployed commit: `test_futures.js`, `test_score.js`, `test_sync.js`, `test_encounters.py`.
 - `tests/e2e/*.py` did NOT run. Application Control on David's PC blocks the greenlet DLL that Playwright loads. The e2e suite currently has no machine to run on.
 - Data is generated: edit `data/encounters.src.json`, `openings.src.json` or `endgames.src.json`, run `python3 tools/build_encounters.py --sf <stockfish>`. Never hand-edit `v2.json` or `web/encounters.js`.
-- Three packs: `tactics` (12), `openings` (6), `endgames` (5), chosen on the home screen.
+- Six lesson days cover all 23 fights and deliberately mix packs, so a session cannot dead-end inside one pack. Days are picked on the home screen; `pack` survives only as a data label.
+- A session is now a day. It ends when the day's fights are done, and finishing one offers the next straight away. Nothing is locked; a second day in one sitting gets a soft line about coming back tomorrow.
+- The kid has a rank that only ever climbs, Rookie through Time Marshal, shown in the top bar and on every card.
+- Glitch's own rating still falls permanently and never recovers. A different crony fronts for him each calendar day, so there is always a fresh brag to knock down without yesterday's win being taken back.
+- Glitch physically wilts as his rating sinks, via `data-wilt` on his sprite.
 - Phase 1 skin: Timeline Split colours, Glitch with five moods, charging bars, critical zoom, path pips, tap-to-skip.
 - Phase 2: co-op, handicapped duel, per-player Blitz, silent adaptive difficulty, collection art.
 - Glitch brags a rating that deflates as cards are earned. It is the only falling number in the app and it belongs to the villain.

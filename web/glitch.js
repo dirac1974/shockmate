@@ -11,12 +11,20 @@
   function svg(mood) {
     return '<svg viewBox="-10 0 140 120" class="glitch-svg" aria-hidden="true">' + BODY + (FACE[mood] || FACE.taunt) + "</svg>";
   }
-  function set(mood, line) {
+  // How far he has been deflated, 0 (full brag) to 3 (floored). The theme layer draws the droop.
+  function wiltTier(fraction) {
+    const f = typeof fraction === "number" ? fraction : 1;
+    if (f > 0.66) return 0;
+    if (f > 0.40) return 1;
+    if (f > 0.15) return 2;
+    return 3;
+  }
+  function set(mood, line, wilt) {
     const host = root.document && root.document.getElementById("glitch");
-    if (host) { host.innerHTML = svg(mood); host.dataset.mood = mood; host.classList.remove("pop"); void host.offsetWidth; host.classList.add("pop"); }
+    if (host) { host.innerHTML = svg(mood); host.dataset.mood = mood; host.dataset.wilt = String(typeof wilt === "number" ? wilt : 0); host.classList.remove("pop"); void host.offsetWidth; host.classList.add("pop"); }
     const bubble = root.document && root.document.getElementById("glitch-line");
     if (bubble) { bubble.textContent = line || ""; bubble.hidden = !line; }
   }
-  root.ShockmateGlitch = { svg: svg, set: set, moods: Object.keys(FACE) };
+  root.ShockmateGlitch = { svg: svg, set: set, wiltTier: wiltTier, moods: Object.keys(FACE) };
   if (typeof module !== "undefined") module.exports = root.ShockmateGlitch;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -221,3 +221,32 @@ select, input[type=number], input[type=text] { display: block; width: 100%; marg
 .brag-tick { color: var(--cyan); font-family: Bangers, system-ui; letter-spacing: 1px; font-size: 18px; }
 
 .build { opacity: .55; font-size: 11px; margin-top: 2px; }
+
+/* ---------- lesson days, rank, today's crony, and Glitch wilting ---------- */
+
+.days { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 6px 0 2px; }
+.day-chip { border: 2px solid var(--line, #33406b); background: transparent; color: inherit;
+  border-radius: 12px; padding: 7px 12px; font: inherit; font-weight: 700; cursor: pointer; min-width: 64px; }
+.day-chip .n { display: block; font-size: 0.72rem; opacity: 0.7; letter-spacing: 0.06em; }
+.day-chip.current { border-color: var(--cyan, #33e0ff); color: var(--cyan, #33e0ff); }
+.day-chip.done { border-color: var(--gold, #ffcc33); color: var(--gold, #ffcc33); }
+.day-chip.done .n::after { content: " ✓"; }
+.day-chip.locked { opacity: 0.38; cursor: not-allowed; }
+#day-blurb { margin-top: 2px; }
+
+.stat.rank span:last-child { font-size: 0.8rem; letter-spacing: 0.02em; }
+.rank-line { font-weight: 800; color: var(--gold, #ffcc33); margin: 2px 0 6px; }
+
+.brag.crony { margin-top: 10px; }
+.brag.crony .brag-row b { color: var(--magenta, #ff4fa3); }
+#crony[hidden] { display: none; }
+
+/* He physically deflates as his rating falls. Tier 0 is full swagger, tier 3 is a 300 in a trench coat. */
+#glitch { transition: transform 240ms ease, filter 240ms ease, opacity 240ms ease; transform-origin: 50% 100%; }
+#glitch[data-wilt="1"] { transform: scale(0.96) rotate(-2deg); filter: saturate(0.85); }
+#glitch[data-wilt="2"] { transform: scale(0.9) rotate(-4deg) translateY(4px); filter: saturate(0.6) brightness(0.92); }
+#glitch[data-wilt="3"] { transform: scale(0.84) rotate(-7deg) translateY(8px); filter: saturate(0.35) brightness(0.85); opacity: 0.92; }
+
+@media (prefers-reduced-motion: reduce) {
+  #glitch { transition: none; }
+}

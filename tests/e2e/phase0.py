@@ -38,25 +38,38 @@ async def run():
         await pg.goto(URL)
         encs = [e for e in await pg.evaluate("window.SHOCKMATE_ENCOUNTERS") if e["pack"] == "tactics"]
         assert len(encs) == 12, len(encs)
-        # Path A: all 12 fights on the best move, straight through to the cliffhanger
+        # Path A: Day 1 on the best move, then the congratulation and the step into Day 2
         assert await pg.is_hidden("#step-two") and await pg.is_visible("#btn-start")
         await pg.click("#seat-2")
         assert await pg.is_hidden("#btn-start") and await pg.is_hidden("#profiles"), "two-player hides the solo controls"
         await pg.click("#seat-1"); assert await pg.is_visible("#profiles")
         # Glitch's bragged rating: his number only ever falls, and never below the floor.
         assert (await pg.inner_text("#brag-real")) == "1500", "an untested Glitch brags 1500"
+        assert await pg.is_visible('.day-chip[data-day="1"]'), "the home screen offers lesson days"
+        assert await pg.eval_on_selector('.day-chip[data-day="2"]', "e => e.disabled"), "day 2 waits for day 1"
         await pg.click("#btn-start")
-        for i in range(12):
+        day_len = await pg.evaluate("window.__shockmate.state.encounters.length")
+        assert 3 <= day_len <= 4, day_len
+        for i in range(day_len):
             await phase(pg, "think"); enc = await pg.evaluate("window.__shockmate.current()")
             await move(pg, enc["best"]); await gate_and_next(pg, enc)
         await pg.wait_for_selector("#session-end:not([hidden])", timeout=5000)
-        summary = await pg.text_content("#session-summary"); assert "Fights won: 12" in summary, summary
+        title = await pg.text_content("#end-title"); assert "Day 1 done" in title, title
+        summary = await pg.text_content("#session-summary")
+        assert ("Fights won: %d" % day_len) in summary, summary
+        assert "Off Glitch for good" in summary, summary
+        assert "Rank:" in (await pg.text_content("#end-rank")), "the end of a day names his rank"
         build = await pg.inner_text("#build-tag")
-        assert "fights" in build and "packs" in build, build  # the marker a phone can be read from
+        assert "fights" in build and "days" in build, build  # the marker a phone can be read from
         final_rating = int(await pg.evaluate("document.getElementById('brag-real').textContent"))
         assert 300 <= final_rating < 1500, final_rating
-        assert summary.endswith("/%d" % len(await pg.evaluate("window.SHOCKMATE_ENCOUNTERS"))), summary
-        await pg.click("#btn-end-ok")
+        # He may carry straight on. The next day is offered, never forced, and never locked.
+        assert not await pg.eval_on_selector("#btn-next-day", "e => e.hidden"), "finishing a day offers the next"
+        assert "Day 2" in (await pg.text_content("#btn-next-day"))
+        assert await pg.eval_on_selector("#end-nudge", "e => e.hidden"), "no nudge on the first day of a sitting"
+        await pg.click("#btn-next-day"); await phase(pg, "think")
+        assert await pg.evaluate("window.__shockmate.state.day") == 2, "the next day actually starts"
+        await pg.reload()
         # Path B: fresh profile, bait then blunder -> second try -> confession -> guided -> card still earned
         await pg.click("#prof-1"); await pg.click("#btn-start"); await phase(pg, "think")
         enc = await pg.evaluate("window.__shockmate.current()")
@@ -85,6 +98,6 @@ async def run():
         await pg.click("#btn-settings"); await pg.wait_for_selector("#screen-settings.active"); await pg.click("#btn-close-settings")
         await b.close()
     assert not errors, errors
-    print("OK e2e phase0: 12 best-path fights to cliffhanger, bait+blunder second try + confession + guided, good-tier peek, no console errors")
+    print("OK e2e phase0: Day 1 best-path to the congratulation and on into Day 2, bait+blunder second try + confession + guided, good-tier peek, no console errors")
 
 asyncio.run(run())

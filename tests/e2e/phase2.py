@@ -53,17 +53,20 @@ async def run():
         line = await pg.text_content("#duel-line"); assert "Sam" in line and "Rio" in line, line
         await pg.click("#btn-duel-next"); await phase(pg, "think")
         assert await pg.evaluate("window.__shockmate.current().id") != enc["id"], "next board"
-        # Openings pack: separate 6-fight path, own fights, same loop
-        await pg.reload(); await pg.click("#seat-1"); await pg.click("#pack-openings"); await pg.click("#btn-start")
+        # Lesson day path: a day is its own short run, and it mixes packs on purpose
+        await pg.reload(); await pg.click("#seat-1"); await pg.click('.day-chip[data-day="1"]'); await pg.click("#btn-start")
+        day_ids = await pg.evaluate("window.__shockmate.state.encounters.map(e => e.id)")
         pips = await pg.eval_on_selector_all("#path .pip", "els => els.length")
-        assert pips == 6, pips
-        enc = await win_fight(pg); assert enc["pack"] == "openings", enc["pack"]
+        assert pips == len(day_ids), (pips, day_ids)
+        packs = await pg.evaluate("[...new Set(window.__shockmate.state.encounters.map(e => e.pack))]")
+        assert len(packs) > 1, packs  # a day is not a pack
+        enc = await win_fight(pg); assert enc["id"] in day_ids, (enc["id"], day_ids)
         await phase(pg, "card"); await pg.click("#btn-next"); await phase(pg, "think")
         await pg.click("#btn-collection")
         arts = await pg.eval_on_selector_all(".fig .art svg", "els => els.length")
         assert arts == len(await pg.evaluate("window.SHOCKMATE_ENCOUNTERS")), arts  # every fight in every pack has card art
         await b.close()
     assert not errors, errors
-    print("OK e2e phase2: co-op alternation + rage + separate collections, duel hot-seat + verdict, blitz per player, openings pack path, card art for every fight")
+    print("OK e2e phase2: co-op alternation + rage + separate collections, duel hot-seat + verdict, blitz per player, mixed-pack lesson day path, card art for every fight")
 
 asyncio.run(run())

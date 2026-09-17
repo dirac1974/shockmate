@@ -157,7 +157,58 @@
     if (b.kept && !a.kept) return { winner: b.name, line: b.name + " kept the reason. " + a.name + " ate the snack story." };
     return { winner: "basement", line: "The basement wins. Neither kept the why. Try the same board again." };
   }
-  const api = { glitchRating, ratingTaunt, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
+  /* The kid's rank. It is HIS number, so it only ever climbs. The villain owns the falling one. */
+  const RANKS = [
+    { at: 0, title: "Rookie" }, { at: 2, title: "Cadet" }, { at: 5, title: "Field Agent" },
+    { at: 9, title: "Senior Agent" }, { at: 14, title: "Timeline Warden" },
+    { at: 19, title: "Glitch Hunter" }, { at: 23, title: "Time Marshal" },
+  ];
+  function agentRank(stats) {
+    const cards = Object.keys((stats && stats.cardsEarned) || {}).length;
+    let i = 0;
+    for (let k = 0; k < RANKS.length; k++) { if (cards >= RANKS[k].at) i = k; }
+    const next = RANKS[i + 1] || null;
+    return { index: i, title: RANKS[i].title, cards: cards, next: next ? next.title : null,
+      cardsToNext: next ? next.at - cards : 0, top: !next,
+      fraction: next ? (cards - RANKS[i].at) / (next.at - RANKS[i].at) : 1 };
+  }
+  function rankedUp(before, after) { return after.index > before.index; }
+
+  /* Glitch's own rating never comes back up; that trophy is permanent. Instead he sends a
+     different crony each day, so there is always a fresh brag to knock down today. The daily
+     number resets, the permanent one does not, and nothing the kid earned is ever taken back. */
+  const CRONIES = [
+    { name: "SPLINTER", claimed: 800 }, { name: "RERUN", claimed: 950 },
+    { name: "STATIC", claimed: 1100 }, { name: "LOOPHOLE", claimed: 1250 },
+    { name: "PASTE", claimed: 700 }, { name: "WOBBLE", claimed: 875 },
+    { name: "FLICKER", claimed: 1025 },
+  ];
+  function dateKey(ts) {
+    const d = new Date(ts);
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  }
+  function cardsOnDay(stats, ts) {
+    const earned = (stats && stats.cardsEarned) || {}, key = dateKey(ts);
+    return Object.keys(earned).filter((id) => earned[id] && earned[id].t && dateKey(earned[id].t) === key);
+  }
+  function dailyChallenger(stats, ts) {
+    const at = ts || Date.now();
+    const ids = cardsOnDay(stats, at);
+    const earned = (stats && stats.cardsEarned) || {};
+    const crits = ids.filter((id) => earned[id] && earned[id].critical).length;
+    const key = dateKey(at);
+    const seed = key.split("-").reduce((a, x) => a + Number(x), 0);
+    const crony = CRONIES[seed % CRONIES.length];
+    const left = (crony.claimed - FLOOR) * Math.pow(KEEP, ids.length + CRIT_WEIGHT * crits);
+    const real = Math.max(FLOOR, Math.round((FLOOR + left) / 5) * 5);
+    return { name: crony.name, claimed: crony.claimed, real: real, drop: crony.claimed - real,
+      cardsToday: ids.length, criticalsToday: crits, dateKey: key,
+      fraction: (real - FLOOR) / (crony.claimed - FLOOR), floored: real <= FLOOR + 40 };
+  }
+  // Lifetime points taken off Glitch himself. Derived from cards, so it only ever grows.
+  function knockedOff(stats) { return BRAG - glitchRating(stats).real; }
+
+  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
