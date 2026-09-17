@@ -4,18 +4,21 @@
     if (color === "w") return { fill: "#fff4d2", shade: "#d8c49a", shine: "#fffdf6", ink: "#2b2358" };
     return { fill: "#2a2452", shade: "#171238", shine: "#40376f", ink: "#dde5ff" };
   }
+  /* Conventional Staunton silhouettes, hand-authored on a 45x45 grid.
+     Shared foot: a flared base plus a collar, so every piece sits on the square the same way. */
+  const FOOT = '<path d="M9.8 40.6 h25.4 a1.6 1.6 0 0 0 0-3.2 H9.8 a1.6 1.6 0 0 0 0 3.2z"/><path d="M12.6 37.4 c0-2.6 1.9-3.4 4-4.2 h11.8 c2.1.8 4 1.6 4 4.2z"/>';
   const BODY = {
-    k: '<path d="M22.5 3.2 v9.2 M18.2 7.6 h8.6"/><path d="M15.2 14.4 l2.8-3.2 h9 l2.8 3.2 v4.2 H15.2z"/><path d="M16.4 18.6 h12.2 v10.6 c0 2.8-2.2 5.8-6.1 7.2-3.9-1.4-6.1-4.4-6.1-7.2z"/><path d="M13.4 36.2 h18.2 v2.6 H13.4z"/><path d="M11.2 38.8 h22.6 v2.6 H11.2z"/>',
-    q: '<circle cx="12.4" cy="9.2" r="2.05"/><circle cx="18.2" cy="6.4" r="2.05"/><circle cx="22.5" cy="4.7" r="2.2"/><circle cx="26.8" cy="6.4" r="2.05"/><circle cx="32.6" cy="9.2" r="2.05"/><path d="M12.6 11.2 L16 18.8 h13 l3.4-7.6"/><path d="M16.2 18.8 h12.6 v10.4 c0 2.8-2.2 5.8-6.3 7.2-4.1-1.4-6.3-4.4-6.3-7.2z"/><path d="M13.4 36.2 h18.2 v2.6 H13.4z"/><path d="M11.2 38.8 h22.6 v2.6 H11.2z"/>',
-    r: '<path d="M12.2 6.2 h4.4 v4.2 h3.6 V6.2 h4.6 v4.2 h3.6 V6.2 h4.4 v8.4 H12.2z"/><path d="M14.6 14.6 h15.8 v16.4 H14.6z"/><path d="M13.2 31 h18.6 v3.2 H13.2z"/><path d="M11.2 38.6 h22.6 v2.8 H11.2z"/><path d="M13.4 34.2 h18.2 v4.4 H13.4z"/>',
-    b: '<circle cx="22.5" cy="8.2" r="2.15"/><path d="M22.5 10.4 c6.4 4.2 8.6 11.2 6.4 18.4 H16.1 c-2.2-7.2 0-14.2 6.4-18.4z"/><path d="M20.2 16.2 h4.6 M22.5 14.1 v6.4" stroke-width="1.5"/><path d="M14.8 29.2 h15.4 l1.6 4.6 H13.2z"/><path d="M13.4 36.2 h18.2 v2.6 H13.4z"/><path d="M11.2 38.8 h22.6 v2.6 H11.2z"/>',
-    n: '<path d="M12.2 41 h21.2 v-3.2 H16.6 l.6-4.8 9.2-1.6 c3.2-.4 6.6-3.2 6.4-8.2-.2-4.2-2.8-7-6.2-8.2 0-2.4-1.6-4.8-4.4-5.4-2.2-2.4-5.8-2-7.4.8 l-3.4 3.4 3.2 1.2 c-2.4 2.6-4.8 5.2-4.8 8.8 0 3.6 2.6 5.6 6.2 6.2 l-2.2 4.6-2.8 6.4z"/><circle cx="24.6" cy="16.4" r="1.05" fill="#dde5ff"/>',
-    p: '<circle cx="22.5" cy="12.4" r="6.1"/><path d="M16.6 18.6 h11.8 l2.8 9.6 H13.8z"/><path d="M13.6 28.4 h17.8 v5.2 H13.6z"/><path d="M11.4 38.6 h22.2 v2.8 H11.4z"/><path d="M13.6 33.6 h17.8 v5 H13.6z"/>'
+    p: FOOT + '<circle cx="22.5" cy="11.6" r="4.9"/><path d="M19.3 15.9 c-1.3 1.1-2.1 2.4-2.1 3.6 0 1.5.8 2.3 1.6 3.1-2.5 1.6-4.6 4.6-5.2 10.6 h20.4 c-.6-6-2.7-9-5.2-10.6.8-.8 1.6-1.6 1.6-3.1 0-1.2-.8-2.5-2.1-3.6z"/>',
+    r: FOOT + '<path d="M11.6 7.4 h4.6 v3.4 h3.6 V7.4 h5.4 v3.4 h3.6 V7.4 h4.6 v7.2 l-2.6 2.2 h-16.2 l-2.6-2.2z"/><path d="M15.6 17.2 h13.8 l-.9 12.4 h-12z"/><path d="M13.4 33.2 c.8-2.4 2.2-3.6 2.2-3.6 h13.8 s1.4 1.2 2.2 3.6z"/>',
+    b: FOOT + '<circle cx="22.5" cy="6.6" r="2.2"/><path d="M22.5 9 c5.4 3.4 8.2 8.6 7.2 13.4 -1.4 1.4-3.6 2.2-7.2 2.2 s-5.8-.8-7.2-2.2 C14.3 17.6 17.1 12.4 22.5 9z"/><path d="M19.9 17.2 l5.4-5.8" stroke-width="1.6"/><path d="M16.9 24.6 c1.4 1 3.4 1.4 5.6 1.4 s4.2-.4 5.6-1.4 c1.6 2.2 2.2 4.6 2.2 8.6 H14.7 c0-4 .6-6.4 2.2-8.6z"/>',
+    n: FOOT + '<path d="M16.2 33.2 c-1-5.2 1.2-9.4 5-12.2 -3.4-.2-6.6.8-9.4 2.8 l-2.6-1.6 c1-2 2.6-3.6 4.6-4.8 -2 .2-3.8.8-5.2 1.8 -.2-3.2 1.4-6.2 4.4-8.6 l3.8-3 c1.6-1.2 3.6-1.6 5.2-.8 l1-3.4 2 3 c5 1 9 4.6 10.4 9.6 1.4 5.2.4 11-2.4 16z"/><circle cx="17.6" cy="13.6" r="1.2"/><path d="M26.6 11.4 c2.4 1.2 4 3.4 4.6 6" stroke-width="1.3" fill="none"/>',
+    q: FOOT + '<circle cx="9.6" cy="12.4" r="2.1"/><circle cx="16" cy="8.6" r="2.1"/><circle cx="22.5" cy="7.2" r="2.3"/><circle cx="29" cy="8.6" r="2.1"/><circle cx="35.4" cy="12.4" r="2.1"/><path d="M10.4 14.4 l3 8.2 h18.2 l3-8.2 -5.8 2.6 -2.8-7 -3.5 7.6 -3.5-7.6 -2.8 7z"/><path d="M13.4 22.6 h18.2 c.8 2.6 1 5.8.4 10.6 H13 c-.6-4.8-.4-8 .4-10.6z"/>',
+    k: FOOT + '<path d="M22.5 3.4 v7.4 M19.1 6.8 h6.8" stroke-width="1.9"/><path d="M22.5 12.2 c2.6-2.4 6.4-2.6 8.6-.4 2.2 2.2 1.8 5.6-.6 7.4 l-8 6 -8-6 c-2.4-1.8-2.8-5.2-.6-7.4 2.2-2.2 6-2 8.6.4z"/><path d="M15.4 19.8 c2.3-.9 4.7-1.4 7.1-1.4 s4.8.5 7.1 1.4" stroke-width="1.4" fill="none"/><path d="M14.2 21.4 c2.6-1.4 5.4-2 8.3-2 s5.7.6 8.3 2 c1 3.6 1.2 7.6.6 11.8 H13.6 c-.6-4.2-.4-8.2.6-11.8z"/>'
   };
   function svg(color, role) {
     const p = palette(color);
     const body = BODY[role] || BODY.p;
-    return '<svg class="glyph" viewBox="0 0 45 45" aria-hidden="true"><defs><linearGradient id="g' + color + role + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + p.shine + '"/><stop offset="1" stop-color="' + p.fill + '"/></linearGradient></defs><g fill="url(#g' + color + role + ')" stroke="' + p.ink + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round">' + body + '</g></svg>';
+    return '<svg class="glyph" viewBox="0 0 45 45" aria-hidden="true"><defs><linearGradient id="g' + color + role + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + p.shine + '"/><stop offset="1" stop-color="' + p.fill + '"/></linearGradient></defs><g fill="url(#g' + color + role + ')" stroke="' + p.ink + '" stroke-width="1.55" stroke-linejoin="round" stroke-linecap="round">' + body + '</g></svg>';
   }
   const FROM_GLYPH = {"♔":"k","♕":"q","♖":"r","♗":"b","♘":"n","♙":"p","♚":"k","♛":"q","♜":"r","♝":"b","♞":"n","♟":"p"};
   function upgradeBoard() {

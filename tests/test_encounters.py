@@ -25,7 +25,16 @@ def test():
             b = board.copy(); line = e[key]; assert 1 <= len(line) <= 5, e["id"]
             for u in line: mv = chess.Move.from_uci(u); assert mv in b.legal_moves, f"{e['id']} {key} illegal {u}"; b.push(mv)
         assert e["bestLineUci"][0] == e["best"] and e["temptingLineUci"][0] == e["bait"], e["id"]
-        for sq in e["whyTargets"]["squares"]: assert board.piece_at(chess.parse_square(sq)) is not None, f"{e['id']} whyTarget {sq}"
+        at = e["whyTargets"].get("at"); assert at in ("before", "after"), e["id"] + " whyTargets.at"
+        gate = board.copy()
+        if at == "after": gate.push(best)
+        for sq in e["whyTargets"]["squares"]:
+            s = chess.parse_square(sq)
+            assert board.piece_at(s) is not None, f"{e['id']} whyTarget {sq} empty at start"
+            assert gate.piece_at(s) is not None, f"{e['id']} whyTarget {sq} empty in the {at} gate position"
+            if at == "after":
+                p0, p1 = board.piece_at(s), gate.piece_at(s)
+                assert p0.piece_type == p1.piece_type and p0.color == p1.color, f"{e['id']} whyTarget {sq} changed after the move; gate should be 'before'"
         assert len(e["whyTargets"]["prompt"].split()) <= 12, e["id"] + " prompt too long"
         for k in ("taunt", "gloat", "rage"): assert 3 <= len(e["glitch"][k].split()) <= 14, f"{e['id']} glitch {k}"
         assert e["best"][:2] in e["candidates"], e["id"] + " candidates"

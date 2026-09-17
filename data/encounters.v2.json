@@ -15,7 +15,8 @@
    "prompt": "Tap the piece nobody guards.",
    "squares": [
     "a5"
-   ]
+   ],
+   "at": "before"
   },
   "glitch": {
    "taunt": "Psst. Free pawn on h5. Grab it. Nobody's looking.",
@@ -228,7 +229,8 @@
    "squares": [
     "g8",
     "d5"
-   ]
+   ],
+   "at": "after"
   },
   "glitch": {
    "taunt": "That pawn on d6 is begging to be eaten.",
@@ -357,7 +359,8 @@
    "squares": [
     "b6",
     "d6"
-   ]
+   ],
+   "at": "after"
   },
   "glitch": {
    "taunt": "Careful, careful. Just move your king somewhere safe.",
@@ -452,7 +455,8 @@
    "prompt": "Tap who takes back if you grab the bishop.",
    "squares": [
     "c6"
-   ]
+   ],
+   "at": "after"
   },
   "glitch": {
    "taunt": "The bishop is right in the middle. Queen takes bishop!",
@@ -629,7 +633,8 @@
    "squares": [
     "c6",
     "e8"
-   ]
+   ],
+   "at": "after"
   },
   "glitch": {
    "taunt": "Queen takes knight. Big and loud. Do it.",
@@ -856,7 +861,8 @@
    "squares": [
     "c6",
     "e8"
-   ]
+   ],
+   "at": "after"
   },
   "glitch": {
    "taunt": "Bishop takes knight! Cash it in now!",
@@ -1023,7 +1029,8 @@
    "squares": [
     "e8",
     "a8"
-   ]
+   ],
+   "at": "after"
   },
   "glitch": {
    "taunt": "Rook to h7 wins a pawn next move. Slow and safe.",
@@ -1201,7 +1208,8 @@
     "f7",
     "g7",
     "h7"
-   ]
+   ],
+   "at": "after"
   },
   "glitch": {
    "taunt": "That h5 pawn is free. Go get it.",
@@ -1332,7 +1340,8 @@
    "prompt": "Tap the lunch that ends the game.",
    "squares": [
     "a8"
-   ]
+   ],
+   "at": "before"
   },
   "glitch": {
    "taunt": "Knight on d4. Free. Yum. Take it.",
@@ -1497,7 +1506,8 @@
    "prompt": "Tap the king that cannot escape.",
    "squares": [
     "g8"
-   ]
+   ],
+   "at": "after"
   },
   "glitch": {
    "taunt": "A WHOLE QUEEN. Free. Take it take it take it.",
@@ -1642,7 +1652,8 @@
    "squares": [
     "e1",
     "e8"
-   ]
+   ],
+   "at": "after"
   },
   "glitch": {
    "taunt": "Knight takes f7 with check! Pawn AND check!",
@@ -1817,7 +1828,8 @@
    "squares": [
     "e8",
     "a8"
-   ]
+   ],
+   "at": "after"
   },
   "glitch": {
    "taunt": "Pawn on a7. Free cookie. Eat it.",

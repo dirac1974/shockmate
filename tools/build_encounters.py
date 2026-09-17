@@ -78,7 +78,14 @@ def build(engine, e):
         if u == e["bait"]: continue
         if u[:2] not in seen: seen.add(u[:2]); cands.append(u[:2])
         if len(cands) == 3: break
-    for sq in e["whyTargets"]["squares"]: assert board.piece_at(chess.parse_square(sq)), f"{e['id']} whyTarget {sq} empty"
+    # Which position the why-gate should show: the moment where the reason is actually on the board.
+    after = board.copy(); after.push(best)
+    gate_at = "after"
+    for sq in e["whyTargets"]["squares"]:
+        s = chess.parse_square(sq); p0, p1 = board.piece_at(s), after.piece_at(s)
+        assert p0 is not None, f"{e['id']} whyTarget {sq} empty in the start position"
+        if p1 is None or p1.piece_type != p0.piece_type or p1.color != p0.color: gate_at = "before"
+    e["whyTargets"] = dict(e["whyTargets"], at=gate_at)
     out = dict(e); out.update({"tempting": e["bait"], "bestSan": board.san(best), "temptingSan": board.san(bait), "turn": "w",
         "moves": moves, "bestLineUci": best_line, "temptingLineUci": bait_line, "candidates": cands,
         "boss": e["id"] in BOSS, "pack": pack(board), "legal": legal_pack(board)})

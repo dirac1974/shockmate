@@ -14,6 +14,13 @@ async def move(pg, uci):
 
 async def gate_and_next(pg, enc, expect_next=True):
     await phase(pg, "gate")
+    # the gate must show the position the prompt talks about, and every target must hold a piece
+    at = enc["whyTargets"].get("at")
+    assert at in ("before", "after"), at
+    for s in enc["whyTargets"]["squares"]:
+        assert await pg.eval_on_selector(f'.sq[data-sq="{s}"]', "e => !!e.querySelector('.piece')"), enc["id"] + " gate target " + s + " is empty on screen"
+    if at == "before":
+        assert "REWIND" in (await pg.text_content("#banner")), "a before-gate tells the kid the board stepped back"
     await pg.click(f'.sq[data-sq="{enc["best"][:2]}"]') if enc["best"][:2] not in enc["whyTargets"]["squares"] else None  # a wrong tap must not break the gate
     for s in enc["whyTargets"]["squares"]: await pg.click(f'.sq[data-sq="{s}"]')
     await phase(pg, "card")

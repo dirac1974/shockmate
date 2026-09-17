@@ -276,7 +276,13 @@
     return new Promise((resolve) => {
       const targets = enc.whyTargets.squares.slice();
       state.gate = { targets, found: [], wrong: 0, resolve }; state.phase = "gate";
-      banner("LOCK IT IN", "tease"); glitchSay("Don't say it. Don't you DARE say why…", "hide"); prompt(enc.whyTargets.prompt);
+      // Rewind to the moment the reason is visible, so the prompt matches the board.
+      const start = F.piecesFromList(enc.pieces);
+      const rewind = enc.whyTargets.at !== "after";
+      setPieces(rewind ? start : F.applyUci(start, enc.best).pieces);
+      banner(rewind ? "REWIND" : "LOCK IT IN", "tease");
+      glitchSay("Don't say it. Don't you DARE say why…", "hide");
+      prompt(enc.whyTargets.prompt);
       clearMarks(); renderDots(); $("prompt").classList.add("gate-prompt");
     });
   }
