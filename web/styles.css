@@ -189,3 +189,19 @@ select, input[type=number] {
 }
 .win #why-card { box-shadow: 0 0 0 2px var(--ok); }
 .miss #why-card { box-shadow: 0 0 0 2px var(--bad); }
+/* Phase 0 additions (old theme kept; Phase 1 replaces the skin) */
+.glitch-line { text-align: center; color: var(--gold); font-size: 18px; min-height: 26px; margin: 6px 0 8px; }
+.prof.active { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 0 2px #e0b43a55; }
+.board.dim { opacity: .45; transition: opacity .3s; }
+.banner.tease { background: #14233d; color: var(--teal); animation: pulse .5s ease infinite; }
+.banner.crit { background: #3d2e00; color: var(--gold); font-size: 22px; animation: pulse .3s ease 4; }
+.sq.cand { box-shadow: inset 0 0 0 4px #2ec4b6aa; }
+.sq.guide { box-shadow: inset 0 0 0 4px var(--ok); animation: pulse .6s ease infinite; }
+.sq.gate-target { box-shadow: inset 0 0 0 3px #2ec4b666; }
+.sq.gate-ok { box-shadow: inset 0 0 0 5px var(--teal); }
+.sq.gate-hint { animation: pulse .5s ease infinite; box-shadow: inset 0 0 0 5px var(--gold); }
+.sq.nope { animation: shake .3s ease; }
+.gate-dots { display: flex; justify-content: center; gap: 8px; min-height: 12px; }
+.gate-dots span { width: 36px; height: 8px; border-radius: 4px; background: #2b2118; }
+.gate-dots span.on { background: var(--teal); }
+.fig.crit { border: 1px solid var(--gold); }

@@ -1,18 +1,16 @@
-# First 12 Shockmate encounters
+# The 12 fights (generated summary — source is data/encounters.src.json)
 
-White to move. Each board has a best move and a tempting snack.
+White to move. best vs bait, engine centipawns (mate = 10000), why-gate targets.
 
-01 Snack vs Crown — Rxa5 vs Qxh5. A hanging queen is an army. A rim pawn is a cookie.
-02 Two-Headed Knight — Nf6+ vs Nxd6. One jump bites king and rook. The pawn snack hangs the horse.
-03 Tiny Double Bite — c5+ vs Ke2. A pawn checks the king and bites the rook. b4 guards the pawn.
-04 Poison Lunch — Qd4 vs Qxd5. The bishop is guarded. The pawn takes back.
-05 Thumbtack — Bb5 vs Qxc6+. Freeze the knight to the king before you pile on.
-06 Frozen Lunch — Bxc6+ vs Ke2. The knight cannot run. Take it.
-07 Skewer Stick — Rh8+ vs Rh7. Check. The king steps aside. The rook behind dies.
-08 Basement Door — Ra8# vs Ra5. His pawns locked the door. Mate beats a pawn hunt.
-09 Leftover Loose — Qxa8# vs Qxd4. Two lunches. Eat the mate.
-10 Their Future First — Re8# vs gxh3. Taking the queen feels huge. Mate ends the movie.
-11 Hidden Laser — Nxd6+ vs b3. Knight steps aside. Bishop becomes a laser. Queen explodes.
-12 Crowns Not Cookies — Nc7+ vs Nxa7. Two royal heads beat one snack pawn.
-
-FENs and legal moves live in data/encounters.json.
+01 Snack vs Crown — Rxa5 (784) vs Qxh5 (-9998) · gate: Tap the piece nobody guards. ['a5']
+02 Two-Headed Knight — Nf6+ (445) vs Nxd6 (-9999) · gate: Tap the 2 pieces your knight bites. ['g8', 'd5']
+03 Tiny Double Bite — c5+ (651) vs Ke2 (-286) · gate: Tap the 2 pieces the pawn attacks. ['b6', 'd6']
+04 Poison Lunch — Qxa5 (520) vs Qxd5 (-797) · gate: Tap who takes back if you grab the bishop. ['c6'] · BOSS
+05 Thumbtack — Bb5 (564) vs Qxc6+ (-377) · gate: Tap the glued knight and its king. ['c6', 'e8']
+06 Pile On — d5 (484) vs Bxc6+ (5) · gate: Tap the knight that cannot run and its king. ['c6', 'e8']
+07 Skewer Stick — Rh8+ (648) vs Rh7 (154) · gate: Tap the king and the piece hiding behind him. ['e8', 'a8']
+08 Basement Door — Ra8# (10000) vs Ra5 (239) · gate: Tap the 3 pawns that trap the king. ['f7', 'g7', 'h7'] · BOSS
+09 Leftover Loose — Qxa8# (10000) vs Qxd4 (354) · gate: Tap the lunch that ends the game. ['a8']
+10 Their Future First — Re8# (10000) vs gxh3 (595) · gate: Tap the king that cannot escape. ['g8']
+11 Hidden Laser — Nxc6+ (725) vs Nxf7+ (-544) · gate: Tap the hidden attacker and the king. ['e1', 'e8']
+12 Crowns Not Cookies — Nc7+ (443) vs Nxa7 (-532) · gate: Tap the 2 royal pieces the knight forks. ['e8', 'a8'] · BOSS

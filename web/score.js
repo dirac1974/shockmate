@@ -1,4 +1,4 @@
-/* Hits only after move + why. Palace due 1d/3d/7d. Sibling duel verdict. */
+/* A correct move is a hit (fairness tiers decide "correct"); the why-gate confirms it. Palace due 1d/3d/7d. Duel verdict. */
 (function (root) {
   const LEDGER_MAX = 40;
   const DAY = 24 * 60 * 60 * 1000;
@@ -52,8 +52,13 @@
     const card = Object.assign({}, cardOf(next, enc.id));
     card.attempts += 1; card.lastSan = attempt.san || ""; card.why = enc.why;
     card.title = enc.title; card.motif = enc.motif; card.bestSan = enc.bestSan; card.lastFound = correct;
-    if (correct) card.founds = (card.founds || 0) + 1;
-    else { card.misses += 1; card.lastCorrect = false; card.mastered = false; scheduleAfterFail(card, attempt.t || 0); next.misses = (next.misses || 0) + 1; next.streak = 0; }
+    if (correct) {
+      card.founds = (card.founds || 0) + 1; card.hits += 1; card.lastCorrect = true;
+      scheduleAfterKeep(card, attempt.t || 0, !!attempt.hurry);
+      next.hits = (next.hits || 0) + 1; next.streak = (next.streak || 0) + 1;
+      next.bestStreak = Math.max(next.bestStreak || 0, next.streak);
+      if (card.hits >= 2) card.mastered = true;
+    } else { card.misses += 1; card.lastCorrect = false; card.mastered = false; scheduleAfterFail(card, attempt.t || 0); next.misses = (next.misses || 0) + 1; next.streak = 0; }
     next.cards[enc.id] = card; touchFigurine(next, enc, card.mastered);
     pushLedger(next, { id: enc.id, title: enc.title, motif: enc.motif, san: attempt.san || "", bestSan: enc.bestSan, correct: correct, kind: "move", why: enc.why, t: attempt.t || 0 });
     return { stats: next, card: card, correct: correct };
@@ -67,11 +72,7 @@
     const card = Object.assign({}, cardOf(next, enc.id));
     const found = card.lastFound === true; const ok = !!result.ok;
     if (ok && found) {
-      card.whys = (card.whys || 0) + 1; card.hits += 1; card.lastCorrect = true;
-      scheduleAfterKeep(card, result.t || 0, !!result.hurry);
-      next.hits = (next.hits || 0) + 1; next.streak = (next.streak || 0) + 1;
-      next.bestStreak = Math.max(next.bestStreak || 0, next.streak);
-      if (card.hits >= 2) card.mastered = true;
+      card.whys = (card.whys || 0) + 1; card.lastCorrect = true;
     } else {
       card.lastCorrect = false;
       if (found && !ok) card.copied = (card.copied || 0) + 1;

@@ -1,58 +1,51 @@
 # Shockmate — session memory
 
-Read this first in a new chat. Then open `docs/AGENTS.md`.
+Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines roles.
 
-**Date frozen:** 2026-09-16  
-**Repo:** https://github.com/dirac1974/shockmate  
-**Local source of truth:** `/home/workdir/artifacts/shockmate/`  
-**GitHub account:** `dirac1974`
+**Date:** 2026-09-16
+**Repo:** https://github.com/dirac1974/shockmate
+**Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
 
-ADHD chess trainer. Twelve engine-validated fights. Kid picks a move, watches **two futures** (snack vs best), must keep the **why sentence** before the score counts a hit. Memory palace + spaced review + sibling hot-seat duel. No pay-to-win. No eval numbers. Sessions are short.
+ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeline Split. The kid is a time agent; every move splits time in two; Glitch, a purple time-goblin, dangles bait toward the bad timeline. Twelve engine-scored fights, board-tap why-gate, per-kid profiles, co-op by default.
 
-Core loop: move → two futures on the board → why-gate (one tap, two sentences) → retry if wrong → palace figurine if they kept the reason.
+Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the future plays out on the board → why-gate (tap the pieces) → card earned → next fight or cliffhanger.
 
-## Links
+## Actual state of `main` (commit 09cfeb3)
 
-- Repo: https://github.com/dirac1974/shockmate
-- Play (jsDelivr, no warning): https://cdn.jsdelivr.net/gh/dirac1974/shockmate@main/web/index.html
-- Dev proxy (warning page): https://raw.githack.com/dirac1974/shockmate/main/web/index.html
-- Local: `artifacts/shockmate/web/index.html`
-- Pages after owner flip: https://dirac1974.github.io/shockmate/
-
-## Shipped locally
-
-- 12 encounters, Stockfish best vs tempting
-- Two futures engine in `web/futures.js`
-- Full arena in local `web/game.js` (~901 lines)
-- Why-gate: hit = move + why; Next locked until the sentence is right
-- Score/retry/spaced review/duel in `web/score.js`
-- SVG Staunton pieces in `web/pieces.js` (do not go back to emoji)
-- 8x8 equal-square board
-
-Tests: `node tests/test_futures.js`, `node tests/test_score.js`, `python3 tests/test_encounters.py`
-
-## GitHub vs local
-
-Local `web/game.js` is the full arena. GitHub `game.js` can lag. Next session should push it.
+- `web/game.js` is v0.1 (269 lines). After the first move the player is stuck: why buttons empty, Next never enables, Retry/History/Duel/Walk unbound.
+- `node tests/test_futures.js` FAILS: `web/encounters.js` has no `bestLineUci` / `temptingLineUci`.
+- `node tests/test_score.js` FAILS at line 17.
+- `python3 tests/test_encounters.py` passes (legality only).
+- Fight 06 is an even trade (Bxc6+ bxc6), not a won piece. Fight 11 is a direct knight check, not a discovered attack. Hits require the one exact engine move; equally good moves are scored as misses.
+- The "901-line full arena" referenced by the previous doc lived only in a Grok sandbox. Treat it as lost.
 
 ## Do not break
 
-Engine is judge. Animation is teacher. Palace is memory. No eval on screen. No loot. Short sessions. Hits need move + why. Quiet while they think. Loud after the move. No freeze-punishing timer.
+Engine is judge. Animation is teacher. No eval numbers on screen. No loot, no purchases, no energy timers. Nothing on screen ever goes down (no streak reset, no miss count). Every fight is winnable this session (second try, then confession, card still earned). Quiet during the think window, loud after the move. Cartoon slapstick only. Kids are never scored against each other. Commits credit "Claude".
 
-## Next implementation order
+## Phase 0 — Playable truth (current)
 
-A. Sync local `web/game.js` to GitHub
-B. Owner enables GitHub Pages (main / root)
-C. Motif finishers v2 (fork two-head, pin thumbtack, skewer through, door slam, laser, poison)
-D. Wire due palace walks to `pickWalkTarget`
-E. Only then: second pack of 12, parent weekly report. No openings/accounts/chat first.
+Order: Data and Arena in parallel → QA → Lead merges, tags `v0.3-playable`, enables GitHub Pages.
 
-## Next agent start
+- [ ] Data: `data/encounters.src.json` → `tools/build_encounters.py` (Stockfish 17, every legal move scored, tiers per PLAN §5.1, margin rule ≥150 cp or mate) → `data/encounters.v2.json` + generated `web/encounters.js`. Continuation lines for all 12. Fix 06 and 11. `test_encounters.py` asserts margins, line legality, whyTargets.
+- [ ] Arena: rewrite `web/game.js` as a state machine (home → think → tease → consequence → whygate → next | cliffhanger) on top of `futures.js` + `score.js`. Bind every control. Second-try flow. Tiers. Per-profile storage `shockmate-v2:<profileId>`. `test_futures.js` and `test_score.js` green.
+- [ ] QA: Playwright 390×844 through all 12 fights on best / good / bait / blunder / second-try. Fail on any disabled dead end or console error.
+- [ ] Lead: merge Data → Arena → QA, tag, Pages on `main` root, confirm https://dirac1974.github.io/shockmate/ plays.
+- [ ] Lead: write `docs/reports/phase0.md` (under 400 words) for review in the planning chat. Phase 1 does not start until that review comes back.
 
-1. Read this file and `docs/AGENTS.md`
-2. Diff local vs GitHub `web/game.js`
-3. Run the three test files
-4. Take A then B then C then D
-5. Push after each stage
+Phase 0 keeps the old theme. Phase 1 (PLAN §7) replaces it with the Timeline Split skin and Glitch.
+
+## Links
+
+- Plan (living copy): https://claude.ai/code/artifact/73839b7f-e1e8-4f13-a65e-ce725a30b4e1
+- Concept screens: https://claude.ai/artifact/UvtVosoKFKnmUFLhbpnLQ7
+- Play (after Pages flip): https://dirac1974.github.io/shockmate/
+
+## Next session start
+
+1. Read this file, then `docs/PLAN.md` §5–§8.
+2. Run the three tests and record what is red.
+3. Take the first unchecked box above in your role.
+4. Before ending: update this file (what shipped, what is red, next three steps). Keep it under 80 lines.

@@ -52,8 +52,8 @@ function run() {
   const hit = futures.buildPlan(snack, snack.best);
   assert.strictEqual(hit.hit, true);
   const rest = hit.acts.find((a) => a.label === "best-rest");
-  assert.ok(rest);
-  assert.deepStrictEqual(rest.ucis, snack.bestLineUci.slice(1));
+  if (snack.bestLineUci.length > 1) assert.deepStrictEqual(rest.ucis, snack.bestLineUci.slice(1));
+  else assert.ok(!rest && hit.acts.find((a) => a.kind === "hold"), "one-ply why holds instead of playing a rest");
 
   const mate = list[7];
   const hitMate = futures.buildPlan(mate, mate.best);
@@ -111,13 +111,20 @@ function run() {
   const doorT = futures.motifTargets(list[7]);
   assert.ok(doorT.includes("a8"), "basement door slams a8: " + doorT);
   const laserT = futures.motifTargets(list[10]);
-  assert.ok(laserT.includes("d6") && laserT.includes("e8"), "discovery eats queen and checks king: " + laserT);
+  assert.ok(laserT.includes("c6") && laserT.includes("e8"), "discovery eats queen and checks king: " + laserT);
 
   const snackMiss = futures.simulatePlan(snack, snack.tempting);
   const lastWeak = snackMiss.events.filter((ev) => ev.label === "weak").pop();
-  assert.strictEqual(lastWeak.uci, "a5e1");
-  assert.strictEqual(lastWeak.captured, null, "Qe1# is mate on an empty door, not a capture");
+  assert.strictEqual(lastWeak.uci, "a5a1");
+  assert.strictEqual(lastWeak.captured, "r", "Qxa1+ eats the rook the queen abandoned");
 
+  list.forEach((e) => {
+    assert.ok(e.moves && e.moves[e.best] && e.moves[e.best].tier === "best", e.id + " best move is tier best");
+    assert.strictEqual(e.moves[e.tempting].tier, "bait", e.id + " bait move is tier bait");
+    Object.keys(e.legal).forEach((fr) => e.legal[fr].forEach((m) => assert.ok(e.moves[m.uci], e.id + " every legal move is scored: " + m.uci)));
+    assert.ok(e.whyTargets && e.whyTargets.squares.length >= 1 && e.whyTargets.prompt.split(" ").length <= 12, e.id + " why targets");
+    assert.ok(e.candidates && e.candidates.length >= 2 && e.candidates.includes(e.best.slice(0, 2)), e.id + " candidates include the best origin");
+  });
   console.log("OK futures: 12 lines apply, 12 hit+miss plans simulate, motif finishers, palace decoys.");
 }
 

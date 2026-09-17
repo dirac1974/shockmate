@@ -1,0 +1,299 @@
+[
+ {
+  "id": "01",
+  "title": "Snack vs Crown",
+  "motif": "hanging",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "LOOSE LUNCH",
+  "fen": "6k1/5ppp/8/q6p/8/8/5PPP/R2Q2K1 w - - 0 1",
+  "best": "a1a5",
+  "bait": "d1h5",
+  "hook": "The queen is daydreaming on the rim.",
+  "why": "You ate one snack. I ate the whole queen.",
+  "whyLong": "A hanging queen is an army. A rim pawn is a cookie.",
+  "whyTargets": {
+   "prompt": "Tap the piece nobody guards.",
+   "squares": [
+    "a5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Psst. Free pawn on h5. Grab it. Nobody's looking.",
+   "gloat": "Ha! You ate a pawn. I eat your rook.",
+   "rage": "NOOOO. That was my WHOLE QUEEN!"
+  }
+ },
+ {
+  "id": "02",
+  "title": "Two-Headed Knight",
+  "motif": "fork",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "6k1/5p1p/3p2p1/3r4/4N3/8/5PPP/6K1 w - - 0 1",
+  "best": "e4f6",
+  "bait": "e4d6",
+  "hook": "One horse. Two throats.",
+  "why": "One jump bites the king and the rook.",
+  "whyLong": "The pawn snack hangs your horse.",
+  "whyTargets": {
+   "prompt": "Tap the 2 pieces your knight bites.",
+   "squares": [
+    "g8",
+    "d5"
+   ]
+  },
+  "glitch": {
+   "taunt": "That pawn on d6 is begging to be eaten.",
+   "gloat": "Rook takes horse. Thanks for lunch.",
+   "rage": "Two heads?! That's cheating!"
+  }
+ },
+ {
+  "id": "03",
+  "title": "Tiny Double Bite",
+  "motif": "pawnFork",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "8/8/1k1r4/8/1PP5/8/P1P5/4K3 w - - 0 1",
+  "best": "c4c5",
+  "bait": "e1e2",
+  "hook": "The smallest soldier wants two trophies.",
+  "why": "A tiny pawn checks the king and bites the rook.",
+  "whyLong": "c5 is guarded by b4.",
+  "whyTargets": {
+   "prompt": "Tap the 2 pieces the pawn attacks.",
+   "squares": [
+    "b6",
+    "d6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Careful, careful. Just move your king somewhere safe.",
+   "gloat": "Nothing happened. Boring. My favorite.",
+   "rage": "A PAWN did that?!"
+  }
+ },
+ {
+  "id": "04",
+  "title": "Poison Lunch",
+  "motif": "counting",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "COUNTING",
+  "fen": "4k3/pp3ppp/2p5/n2b4/8/8/3Q1PPP/4K3 w - - 0 1",
+  "best": "d2a5",
+  "bait": "d2d5",
+  "hook": "Two lunches. One is poison.",
+  "why": "Count defenders. The bishop is guarded, the knight is free.",
+  "whyLong": "Queen for bishop is poison. A free knight is a meal.",
+  "whyTargets": {
+   "prompt": "Tap who takes back if you grab the bishop.",
+   "squares": [
+    "c6"
+   ]
+  },
+  "glitch": {
+   "taunt": "The bishop is right in the middle. Queen takes bishop!",
+   "gloat": "Pawn takes queen. Best trade ever. For me.",
+   "rage": "You COUNTED? Who taught you that?"
+  }
+ },
+ {
+  "id": "05",
+  "title": "Thumbtack",
+  "motif": "pin",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "3rk3/ppp2ppp/2n5/8/8/5Q2/PPP2PPP/4KB2 w - - 0 1",
+  "best": "f1b5",
+  "bait": "f3c6",
+  "hook": "Glue the knight to its king.",
+  "why": "Line the bishop up. The knight is glued to its king.",
+  "whyLong": "Do not spend the queen to grab it.",
+  "whyTargets": {
+   "prompt": "Tap the glued knight and its king.",
+   "squares": [
+    "c6",
+    "e8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Queen takes knight. Big and loud. Do it.",
+   "gloat": "Pawn takes queen. You paid a queen for a horse.",
+   "rage": "Glued?! Unglue it! UNGLUE IT!"
+  }
+ },
+ {
+  "id": "06",
+  "title": "Pile On",
+  "motif": "pin",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "4k3/ppp2ppp/2n5/1B6/3P4/8/PPP2PP1/4K3 w - - 0 1",
+  "best": "d4d5",
+  "bait": "b5c6",
+  "hook": "It cannot run. Do not cash it. Pile on.",
+  "why": "The knight cannot move. Attack it again and it dies.",
+  "whyLong": "Bishop takes knight is an even trade. A second attacker wins it for free.",
+  "whyTargets": {
+   "prompt": "Tap the knight that cannot run and its king.",
+   "squares": [
+    "c6",
+    "e8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Bishop takes knight! Cash it in now!",
+   "gloat": "Pawn takes bishop. Even trade. You got nothing.",
+   "rage": "You piled ON?! That's not fair!"
+  }
+ },
+ {
+  "id": "07",
+  "title": "Skewer Stick",
+  "motif": "skewer",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "r3k3/ppp2pp1/8/8/8/8/PPP2PP1/4K2R w K - 0 1",
+  "best": "h1h8",
+  "bait": "h1h7",
+  "hook": "Stab through the king.",
+  "why": "Check. He steps aside. The rook behind him dies.",
+  "whyLong": "A skewer is a pin in reverse.",
+  "whyTargets": {
+   "prompt": "Tap the king and the piece hiding behind him.",
+   "squares": [
+    "e8",
+    "a8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Rook to h7 wins a pawn next move. Slow and safe.",
+   "gloat": "Slow and safe. And nothing.",
+   "rage": "Through the KING?! That's a shish kebab!"
+  }
+ },
+ {
+  "id": "08",
+  "title": "Basement Door",
+  "motif": "backRank",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "6k1/5ppp/8/7p/8/8/8/R5K1 w - - 0 1",
+  "best": "a1a8",
+  "bait": "a1a5",
+  "hook": "His own pawns locked the door.",
+  "why": "Mate beats a pawn hunt.",
+  "whyLong": "No luft. The rook owns the last rank.",
+  "whyTargets": {
+   "prompt": "Tap the 3 pawns that trap the king.",
+   "squares": [
+    "f7",
+    "g7",
+    "h7"
+   ]
+  },
+  "glitch": {
+   "taunt": "That h5 pawn is free. Go get it.",
+   "gloat": "You went pawn hunting. The game goes on. And on.",
+   "rage": "MY OWN PAWNS locked the door?!"
+  }
+ },
+ {
+  "id": "09",
+  "title": "Leftover Loose",
+  "motif": "hanging",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "LOOSE LUNCH",
+  "fen": "r5k1/5ppp/8/8/3n4/8/5PPP/Q5K1 w - - 0 1",
+  "best": "a1a8",
+  "bait": "a1d4",
+  "hook": "Two lunches. One is mate.",
+  "why": "The rook on the back door is mate.",
+  "whyLong": "Eat the lunch that ends the game.",
+  "whyTargets": {
+   "prompt": "Tap the lunch that ends the game.",
+   "squares": [
+    "a8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Knight on d4. Free. Yum. Take it.",
+   "gloat": "You took the horse. Still playing. Still my game.",
+   "rage": "The ROOK was the lunch?!"
+  }
+ },
+ {
+  "id": "10",
+  "title": "Their Future First",
+  "motif": "mateOverMaterial",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "6k1/5ppp/8/8/8/7q/5PPP/4R1K1 w - - 0 1",
+  "best": "e1e8",
+  "bait": "g2h3",
+  "hook": "Her queen looks delicious.",
+  "why": "Taking their queen feels huge. Mating them ends the movie.",
+  "whyLong": "Ask if you have mate in one before you snack.",
+  "whyTargets": {
+   "prompt": "Tap the king that cannot escape.",
+   "squares": [
+    "g8"
+   ]
+  },
+  "glitch": {
+   "taunt": "A WHOLE QUEEN. Free. Take it take it take it.",
+   "gloat": "You took the queen. I'm still alive. Rude.",
+   "rage": "Mate?! I was offering you a QUEEN!"
+  }
+ },
+ {
+  "id": "11",
+  "title": "Hidden Laser",
+  "motif": "discovery",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "4k3/pp3ppp/2q5/4N3/8/8/5PPP/4R1K1 w - - 0 1",
+  "best": "e5c6",
+  "bait": "e5f7",
+  "hook": "The rook is hiding behind the horse.",
+  "why": "The knight steps aside. The rook becomes a laser. Take the queen with check.",
+  "whyLong": "Both knight moves give check. Only one eats a queen.",
+  "whyTargets": {
+   "prompt": "Tap the hidden attacker and the king.",
+   "squares": [
+    "e1",
+    "e8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Knight takes f7 with check! Pawn AND check!",
+   "gloat": "King takes knight. You gave me a horse for a pawn.",
+   "rage": "A LASER?! Behind the HORSE?!"
+  }
+ },
+ {
+  "id": "12",
+  "title": "Crowns Not Cookies",
+  "motif": "royalFork",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "r3k3/p4p2/8/1N6/8/8/P4P2/4K3 w - - 0 1",
+  "best": "b5c7",
+  "bait": "b5a7",
+  "hook": "A pawn snack. Or two crowns.",
+  "why": "Two royal heads beat one snack pawn.",
+  "whyLong": "Fork the king and the rook.",
+  "whyTargets": {
+   "prompt": "Tap the 2 royal pieces the knight forks.",
+   "squares": [
+    "e8",
+    "a8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Pawn on a7. Free cookie. Eat it.",
+   "gloat": "Rook takes horse. Cookie was a trap.",
+   "rage": "CROWNS?! You skipped the cookie?!"
+  }
+ }
+]
