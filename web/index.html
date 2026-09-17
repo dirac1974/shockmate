@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>Shockmate — Beat Glitch</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -17,6 +19,7 @@
       </div>
       <button id="btn-collection" class="ghost">Cards</button>
       <button id="btn-settings" class="ghost">Settings</button>
+      <div class="path" id="path"></div>
     </header>
     <section id="screen-title" class="screen active">
       <h1>Beat Glitch.</h1>
@@ -29,11 +32,18 @@
       <p class="hint" id="title-due">Sessions are short on purpose.</p>
     </section>
     <section id="screen-play" class="screen">
-      <div class="glitch-line" id="glitch-line"></div>
+      <div class="glitch-row">
+        <div id="glitch"></div>
+        <div class="bubble" id="glitch-line" hidden></div>
+      </div>
       <div class="banner" id="banner" hidden></div>
       <div class="board-wrap">
         <div id="board" class="board" aria-label="Chess board"></div>
         <div id="fx" class="fx" aria-hidden="true"></div>
+      </div>
+      <div class="timelines" id="timelines" hidden>
+        <div class="tl you"><b>YOU</b><i><span></span></i></div>
+        <div class="tl him"><b>GLITCH</b><i><span></span></i></div>
       </div>
       <div class="prompt" id="prompt">Your move.</div>
       <div class="gate-dots" id="gate-dots"></div>
@@ -48,7 +58,7 @@
         <div class="mascot" id="why-mascot">TWO HEADS</div>
         <p id="why-text"></p>
         <p class="why-long" id="why-long"></p>
-        <p class="glitch-line" id="glitch-line-2"></p>
+        <p class="why-long" id="glitch-line-2"></p>
       </div>
       <div class="actions">
         <button id="btn-next" class="cta">Next fight</button>
@@ -78,7 +88,7 @@
       <div class="modal-card">
         <h2 id="end-title">Mission complete</h2>
         <p id="session-summary"></p>
-        <p class="sub" id="session-next"></p>
+        <div class="next-peek"><div class="mini" id="next-mini"></div><p class="sub" id="session-next"></p></div>
         <button id="btn-end-ok" class="cta">Done for today</button>
       </div>
     </div>
@@ -86,6 +96,7 @@
   <script src="encounters.js"></script>
   <script src="futures.js"></script>
   <script src="pieces.js"></script>
+  <script src="glitch.js"></script>
   <script src="score.js"></script>
   <script src="game.js"></script>
 </body>

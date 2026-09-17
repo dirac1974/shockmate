@@ -7,13 +7,18 @@
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
   const T = (ms) => (FAST ? Math.min(ms, 20) : ms);
-  const sleep = (ms) => new Promise((r) => setTimeout(r, T(ms)));
+  const sleep = (ms) => new Promise((r) => {
+    const t = setTimeout(done, T(ms)); let done2 = false;
+    function done() { if (done2) return; done2 = true; clearTimeout(t); state.waiters.delete(done); r(); }
+    state.waiters.add(done);
+  });
+  function skipAhead() { const w = Array.from(state.waiters); state.waiters.clear(); w.forEach((f) => f()); }
   const $ = (id) => document.getElementById(id);
 
   const state = {
     encounters: window.SHOCKMATE_ENCOUNTERS || [], index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
-    session: { count: 0, reviews: 0, won: 0, crits: 0 },
+    session: { count: 0, reviews: 0, won: 0, crits: 0 }, waiters: new Set(),
     settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0 },
     stats: null,
   };
@@ -42,13 +47,26 @@
   function banner(text, tone) {
     const b = $("banner"); b.className = "banner" + (tone ? " " + tone : ""); b.textContent = text || ""; b.hidden = !text;
   }
-  function glitchSay(text) { $("glitch-line").textContent = text ? "Glitch: " + text : ""; }
+  function glitchSay(text, mood) {
+    if (window.ShockmateGlitch) return window.ShockmateGlitch.set(mood || "taunt", text || "");
+    const b = $("glitch-line"); b.textContent = text || ""; b.hidden = !text;
+  }
+  function renderPath() {
+    const root = $("path"); if (!root) return;
+    const earned = state.stats.cardsEarned || {}, cur = current();
+    root.innerHTML = state.encounters.map((e) => {
+      const cls = ["pip"]; if (e.boss) cls.push("boss");
+      if (earned[e.id]) cls.push("done"); else if (state.phase !== "home" && e.id === cur.id) cls.push("now");
+      return '<div class="' + cls.join(" ") + '"></div>';
+    }).join("");
+  }
   function prompt(text) { $("prompt").textContent = text; }
   function hud() {
     $("stat-won").textContent = state.stats.won || 0;
     $("stat-crit").textContent = state.stats.criticals || 0;
     $("stat-cards").textContent = Object.keys(state.stats.cardsEarned || {}).length;
     [0, 1].forEach((i) => { const b = $("prof-" + i); b.textContent = state.settings.names[i]; b.classList.toggle("active", state.settings.profile === i); });
+    renderPath();
   }
   let ac;
   function beep(freq, dur, type, gain) {
@@ -149,8 +167,8 @@
   function startEncounter() {
     const enc = current(); state.selected = null; state.tries = 0; state.guided = false; state.lastTier = null; state.phase = "think";
     setPieces(F.piecesFromList(enc.pieces)); clearMarks(); $("fx").innerHTML = ""; $("board").classList.remove("dim");
-    banner(""); glitchSay(enc.glitch.taunt); prompt(enc.hook); $("gate-dots").innerHTML = "";
-    $("btn-hint").disabled = false; $("btn-skip").disabled = false; show("screen-play");
+    banner(""); glitchSay(enc.glitch.taunt, "taunt"); prompt(enc.hook); $("gate-dots").innerHTML = "";
+    $("btn-hint").hidden = false; $("btn-skip").hidden = false; show("screen-play");
   }
   async function commitMove(move) {
     const enc = current(); state.phase = "busy"; state.selected = null; paintSelection();
@@ -158,15 +176,16 @@
     const dest = sq(step.to) && sq(step.to).querySelector(".piece"); if (dest) dest.classList.add("pop"); sfx("move");
     if (step.captured) explode(step.to, false);
     const tier = state.guided ? "best" : (enc.moves[move.uci] || {}).tier || "blunder";
-    state.lastTier = tier; state.lastUci = move.uci; $("btn-hint").disabled = true; $("btn-skip").disabled = true;
+    state.lastTier = tier; state.lastUci = move.uci; $("btn-hint").hidden = true; $("btn-skip").hidden = true;
     // tease: both futures charge
-    banner("SPLITTING TIME…", "tease"); $("board").classList.add("dim"); glitchSay("Wait. Which future is this…"); sfx("tease");
-    await sleep(700); $("board").classList.remove("dim");
+    banner("SPLITTING TIME…", "tease"); $("board").classList.add("dim"); $("timelines").hidden = false;
+    glitchSay("Wait. Wait. Which future is this…", "nervous"); sfx("tease");
+    await sleep(700); $("board").classList.remove("dim"); $("timelines").hidden = true;
     if (tier === "best" || tier === "good") await hitFlow(enc, move, tier, step.pieces);
     else await missFlow(enc, move, tier, start, step.pieces);
   }
   async function hitFlow(enc, move, tier, afterMap) {
-    banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage);
+    banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage");
     state.stats = S.recordAttempt(state.stats, enc, { correct: true, san: move.san, t: now(), hurry: state.settings.hurry }).stats;
     (state.stats.tiers = state.stats.tiers || []).push(tier); if (state.stats.tiers.length > 8) state.stats.tiers.shift();
     let map = afterMap;
@@ -176,7 +195,10 @@
     const crit = tier === "best" && !state.guided && !state.lastCritical && (enc.boss || Math.random() < 1 / 6);
     state.lastCritical = crit;
     if (crit) {
-      banner("CRITICAL!", "crit"); sfx("crit"); (fin.targets.length ? fin.targets : [enc.best.slice(2, 4)]).forEach((s) => explode(s, true));
+      banner("CRITICAL!", "crit"); sfx("crit"); document.querySelector(".board-wrap").classList.add("zoom");
+      await sleep(180);
+      (fin.targets.length ? fin.targets : [enc.best.slice(2, 4)]).forEach((s) => explode(s, true));
+      setTimeout(() => document.querySelector(".board-wrap").classList.remove("zoom"), T(900));
       state.stats.criticals = (state.stats.criticals || 0) + 1; state.session.crits += 1; await sleep(900);
     }
     if (tier === "good") { toast("Glitch: there was a BIGGER one…", 2200); }
@@ -189,7 +211,7 @@
     showCard(enc, tier, crit);
   }
   async function missFlow(enc, move, tier, start, afterMap) {
-    banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat);
+    banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug");
     state.stats = S.recordAttempt(state.stats, enc, { correct: false, san: move.san, t: now() }).stats;
     (state.stats.tiers = state.stats.tiers || []).push(tier); if (state.stats.tiers.length > 8) state.stats.tiers.shift(); save();
     if (move.uci === enc.tempting && enc.temptingLineUci.length > 1) await playLine(enc.temptingLineUci.slice(1), afterMap);
@@ -197,11 +219,11 @@
     await sleep(500);
     state.tries += 1;
     if (state.tries === 1) {
-      banner("SECOND TRY", "tease"); setPieces(start); clearMarks(); glitchSay("Sweating? Me? Never."); prompt("Try again. Glitch is sweating.");
+      banner("SECOND TRY", "tease"); setPieces(start); clearMarks(); glitchSay("Sweating? Me? Never.", "nervous"); prompt("Try again. Glitch is sweating.");
       state.phase = "think"; paintSelection(); return;
     }
     // confession: show the better future, then the kid plays it
-    banner("THE BETTER FUTURE", "win"); glitchSay("Fine. FINE. Here is what I was scared of."); setPieces(start); await sleep(500);
+    banner("THE BETTER FUTURE", "win"); glitchSay("Fine. FINE. Here is what I was scared of.", "nervous"); setPieces(start); await sleep(500);
     await playLine(enc.bestLineUci, start); finisher(enc); await sleep(800);
     banner("YOUR TURN", "tease"); setPieces(start); clearMarks(); state.guided = true; state.phase = "think";
     prompt("Now you play it: " + enc.bestSan); paintSelection();
@@ -210,8 +232,8 @@
     return new Promise((resolve) => {
       const targets = enc.whyTargets.squares.slice();
       state.gate = { targets, found: [], wrong: 0, resolve }; state.phase = "gate";
-      banner("LOCK IT IN", "tease"); glitchSay("Don't say it. Don't you DARE say why…"); prompt(enc.whyTargets.prompt);
-      clearMarks(); renderDots();
+      banner("LOCK IT IN", "tease"); glitchSay("Don't say it. Don't you DARE say why…", "hide"); prompt(enc.whyTargets.prompt);
+      clearMarks(); renderDots(); $("prompt").classList.add("gate-prompt");
     });
   }
   function renderDots() {
@@ -221,7 +243,7 @@
     const g = state.gate; if (!g) return;
     if (g.targets.includes(name) && !g.found.includes(name)) {
       g.found.push(name); sq(name).classList.add("gate-ok"); sq(name).classList.remove("gate-hint"); sfx("win"); renderDots();
-      if (g.found.length === g.targets.length) { state.phase = "busy"; $("gate-dots").innerHTML = ""; banner("LOCKED IN", "win"); setTimeout(() => { const r = g.resolve; state.gate = null; r(); }, T(500)); }
+      if (g.found.length === g.targets.length) { state.phase = "busy"; $("gate-dots").innerHTML = ""; $("prompt").classList.remove("gate-prompt"); banner("LOCKED IN", "win"); setTimeout(() => { const r = g.resolve; state.gate = null; r(); }, T(500)); }
       return;
     }
     if (!g.found.includes(name)) {
@@ -231,7 +253,7 @@
     }
   }
   function showCard(enc, tier, crit) {
-    state.phase = "card";
+    state.phase = "card"; renderPath(); $("prompt").classList.remove("gate-prompt");
     $("card-title").textContent = crit ? "CRITICAL card earned" : (state.tries > 0 ? "Card earned (Glitch needed " + (state.tries + 1) + " tries to get you)" : "Card earned");
     $("why-mascot").textContent = enc.mascot; $("why-text").textContent = enc.why; $("why-long").textContent = enc.whyLong;
     $("glitch-line-2").textContent = "Glitch: " + enc.glitch.rage;
@@ -258,9 +280,20 @@
     $("end-title").textContent = state.session.won ? "Mission complete" : "Mission paused";
     $("session-summary").textContent = "Fights won: " + state.session.won + " · Criticals: " + state.session.crits + " · Cards: " + Object.keys(state.stats.cardsEarned).length + "/" + state.encounters.length;
     $("session-next").textContent = "Next time: " + nxt.hook + " Glitch says: \"You got lucky. I have a new trap ready.\"";
+    renderMini(nxt);
     $("session-end").hidden = false; state.phase = "end";
   }
   function startSession() { state.session = { count: 0, reviews: 0, won: 0, crits: 0 }; state.index = pickNext(-1); startEncounter(); }
+
+  function renderMini(enc) {
+    const host = $("next-mini"); if (!host) return;
+    const map = F.piecesFromList(enc.pieces); let html = "";
+    for (let r = 8; r >= 1; r--) for (let f = 0; f < 8; f++) {
+      const name = FILES[f] + r, p = map[name], light = ((f + r) % 2 !== 0);
+      html += '<div class="' + (light ? "light" : "dark") + '">' + (p && window.ShockmatePieces ? window.ShockmatePieces.svg(p.color, p.role) : "") + "</div>";
+    }
+    host.innerHTML = html;
+  }
 
   /* ---------- collection ---------- */
   function renderCollection() {
@@ -288,14 +321,14 @@
     $("btn-next").onclick = nextEncounter;
     $("btn-peek").onclick = async function () {
       const enc = current(); $("btn-peek").hidden = true; show("screen-play"); state.phase = "busy";
-      const start = F.piecesFromList(enc.pieces); banner("THE BIGGEST ONE", "win"); glitchSay("Ugh. THAT one."); prompt("Best was " + enc.bestSan + ".");
+      const start = F.piecesFromList(enc.pieces); banner("THE BIGGEST ONE", "win"); glitchSay("Ugh. THAT one.", "rage"); prompt("Best was " + enc.bestSan + ".");
       await playLine(enc.bestLineUci, start); finisher(enc); await sleep(900); showCard(enc, "best", false);
     };
     $("btn-replay").onclick = async function () {
       const enc = current(); show("screen-play"); state.phase = "busy"; const start = F.piecesFromList(enc.pieces);
-      banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat); prompt(enc.temptingSan + " — the bait."); clearMarks();
+      banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug"); prompt(enc.temptingSan + " — the bait."); clearMarks();
       await playLine(enc.temptingLineUci, start); await sleep(500);
-      banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage); prompt(enc.bestSan + " — the move Glitch fears."); clearMarks();
+      banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage"); prompt(enc.bestSan + " — the move Glitch fears."); clearMarks();
       await playLine(enc.bestLineUci, start); finisher(enc); await sleep(900); showCard(enc, state.lastTier || "best", false);
     };
     $("btn-collection").onclick = function () { renderCollection(); show("screen-collection"); };
@@ -319,7 +352,8 @@
       const el = sq(enc.tempting.slice(2, 4)); if (el) el.classList.add("tempt-glow"); toast("Glitch wants THAT one. So don't.", 2000);
     };
     $("btn-skip").onclick = function () { if (state.phase !== "think") return; nextEncounter(); };
-    $("btn-end-ok").onclick = function () { $("session-end").hidden = true; state.phase = "home"; show("screen-title"); };
+    $("btn-end-ok").onclick = function () { $("session-end").hidden = true; state.phase = "home"; show("screen-title"); renderPath(); };
+    document.querySelector(".board-wrap").addEventListener("click", function () { if (state.phase === "busy") skipAhead(); }, true);
   }
   function selfTest() {
     const errors = []; const list = state.encounters;
