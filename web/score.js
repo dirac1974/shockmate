@@ -178,10 +178,10 @@
      different crony each day, so there is always a fresh brag to knock down today. The daily
      number resets, the permanent one does not, and nothing the kid earned is ever taken back. */
   const CRONIES = [
-    { name: "SPLINTER", claimed: 800 }, { name: "RERUN", claimed: 950 },
-    { name: "STATIC", claimed: 1100 }, { name: "LOOPHOLE", claimed: 1250 },
-    { name: "PASTE", claimed: 700 }, { name: "WOBBLE", claimed: 875 },
-    { name: "FLICKER", claimed: 1025 },
+    { name: "SPLINTER", claimed: 800, weak: "fork" }, { name: "RERUN", claimed: 950, weak: "counting" },
+    { name: "STATIC", claimed: 1100, weak: "pin" }, { name: "LOOPHOLE", claimed: 1250, weak: "backRank" },
+    { name: "PASTE", claimed: 700, weak: "hanging" }, { name: "WOBBLE", claimed: 875, weak: "skewer" },
+    { name: "FLICKER", claimed: 1025, weak: "discovery" },
   ];
   function dateKey(ts) {
     const d = new Date(ts);
@@ -201,14 +201,64 @@
     const crony = CRONIES[seed % CRONIES.length];
     const left = (crony.claimed - FLOOR) * Math.pow(KEEP, ids.length + CRIT_WEIGHT * crits);
     const real = Math.max(FLOOR, Math.round((FLOOR + left) / 5) * 5);
-    return { name: crony.name, claimed: crony.claimed, real: real, drop: crony.claimed - real,
+    return { name: crony.name, claimed: crony.claimed, real: real, drop: crony.claimed - real, weak: crony.weak || null,
       cardsToday: ids.length, criticalsToday: crits, dateKey: key,
       fraction: (real - FLOOR) / (crony.claimed - FLOOR), floored: real <= FLOOR + 40 };
   }
   // Lifetime points taken off Glitch himself. Derived from cards, so it only ever grows.
   function knockedOff(stats) { return BRAG - glitchRating(stats).real; }
 
-  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
+  /* ---------- battle layer ----------
+     The boss is today's crony. Correct moves land as hits and knock his number down. Abilities
+     change damage, information the app already gives, or how Glitch reacts. They never change
+     which move is right, so the engine stays the judge and the animation stays the teacher. */
+  const ABILITIES = [
+    { id: "double", name: "Double Strike", cost: 2, blurb: "Your next hit lands twice as hard." },
+    { id: "tell", name: "Glitch's Tell", cost: 1, blurb: "Glitch flinches at the bait. Shows the move he WANTS you to play." },
+    { id: "shield", name: "Time Shield", cost: 1, blurb: "Your next miss costs nothing, and Glitch does not get to gloat." },
+    { id: "overcharge", name: "Overcharge", cost: 3, blurb: "Your next win is a guaranteed Critical." },
+  ];
+  const POWER_CAP = 5;
+  function emptyBattle() {
+    return { power: 0, kos: 0, bonus: {}, next: { double: false, shield: false, overcharge: false }, gear: {} };
+  }
+  function battleOf(stats) {
+    const b = Object.assign(emptyBattle(), (stats && stats.battle) || {});
+    b.next = Object.assign({ double: false, shield: false, overcharge: false }, b.next);
+    b.bonus = Object.assign({}, b.bonus); b.gear = Object.assign({}, b.gear);
+    return b;
+  }
+  // Boss health is the crony's rating minus any extra damage abilities dealt today. Floored like everything else.
+  function bossHp(stats, ts) {
+    const at = ts || Date.now(), c = dailyChallenger(stats, at), b = battleOf(stats);
+    const extra = b.bonus[c.dateKey] || 0;
+    const hp = Math.max(FLOOR, c.real - extra);
+    return { name: c.name, claimed: c.claimed, hp: hp, max: c.claimed, floor: FLOOR, weak: c.weak,
+      fraction: (hp - FLOOR) / (c.claimed - FLOOR), ko: hp <= FLOOR, dateKey: c.dateKey, cardsToday: c.cardsToday };
+  }
+  // Power is the kid's number. It climbs on wins and only falls when he chooses to spend it.
+  function earnPower(battle, crit) {
+    const b = battleOf({ battle: battle });
+    b.power = Math.min(POWER_CAP, b.power + 1 + (crit ? 1 : 0));
+    return b;
+  }
+  function abilityById(id) { return ABILITIES.filter((a) => a.id === id)[0] || null; }
+  function canAfford(battle, id) { const a = abilityById(id); return !!a && battleOf({ battle: battle }).power >= a.cost; }
+  function armAbility(battle, id) {
+    const a = abilityById(id); if (!a || !canAfford(battle, id)) return battleOf({ battle: battle });
+    const b = battleOf({ battle: battle });
+    b.power -= a.cost; if (id !== "tell") b.next[id] = true;
+    return b;
+  }
+  function disarm(battle, id) { const b = battleOf({ battle: battle }); b.next[id] = false; return b; }
+  function addBonus(battle, dateKey, amount) {
+    const b = battleOf({ battle: battle });
+    b.bonus[dateKey] = (b.bonus[dateKey] || 0) + Math.max(0, Math.round(amount));
+    return b;
+  }
+  function recordKo(battle) { const b = battleOf({ battle: battle }); b.kos += 1; return b; }
+
+  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

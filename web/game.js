@@ -33,7 +33,7 @@
   const RAGE_TARGET = 4;
 
   /* ---------- storage ---------- */
-  function freshStats() { return Object.assign(S.emptyStats(), { won: 0, criticals: 0, cardsEarned: {}, tiers: [] }); }
+  function freshStats() { return Object.assign(S.emptyStats(), { won: 0, criticals: 0, cardsEarned: {}, tiers: [], battle: S.emptyBattle() }); }
   function readProfile(i) {
     try { return Object.assign(freshStats(), JSON.parse(localStorage.getItem(KEY + ":p" + i) || "{}")); }
     catch (e) { return freshStats(); }
@@ -237,13 +237,22 @@
       ? c.name + " claimed " + c.claimed + " this morning. You have taken " + c.drop + " off him today."
       : c.name + " is standing in for Glitch today. He says he is " + c.claimed + ".";
   }
+  function renderBoss() {
+    const box = $("boss"); if (!box) return;
+    const b = S.bossHp(state.stats, now());
+    box.hidden = state.phase === "home";
+    box.classList.toggle("ko", b.ko);
+    $("boss-name").textContent = b.ko ? b.name + " \u00b7 KO" : b.name;
+    $("boss-hp").textContent = b.ko ? "DOWN" : String(b.hp);
+    $("boss-fill").style.width = Math.round(Math.max(0, Math.min(1, b.fraction)) * 100) + "%";
+  }
   function prompt(text) { $("prompt").textContent = text; }
   function hud() {
     $("stat-won").textContent = state.stats.won || 0;
     $("stat-crit").textContent = state.stats.criticals || 0;
     $("stat-cards").textContent = Object.keys(state.stats.cardsEarned || {}).length;
     if ($("stat-rank")) $("stat-rank").textContent = S.agentRank(state.stats).title;
-    renderCrony();
+    renderCrony(); renderBoss();
     if ($("two-hint")) $("two-hint").textContent = state.settings.names[0] + " and " + state.settings.names[1]
       + " take turns on this phone. You both play White.";
     // During play the board never flips, so the note doubles as "whose go is it" in co-op.
@@ -402,9 +411,19 @@
     save(); hud();
     await whyGate(enc);
     state.stats = S.recordWhy(state.stats, enc, { ok: true, t: now(), hurry: state.settings.hurry }).stats;
-    state.ratingBefore = S.glitchRating(state.stats).real; state.rankBefore = S.agentRank(state.stats).index;   // read before the card lands, shown on the card screen
+    state.ratingBefore = S.glitchRating(state.stats).real; state.rankBefore = S.agentRank(state.stats).index; state.hpBefore = S.bossHp(state.stats, now()).hp;   // read before the card lands, shown on the card screen
     const earned = state.stats.cardsEarned[enc.id] || { critical: false, tries: 0 };
-    earned.critical = earned.critical || crit; earned.tries = state.tries + 1; earned.t = now(); state.stats.cardsEarned[enc.id] = earned;
+    earned.critical = earned.critical || crit; earned.tries = state.tries + 1; earned.t = now(); earned.tier = tier; state.stats.cardsEarned[enc.id] = earned;
+    const hpNow = S.bossHp(state.stats, now());
+    const dmg = Math.max(0, (state.hpBefore || hpNow.hp) - hpNow.hp);
+    banner((crit ? "CRITICAL HIT!  -" : "HIT!  -") + dmg, crit ? "crit" : "win");
+    renderBoss(); await sleep(650);
+    if (hpNow.ko && state.koShown !== hpNow.dateKey) {
+      state.koShown = hpNow.dateKey;
+      state.stats.battle = S.recordKo(state.stats.battle);
+      banner("KNOCKOUT!  " + hpNow.name + " is done", "crit"); sfx("crit");
+      glitchSay(hpNow.name + "? Never heard of him.", "hide"); await sleep(1100);
+    }
     syncSoon();
     state.stats.won = (state.stats.won || 0) + 1; state.session.won += 1;
     if (state.mode !== "solo") { state.session.rage = Math.min(RAGE_TARGET, state.session.rage + 1); renderTeam(); }
@@ -463,7 +482,8 @@
   }
   function showCard(enc, tier, crit) {
     state.phase = "card"; renderPath(); $("prompt").classList.remove("gate-prompt");
-    $("card-title").textContent = crit ? "CRITICAL card earned" : (state.tries > 0 ? "Card earned (Glitch needed " + (state.tries + 1) + " tries to get you)" : "Card earned");
+    $("card-title").textContent = crit ? "CRITICAL KNOCKDOWN" : (state.tries > 0 ? "YOU BEAT GLITCH after " + (state.tries + 1) + " tries" : "YOU BEAT GLITCH");
+    if ($("card-spoils")) { $("card-spoils").hidden = false; $("card-spoils").textContent = "Spoils: the " + enc.title + " card"; }
     $("why-mascot").textContent = enc.mascot; $("why-text").textContent = enc.why; $("why-long").textContent = enc.whyLong;
     $("glitch-line-2").textContent = "Glitch: " + enc.glitch.rage;
     $("btn-peek").hidden = !(tier === "good" && state.lastUci !== enc.best);
@@ -551,8 +571,9 @@
     const nxt = D.nextDay(day.n);
     const who = state.mode === "solo" ? activeName() : state.settings.names.join(" and ");
 
+    const boss = S.bossHp(state.stats, now());
     $("end-title").textContent = pr.complete
-      ? "Day " + day.n + " done, " + who + "!"
+      ? (boss.ko ? "KNOCKOUT! You beat " + boss.name + ", " + who + "!" : "Day " + day.n + " done, " + who + "!")
       : (state.session.won ? "Good run, " + who + "!" : "Paused");
 
     const bits = ["Fights won: " + state.session.won, "Criticals: " + state.session.crits];

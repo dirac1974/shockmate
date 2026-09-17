@@ -43,7 +43,8 @@
     Object.keys(Object.assign({}, a.cardsEarned, b.cardsEarned)).forEach((id) => {
       const x = (a.cardsEarned || {})[id], y = (b.cardsEarned || {})[id];
       if (!x || !y) { out.cardsEarned[id] = Object.assign({}, x || y); return; }
-      out.cardsEarned[id] = { critical: !!(x.critical || y.critical), tries: bigger(x.tries, y.tries), t: later(x.t, y.t) };
+      out.cardsEarned[id] = { critical: !!(x.critical || y.critical), tries: bigger(x.tries, y.tries), t: later(x.t, y.t),
+        tier: ((x.t || 0) >= (y.t || 0) ? (x.tier || y.tier) : (y.tier || x.tier)) || undefined };
     });
 
     const seen = {};
@@ -54,6 +55,15 @@
 
     // Tier history drives silent difficulty. Keep the most recent window from both devices.
     out.tiers = [].concat(a.tiers || [], b.tiers || []).slice(-TIERS_MAX);
+    // Battle: power and knockouts are the kid's numbers, so two devices take the larger. Bonus damage per day likewise.
+    const ba = a.battle || {}, bb = b.battle || {};
+    out.battle = Object.assign({}, ba, bb, {
+      power: bigger(ba.power, bb.power), kos: bigger(ba.kos, bb.kos),
+      next: Object.assign({}, ba.next, bb.next), gear: Object.assign({}, ba.gear, bb.gear), bonus: {},
+    });
+    Object.keys(Object.assign({}, ba.bonus, bb.bonus)).forEach((k) => {
+      out.battle.bonus[k] = bigger((ba.bonus || {})[k], (bb.bonus || {})[k]);
+    });
     return out;
   }
 

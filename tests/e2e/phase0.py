@@ -54,7 +54,7 @@ async def run():
             await phase(pg, "think"); enc = await pg.evaluate("window.__shockmate.current()")
             await move(pg, enc["best"]); await gate_and_next(pg, enc)
         await pg.wait_for_selector("#session-end:not([hidden])", timeout=5000)
-        title = await pg.text_content("#end-title"); assert "Day 1 done" in title, title
+        title = await pg.text_content("#end-title"); assert ("Day 1 done" in title) or ("KNOCKOUT" in title), title
         summary = await pg.text_content("#session-summary")
         assert ("Fights won: %d" % day_len) in summary, summary
         assert "Off Glitch for good" in summary, summary

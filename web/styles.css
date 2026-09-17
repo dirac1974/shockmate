@@ -250,3 +250,14 @@ select, input[type=number], input[type=text] { display: block; width: 100%; marg
 @media (prefers-reduced-motion: reduce) {
   #glitch { transition: none; }
 }
+
+/* ---------- battle: the boss bar and the spoils line ---------- */
+.boss { margin: 4px auto 6px; max-width: 420px; padding: 6px 10px; border: 2px solid var(--line, #33406b); border-radius: 12px; background: rgba(0,0,0,0.18); }
+.boss-row { display: flex; justify-content: space-between; align-items: baseline; font-weight: 800; letter-spacing: 0.04em; }
+.boss-row b { color: var(--magenta, #ff4fa3); }
+.boss-row span { font-variant-numeric: tabular-nums; }
+.boss-bar { height: 10px; border-radius: 6px; background: rgba(255,255,255,0.08); overflow: hidden; margin-top: 4px; }
+.boss-bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--magenta, #ff4fa3), var(--gold, #ffcc33)); transition: width 320ms ease; }
+.boss.ko .boss-row b { color: var(--gold, #ffcc33); }
+.boss.ko .boss-bar i { background: var(--gold, #ffcc33); }
+.spoils { text-align: center; color: var(--gold, #ffcc33); font-weight: 700; margin: -2px 0 8px; }
