@@ -212,7 +212,16 @@
     // During play the board never flips, so the note doubles as "whose go is it" in co-op.
     if ($("turn-note")) $("turn-note").textContent = activeName() + " is White.";  // the co-op turn banner already says whose go it is
     [0, 1].forEach((i) => { const b = $("prof-" + i); b.textContent = state.settings.names[i]; b.classList.toggle("active", (state.mode === "solo" ? state.settings.profile : state.active) === i); });
-    renderPath(); renderTeam();
+    renderBrag(); renderPath(); renderTeam();
+  }
+
+  // Glitch's number, never the kid's. It only ever falls, and his claim never moves.
+  function renderBrag() {
+    if (!$("brag-real")) return;
+    const r = S.glitchRating(state.stats);
+    $("brag-real").textContent = r.real;
+    $("brag-fill").style.width = Math.max(2, Math.round(100 * r.fraction)) + "%";
+    $("brag-line").textContent = S.ratingTaunt(r);
   }
   let ac;
   function beep(freq, dur, type, gain) {
@@ -355,6 +364,7 @@
     save(); hud();
     await whyGate(enc);
     state.stats = S.recordWhy(state.stats, enc, { ok: true, t: now(), hurry: state.settings.hurry }).stats;
+    state.ratingBefore = S.glitchRating(state.stats).real;   // read before the card lands, shown on the card screen
     const earned = state.stats.cardsEarned[enc.id] || { critical: false, tries: 0 };
     earned.critical = earned.critical || crit; earned.tries = state.tries + 1; earned.t = now(); state.stats.cardsEarned[enc.id] = earned;
     syncSoon();
@@ -419,6 +429,12 @@
     $("why-mascot").textContent = enc.mascot; $("why-text").textContent = enc.why; $("why-long").textContent = enc.whyLong;
     $("glitch-line-2").textContent = "Glitch: " + enc.glitch.rage;
     $("btn-peek").hidden = !(tier === "good" && state.lastUci !== enc.best);
+    const before = state.ratingBefore, after = S.glitchRating(state.stats), fell = (before || after.real) - after.real;
+    const tick = $("brag-tick");
+    if (tick) {
+      tick.hidden = fell <= 0;
+      tick.textContent = fell > 0 ? "GLITCH'S RATING " + before + " \u2192 " + after.real + "  (\u25bc" + fell + ")" : "";
+    }
     show("screen-card");
   }
 

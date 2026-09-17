@@ -210,3 +210,12 @@ select, input[type=number], input[type=text] { display: block; width: 100%; marg
 .link { background: none; border: 0; color: var(--cyan); text-decoration: underline;
   font: inherit; padding: 0; cursor: pointer; }
 #turn-note { color: #8fa0d8; font-size: 12px; margin-top: 4px; }
+
+.brag { margin: 10px 0 2px; }
+.brag-row { display: flex; justify-content: space-between; align-items: baseline; }
+.brag-row b { font-family: Bangers, system-ui; letter-spacing: 1px; color: #a9b6e8; font-size: 14px; }
+.brag-row span { font-family: Bangers, system-ui; font-size: 26px; color: var(--mag); }
+.brag-bar { height: 8px; border-radius: 6px; background: #1b2350; overflow: hidden; margin-top: 4px; }
+.brag-bar i { display: block; height: 100%; width: 100%; border-radius: 6px;
+  background: linear-gradient(90deg, var(--mag), #a855f7); transition: width 700ms ease; }
+.brag-tick { color: var(--cyan); font-family: Bangers, system-ui; letter-spacing: 1px; font-size: 18px; }

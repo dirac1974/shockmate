@@ -43,12 +43,16 @@ async def run():
         await pg.click("#seat-2")
         assert await pg.is_hidden("#btn-start") and await pg.is_hidden("#profiles"), "two-player hides the solo controls"
         await pg.click("#seat-1"); assert await pg.is_visible("#profiles")
+        # Glitch's bragged rating: his number only ever falls, and never below the floor.
+        assert (await pg.inner_text("#brag-real")) == "2400", "an untested Glitch brags 2400"
         await pg.click("#btn-start")
         for i in range(12):
             await phase(pg, "think"); enc = await pg.evaluate("window.__shockmate.current()")
             await move(pg, enc["best"]); await gate_and_next(pg, enc)
         await pg.wait_for_selector("#session-end:not([hidden])", timeout=5000)
         summary = await pg.text_content("#session-summary"); assert "Fights won: 12" in summary, summary
+        final_rating = int(await pg.evaluate("document.getElementById('brag-real').textContent"))
+        assert 400 <= final_rating < 2400, final_rating
         assert summary.endswith("/%d" % len(await pg.evaluate("window.SHOCKMATE_ENCOUNTERS"))), summary
         await pg.click("#btn-end-ok")
         # Path B: fresh profile, bait then blunder -> second try -> confession -> guided -> card still earned

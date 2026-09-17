@@ -26,6 +26,31 @@
     if (retry) return retry;
     return (encounters || []).find((e) => (stats.cards || {})[e.id]) || null;
   }
+  // Glitch's bragged rating. It is HIS number, so it can fall — the kid's own numbers never do.
+  // Monotonic in cards earned, so it never creeps back up, and adding a pack later just gives
+  // him further to fall. The joke is that his claim never changes while the truth slides.
+  // Each card knocks a slice off whatever brag he has left, rather than a flat amount: the
+  // first win moves the needle 140 points, the movement stays visible all the way down, and
+  // adding a fourth pack later needs no rebalancing because the floor is an asymptote.
+  const BRAG = 2400, FLOOR = 400, KEEP = 0.93, CRIT_WEIGHT = 0.5;
+  function glitchRating(stats) {
+    const earned = (stats && stats.cardsEarned) || {};
+    const ids = Object.keys(earned);
+    const crits = ids.filter((id) => earned[id] && earned[id].critical).length;
+    const left = (BRAG - FLOOR) * Math.pow(KEEP, ids.length + CRIT_WEIGHT * crits);
+    const real = Math.max(FLOOR, Math.round((FLOOR + left) / 5) * 5);
+    return { claimed: BRAG, real: real, drop: BRAG - real, floor: FLOOR,
+      cards: ids.length, criticals: crits,
+      fraction: (real - FLOOR) / (BRAG - FLOOR), floored: real <= FLOOR + 50 };
+  }
+  function ratingTaunt(r) {
+    if (!r.cards) return "Glitch says he is " + r.claimed + ". He has not been tested yet.";
+    if (r.floored) return "Glitch still says " + r.claimed + ". Nobody believes him now.";
+    if (r.real <= 1200) return "Glitch still says " + r.claimed + ". The scoreboard disagrees.";
+    if (r.real <= 1800) return "Glitch says " + r.claimed + " a bit more quietly now.";
+    return "Glitch says he is " + r.claimed + ".";
+  }
+
   function emptyStats() {
     return { hits: 0, misses: 0, streak: 0, bestStreak: 0, session: 0, figurines: [], cards: {}, ledger: [] };
   }
@@ -130,7 +155,7 @@
     if (b.kept && !a.kept) return { winner: b.name, line: b.name + " kept the reason. " + a.name + " ate the snack story." };
     return { winner: "basement", line: "The basement wins. Neither kept the why. Try the same board again." };
   }
-  const api = { emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
+  const api = { glitchRating, ratingTaunt, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

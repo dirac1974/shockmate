@@ -28,6 +28,43 @@ function run() {
   assert.strictEqual(list[score.pickNextIndex(list, s, 0)].id, "02");
   const rows = score.historyRows(list, s);
   assert.strictEqual(rows[1].status, "retry");
-  console.log("OK score");
+  
+// --- Glitch's bragged rating: his number falls, the kid's never does ---
+{
+  const r0 = score.glitchRating({});
+  assert.strictEqual(r0.real, 2400, "untested Glitch starts at his brag");
+  assert.strictEqual(r0.claimed, 2400);
+
+  const one = score.glitchRating({ cardsEarned: { "01": { critical: false } } });
+  assert.strictEqual(one.real, 2260, "the first card knocks 140 off — visible movement");
+  assert.strictEqual(one.claimed, 2400, "his claim never moves - that is the joke");
+
+  const crit = score.glitchRating({ cardsEarned: { "01": { critical: true } } });
+  assert.strictEqual(crit.real, 2195, "a critical hurts him more");
+
+  // Monotonic: replaying a fight or earning more can never push his rating back up.
+  let prev = 2400, earned = {};
+  for (let i = 0; i < 23; i++) {
+    earned["c" + i] = { critical: i % 3 === 0 };
+    const now = score.glitchRating({ cardsEarned: earned }).real;
+    assert.ok(now <= prev, "rating never rises");
+    prev = now;
+  }
+  assert.ok(prev >= 400, "never below the floor: " + prev);
+  assert.ok(prev < 900, "clearing every current fight should leave him humiliated: " + prev);
+  const f = score.glitchRating({ cardsEarned: earned }).fraction;
+  assert.ok(f > 0 && f < 0.3, "the meter has visibly emptied: " + f);
+
+  const flooded = { cardsEarned: {} };
+  for (let i = 0; i < 400; i++) flooded.cardsEarned["x" + i] = { critical: true };
+  assert.strictEqual(score.glitchRating(flooded).real, 400, "floor holds however many packs arrive");
+  assert.ok(score.glitchRating({ cardsEarned: { a: {}, b: {}, c: {} } }).real > 400, "three cards do not finish him");
+  assert.ok(score.glitchRating(flooded).floored, "floored is reported so the taunt can change");
+
+  assert.ok(/not been tested/.test(score.ratingTaunt(r0)), "no cards yet, no excuses yet");
+  assert.ok(/2400/.test(score.ratingTaunt(score.glitchRating(flooded))), "he still claims 2400 at the floor");
+}
+
+console.log("OK score, including Glitch's deflating brag");
 }
 run();
