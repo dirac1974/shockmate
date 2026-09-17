@@ -39,6 +39,10 @@ async def run():
         encs = [e for e in await pg.evaluate("window.SHOCKMATE_ENCOUNTERS") if e["pack"] == "tactics"]
         assert len(encs) == 12, len(encs)
         # Path A: all 12 fights on the best move, straight through to the cliffhanger
+        assert await pg.is_hidden("#step-two") and await pg.is_visible("#btn-start")
+        await pg.click("#seat-2")
+        assert await pg.is_hidden("#btn-start") and await pg.is_hidden("#profiles"), "two-player hides the solo controls"
+        await pg.click("#seat-1"); assert await pg.is_visible("#profiles")
         await pg.click("#btn-start")
         for i in range(12):
             await phase(pg, "think"); enc = await pg.evaluate("window.__shockmate.current()")

@@ -21,7 +21,7 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics" },
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", seats: 1 },
     mode: "solo", pack: "tactics", active: 0, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
   };
@@ -39,6 +39,7 @@
     try { Object.assign(state.settings, JSON.parse(localStorage.getItem(KEY + ":settings") || "{}")); } catch (e) {}
     if (!Array.isArray(state.settings.blitz)) state.settings.blitz = [false, false];
     if (PACKS.indexOf(state.settings.pack) < 0) state.settings.pack = "tactics";
+    setSeats(state.settings.seats === 2 ? 2 : 1);
     setPack(state.settings.pack);
     loadStats();
   }
@@ -49,6 +50,17 @@
     } catch (e) {}
   }
   function activeName() { return state.settings.names[state.active]; }
+  function setSeats(n) {
+    // Seats answer "how many people are holding this phone", never "which colour am I".
+    state.seats = n === 2 ? 2 : 1; state.settings.seats = state.seats;
+    $("seat-1").classList.toggle("active", state.seats === 1);
+    $("seat-2").classList.toggle("active", state.seats === 2);
+    $("step-solo").hidden = state.seats === 2;
+    $("step-two").hidden = state.seats === 1;
+    $("btn-start").hidden = state.seats === 2;
+    $("two-hint").textContent = state.settings.names[0] + " and " + state.settings.names[1]
+      + " take turns on this phone. You both play White.";
+  }
   function setPack(name) {
     state.pack = PACKS.indexOf(name) >= 0 ? name : "tactics";
     state.encounters = ALL.filter((e) => e.pack === state.pack);
@@ -111,6 +123,10 @@
     $("stat-won").textContent = state.stats.won || 0;
     $("stat-crit").textContent = state.stats.criticals || 0;
     $("stat-cards").textContent = Object.keys(state.stats.cardsEarned || {}).length;
+    if ($("two-hint")) $("two-hint").textContent = state.settings.names[0] + " and " + state.settings.names[1]
+      + " take turns on this phone. You both play White.";
+    // During play the board never flips, so the note doubles as "whose go is it" in co-op.
+    if ($("turn-note")) $("turn-note").textContent = activeName() + " is White.";  // the co-op turn banner already says whose go it is
     [0, 1].forEach((i) => { const b = $("prof-" + i); b.textContent = state.settings.names[i]; b.classList.toggle("active", (state.mode === "solo" ? state.settings.profile : state.active) === i); });
     renderPath(); renderTeam();
   }
@@ -433,6 +449,9 @@
   function bind() {
     $("prof-0").onclick = () => switchProfile(0); $("prof-1").onclick = () => switchProfile(1);
     PACKS.forEach((p) => { const b = $("pack-" + p); if (b) b.onclick = () => { setPack(p); save(); hud(); }; });
+    $("seat-1").onclick = () => { setSeats(1); save(); hud(); };
+    $("seat-2").onclick = () => { setSeats(2); save(); hud(); };
+    $("btn-names").onclick = () => { $("btn-settings").click(); };
     $("btn-start").onclick = () => startSession("solo");
     $("btn-coop").onclick = () => { startSession("coop"); toast(state.settings.names[0] + " starts. Take turns.", 2000); };
     $("btn-duel").onclick = startDuel;
@@ -490,5 +509,5 @@
     else console.log("Shockmate self-test passed: " + ALL.length + " fights across " + PACKS.length + " packs.");
   }
   load(); bind(); hud(); selfTest();
-  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, setPack, all: ALL };
+  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, setPack, setSeats, all: ALL };
 })();

@@ -29,7 +29,7 @@ async def run():
         await pg.goto(URL)
 
         # Co-op: players alternate, the rage meter fills, both collections grow, nobody is ranked against anybody
-        await pg.click("#btn-coop")
+        await pg.click("#seat-2"); await pg.click("#btn-coop")
         assert not await pg.eval_on_selector("#team", "e => e.hidden"), "team strip shows in co-op"
         assert "SAM" in (await pg.text_content("#turn-chip"))
         assert not await pg.eval_on_selector("#blitz", "e => e.hidden"), "blitz bar shows for the player who has it on"
@@ -42,7 +42,7 @@ async def run():
         assert cards == [1, 1], cards
 
         # Duel: same board hot-seat, verdict names a winner, handicap lights candidates for the trailing seat
-        await pg.reload(); await pg.click("#btn-duel"); await phase(pg, "think")
+        await pg.reload(); await pg.click("#seat-2"); await pg.click("#btn-duel"); await phase(pg, "think")
         enc = await pg.evaluate("window.__shockmate.current()")
         seat0 = await pg.evaluate("window.__shockmate.state.active")
         await win_fight(pg)  # seat 0 keeps the reason
@@ -54,7 +54,7 @@ async def run():
         await pg.click("#btn-duel-next"); await phase(pg, "think")
         assert await pg.evaluate("window.__shockmate.current().id") != enc["id"], "next board"
         # Openings pack: separate 6-fight path, own fights, same loop
-        await pg.reload(); await pg.click("#pack-openings"); await pg.click("#btn-start")
+        await pg.reload(); await pg.click("#seat-1"); await pg.click("#pack-openings"); await pg.click("#btn-start")
         pips = await pg.eval_on_selector_all("#path .pip", "els => els.length")
         assert pips == 6, pips
         enc = await win_fight(pg); assert enc["pack"] == "openings", enc["pack"]

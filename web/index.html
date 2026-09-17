@@ -24,20 +24,42 @@
     <section id="screen-title" class="screen active">
       <h1>Beat Glitch.</h1>
       <p class="lead">Glitch dangles bait on every board. Find the move he is scared of.</p>
+      <p class="white-note">You are always White. Glitch is always Black. You always move first.</p>
+
+      <p class="step-label">Who is here?</p>
+      <div class="actions" id="seats">
+        <button id="seat-1" class="ghost seat active">Just me</button>
+        <button id="seat-2" class="ghost seat">Two of us</button>
+      </div>
+
+      <div id="step-solo">
+        <p class="step-label">Playing as</p>
+        <div class="actions" id="profiles">
+          <button id="prof-0" class="ghost prof">Player 1</button>
+          <button id="prof-1" class="ghost prof">Player 2</button>
+        </div>
+        <p class="hint">Your cards are saved under this name — it is not your colour.
+          <button id="btn-names" class="link">Change names</button>
+        </p>
+      </div>
+
+      <div id="step-two" hidden>
+        <p class="step-label">Two of us, one phone</p>
+        <div class="actions">
+          <button id="btn-coop" class="ghost">Team up vs Glitch</button>
+          <button id="btn-duel" class="ghost">Duel</button>
+        </div>
+        <p class="hint" id="two-hint">Take turns on this phone. You both play White.</p>
+      </div>
+
+      <p class="step-label">Practise</p>
       <div class="actions" id="packs">
         <button id="pack-tactics" class="ghost pack active">Tactics</button>
         <button id="pack-openings" class="ghost pack">Openings</button>
         <button id="pack-endgames" class="ghost pack">Endgames</button>
       </div>
-      <div class="actions" id="profiles">
-        <button id="prof-0" class="ghost prof">Player 1</button>
-        <button id="prof-1" class="ghost prof">Player 2</button>
-      </div>
+
       <button id="btn-start" class="cta">Play</button>
-      <div class="actions">
-        <button id="btn-coop" class="ghost">Team up vs Glitch</button>
-        <button id="btn-duel" class="ghost">Duel</button>
-      </div>
       <p class="hint" id="title-due">Sessions are short on purpose.</p>
     </section>
     <section id="screen-play" class="screen">
@@ -59,6 +81,7 @@
         <div class="tl you"><b>YOU</b><i><span></span></i></div>
         <div class="tl him"><b>GLITCH</b><i><span></span></i></div>
       </div>
+      <p id="turn-note">You are White.</p>
       <div class="prompt" id="prompt">Your move.</div>
       <div class="gate-dots" id="gate-dots"></div>
       <div class="actions">
@@ -88,13 +111,14 @@
     </section>
     <section id="screen-settings" class="screen">
       <h2>Parent settings</h2>
-      <label>Player 1 name <input id="opt-name-0" type="text" maxlength="16" /></label>
-      <label>Player 2 name <input id="opt-name-1" type="text" maxlength="16" /></label>
+      <p class="hint">Names label whose cards are whose. Both kids always play White.</p>
+      <label>First name (starts co-op) <input id="opt-name-0" type="text" maxlength="16" /></label>
+      <label>Second name <input id="opt-name-1" type="text" maxlength="16" /></label>
       <label>Fights per session <input id="opt-cap" type="number" min="3" max="12" value="6" /></label>
       <label class="check"><input id="opt-sound" type="checkbox" checked /> Sound</label>
       <label class="check"><input id="opt-coords" type="checkbox" /> Coordinates</label>
-      <label class="check"><input id="opt-blitz-0" type="checkbox" /> Blitz mode for player 1</label>
-      <label class="check"><input id="opt-blitz-1" type="checkbox" /> Blitz mode for player 2</label>
+      <label class="check"><input id="opt-blitz-0" type="checkbox" /> Blitz mode for the first player</label>
+      <label class="check"><input id="opt-blitz-1" type="checkbox" /> Blitz mode for the second player</label>
       <label class="check"><input id="opt-hurry" type="checkbox" /> Hurry rematch clock (testing)</label>
       <button id="btn-reset" class="ghost danger">Reset this player</button>
       <button id="btn-close-settings" class="cta">Done</button>

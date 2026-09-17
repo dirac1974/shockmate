@@ -202,3 +202,11 @@ select, input[type=number], input[type=text] { display: block; width: 100%; marg
 .fig.locked .art { color: var(--line); }
 
 .pack.active { border-color: var(--mag); color: var(--mag); box-shadow: 0 0 0 2px #ff4fa344; }
+
+.white-note { color: var(--cyan); font-size: 13px; margin: -2px 0 14px; }
+.step-label { font-family: Bangers, system-ui; letter-spacing: 1px; font-size: 15px;
+  color: #a9b6e8; margin: 16px 0 6px; text-transform: uppercase; }
+.seat.active { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 0 2px #35e6ff44; }
+.link { background: none; border: 0; color: var(--cyan); text-decoration: underline;
+  font: inherit; padding: 0; cursor: pointer; }
+#turn-note { color: #8fa0d8; font-size: 12px; margin-top: 4px; }
