@@ -1,0 +1,127 @@
+[
+ {
+  "id": "g1",
+  "pack": "endgames",
+  "title": "Never Stalemate",
+  "motif": "stalemateTrap",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "NO STALEMATE",
+  "fen": "7k/8/6K1/8/8/1Q6/8/8 w - - 0 1",
+  "bestMove": "Qb8#",
+  "baitMove": "Qc4",
+  "hook": "One move ends it. One move throws it away.",
+  "why": "Mate on the back row. The other queen move leaves him no legal move at all \u2014 a draw.",
+  "whyLong": "A stalemate turns a winning game into half a point. Always leave the enemy king a square, or give mate.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "h8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Bring the queen closer. Squeeze him. Squeeze!",
+   "gloat": "No legal moves! Stalemate! It's a DRAW! Hahaha!",
+   "rage": "Mate on the back row?! I wanted a draw!"
+  }
+ },
+ {
+  "id": "g2",
+  "pack": "endgames",
+  "title": "Ladder Mate",
+  "motif": "backRank",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "LADDER",
+  "fen": "7k/R7/8/8/8/8/8/1R5K w - - 0 1",
+  "bestMove": "Rb8#",
+  "baitMove": "Rh7+",
+  "hook": "One rook holds the row below. The other climbs.",
+  "why": "The second rook lands on the last row. The first one guards the escape.",
+  "whyLong": "Two rooks mate by climbing like a ladder. Never check for the sake of checking.",
+  "whyTargets": {
+   "prompt": "Tap the rook guarding his escape row.",
+   "squares": [
+    "a7"
+   ]
+  },
+  "glitch": {
+   "taunt": "Check him! Rook to h7! Checks are exciting!",
+   "gloat": "You checked. I moved. We can do this all day.",
+   "rage": "A LADDER?! Who taught you the ladder?!"
+  }
+ },
+ {
+  "id": "g3",
+  "pack": "endgames",
+  "title": "Don't Check, Take",
+  "motif": "counting",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "COUNT FIRST",
+  "fen": "8/8/8/8/1k6/8/p7/K1R5 w - - 0 1",
+  "bestMove": "Kxa2",
+  "baitMove": "Rb1+",
+  "hook": "His pawn is one step from a crown.",
+  "why": "Take the pawn with the king. The check lets the pawn eat your rook and promote.",
+  "whyLong": "Before any check, ask what it gives away. A pawn on the second row is a queen waiting.",
+  "whyTargets": {
+   "prompt": "Tap the pawn one step from a crown.",
+   "squares": [
+    "a2"
+   ]
+  },
+  "glitch": {
+   "taunt": "Check with the rook! Drive him off! Go go go!",
+   "gloat": "Pawn takes rook. And now I get a QUEEN. Thank you!",
+   "rage": "You just... ate it? With the KING?!"
+  }
+ },
+ {
+  "id": "g4",
+  "pack": "endgames",
+  "title": "King First, Pawn Second",
+  "motif": "kingMarch",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "KING MARCH",
+  "fen": "3k4/8/4K3/3P4/8/8/8/8 w - - 0 1",
+  "bestMove": "Kd6",
+  "baitMove": "d6",
+  "hook": "One king step wins. Pushing the pawn draws.",
+  "why": "Take the square in front of the pawn first. Pushing early lets his king sit in front and hold the draw.",
+  "whyLong": "In pawn endings the king goes first. The pawn only runs once the king owns the road.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that must wait.",
+   "squares": [
+    "d5"
+   ]
+  },
+  "glitch": {
+   "taunt": "PUSH IT! Pawns want to run! Push the pawn!",
+   "gloat": "My king sits right in front. Draw. Nothing you can do.",
+   "rage": "The KING went first?! That's not how pawns work!"
+  }
+ },
+ {
+  "id": "g5",
+  "pack": "endgames",
+  "title": "Box Him In",
+  "motif": "stalemateTrap",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "THE BOX",
+  "fen": "k7/8/1K6/8/8/8/8/3Q4 w - - 0 1",
+  "bestMove": "Qd8#",
+  "baitMove": "Qd6",
+  "hook": "He is in the corner. Finish it.",
+  "why": "The queen lands on the last row for mate. Hugging him with the queen is only a stalemate.",
+  "whyLong": "With king and queen, drive the king to the edge, then mate on the edge. Never take his last square without check.",
+  "whyTargets": {
+   "prompt": "Tap the cornered king.",
+   "squares": [
+    "a8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Queen right next to him! Smother him! Do it!",
+   "gloat": "No moves and no check. STALEMATE. Draw! I'll take it!",
+   "rage": "Mate?! I was one square from a free draw!"
+  }
+ }
+]

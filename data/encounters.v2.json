@@ -429,8 +429,8 @@
   ],
   "candidates": [
    "c4",
-   "a2",
-   "e1"
+   "e1",
+   "a2"
   ],
   "boss": false,
   "position": "wpa2wpb4bkb6wpc2wpc4brd6wke1",
@@ -3073,7 +3073,7 @@
   "candidates": [
    "d1",
    "f1",
-   "b2"
+   "b1"
   ],
   "boss": false,
   "position": "wra1bpa7bra8wnb1wpb2bpb5bnb8wbc1bpc4bbc8wqd1wpd4bqd8wke1wpe3bpe7bke8wbf1wpf2bpf7bbf8wng1wpg2bpg7bng8wrh1wph2bph7brh8",
@@ -3337,6 +3337,785 @@
    "d2": "d2d3:d3,d2d4:d4",
    "b2": "b2b3:b3,b2b4:b4",
    "a2": "a2a3:a3,a2a4:a4"
+  }
+ },
+ {
+  "id": "g1",
+  "pack": "endgames",
+  "title": "Never Stalemate",
+  "motif": "stalemateTrap",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "NO STALEMATE",
+  "fen": "7k/8/6K1/8/8/1Q6/8/8 w - - 0 1",
+  "hook": "One move ends it. One move throws it away.",
+  "why": "Mate on the back row. The other queen move leaves him no legal move at all \u2014 a draw.",
+  "whyLong": "A stalemate turns a winning game into half a point. Always leave the enemy king a square, or give mate.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "h8"
+   ],
+   "at": "after"
+  },
+  "glitch": {
+   "taunt": "Bring the queen closer. Squeeze him. Squeeze!",
+   "gloat": "No legal moves! Stalemate! It's a DRAW! Hahaha!",
+   "rage": "Mate on the back row?! I wanted a draw!"
+  },
+  "best": "b3b8",
+  "bait": "b3c4",
+  "tempting": "b3c4",
+  "bestSan": "Qb8#",
+  "temptingSan": "Qc4",
+  "turn": "w",
+  "moves": {
+   "g6f7": {
+    "san": "Kf7",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "g6h6": {
+    "san": "Kh6",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "g6f6": {
+    "san": "Kf6",
+    "cp": 9998,
+    "tier": "best"
+   },
+   "g6h5": {
+    "san": "Kh5",
+    "cp": 9995,
+    "tier": "best"
+   },
+   "g6g5": {
+    "san": "Kg5",
+    "cp": 9996,
+    "tier": "best"
+   },
+   "g6f5": {
+    "san": "Kf5",
+    "cp": 9997,
+    "tier": "best"
+   },
+   "b3g8": {
+    "san": "Qg8+",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "b3b8": {
+    "san": "Qb8#",
+    "cp": 10000,
+    "tier": "best"
+   },
+   "b3f7": {
+    "san": "Qf7",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "b3b7": {
+    "san": "Qb7",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3e6": {
+    "san": "Qe6",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "b3b6": {
+    "san": "Qb6",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3d5": {
+    "san": "Qd5",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "b3b5": {
+    "san": "Qb5",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3c4": {
+    "san": "Qc4",
+    "cp": 0,
+    "tier": "bait"
+   },
+   "b3b4": {
+    "san": "Qb4",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3a4": {
+    "san": "Qa4",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3h3": {
+    "san": "Qh3+",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3g3": {
+    "san": "Qg3",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3f3": {
+    "san": "Qf3",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3e3": {
+    "san": "Qe3",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3d3": {
+    "san": "Qd3",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3c3": {
+    "san": "Qc3+",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3a3": {
+    "san": "Qa3",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3c2": {
+    "san": "Qc2",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3b2": {
+    "san": "Qb2+",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3a2": {
+    "san": "Qa2",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "b3d1": {
+    "san": "Qd1",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b3b1": {
+    "san": "Qb1",
+    "cp": 9999,
+    "tier": "best"
+   }
+  },
+  "bestLineUci": [
+   "b3b8"
+  ],
+  "temptingLineUci": [
+   "b3c4"
+  ],
+  "candidates": [
+   "b3",
+   "g6"
+  ],
+  "boss": false,
+  "position": "wqb3wkg6bkh8",
+  "legal": {
+   "g6": "g6f7:Kf7,g6h6:Kh6,g6f6:Kf6,g6h5:Kh5,g6g5:Kg5,g6f5:Kf5",
+   "b3": "b3g8:Qg8+,b3b8:Qb8#,b3f7:Qf7,b3b7:Qb7,b3e6:Qe6,b3b6:Qb6,b3d5:Qd5,b3b5:Qb5,b3c4:Qc4,b3b4:Qb4,b3a4:Qa4,b3h3:Qh3+,b3g3:Qg3,b3f3:Qf3,b3e3:Qe3,b3d3:Qd3,b3c3:Qc3+,b3a3:Qa3,b3c2:Qc2,b3b2:Qb2+,b3a2:Qa2,b3d1:Qd1,b3b1:Qb1"
+  }
+ },
+ {
+  "id": "g2",
+  "pack": "endgames",
+  "title": "Ladder Mate",
+  "motif": "backRank",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "LADDER",
+  "fen": "7k/R7/8/8/8/8/8/1R5K w - - 0 1",
+  "hook": "One rook holds the row below. The other climbs.",
+  "why": "The second rook lands on the last row. The first one guards the escape.",
+  "whyLong": "Two rooks mate by climbing like a ladder. Never check for the sake of checking.",
+  "whyTargets": {
+   "prompt": "Tap the rook guarding his escape row.",
+   "squares": [
+    "a7"
+   ],
+   "at": "after"
+  },
+  "glitch": {
+   "taunt": "Check him! Rook to h7! Checks are exciting!",
+   "gloat": "You checked. I moved. We can do this all day.",
+   "rage": "A LADDER?! Who taught you the ladder?!"
+  },
+  "best": "b1b8",
+  "bait": "a7h7",
+  "tempting": "a7h7",
+  "bestSan": "Rb8#",
+  "temptingSan": "Rh7+",
+  "turn": "w",
+  "moves": {
+   "a7a8": {
+    "san": "Ra8+",
+    "cp": 722,
+    "tier": "blunder"
+   },
+   "a7h7": {
+    "san": "Rh7+",
+    "cp": 521,
+    "tier": "bait"
+   },
+   "a7g7": {
+    "san": "Rg7",
+    "cp": 494,
+    "tier": "blunder"
+   },
+   "a7f7": {
+    "san": "Rf7",
+    "cp": 9997,
+    "tier": "best"
+   },
+   "a7e7": {
+    "san": "Re7",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "a7d7": {
+    "san": "Rd7",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "a7c7": {
+    "san": "Rc7",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "a7b7": {
+    "san": "Rab7",
+    "cp": 9998,
+    "tier": "best"
+   },
+   "a7a6": {
+    "san": "Ra6",
+    "cp": 9998,
+    "tier": "best"
+   },
+   "a7a5": {
+    "san": "Ra5",
+    "cp": 728,
+    "tier": "blunder"
+   },
+   "a7a4": {
+    "san": "Ra4",
+    "cp": 689,
+    "tier": "blunder"
+   },
+   "a7a3": {
+    "san": "Ra3",
+    "cp": 9997,
+    "tier": "best"
+   },
+   "a7a2": {
+    "san": "Ra2",
+    "cp": 9997,
+    "tier": "best"
+   },
+   "a7a1": {
+    "san": "Raa1",
+    "cp": 660,
+    "tier": "blunder"
+   },
+   "h1h2": {
+    "san": "Kh2",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "h1g2": {
+    "san": "Kg2",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "h1g1": {
+    "san": "Kg1",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b1b8": {
+    "san": "Rb8#",
+    "cp": 10000,
+    "tier": "best"
+   },
+   "b1b7": {
+    "san": "Rbb7",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b1b6": {
+    "san": "Rb6",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b1b5": {
+    "san": "Rb5",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b1b4": {
+    "san": "Rb4",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b1b3": {
+    "san": "Rb3",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b1b2": {
+    "san": "Rb2",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b1g1": {
+    "san": "Rg1",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "b1f1": {
+    "san": "Rf1",
+    "cp": 9998,
+    "tier": "best"
+   },
+   "b1e1": {
+    "san": "Re1",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b1d1": {
+    "san": "Rd1",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b1c1": {
+    "san": "Rc1",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b1a1": {
+    "san": "Rba1",
+    "cp": 9998,
+    "tier": "best"
+   }
+  },
+  "bestLineUci": [
+   "b1b8"
+  ],
+  "temptingLineUci": [
+   "a7h7",
+   "h8h7"
+  ],
+  "candidates": [
+   "b1",
+   "a7",
+   "h1"
+  ],
+  "boss": false,
+  "position": "wra7wrb1wkh1bkh8",
+  "legal": {
+   "a7": "a7a8:Ra8+,a7h7:Rh7+,a7g7:Rg7,a7f7:Rf7,a7e7:Re7,a7d7:Rd7,a7c7:Rc7,a7b7:Rab7,a7a6:Ra6,a7a5:Ra5,a7a4:Ra4,a7a3:Ra3,a7a2:Ra2,a7a1:Raa1",
+   "h1": "h1h2:Kh2,h1g2:Kg2,h1g1:Kg1",
+   "b1": "b1b8:Rb8#,b1b7:Rbb7,b1b6:Rb6,b1b5:Rb5,b1b4:Rb4,b1b3:Rb3,b1b2:Rb2,b1g1:Rg1,b1f1:Rf1,b1e1:Re1,b1d1:Rd1,b1c1:Rc1,b1a1:Rba1"
+  }
+ },
+ {
+  "id": "g3",
+  "pack": "endgames",
+  "title": "Don't Check, Take",
+  "motif": "counting",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "COUNT FIRST",
+  "fen": "8/8/8/8/1k6/8/p7/K1R5 w - - 0 1",
+  "hook": "His pawn is one step from a crown.",
+  "why": "Take the pawn with the king. The check lets the pawn eat your rook and promote.",
+  "whyLong": "Before any check, ask what it gives away. A pawn on the second row is a queen waiting.",
+  "whyTargets": {
+   "prompt": "Tap the pawn one step from a crown.",
+   "squares": [
+    "a2"
+   ],
+   "at": "before"
+  },
+  "glitch": {
+   "taunt": "Check with the rook! Drive him off! Go go go!",
+   "gloat": "Pawn takes rook. And now I get a QUEEN. Thank you!",
+   "rage": "You just... ate it? With the KING?!"
+  },
+  "best": "a1a2",
+  "bait": "c1b1",
+  "tempting": "c1b1",
+  "bestSan": "Kxa2",
+  "temptingSan": "Rb1+",
+  "turn": "w",
+  "moves": {
+   "c1c8": {
+    "san": "Rc8",
+    "cp": 518,
+    "tier": "best"
+   },
+   "c1c7": {
+    "san": "Rc7",
+    "cp": 529,
+    "tier": "best"
+   },
+   "c1c6": {
+    "san": "Rc6",
+    "cp": 495,
+    "tier": "good"
+   },
+   "c1c5": {
+    "san": "Rc5",
+    "cp": -2,
+    "tier": "blunder"
+   },
+   "c1c4": {
+    "san": "Rc4+",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "c1c3": {
+    "san": "Rc3",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "c1c2": {
+    "san": "Rc2",
+    "cp": 523,
+    "tier": "best"
+   },
+   "c1h1": {
+    "san": "Rh1",
+    "cp": 473,
+    "tier": "good"
+   },
+   "c1g1": {
+    "san": "Rg1",
+    "cp": 478,
+    "tier": "good"
+   },
+   "c1f1": {
+    "san": "Rf1",
+    "cp": 500,
+    "tier": "good"
+   },
+   "c1e1": {
+    "san": "Re1",
+    "cp": 467,
+    "tier": "good"
+   },
+   "c1d1": {
+    "san": "Rd1",
+    "cp": 483,
+    "tier": "good"
+   },
+   "c1b1": {
+    "san": "Rb1+",
+    "cp": 0,
+    "tier": "bait"
+   },
+   "a1b2": {
+    "san": "Kb2",
+    "cp": 484,
+    "tier": "good"
+   },
+   "a1a2": {
+    "san": "Kxa2",
+    "cp": 518,
+    "tier": "best"
+   }
+  },
+  "bestLineUci": [
+   "a1a2"
+  ],
+  "temptingLineUci": [
+   "c1b1",
+   "a2b1r"
+  ],
+  "candidates": [
+   "c1",
+   "a1"
+  ],
+  "boss": false,
+  "position": "wka1bpa2bkb4wrc1",
+  "legal": {
+   "c1": "c1c8:Rc8,c1c7:Rc7,c1c6:Rc6,c1c5:Rc5,c1c4:Rc4+,c1c3:Rc3,c1c2:Rc2,c1h1:Rh1,c1g1:Rg1,c1f1:Rf1,c1e1:Re1,c1d1:Rd1,c1b1:Rb1+",
+   "a1": "a1b2:Kb2,a1a2x:Kxa2"
+  }
+ },
+ {
+  "id": "g4",
+  "pack": "endgames",
+  "title": "King First, Pawn Second",
+  "motif": "kingMarch",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "KING MARCH",
+  "fen": "3k4/8/4K3/3P4/8/8/8/8 w - - 0 1",
+  "hook": "One king step wins. Pushing the pawn draws.",
+  "why": "Take the square in front of the pawn first. Pushing early lets his king sit in front and hold the draw.",
+  "whyLong": "In pawn endings the king goes first. The pawn only runs once the king owns the road.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that must wait.",
+   "squares": [
+    "d5"
+   ],
+   "at": "after"
+  },
+  "glitch": {
+   "taunt": "PUSH IT! Pawns want to run! Push the pawn!",
+   "gloat": "My king sits right in front. Draw. Nothing you can do.",
+   "rage": "The KING went first?! That's not how pawns work!"
+  },
+  "best": "e6d6",
+  "bait": "d5d6",
+  "tempting": "d5d6",
+  "bestSan": "Kd6",
+  "temptingSan": "d6",
+  "turn": "w",
+  "moves": {
+   "e6f7": {
+    "san": "Kf7",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "e6f6": {
+    "san": "Kf6",
+    "cp": 1,
+    "tier": "blunder"
+   },
+   "e6d6": {
+    "san": "Kd6",
+    "cp": 512,
+    "tier": "best"
+   },
+   "e6f5": {
+    "san": "Kf5",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "e6e5": {
+    "san": "Ke5",
+    "cp": 0,
+    "tier": "blunder"
+   },
+   "d5d6": {
+    "san": "d6",
+    "cp": 0,
+    "tier": "bait"
+   }
+  },
+  "bestLineUci": [
+   "e6d6"
+  ],
+  "temptingLineUci": [
+   "d5d6"
+  ],
+  "candidates": [
+   "e6",
+   "d5"
+  ],
+  "boss": false,
+  "position": "wpd5bkd8wke6",
+  "legal": {
+   "e6": "e6f7:Kf7,e6f6:Kf6,e6d6:Kd6,e6f5:Kf5,e6e5:Ke5",
+   "d5": "d5d6:d6"
+  }
+ },
+ {
+  "id": "g5",
+  "pack": "endgames",
+  "title": "Box Him In",
+  "motif": "stalemateTrap",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "THE BOX",
+  "fen": "k7/8/1K6/8/8/8/8/3Q4 w - - 0 1",
+  "hook": "He is in the corner. Finish it.",
+  "why": "The queen lands on the last row for mate. Hugging him with the queen is only a stalemate.",
+  "whyLong": "With king and queen, drive the king to the edge, then mate on the edge. Never take his last square without check.",
+  "whyTargets": {
+   "prompt": "Tap the cornered king.",
+   "squares": [
+    "a8"
+   ],
+   "at": "after"
+  },
+  "glitch": {
+   "taunt": "Queen right next to him! Smother him! Do it!",
+   "gloat": "No moves and no check. STALEMATE. Draw! I'll take it!",
+   "rage": "Mate?! I was one square from a free draw!"
+  },
+  "best": "d1d8",
+  "bait": "d1d6",
+  "tempting": "d1d6",
+  "bestSan": "Qd8#",
+  "temptingSan": "Qd6",
+  "turn": "w",
+  "moves": {
+   "b6c7": {
+    "san": "Kc7",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b6c6": {
+    "san": "Kc6",
+    "cp": 9998,
+    "tier": "best"
+   },
+   "b6a6": {
+    "san": "Ka6",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "b6c5": {
+    "san": "Kc5",
+    "cp": 9997,
+    "tier": "best"
+   },
+   "b6b5": {
+    "san": "Kb5",
+    "cp": 9997,
+    "tier": "best"
+   },
+   "b6a5": {
+    "san": "Ka5",
+    "cp": 9997,
+    "tier": "best"
+   },
+   "d1d8": {
+    "san": "Qd8#",
+    "cp": 10000,
+    "tier": "best"
+   },
+   "d1d7": {
+    "san": "Qd7",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1d6": {
+    "san": "Qd6",
+    "cp": 0,
+    "tier": "bait"
+   },
+   "d1h5": {
+    "san": "Qh5",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1d5": {
+    "san": "Qd5+",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1g4": {
+    "san": "Qg4",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1d4": {
+    "san": "Qd4",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1a4": {
+    "san": "Qa4+",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1f3": {
+    "san": "Qf3+",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1d3": {
+    "san": "Qd3",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1b3": {
+    "san": "Qb3",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1e2": {
+    "san": "Qe2",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1d2": {
+    "san": "Qd2",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1c2": {
+    "san": "Qc2",
+    "cp": 9998,
+    "tier": "best"
+   },
+   "d1h1": {
+    "san": "Qh1+",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1g1": {
+    "san": "Qg1",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1f1": {
+    "san": "Qf1",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1e1": {
+    "san": "Qe1",
+    "cp": 9999,
+    "tier": "best"
+   },
+   "d1c1": {
+    "san": "Qc1",
+    "cp": 9998,
+    "tier": "best"
+   },
+   "d1b1": {
+    "san": "Qb1",
+    "cp": 9998,
+    "tier": "best"
+   },
+   "d1a1": {
+    "san": "Qa1+",
+    "cp": 9999,
+    "tier": "best"
+   }
+  },
+  "bestLineUci": [
+   "d1d8"
+  ],
+  "temptingLineUci": [
+   "d1d6"
+  ],
+  "candidates": [
+   "d1",
+   "b6"
+  ],
+  "boss": false,
+  "position": "bka8wkb6wqd1",
+  "legal": {
+   "b6": "b6c7:Kc7,b6c6:Kc6,b6a6:Ka6,b6c5:Kc5,b6b5:Kb5,b6a5:Ka5",
+   "d1": "d1d8:Qd8#,d1d7:Qd7,d1d6:Qd6,d1h5:Qh5,d1d5:Qd5+,d1g4:Qg4,d1d4:Qd4,d1a4:Qa4+,d1f3:Qf3+,d1d3:Qd3,d1b3:Qb3,d1e2:Qe2,d1d2:Qd2,d1c2:Qc2,d1h1:Qh1+,d1g1:Qg1,d1f1:Qf1,d1e1:Qe1,d1c1:Qc1,d1b1:Qb1,d1a1:Qa1+"
   }
  }
 ]

@@ -10,6 +10,8 @@
     mateOverMaterial: '<rect x="4" y="6" width="24" height="32" rx="2"/><path d="M10 22 l4 5 l9 -11"/>',
     discovery: '<path d="M4 34 L28 10"/><path d="M28 10 l-2 7 l7 -2z"/><circle cx="9" cy="29" r="4"/>',
     counting: '<path d="M16 6 V34 M6 14 h20"/><path d="M6 14 l-4 9 h8z"/><path d="M26 14 l-4 9 h8z"/>',
+    stalemateTrap: '<circle cx="17" cy="20" r="11"/><path d="M9 28 L25 12"/><path d="M17 33 V38 M10 38 h14"/>',
+    kingMarch: '<path d="M17 4 V12 M13 8 h8"/><path d="M8 32 c0-7 4-12 9-15 5 3 9 8 9 15z"/><path d="M6 36 h22"/><path d="M28 20 h5 M30 17 l3 3 -3 3"/>',
     trapped: '<rect x="5" y="9" width="24" height="26" rx="2"/><path d="M11 35 V9 M17 35 V9 M23 35 V9"/><circle cx="17" cy="22" r="4.6"/>',
     mateThreat: '<path d="M17 5 V15 M12 9 h10"/><path d="M8 35 c0-8 4-14 9-17 5 3 9 9 9 17z"/><path d="M8 35 h18" stroke-width="3"/>',
     hanging: '<path d="M16 4 V16"/><circle cx="16" cy="24" r="8"/><path d="M11 29 l10 -10"/>',

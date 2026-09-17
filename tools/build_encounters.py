@@ -5,7 +5,7 @@ and asserts the authoring rule (best beats bait by >=150 cp or mate vs no mate).
 import json, re, sys, shutil, chess, chess.engine
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
-SRCS = [ROOT/"data/encounters.src.json", ROOT/"data/openings.src.json"]
+SRCS = [ROOT/"data/encounters.src.json", ROOT/"data/openings.src.json", ROOT/"data/endgames.src.json"]
 OUT_JSON, OUT_JS = ROOT/"data/encounters.v2.json", ROOT/"web/encounters.js"
 MATE, GOOD_GAP, BEST_GAP, MARGIN, DEPTH, PV_DEPTH, BOSS = 10000, 60, 10, 150, 14, 16, {"04", "08", "12"}
 
@@ -118,12 +118,14 @@ def build(engine, e):
     for line in (best_line, bait_line):
         b = board.copy()
         for u in line: mv = chess.Move.from_uci(u); assert mv in b.legal_moves, f"{e['id']} illegal ply {u}"; b.push(mv)
+    # Second-try hint: the origin squares of the strongest moves. The bait's origin stays eligible,
+    # so narrowing never hands over the answer by elimination.
     ranked = sorted(scores.items(), key=lambda kv: -kv[1])
     cands, seen = [], set()
     for u, _ in ranked:
-        if u == e["bait"]: continue
         if u[:2] not in seen: seen.add(u[:2]); cands.append(u[:2])
         if len(cands) == 3: break
+    if e["best"][:2] not in cands: cands = [e["best"][:2]] + cands[:2]
     # Which position the why-gate should show: the moment where the reason is actually on the board.
     after = board.copy(); after.push(best)
     gate_at = "after"

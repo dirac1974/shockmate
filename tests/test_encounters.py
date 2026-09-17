@@ -14,6 +14,7 @@ def test():
     for e in data: packs.setdefault(e.get("pack", "tactics"), []).append(e)
     assert len(packs["tactics"]) == 12, "tactics pack holds 12 fights"
     assert len(packs.get("openings", [])) >= 5, "openings pack needs at least 5 fights"
+    assert len(packs.get("endgames", [])) >= 4, "endgames pack needs at least 4 fights"
     ids = [e["id"] for e in data]; assert len(ids) == len(set(ids)), "ids unique across packs"
     for e in data:
         board = chess.Board(e["fen"]); assert board.is_valid(), e["id"]
@@ -42,7 +43,8 @@ def test():
                 assert p0.piece_type == p1.piece_type and p0.color == p1.color, f"{e['id']} whyTarget {sq} changed after the move; gate should be 'before'"
         assert len(e["whyTargets"]["prompt"].split()) <= 12, e["id"] + " prompt too long"
         for k in ("taunt", "gloat", "rage"): assert 3 <= len(e["glitch"][k].split()) <= 14, f"{e['id']} glitch {k}"
-        assert e["best"][:2] in e["candidates"], e["id"] + " candidates"
+        assert e["best"][:2] in e["candidates"], e["id"] + " candidates include the best origin"
+        assert 1 <= len(e["candidates"]) <= 3, e["id"] + " candidate count"
     assert sum(1 for e in packs["tactics"] if e["boss"]) == 3, "three bosses in the tactics pack"
     for e in data:
         assert chess.Board(e["fen"]).turn == chess.WHITE, e["id"] + " arena positions are always white to move"

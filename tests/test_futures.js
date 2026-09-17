@@ -124,7 +124,7 @@ function run() {
     assert.strictEqual(e.moves[e.tempting].tier, "bait", e.id + " bait move is tier bait");
     Object.keys(e.legal).forEach((fr) => e.legal[fr].forEach((m) => assert.ok(e.moves[m.uci], e.id + " every legal move is scored: " + m.uci)));
     assert.ok(e.whyTargets && e.whyTargets.squares.length >= 1 && e.whyTargets.prompt.split(" ").length <= 12, e.id + " why targets");
-    assert.ok(e.candidates && e.candidates.length >= 2 && e.candidates.includes(e.best.slice(0, 2)), e.id + " candidates include the best origin");
+    assert.ok(e.candidates && e.candidates.length >= 1 && e.candidates.includes(e.best.slice(0, 2)), e.id + " candidates include the best origin");
   });
   console.log("OK futures: " + list.length + " fights apply, hit+miss plans simulate, motif finishers, palace decoys.");
 }

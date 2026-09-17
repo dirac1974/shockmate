@@ -16,7 +16,7 @@
   const $ = (id) => document.getElementById(id);
 
   const ALL = window.SHOCKMATE_ENCOUNTERS || [];
-  const PACKS = ["tactics", "openings"];
+  const PACKS = ["tactics", "openings", "endgames"];
   const state = {
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
@@ -480,7 +480,7 @@
   function selfTest() {
     const errors = []; const list = ALL;
     if (ALL.filter((e) => e.pack === "tactics").length !== 12) errors.push("tactics pack should hold 12 fights");
-    if (!ALL.filter((e) => e.pack === "openings").length) errors.push("openings pack is empty");
+    PACKS.slice(1).forEach((p) => { if (!ALL.filter((e) => e.pack === p).length) errors.push(p + " pack is empty"); });
     list.forEach((e) => {
       if (!(e.legal[e.best.slice(0, 2)] || []).some((m) => m.uci === e.best)) errors.push(e.id + " best not legal");
       if (!e.moves || !e.moves[e.best] || e.moves[e.best].tier !== "best") errors.push(e.id + " best not tiered");
