@@ -2,6 +2,10 @@
 
 One Lead session in Claude Code (Opus) runs each phase and spawns subagents with hard file ownership. The Lead is the only agent that merges, pushes, tags, or edits `docs/`. Full spec: `docs/PLAN.md`. Session state: `docs/CONTINUATION.md`.
 
+## Current assignment (2026-09-17)
+
+v0.6 is live at `1189ad0` and nothing is in flight. The next move is not a build task. It is gate 0: a real session with both kids, six fights each, on a phone. Do not open a phase branch until David reports it. The one job that does not wait is QA putting the suites into GitHub Actions, because `tests/e2e/` currently has no machine that can run it. See "Next places" in `docs/CONTINUATION.md`.
+
 ## Roles and ownership
 
 | Agent | Branch | Owns | Never touches |
@@ -24,7 +28,7 @@ A subagent that needs a change in a file it does not own writes the request in i
 6. Product rules (PLAN §8) are not negotiable: engine is judge; animation is teacher; no eval numbers; no loot; nothing on screen goes down; every fight winnable this session; quiet in the think window, loud after the move; cartoon slapstick only; kids never scored against each other.
 7. Lead ends every session by rewriting `docs/CONTINUATION.md`: what shipped, what is red, next three steps, under 80 lines.
 
-## Phase 0 kickoff (Lead)
+## Phase 0 kickoff (spent, kept for reference)
 
 ```text
 You are the Lead for Shockmate. Read docs/PLAN.md and docs/CONTINUATION.md, then run Phase 0 to completion without asking me questions unless they are listed in PLAN.md section 9.

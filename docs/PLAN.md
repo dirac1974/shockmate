@@ -243,7 +243,9 @@ Four phases, each ending in something the kids can play. A phase does not start 
 | 2 · Return | Path map, bosses, collection, cliffhanger end, in-session Glitch rematches from `dueReviews`, co-op mode, duel handicap, Blitz toggle | Both kids come back unprompted on day 2 and day 4. Rematch fights are not recognized as "review." |
 | 3 · Grow | Pack 2 (12 fights incl. two "bait is real"), parent weekly summary, voice lines, tablet layout | Parent summary matches what the kids report. No new dead ends. |
 
-**Out of scope until Phase 3 ships:** openings, accounts, chat, online play, Chess.com sync, 3D.
+**Status (2026-09-17):** Phases 0, 1 and 2 are built and live at `1189ad0`. None of their gates has been run with the kids, so no phase is signed off. Openings, endgames, offline install and family sync shipped early, inside v0.6, ahead of the line below.
+
+**Out of scope until the Phase 3 gate:** accounts, chat, online play, Chess.com sync, 3D. Openings and endgames shipped early and are no longer out of scope.
 
 **Sequencing inside Phase 0 (Claude Code, parallel where marked)**
 
@@ -307,6 +309,7 @@ The build can start with the defaults below; the only thing that changes the Pha
 | Session cap | 6 fights | Short enough to end on a high, long enough to hit a boss every other session |
 | Stockfish for the build script | Data agent installs it in the Claude Code environment | Needed to score every legal move; not shipped to the browser |
 
-- [ ] David: answer the `game.js` question, or say "lost."
-- [ ] David: paste the section 8 kickoff prompt into Claude Code and let it run Phase 0.
-- [ ] David: after Phase 0, sit both kids down for 6 fights each and note where anyone got stuck or bored. That is the Phase 1 gate.
+- [x] David: the 901-line arena was never recovered. Arena rewrote `web/game.js` from the tested modules. Settled.
+- [x] David: Phase 0 ran, and Phases 1 and 2 followed it. All of it is merged and live.
+- [ ] David: sit both kids down for 6 fights each on a phone, installed to the home screen, and note where anyone got stuck or bored. Still the gate. Nothing downstream starts until it is reported.
+- [ ] David: run the family sync once against the live project, saving a backup file first. It needs the Supabase URL, anon key, family code and PINs, so no agent can do it.

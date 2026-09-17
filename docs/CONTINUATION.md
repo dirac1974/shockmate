@@ -2,60 +2,60 @@
 
 Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines roles.
 
-**Date:** 2026-09-17 (Phases 0–2 built locally)
+**Date:** 2026-09-17
 **Repo:** https://github.com/dirac1974/shockmate
+**Live:** https://dirac1974.github.io/shockmate/ — `1189ad0`, marker `v0.6 · 23 fights · 3 packs`
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
 
-ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeline Split. The kid is a time agent; every move splits time in two; Glitch, a purple time-goblin, dangles bait toward the bad timeline. Twelve engine-scored fights, board-tap why-gate, per-kid profiles, co-op by default.
+ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeline Split. The kid is a time agent; every move splits time in two; Glitch, a purple time-goblin, dangles bait toward the bad timeline. Engine-scored fights, board-tap why-gate, per-kid profiles, co-op by default.
 
 Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the future plays out on the board → why-gate (tap the pieces) → card earned → next fight or cliffhanger.
 
-## Actual state (Phase 0 done locally on top of 09cfeb3)
+## Actual state — v0.6 is live
 
-- All four test suites pass: `test_futures.js`, `test_score.js`, `test_encounters.py`, `tests/e2e/phase0.py` (Playwright, 390×844).
-- `web/game.js` is the Phase 0 state machine; every control is bound; every fight is winnable (second try → confession → guided).
-- Data is generated: edit `data/encounters.src.json`, run `python3 tools/build_encounters.py --sf <stockfish>`, never hand-edit `v2.json` or `web/encounters.js`.
-- Fights 04, 05, 06, 11 were rebuilt so the chess is true. See `docs/reports/phase0.md`.
-- Phase 1 skin is in: Timeline Split colours, Glitch (`web/glitch.js`, five moods), charging timeline bars, critical zoom, path pips, next-board peek, tap-to-skip. See `docs/reports/phase1.md`.
-- Piece art is conventional Staunton (hand-authored paths in `web/pieces.js`); the why-gate rewinds to the position where the reason is on the board (`whyTargets.at`, decided by the build script).
-- Glitch brags a 2400 rating that deflates as cards are earned (`glitchRating` in `web/score.js`, meter on the home screen, tick on the card screen). It is the only falling number in the app and it belongs to the villain. See `docs/reports/glitch-rating.md`.
-- Progress: localStorage, plus a backup file and optional Supabase family-code sync (`web/sync.js`, `supabase/migrations/0001_shockmate_sync.sql`, config in `web/sync-config.js`). Installable/offline via `web/sw.js` — bump `CACHE` when the shell changes. See `docs/reports/persistence.md`.
-- Three packs now: `tactics` (12), `openings` (6) and `endgames` (5), chosen on the home screen. See `docs/reports/openings.md` and `docs/reports/endgames.md`.
-- Openings are authored as SAN move lists in `data/openings.src.json` and mirrored to white-to-move when authored from Black's side. See `docs/reports/openings.md`.
-- Phase 2 is in: co-op (alternating turns, shared rage meter, separate collections), handicapped duel, per-player Blitz, silent adaptive difficulty, collection art (`web/motifs.js`). See `docs/reports/phase2.md`.
+Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistence and family sync landed on top of them, ahead of the plan.
+
+- Live at `1189ad0`. Pages serves `main` / root and rebuilds in about 40 seconds. Verify a deploy by the home-screen build marker, never by eye.
+- Four suites green on the deployed commit: `test_futures.js`, `test_score.js`, `test_sync.js`, `test_encounters.py`.
+- `tests/e2e/*.py` did NOT run. Application Control on David's PC blocks the greenlet DLL that Playwright loads. The e2e suite currently has no machine to run on.
+- Data is generated: edit `data/encounters.src.json`, `openings.src.json` or `endgames.src.json`, run `python3 tools/build_encounters.py --sf <stockfish>`. Never hand-edit `v2.json` or `web/encounters.js`.
+- Three packs: `tactics` (12), `openings` (6), `endgames` (5), chosen on the home screen.
+- Phase 1 skin: Timeline Split colours, Glitch with five moods, charging bars, critical zoom, path pips, tap-to-skip.
+- Phase 2: co-op, handicapped duel, per-player Blitz, silent adaptive difficulty, collection art.
+- Glitch brags a rating that deflates as cards are earned. It is the only falling number in the app and it belongs to the villain.
+- Progress: localStorage, backup file, optional Supabase family-code sync. Installable and offline via `web/sw.js`.
+- Tags: `v0.5-return` points at the Phase 2 build `2400b75`. v0.6 is deliberately untagged to avoid a clash.
+
+## Built is not passed
+
+Every phase gate in PLAN §7 is a real session with the kids, not a test run. The site only went live on 2026-09-17, so the gates for Phases 0, 1 and 2 have never been run. Nothing downstream is signed off. Treat the roadmap below as blocked on gate 0.
 
 ## Do not break
 
-Engine is judge. Animation is teacher. No eval numbers on screen. No loot, no purchases, no energy timers. Nothing on screen ever goes down (no streak reset, no miss count). Every fight is winnable this session (second try, then confession, card still earned). Quiet during the think window, loud after the move. Cartoon slapstick only. Kids are never scored against each other. Commits credit "Claude".
+Engine is judge. Animation is teacher. No eval numbers on screen. No loot, no purchases, no energy timers. Nothing on screen ever goes down. Every fight is winnable this session (second try, then confession, card still earned). Quiet during the think window, loud after the move. Cartoon slapstick only. Kids are never scored against each other. Commits credit "Claude", never a model name.
 
-## Phase 0 — Playable truth (current)
+## Next places
 
-Order: Data and Arena in parallel → QA → Lead merges, tags `v0.3-playable`, enables GitHub Pages.
+1. **Gate 0 — both kids, six fights each, on a phone.** David. Blocking everything. Add the site to the home screen first, so iOS stops clearing cards after a week and the app works with no signal. Note every place anyone got stuck or bored. That note is the input to Phase 3, not a formality.
+2. **Prove the family sync once, with a backup first.** David, because it needs credentials. `web/sync.js` and `supabase/migrations/0001_shockmate_sync.sql` have never run against the live project. Save a backup file, then family code, then Sync now, on two devices, and confirm a card earned on one appears on the other.
+3. **Give the e2e suite a home.** QA. Put the four unit suites plus Playwright in GitHub Actions on push to `main`. Today a red e2e test is invisible, because the only machine that runs it is blocked by policy. This is the one engineering task that does not wait on gate 0.
+4. **Phase 3 "Grow", rescoped.** Openings and endgames already shipped, so what remains of PLAN §7 Phase 3 is: parent weekly summary, tablet layout, recorded Glitch voice lines, and a second tactics pack including two "bait is real" fights. Do not open a branch until gate 0 is reported.
 
-- [x] Data: schema v2, build script, tiers, lines, fights 04/06/11 fixed, tests.
-- [x] Arena: state machine, every control bound, second try, confession, guided replay, profiles, criticals.
-- [x] QA: `tests/e2e/phase0.py` green.
-- [x] Report: `docs/reports/phase0.md`.
-- [ ] David: push `main` (bundle or patch), tag `v0.3-playable`, enable GitHub Pages (main / root), confirm https://dirac1974.github.io/shockmate/ plays.
-- [ ] David: both kids play 6 fights each on a phone. Note where anyone got stuck or bored. That is the Phase 1 gate.
+## Release ritual
 
-## Phase 1 — Feel (next, after the gate)
-
-Branch `theme/timeline-split`. Theme agent owns `styles.css`, `pieces.js`, new `glitch.js`, `sfx/`, `index.html` markup. Build to the concept screens: navy ground, blue board, cyan/magenta/gold, Bangers + Nunito, Glitch with four faces, recorded SFX, tease with charging timeline bars, Critical with hit-stop and zoom. Arena agent adds the tap-to-skip on animations and the "there was a bigger one" peek as a Glitch line. Do not change data or tiers.
-
-Phase 0 keeps the old theme. Phase 1 (PLAN §7) replaces it with the Timeline Split skin and Glitch.
+Bump `BUILD` in `web/game.js` and `CACHE` in `web/sw.js` together, or phones keep the cached shell. Push `main`, wait for Pages, then confirm the marker on the live page. Work built in a cloud sandbox arrives as a git bundle, because that sandbox has no GitHub credentials and cannot push; a source zip is not enough, since it carries no history.
 
 ## Links
 
+- Play: https://dirac1974.github.io/shockmate/
 - Plan (living copy): https://claude.ai/code/artifact/73839b7f-e1e8-4f13-a65e-ce725a30b4e1
 - Concept screens: https://claude.ai/artifact/UvtVosoKFKnmUFLhbpnLQ7
-- Play (after Pages flip): https://dirac1974.github.io/shockmate/
 
 ## Next session start
 
-1. Read this file, then `docs/PLAN.md` §5–§8.
-2. Run the three tests and record what is red.
-3. Take the first unchecked box above in your role.
+1. Read this file, then `docs/PLAN.md` §5–§9.
+2. Run the four suites and record what is red.
+3. Ask whether gate 0 has been reported. If not, do not start a phase; take item 3 above.
 4. Before ending: update this file (what shipped, what is red, next three steps). Keep it under 80 lines.
