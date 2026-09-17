@@ -8,7 +8,7 @@
   const FAST = /[?&]fast=1/.test(location.search);
   const T = (ms) => (FAST ? Math.min(ms, 20) : ms);
   const sleep = (ms) => new Promise((r) => {
-    const t = setTimeout(done, T(ms)); let done2 = false;
+    const t = setTimeout(done, T(ms) * (state.speed || 1)); let done2 = false;
     function done() { if (done2) return; done2 = true; clearTimeout(t); state.waiters.delete(done); r(); }
     state.waiters.add(done);
   });
@@ -18,26 +18,41 @@
   const state = {
     encounters: window.SHOCKMATE_ENCOUNTERS || [], index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
-    session: { count: 0, reviews: 0, won: 0, crits: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0 },
+    session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false] },
+    mode: "solo", active: 0, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
   };
+  const RAGE_TARGET = 4;
 
   /* ---------- storage ---------- */
   function freshStats() { return Object.assign(S.emptyStats(), { won: 0, criticals: 0, cardsEarned: {}, tiers: [] }); }
-  function loadStats() {
-    try { state.stats = Object.assign(freshStats(), JSON.parse(localStorage.getItem(KEY + ":p" + state.settings.profile) || "{}")); }
-    catch (e) { state.stats = freshStats(); }
+  function readProfile(i) {
+    try { return Object.assign(freshStats(), JSON.parse(localStorage.getItem(KEY + ":p" + i) || "{}")); }
+    catch (e) { return freshStats(); }
   }
+  function useProfile(i) { state.active = i; state.stats = state.profiles[i]; }
+  function loadStats() { state.profiles = [readProfile(0), readProfile(1)]; useProfile(state.settings.profile); }
   function load() {
     try { Object.assign(state.settings, JSON.parse(localStorage.getItem(KEY + ":settings") || "{}")); } catch (e) {}
+    if (!Array.isArray(state.settings.blitz)) state.settings.blitz = [false, false];
     loadStats();
   }
   function save() {
     try {
       localStorage.setItem(KEY + ":settings", JSON.stringify(state.settings));
-      localStorage.setItem(KEY + ":p" + state.settings.profile, JSON.stringify(state.stats));
+      state.profiles.forEach((p, i) => localStorage.setItem(KEY + ":p" + i, JSON.stringify(p)));
     } catch (e) {}
+  }
+  function activeName() { return state.settings.names[state.active]; }
+  /* adaptive: rolling tier history decides whether the next fight opens with candidates lit */
+  function needsHelp(stats) {
+    const t = (stats.tiers || []).slice(-2);
+    return t.length === 2 && t.every((x) => x === "bait" || x === "blunder");
+  }
+  function onFire(stats) {
+    const t = (stats.tiers || []).slice(-3);
+    return t.length === 3 && t.every((x) => x === "best");
   }
   function now() { return Date.now(); }
 
@@ -50,6 +65,27 @@
   function glitchSay(text, mood) {
     if (window.ShockmateGlitch) return window.ShockmateGlitch.set(mood || "taunt", text || "");
     const b = $("glitch-line"); b.textContent = text || ""; b.hidden = !text;
+  }
+  function renderTeam() {
+    const team = $("team"); if (!team) return;
+    team.hidden = state.mode === "solo" || state.phase === "home";
+    if (team.hidden) return;
+    $("turn-chip").textContent = (state.mode === "duel" ? "DUEL · " : "") + activeName().toUpperCase() + "'S TURN";
+    const pct = Math.min(100, Math.round((state.session.rage / RAGE_TARGET) * 100));
+    $("rage-fill").style.width = pct + "%";
+    document.querySelector(".rage").classList.toggle("full", pct >= 100);
+  }
+  function stopBlitz() { clearTimeout(state.blitzTimer); state.blitzTimer = null; state.speed = 1; const b = $("blitz"); b.hidden = true; b.classList.remove("run"); }
+  function startBlitz() {
+    const b = $("blitz");
+    if (!state.settings.blitz[state.active] || state.mode === "duel") return stopBlitz();
+    b.hidden = false; b.classList.remove("run"); $("blitz-fill").style.width = "100%"; void b.offsetWidth; b.classList.add("run");
+    state.speed = 0.6;
+    state.blitzTimer = setTimeout(() => {
+      if (state.phase !== "think") return;
+      current().candidates.forEach((sqr) => sq(sqr) && sq(sqr).classList.add("cand"));
+      glitchSay("Too slow! Here, I'll narrow it down. Ugh.", "nervous");
+    }, T(10000));
   }
   function renderPath() {
     const root = $("path"); if (!root) return;
@@ -65,8 +101,8 @@
     $("stat-won").textContent = state.stats.won || 0;
     $("stat-crit").textContent = state.stats.criticals || 0;
     $("stat-cards").textContent = Object.keys(state.stats.cardsEarned || {}).length;
-    [0, 1].forEach((i) => { const b = $("prof-" + i); b.textContent = state.settings.names[i]; b.classList.toggle("active", state.settings.profile === i); });
-    renderPath();
+    [0, 1].forEach((i) => { const b = $("prof-" + i); b.textContent = state.settings.names[i]; b.classList.toggle("active", (state.mode === "solo" ? state.settings.profile : state.active) === i); });
+    renderPath(); renderTeam();
   }
   let ac;
   function beep(freq, dur, type, gain) {
@@ -110,7 +146,8 @@
   function paintSelection() {
     const enc = current();
     document.querySelectorAll(".sq").forEach((el) => el.classList.remove("sel", "legal", "cap"));
-    if (state.phase === "think" && state.tries === 1 && !state.guided) enc.candidates.forEach((s) => sq(s) && sq(s).classList.add("cand"));
+    const helping = state.tries === 1 || state.helpThisFight;
+    if (state.phase === "think" && helping && !state.guided) enc.candidates.forEach((s) => sq(s) && sq(s).classList.add("cand"));
     if (state.guided) { sq(enc.best.slice(0, 2)).classList.add("guide"); sq(enc.best.slice(2, 4)).classList.add("guide"); }
     if (!state.selected) return;
     sq(state.selected).classList.add("sel");
@@ -169,12 +206,15 @@
     setPieces(F.piecesFromList(enc.pieces)); clearMarks(); $("fx").innerHTML = ""; $("board").classList.remove("dim");
     banner(""); glitchSay(enc.glitch.taunt, "taunt"); prompt(enc.hook); $("gate-dots").innerHTML = "";
     $("btn-hint").hidden = false; $("btn-skip").hidden = false; show("screen-play");
+    state.helpThisFight = needsHelp(state.stats) || (state.mode === "duel" && state.duel && state.duel.helpSeat === state.active);
+    paintSelection(); renderTeam(); startBlitz(); hud();
   }
   async function commitMove(move) {
     const enc = current(); state.phase = "busy"; state.selected = null; paintSelection();
     const start = F.piecesFromList(enc.pieces); const step = F.applyUci(start, move.uci); setPieces(step.pieces);
     const dest = sq(step.to) && sq(step.to).querySelector(".piece"); if (dest) dest.classList.add("pop"); sfx("move");
     if (step.captured) explode(step.to, false);
+    stopBlitz();
     const tier = state.guided ? "best" : (enc.moves[move.uci] || {}).tier || "blunder";
     state.lastTier = tier; state.lastUci = move.uci; $("btn-hint").hidden = true; $("btn-skip").hidden = true;
     // tease: both futures charge
@@ -207,7 +247,10 @@
     state.stats = S.recordWhy(state.stats, enc, { ok: true, t: now(), hurry: state.settings.hurry }).stats;
     const earned = state.stats.cardsEarned[enc.id] || { critical: false, tries: 0 };
     earned.critical = earned.critical || crit; earned.tries = state.tries + 1; earned.t = now(); state.stats.cardsEarned[enc.id] = earned;
-    state.stats.won = (state.stats.won || 0) + 1; state.session.won += 1; save(); hud();
+    state.stats.won = (state.stats.won || 0) + 1; state.session.won += 1;
+    if (state.mode !== "solo") { state.session.rage = Math.min(RAGE_TARGET, state.session.rage + 1); renderTeam(); }
+    save(); hud();
+    if (state.mode === "duel") return duelSeatDone(enc, true);
     showCard(enc, tier, crit);
   }
   async function missFlow(enc, move, tier, start, afterMap) {
@@ -217,6 +260,7 @@
     if (move.uci === enc.tempting && enc.temptingLineUci.length > 1) await playLine(enc.temptingLineUci.slice(1), afterMap);
     else await sleep(600);
     await sleep(500);
+    if (state.mode === "duel") return duelSeatDone(enc, false);
     state.tries += 1;
     if (state.tries === 1) {
       banner("SECOND TRY", "tease"); setPieces(start); clearMarks(); glitchSay("Sweating? Me? Never.", "nervous"); prompt("Try again. Glitch is sweating.");
@@ -261,9 +305,52 @@
     show("screen-card");
   }
 
+  /* ---------- duel ---------- */
+  function tierAvg(stats) {
+    const w = { best: 3, good: 2, bait: 0, blunder: 0 }, t = (stats.tiers || []).slice(-8);
+    if (!t.length) return 1.5;
+    return t.reduce((a, x) => a + (w[x] || 0), 0) / t.length;
+  }
+  function startDuel() {
+    state.mode = "duel";
+    const help = tierAvg(state.profiles[0]) <= tierAvg(state.profiles[1]) ? 0 : 1;
+    state.duel = Object.assign(S.emptyDuel(state.settings.names[0], state.settings.names[1], null), { helpSeat: help });
+    state.session = { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 };
+    useProfile(0); state.index = pickNext(-1); state.duel.encId = current().id; startEncounter();
+  }
+  function duelSeatDone(enc, kept) {
+    state.duel = S.recordDuelSeat(state.duel, { found: kept, kept: kept, san: enc.bestSan });
+    if (state.duel.turn === 0) {
+      state.duel.turn = 1; useProfile(1); hud();
+      banner("HOT SEAT", "tease"); glitchSay("Your turn. Same board. No peeking at the answer.", "smug");
+      toast(state.settings.names[1] + ": same board, your go.", 2200);
+      state.tries = 0; state.guided = false; setTimeout(startEncounter, T(900));
+      return;
+    }
+    const v = S.duelVerdict(state.duel);
+    $("duel-title").textContent = v.winner === "basement" ? "Glitch wins this board" : "Board decided";
+    $("duel-line").textContent = v.line;
+    $("duel-detail").textContent = "The move Glitch feared was " + enc.bestSan + ". " + enc.why;
+    save(); show("screen-duel"); state.phase = "duel";
+  }
+  function duelNextBoard() {
+    state.duel = Object.assign(S.emptyDuel(state.settings.names[0], state.settings.names[1], null), { helpSeat: state.duel.helpSeat });
+    useProfile(0); state.session.count += 1;
+    if (state.session.count >= state.settings.cap) return endSession();
+    state.index = pickNext(); state.duel.encId = current().id; startEncounter();
+  }
+
   /* ---------- session ---------- */
   function pickNext(cur) {
     const list = state.encounters; if (cur === undefined) cur = state.index;
+    if (state.session.rage >= RAGE_TARGET || onFire(state.stats)) {
+      const earned = state.stats.cardsEarned || {};
+      const boss = list.find((e, i) => e.boss && i !== cur && !earned[e.id]);
+      if (boss && (state.session.bosses || 0) < 2) {
+        state.session.rage = 0; state.session.bosses = (state.session.bosses || 0) + 1;
+        toast("Glitch is furious. BOSS BOARD.", 2200); return list.indexOf(boss);
+      }
+    }
     if (state.session.reviews < 2) {
       const due = S.dueReviews(list, state.stats, now()).filter((e) => list.indexOf(e) !== cur);
       if (due.length) { state.session.reviews += 1; toast("Glitch demands a rematch!", 1800); return list.indexOf(due[0]); }
@@ -273,17 +360,28 @@
   function nextEncounter() {
     state.session.count += 1;
     if (state.session.count >= state.settings.cap) return endSession();
+    if (state.mode === "coop") { useProfile(state.active === 0 ? 1 : 0); toast(activeName() + "'s turn.", 1600); }
     state.index = pickNext(); startEncounter();
   }
   function endSession() {
     const nxt = state.encounters[pickNext()];
-    $("end-title").textContent = state.session.won ? "Mission complete" : "Mission paused";
-    $("session-summary").textContent = "Fights won: " + state.session.won + " · Criticals: " + state.session.crits + " · Cards: " + Object.keys(state.stats.cardsEarned).length + "/" + state.encounters.length;
+    stopBlitz();
+    $("end-title").textContent = state.session.won ? (state.mode === "solo" ? "Mission complete" : "Team mission complete") : "Mission paused";
+    const cards = state.mode === "solo"
+      ? Object.keys(state.stats.cardsEarned).length + "/" + state.encounters.length
+      : state.settings.names.map((n, i) => n + " " + Object.keys(state.profiles[i].cardsEarned).length).join(" · ");
+    $("session-summary").textContent = "Fights won: " + state.session.won + " · Criticals: " + state.session.crits + " · Cards: " + cards;
     $("session-next").textContent = "Next time: " + nxt.hook + " Glitch says: \"You got lucky. I have a new trap ready.\"";
     renderMini(nxt);
     $("session-end").hidden = false; state.phase = "end";
   }
-  function startSession() { state.session = { count: 0, reviews: 0, won: 0, crits: 0 }; state.index = pickNext(-1); startEncounter(); }
+  function startSession(mode) {
+    state.mode = mode || "solo";
+    state.session = { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 };
+    useProfile(state.mode === "solo" ? state.settings.profile : 0);
+    state.index = pickNext(-1); startEncounter();
+  }
+  function goHome() { state.mode = "solo"; state.duel = null; state.phase = "home"; stopBlitz(); useProfile(state.settings.profile); renderTeam(); renderPath(); hud(); show("screen-title"); }
 
   function renderMini(enc) {
     const host = $("next-mini"); if (!host) return;
@@ -306,7 +404,8 @@
       rooms[name].forEach((e) => {
         const c = earned[e.id], f = document.createElement("div");
         f.className = "fig" + (c ? (c.critical ? " crit" : "") : " locked");
-        f.textContent = c ? ((c.critical ? "★ " : "· ") + e.title + " — " + e.why) : ("? " + e.title);
+        const art = window.ShockmateMotifs ? window.ShockmateMotifs.icon(e.motif, 28) : "";
+        f.innerHTML = '<div class="art">' + art + '</div><div class="txt"><b>' + (c ? (c.critical ? "★ " : "") + e.title : "Locked") + "</b><small>" + (c ? e.why : "Beat Glitch on this board to unlock.") + "</small></div>";
         div.appendChild(f);
       });
       root.appendChild(div);
@@ -314,10 +413,14 @@
   }
 
   /* ---------- bindings ---------- */
-  function switchProfile(i) { save(); state.settings.profile = i; loadStats(); save(); hud(); }
+  function switchProfile(i) { state.settings.profile = i; useProfile(i); save(); hud(); }
   function bind() {
     $("prof-0").onclick = () => switchProfile(0); $("prof-1").onclick = () => switchProfile(1);
-    $("btn-start").onclick = startSession;
+    $("btn-start").onclick = () => startSession("solo");
+    $("btn-coop").onclick = () => { startSession("coop"); toast(state.settings.names[0] + " starts. Take turns.", 2000); };
+    $("btn-duel").onclick = startDuel;
+    $("btn-duel-next").onclick = duelNextBoard;
+    $("btn-duel-home").onclick = goHome;
     $("btn-next").onclick = nextEncounter;
     $("btn-peek").onclick = async function () {
       const enc = current(); $("btn-peek").hidden = true; show("screen-play"); state.phase = "busy";
@@ -332,27 +435,29 @@
       await playLine(enc.bestLineUci, start); finisher(enc); await sleep(900); showCard(enc, state.lastTier || "best", false);
     };
     $("btn-collection").onclick = function () { renderCollection(); show("screen-collection"); };
-    $("btn-back-play").onclick = function () { show(state.phase === "card" ? "screen-card" : state.phase === "think" || state.phase === "gate" ? "screen-play" : "screen-title"); };
+    $("btn-back-play").onclick = function () { show(state.phase === "card" ? "screen-card" : state.phase === "duel" ? "screen-duel" : state.phase === "think" || state.phase === "gate" ? "screen-play" : "screen-title"); };
     $("btn-settings").onclick = function () {
       $("opt-name-0").value = state.settings.names[0]; $("opt-name-1").value = state.settings.names[1]; $("opt-cap").value = state.settings.cap;
-      $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry; show("screen-settings");
+      $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry;
+      $("opt-blitz-0").checked = !!state.settings.blitz[0]; $("opt-blitz-1").checked = !!state.settings.blitz[1]; show("screen-settings");
     };
     $("btn-close-settings").onclick = function () {
       state.settings.names = [$("opt-name-0").value.trim() || "Player 1", $("opt-name-1").value.trim() || "Player 2"];
       state.settings.cap = Math.max(3, Math.min(12, Number($("opt-cap").value) || 6));
       state.settings.sound = $("opt-sound").checked; state.settings.coords = $("opt-coords").checked; state.settings.hurry = $("opt-hurry").checked;
+      state.settings.blitz = [$("opt-blitz-0").checked, $("opt-blitz-1").checked];
       save(); hud(); show("screen-title");
     };
     $("btn-reset").onclick = function () {
       if (!confirm("Reset " + state.settings.names[state.settings.profile] + "'s cards and progress?")) return;
-      state.stats = freshStats(); save(); hud(); toast("Reset done");
+      state.profiles[state.active] = freshStats(); state.stats = state.profiles[state.active]; save(); hud(); toast("Reset done");
     };
     $("btn-hint").onclick = function () {
       if (state.phase !== "think") return; const enc = current();
       const el = sq(enc.tempting.slice(2, 4)); if (el) el.classList.add("tempt-glow"); toast("Glitch wants THAT one. So don't.", 2000);
     };
     $("btn-skip").onclick = function () { if (state.phase !== "think") return; nextEncounter(); };
-    $("btn-end-ok").onclick = function () { $("session-end").hidden = true; state.phase = "home"; show("screen-title"); renderPath(); };
+    $("btn-end-ok").onclick = function () { $("session-end").hidden = true; goHome(); };
     document.querySelector(".board-wrap").addEventListener("click", function () { if (state.phase === "busy") skipAhead(); }, true);
   }
   function selfTest() {
@@ -366,5 +471,5 @@
     if (errors.length) console.error("self-test failed", errors); else console.log("Shockmate self-test passed: 12 fights, tiers, why targets.");
   }
   load(); bind(); hud(); selfTest();
-  window.__shockmate = { state, startEncounter, nextEncounter, current };
+  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel };
 })();

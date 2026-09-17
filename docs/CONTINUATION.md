@@ -2,7 +2,7 @@
 
 Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines roles.
 
-**Date:** 2026-09-17 (Phase 1 built)
+**Date:** 2026-09-17 (Phases 0–2 built locally)
 **Repo:** https://github.com/dirac1974/shockmate
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
@@ -19,6 +19,7 @@ Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the 
 - Data is generated: edit `data/encounters.src.json`, run `python3 tools/build_encounters.py --sf <stockfish>`, never hand-edit `v2.json` or `web/encounters.js`.
 - Fights 04, 05, 06, 11 were rebuilt so the chess is true. See `docs/reports/phase0.md`.
 - Phase 1 skin is in: Timeline Split colours, Glitch (`web/glitch.js`, five moods), charging timeline bars, critical zoom, path pips, next-board peek, tap-to-skip. See `docs/reports/phase1.md`.
+- Phase 2 is in: co-op (alternating turns, shared rage meter, separate collections), handicapped duel, per-player Blitz, silent adaptive difficulty, collection art (`web/motifs.js`). See `docs/reports/phase2.md`.
 
 ## Do not break
 

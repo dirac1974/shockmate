@@ -29,6 +29,10 @@
         <button id="prof-1" class="ghost prof">Player 2</button>
       </div>
       <button id="btn-start" class="cta">Play</button>
+      <div class="actions">
+        <button id="btn-coop" class="ghost">Team up vs Glitch</button>
+        <button id="btn-duel" class="ghost">Duel</button>
+      </div>
       <p class="hint" id="title-due">Sessions are short on purpose.</p>
     </section>
     <section id="screen-play" class="screen">
@@ -36,6 +40,11 @@
         <div id="glitch"></div>
         <div class="bubble" id="glitch-line" hidden></div>
       </div>
+      <div class="team" id="team" hidden>
+        <div class="turn-chip" id="turn-chip"></div>
+        <div class="rage"><b>GLITCH RAGE</b><i><span id="rage-fill"></span></i></div>
+      </div>
+      <div class="blitz" id="blitz" hidden><i><span id="blitz-fill"></span></i></div>
       <div class="banner" id="banner" hidden></div>
       <div class="board-wrap">
         <div id="board" class="board" aria-label="Chess board"></div>
@@ -79,9 +88,22 @@
       <label>Fights per session <input id="opt-cap" type="number" min="3" max="12" value="6" /></label>
       <label class="check"><input id="opt-sound" type="checkbox" checked /> Sound</label>
       <label class="check"><input id="opt-coords" type="checkbox" /> Coordinates</label>
+      <label class="check"><input id="opt-blitz-0" type="checkbox" /> Blitz mode for player 1</label>
+      <label class="check"><input id="opt-blitz-1" type="checkbox" /> Blitz mode for player 2</label>
       <label class="check"><input id="opt-hurry" type="checkbox" /> Hurry rematch clock (testing)</label>
       <button id="btn-reset" class="ghost danger">Reset this player</button>
       <button id="btn-close-settings" class="cta">Done</button>
+    </section>
+    <section id="screen-duel" class="screen">
+      <div class="future-title" id="duel-title">Duel result</div>
+      <div class="why-card">
+        <p id="duel-line"></p>
+        <p class="why-long" id="duel-detail"></p>
+      </div>
+      <div class="actions">
+        <button id="btn-duel-next" class="cta">Next board</button>
+        <button id="btn-duel-home" class="ghost">Done</button>
+      </div>
     </section>
     <div id="toast" class="toast" hidden></div>
     <div id="session-end" class="modal" hidden>
@@ -97,6 +119,7 @@
   <script src="futures.js"></script>
   <script src="pieces.js"></script>
   <script src="glitch.js"></script>
+  <script src="motifs.js"></script>
   <script src="score.js"></script>
   <script src="game.js"></script>
 </body>
