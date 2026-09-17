@@ -1,4 +1,4 @@
-/* Cartoon Staunton pieces. No emoji — iPhone emoji warp the squares. */
+/* Cartoon Staunton pieces. No emoji. */
 (function (root) {
   function svg(color, role) {
     const fill = color === "w" ? "#f6efe2" : "#1c0e0a";
@@ -11,28 +11,34 @@
       n: '<path d="M12 30 h16 v-3 H14 l1-5 8-2 3-6-4-6-6 3-4 1 2 5-5 2 1 6z"/>',
       p: '<circle cx="20" cy="13" r="5"/><path d="M15 18 h10 l3 8 H12z"/><path d="M12 26 h16 v5 H12z"/>'
     }[role] || "";
-    return '<svg class="glyph" viewBox="0 0 40 40" aria-hidden="true"><g fill="' + fill + '" stroke="' + ink + '" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">' + body + '</g></svg>';
+    return '<svg class="glyph" viewBox="0 0 40 40" aria-hidden="true"><g fill="'+fill+'" stroke="'+ink+'" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">'+body+'</g></svg>';
   }
   const FROM_GLYPH = {"♔":"k","♕":"q","♖":"r","♗":"b","♘":"n","♙":"p","♚":"k","♛":"q","♜":"r","♝":"b","♞":"n","♟":"p"};
   function upgradeBoard() {
     const board = root.document && root.document.getElementById("board");
     if (!board) return;
-    board.querySelectorAll(".piece").forEach((el) => {
+    board.querySelectorAll(".piece").forEach(function (el) {
       if (el.querySelector("svg.glyph")) return;
       const color = el.classList.contains("b") ? "b" : "w";
-      const t = (el.textContent || "").trim();
-      const role = FROM_GLYPH[t] || "p";
+      const role = FROM_GLYPH[(el.textContent || "").trim()] || "p";
       el.textContent = "";
       el.innerHTML = svg(color, role);
     });
   }
+  function injectCss() {
+    const doc = root.document;
+    if (!doc || doc.getElementById("shockmate-board-fix")) return;
+    const s = doc.createElement("style");
+    s.id = "shockmate-board-fix";
+    s.textContent = ".board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:100%;aspect-ratio:1/1;height:auto}.sq{min-width:0;min-height:0;overflow:hidden}.piece{width:82%;height:82%;display:flex;align-items:center;justify-content:center;font-size:0;line-height:0}.piece .glyph{width:100%;height:100%;display:block}";
+    doc.head.appendChild(s);
+  }
   function watch() {
     const doc = root.document; if (!doc) return;
     const boot = function () {
-      upgradeBoard();
+      injectCss(); upgradeBoard();
       const board = doc.getElementById("board");
-      if (!board) return;
-      new MutationObserver(upgradeBoard).observe(board, { childList: true, subtree: true });
+      if (board) new MutationObserver(upgradeBoard).observe(board, { childList: true, subtree: true });
     };
     if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot);
     else boot();
