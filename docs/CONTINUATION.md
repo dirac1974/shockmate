@@ -2,7 +2,7 @@
 
 Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines roles.
 
-**Date:** 2026-09-16
+**Date:** 2026-09-17
 **Repo:** https://github.com/dirac1974/shockmate
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
@@ -12,14 +12,13 @@ ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeli
 
 Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the future plays out on the board → why-gate (tap the pieces) → card earned → next fight or cliffhanger.
 
-## Actual state of `main` (commit 09cfeb3)
+## Actual state (Phase 0 done locally on top of 09cfeb3)
 
-- `web/game.js` is v0.1 (269 lines). After the first move the player is stuck: why buttons empty, Next never enables, Retry/History/Duel/Walk unbound.
-- `node tests/test_futures.js` FAILS: `web/encounters.js` has no `bestLineUci` / `temptingLineUci`.
-- `node tests/test_score.js` FAILS at line 17.
-- `python3 tests/test_encounters.py` passes (legality only).
-- Fight 06 is an even trade (Bxc6+ bxc6), not a won piece. Fight 11 is a direct knight check, not a discovered attack. Hits require the one exact engine move; equally good moves are scored as misses.
-- The "901-line full arena" referenced by the previous doc lived only in a Grok sandbox. Treat it as lost.
+- All four test suites pass: `test_futures.js`, `test_score.js`, `test_encounters.py`, `tests/e2e/phase0.py` (Playwright, 390×844).
+- `web/game.js` is the Phase 0 state machine; every control is bound; every fight is winnable (second try → confession → guided).
+- Data is generated: edit `data/encounters.src.json`, run `python3 tools/build_encounters.py --sf <stockfish>`, never hand-edit `v2.json` or `web/encounters.js`.
+- Fights 04, 05, 06, 11 were rebuilt so the chess is true. See `docs/reports/phase0.md`.
+- Old theme is still on. Phase 1 replaces it.
 
 ## Do not break
 
@@ -29,11 +28,16 @@ Engine is judge. Animation is teacher. No eval numbers on screen. No loot, no pu
 
 Order: Data and Arena in parallel → QA → Lead merges, tags `v0.3-playable`, enables GitHub Pages.
 
-- [ ] Data: `data/encounters.src.json` → `tools/build_encounters.py` (Stockfish 17, every legal move scored, tiers per PLAN §5.1, margin rule ≥150 cp or mate) → `data/encounters.v2.json` + generated `web/encounters.js`. Continuation lines for all 12. Fix 06 and 11. `test_encounters.py` asserts margins, line legality, whyTargets.
-- [ ] Arena: rewrite `web/game.js` as a state machine (home → think → tease → consequence → whygate → next | cliffhanger) on top of `futures.js` + `score.js`. Bind every control. Second-try flow. Tiers. Per-profile storage `shockmate-v2:<profileId>`. `test_futures.js` and `test_score.js` green.
-- [ ] QA: Playwright 390×844 through all 12 fights on best / good / bait / blunder / second-try. Fail on any disabled dead end or console error.
-- [ ] Lead: merge Data → Arena → QA, tag, Pages on `main` root, confirm https://dirac1974.github.io/shockmate/ plays.
-- [ ] Lead: write `docs/reports/phase0.md` (under 400 words) for review in the planning chat. Phase 1 does not start until that review comes back.
+- [x] Data: schema v2, build script, tiers, lines, fights 04/06/11 fixed, tests.
+- [x] Arena: state machine, every control bound, second try, confession, guided replay, profiles, criticals.
+- [x] QA: `tests/e2e/phase0.py` green.
+- [x] Report: `docs/reports/phase0.md`.
+- [ ] David: push `main` (bundle or patch), tag `v0.3-playable`, enable GitHub Pages (main / root), confirm https://dirac1974.github.io/shockmate/ plays.
+- [ ] David: both kids play 6 fights each on a phone. Note where anyone got stuck or bored. That is the Phase 1 gate.
+
+## Phase 1 — Feel (next, after the gate)
+
+Branch `theme/timeline-split`. Theme agent owns `styles.css`, `pieces.js`, new `glitch.js`, `sfx/`, `index.html` markup. Build to the concept screens: navy ground, blue board, cyan/magenta/gold, Bangers + Nunito, Glitch with four faces, recorded SFX, tease with charging timeline bars, Critical with hit-stop and zoom. Arena agent adds the tap-to-skip on animations and the "there was a bigger one" peek as a Glitch line. Do not change data or tiers.
 
 Phase 0 keeps the old theme. Phase 1 (PLAN §7) replaces it with the Timeline Split skin and Glitch.
 
