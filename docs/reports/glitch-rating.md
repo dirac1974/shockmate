@@ -33,7 +33,7 @@ The card screen shows the tick as it happens — `GLITCH'S RATING 1500 → 1375 
 
 ## Version marker
 
-The home screen now carries a small `v0.5 · 23 fights · 3 packs` line, because "I don't see the new screen" is nearly always a stale copy rather than a bug: GitHub Pages caches, iOS caches, and the service worker caches deliberately. Reading that line off a phone says exactly what it loaded. Bump `BUILD` in `web/game.js` and `CACHE` in `web/sw.js` together on each deploy.
+The home screen now carries a small `v0.6 · 23 fights · 3 packs` line, because "I don't see the new screen" is nearly always a stale copy rather than a bug: GitHub Pages caches, iOS caches, and the service worker caches deliberately. Reading that line off a phone says exactly what it loaded. Bump `BUILD` in `web/game.js` and `CACHE` in `web/sw.js` together on each deploy.
 
 ## Verification
 
