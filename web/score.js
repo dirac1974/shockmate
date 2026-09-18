@@ -900,6 +900,22 @@
     famFound: lineTable("taunt", "g-family-found", ["Found them. Which one of you is holding this phone?"]),
     famNames: lineTable("taunt", "g-family-names", ["Names first. I'll be rude to both equally."]),
     famJoin: lineTable("taunt", "g-family-join", ["Got a code? Type it in."]),
+    // v0.26: one household code for every app. A kid new to Shockmate makes his own PIN here.
+    famClaim: lineTable("smug", "g-family-claim", [
+      "New in Shockmate? Pick a PIN. I promise not to peek.",
+      "A fresh agent! Four secret digits, please.",
+      "First time here? Make a PIN. Make it a good one.",
+      "Pick a PIN. Not 1234. I always guess 1234."]),
+    famMissing: lineTable("rage", "g-family-missing", [
+      "That code? Never heard of it. Check the letters.",
+      "Nope. Nobody lives there. Try again.",
+      "Wrong code. Even I can't find that family.",
+      "Hmm. That one's not real. Ask a grown-up."]),
+    famOther: lineTable("taunt", "g-family-other", [
+      "Someone new? Tell me your name.",
+      "Not on the list? Type your name. I'll learn it.",
+      "A mystery agent! What do I call you?",
+      "Name, please. I need something to shout."]),
     /* Flash. The reveal line is said as the board arrives and then he shuts up: the five seconds of
        looking are a think window like any other. The poof, the reaction and the debrief are loud. */
     flashReveal: lineTable("smug", "g-flash-reveal", [

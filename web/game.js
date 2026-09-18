@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.25.1";
+  const BUILD = "v0.26";
   const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
   const X = window.ShockmateFlash;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
@@ -2146,13 +2146,18 @@
   }
 
   /* ================= FAMILY: one-tap setup =================
-     First launch, a ?family=CODE link, or Settings -> Family. New family: the kids' names, each kid
-     picks his own 4-digit PIN on the keypad (twice), and the phone gets a code to share. Join: the
-     code, the roster, "which one is this phone's player?", his PIN, done. Skip keeps the phone local.
-     The coach PIN is a different thing and never leaves the phone. */
+     First launch, a ?family=CODE link (or ?f=CODE from yomple.com), or Settings -> Family. The family
+     is the Yomple household code every other app already uses (MAPLE-K7Q2). Join: type it, the
+     household's kids come from Yomple, the kid taps himself, then his Shockmate PIN (or, new here, he
+     makes one, twice). No code yet: the kids' names and PINs, and the phone mints a household code and
+     registers it with Yomple so the other apps take it too. Skip keeps the phone local. The coach PIN
+     is a different thing and never leaves the phone. */
   const FAM = { step: "choose", mode: "new", from: "first", names: ["", ""], pins: ["", ""], kid: 0,
-    typed: "", first: "", code: "", roster: [], pick: null, busy: false, me: 0 };
-  const FAM_STEPS = ["choose", "names", "pin", "code-card", "join", "pick"];
+    typed: "", first: "", code: "", roster: [], players: [], free: 0, pick: null, pickName: "", user: null, busy: false, me: 0 };
+  const FAM_STEPS = ["choose", "names", "pin", "code-card", "pick"];
+  function yompleCfg() { return window.SHOCKMATE_YOMPLE && window.SHOCKMATE_YOMPLE.url ? window.SHOCKMATE_YOMPLE : null; }
+  const FAM_NOT_FOUND = "No family has that code. Check it with whoever set it up. Codes look like MAPLE-K7Q2; it is the same code your other apps use.";
+  function famOffline(err) { return err && err.code === "offline" ? "No connection. Try again with signal." : String((err && err.message) || err); }
   // The family card has its own Glitch; his lines there come off the same tables as everywhere else.
   function famLine(kind) {
     const l = pickFrom(S.GLITCH_LINES[kind], "moment." + kind);
@@ -2172,14 +2177,13 @@
   }
   function openFamily(from, code) {
     Object.assign(FAM, { step: "choose", mode: "new", from: from || "first", names: ["", ""], pins: ["", ""], kid: 0,
-      typed: "", first: "", code: "", roster: [], pick: null, busy: false, me: 0 });
+      typed: "", first: "", code: "", roster: [], players: [], free: 0, pick: null, pickName: "", busy: false, me: 0,
+      user: Y.yompleUser(location.search) });
     if (!Y.configured(syncCfg())) { toast("Family sync is not set up on this build.", 2600); return goHome(); }
-    if (code) {
-      famLine("famCode");
-      famShow("join"); $("fam-code-input").value = code; return famFind();
-    }
-    famLine("famNew");
     famShow("choose");
+    $("fam-code-input").value = code || "";
+    if (code) { famLine("famCode"); return famFind(); }
+    famLine("famNew");
   }
   function famLeave() {
     const from = FAM.from;
@@ -2210,13 +2214,12 @@
   }
   function famPin() {
     renderFamKeypad(); FAM.typed = "";
-    const who = FAM.mode === "new" ? FAM.names[FAM.kid] : (FAM.roster.filter(function (r) { return r.slot === FAM.pick; })[0] || {}).name;
-    $("fam-pin-title").textContent = FAM.mode === "new"
-      ? (FAM.first ? who + ", type it again" : who + ", pick a secret PIN")
-      : who + ", type your PIN";
-    $("fam-pin-hint").textContent = FAM.mode === "new"
-      ? "Four digits only you know. It joins your games and keeps your cards safe. The coach's PIN is a different one."
-      : "The four digits you picked when the family was made.";
+    const who = FAM.mode === "new" ? FAM.names[FAM.kid] : FAM.pickName;
+    $("fam-pin-title").textContent = FAM.mode === "join" ? who + ", type your PIN"
+      : (FAM.first ? who + ", type it again" : who + ", pick a secret PIN");
+    $("fam-pin-hint").textContent = FAM.mode === "join"
+      ? "Your Shockmate PIN: the four digits you picked the first time you played here."
+      : "Four digits only you know. It joins your games and keeps your cards safe. The coach's PIN is a different one.";
     famDots(); famShow("pin");
   }
   function famKey(k) {
@@ -2231,14 +2234,36 @@
     if (FAM.mode === "join") return famJoinPin(typed);
     if (!FAM.first) { FAM.first = typed; return famPin(); }
     if (typed !== FAM.first) { FAM.first = ""; famPin(); return famShake("Those two did not match. Pick again."); }
-    FAM.pins[FAM.kid] = typed; FAM.first = "";
+    FAM.first = "";
+    if (FAM.mode === "claim") return famClaim(typed);
+    FAM.pins[FAM.kid] = typed;
     if (FAM.kid === 0 && FAM.names[1]) { FAM.kid = 1; return famPin(); }
     famCreate();
+  }
+  /* No code yet: mint a household code the Yomple way, make sure no household already has it, make
+     the Shockmate family under it, then register it with Yomple so every other app takes it. */
+  function famMintFree(tries) {
+    const code = Y.mintCode(), ycfg = yompleCfg();
+    if (!Y.configured(ycfg)) return Promise.resolve(code);
+    return Y.yompleKids(ycfg, code).then(function (rows) {
+      if (rows.length && tries < 6) return famMintFree(tries + 1);
+      return code;
+    }, function () { return code; });
   }
   function famCreate() {
     const kids = FAM.names.map(function (n, i) { return { name: n, pin: FAM.pins[i] }; }).filter(function (k) { return k.name; });
     FAM.busy = true; famState("Making your family…");
-    Y.familyCreate(syncCfg(), "", kids).then(function (code) {
+    const attempt = function (tries) {
+      return famMintFree(0).then(function (code) {
+        return Y.familyCreate(syncCfg(), code, "", kids).catch(function (err) {
+          if (err && err.code === "taken" && tries < 6) return attempt(tries + 1);
+          throw err;
+        });
+      });
+    };
+    attempt(0).then(function (code) {
+      // Best effort: the family works in Shockmate either way, and any Yomple app registers a code it is given.
+      if (Y.configured(yompleCfg())) Y.yompleRegister(yompleCfg(), code).catch(function () {});
       FAM.busy = false; FAM.code = code;
       state.settings.family = { code: code, me: 0, pins: [FAM.pins[0] || "", FAM.pins[1] || ""],
         roster: kids.map(function (k, i) { return { slot: i, name: k.name }; }), skipped: false };
@@ -2249,7 +2274,7 @@
       renderFamCode(); famShow("code-card");
     }).catch(function (err) {
       FAM.busy = false; FAM.kid = 0; FAM.first = "";
-      famShow("names"); famState(err && err.code === "offline" ? "No connection. Try again with signal." : String((err && err.message) || err));
+      famShow("names"); famState(famOffline(err));
     });
   }
   function renderFamCode() {
@@ -2284,49 +2309,99 @@
     });
     return copy();
   }
+  // The household code, typed any way: the kids from Yomple and Shockmate together, then "which one are you?"
   function famFind() {
+    if (FAM.busy) return;
     const code = Y.normaliseCode($("fam-code-input").value);
+    if (!Y.validCode(code)) return famState("Codes look like MAPLE-K7Q2; it is the same code your other apps use.");
     $("fam-code-input").value = code;
-    if (!Y.validCode(code)) return famState("A family code is 8 letters and numbers.");
-    FAM.busy = true; famState("Looking for that family…");
-    Y.familyRoster(syncCfg(), code).then(function (rows) {
+    FAM.busy = true; famState("Looking for your family…");
+    Y.lookupFamily(syncCfg(), yompleCfg(), code, FAM.user).then(function (r) {
       FAM.busy = false;
-      if (!rows.length) return famState("No family has that code. Check it with whoever set it up.");
-      FAM.code = code; FAM.roster = rows; FAM.mode = "join";
+      if (!r.found) { famLine("famMissing"); return famState(FAM_NOT_FOUND); }
+      FAM.code = r.code; FAM.players = r.players; FAM.free = r.free; FAM.roster = r.roster;
       famLine("famFound");
-      const host = $("fam-roster");
-      host.innerHTML = rows.map(function (r) { return '<button type="button" class="cta play" data-pick="' + r.slot + '">' + esc(r.name) + "</button>"; }).join("");
-      Array.prototype.forEach.call(host.querySelectorAll("button[data-pick]"), function (b) {
-        b.onclick = function () { FAM.pick = Number(b.dataset.pick); famPin(); };
-      });
+      renderFamRoster();
       famShow("pick");
     }).catch(function (err) {
       FAM.busy = false;
-      famState(err && err.code === "offline" ? "No connection. Try again with signal." : String((err && err.message) || err));
+      famState(famOffline(err));
+    });
+  }
+  function renderFamRoster() {
+    const host = $("fam-roster");
+    host.innerHTML = FAM.roster.map(function (r, i) {
+      return '<button type="button" class="cta play' + (r.me ? " me" : "") + '" data-pick="' + i + '"' +
+        (r.slot != null ? ' data-slot="' + r.slot + '"' : "") + ">" + esc(r.name) + "</button>";
+    }).join("") + '<button type="button" class="chip" data-other="1">Someone else</button>';
+    Array.prototype.forEach.call(host.querySelectorAll("button[data-pick]"), function (b) {
+      b.onclick = function () { famChoose(FAM.roster[Number(b.dataset.pick)]); };
+    });
+    host.querySelector("button[data-other]").onclick = function () {
+      $("fam-other").hidden = false; $("fam-other-name").value = ""; famLine("famOther"); famState("");
+      try { $("fam-other-name").focus(); } catch (e) {}
+    };
+    $("fam-other").hidden = true;
+  }
+  function famChoose(entry) {
+    if (!entry || FAM.busy) return;
+    FAM.first = "";
+    if (entry.slot != null) { FAM.mode = "join"; FAM.pick = entry.slot; FAM.pickName = entry.name; return famPin(); }
+    if (FAM.free == null) {
+      const who = FAM.players.map(function (p) { return p.name; }).join(" and ");
+      return famState("Shockmate has room for two players in a family, and " + who + " have them. Tap one of them.");
+    }
+    FAM.mode = "claim"; FAM.pick = FAM.free; FAM.pickName = entry.name;
+    famLine("famClaim");
+    famPin();
+  }
+  function famOtherGo() {
+    const name = Y.cleanName($("fam-other-name").value);
+    if (!name) return famState("Type your name first.");
+    const same = FAM.roster.filter(function (r) { return r.name.toLowerCase() === name.toLowerCase(); })[0];
+    famChoose(same || { name: name, slot: null });
+  }
+  // A kid new to Shockmate: his PIN claims the free slot, then the phone is his.
+  function famClaim(pin) {
+    const slot = FAM.pick, code = FAM.code;
+    FAM.busy = true; famState("Saving your PIN…");
+    Y.familyAdopt(syncCfg(), code, slot, FAM.pickName, pin).then(function (r) {
+      FAM.busy = false;
+      FAM.players = FAM.players.filter(function (p) { return p.slot !== slot; }).concat([{ slot: slot, name: r.name }])
+        .sort(function (a, b) { return a.slot - b.slot; });
+      famEnter(slot, pin, {});
+    }).catch(function (err) {
+      FAM.busy = false;
+      // Someone got there first (the other phone, a moment ago): look again, with the new list.
+      if (err && (err.code === "taken" || err.code === "name")) { famShow("choose"); return famFind(); }
+      famShake(famOffline(err));
     });
   }
   // The PIN is checked by pulling his own progress, which is also the first half of his first sync.
   function famJoinPin(pin) {
-    const slot = FAM.pick, code = FAM.code;
+    const slot = FAM.pick;
     FAM.busy = true; famState("Checking…");
-    Y.pull(syncCfg(), code, slot, pin).then(function (remote) {
+    Y.pull(syncCfg(), FAM.code, slot, pin).then(function (remote) {
       FAM.busy = false;
-      const was = fam(), same = was.code === code;
-      const pins = same ? was.pins.slice() : ["", ""]; pins[slot] = pin;
-      state.settings.family = { code: code, me: slot, pins: pins, roster: FAM.roster.slice(), skipped: false };
-      applyRoster(FAM.roster);
-      state.profiles[slot] = Object.assign(freshStats(), Y.mergeStats(state.profiles[slot], remote || {}));
-      state.settings.profile = slot; setSeats(1); useProfile(slot); save(); hud();
-      syncNow(true);
-      toast("This phone is " + state.settings.names[slot] + "'s now.", 2400);
-      FAM.from === "settings" ? (renderSettings(), show("screen-settings")) : goHome();
-      restartLivePoller();
+      famEnter(slot, pin, remote);
     }).catch(function (err) {
       FAM.busy = false;
       if (err && err.code === "pin") return famShake("Not that one. Try again.");
       if (err && err.code === "locked") return famShake("Too many wrong tries. Wait 15 minutes.");
-      famShake(err && err.code === "offline" ? "No connection. Try again with signal." : String((err && err.message) || err));
+      famShake(famOffline(err));
     });
+  }
+  function famEnter(slot, pin, remote) {
+    const code = FAM.code, was = fam(), same = was.code === code;
+    const pins = same ? was.pins.slice() : ["", ""]; pins[slot] = pin;
+    state.settings.family = { code: code, me: slot, pins: pins, roster: FAM.players.slice(), skipped: false };
+    applyRoster(FAM.players);
+    state.profiles[slot] = Object.assign(freshStats(), Y.mergeStats(state.profiles[slot], remote || {}));
+    state.settings.profile = slot; setSeats(1); useProfile(slot); save(); hud();
+    syncNow(true);
+    toast("This phone is " + state.settings.names[slot] + "'s now.", 2400);
+    FAM.from === "settings" ? (renderSettings(), show("screen-settings")) : goHome();
+    restartLivePoller();
   }
   function bindFamily() {
     if (!$("screen-family")) return;
@@ -2339,18 +2414,22 @@
       famLine("famNames");
       famShow("names");
     };
-    $("btn-fam-join").onclick = function () { famLine("famJoin"); famShow("join"); };
     $("btn-fam-skip").onclick = function () { fam().skipped = true; save(); famLeave(); };
     $("btn-fam-names-go").onclick = function () {
       FAM.names = [Y.cleanName($("fam-name-0").value), Y.cleanName($("fam-name-1").value)];
       if (!FAM.names[0]) return famState("The first kid needs a name.");
+      if (FAM.names[1] && FAM.names[1].toLowerCase() === FAM.names[0].toLowerCase()) return famState("Two kids need two names.");
       FAM.kid = 0; FAM.first = ""; FAM.pins = ["", ""]; famPin();
     };
     $("btn-fam-find").onclick = famFind;
     $("fam-code-input").onkeydown = function (ev) { if (ev.key === "Enter") famFind(); };
+    $("btn-fam-other-go").onclick = famOtherGo;
+    $("fam-other-name").onkeydown = function (ev) { if (ev.key === "Enter") famOtherGo(); };
     $("btn-fam-share").onclick = function () { shareFamily(fam().code); };
     $("btn-fam-done").onclick = function () { famLeave(); };
     $("btn-fam-back").onclick = function () {
+      if (FAM.busy) return;
+      if (FAM.step === "pin" && FAM.mode !== "new") { FAM.first = ""; famShow("pick"); return; }
       if (FAM.step === "choose" || FAM.from === "settings" || FAM.step === "code-card") return famLeave();
       FAM.first = ""; famShow("choose");
     };

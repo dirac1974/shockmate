@@ -113,30 +113,81 @@ function run() {
   assert.strictEqual(Y.mergeStats({}, {}).versus, undefined, "a profile that has never played his sibling invents none");
   assert.strictEqual(Y.mergeStats({}, {}).bestMoves, undefined);
 
-  // --- Shockmate's own family: an 8-character code, a slot per kid, a 4-digit PIN each ---
-  assert.strictEqual(Y.normaliseCode("9xpn-e8t5"), "9XPNE8T5", "codes are read out in caps, dashes and spaces dropped");
-  assert.strictEqual(Y.normaliseCode(" abcd efgh jk"), "ABCDEFGH", "and cut to eight");
-  assert.ok(Y.validCode("9XPNE8T5") && Y.validCode("abcd-efgh"), "a code typed any way still reads");
-  assert.ok(!Y.validCode("ABC"), "short codes rejected");
-  ["ABCDEFG0", "ABCDEFGO", "ABCDEFG1", "ABCDEFGI", "ABCDEFGL"].forEach(function (c) {
-    assert.ok(!Y.validCode(c), c + ": the alphabet has no 0, O, 1, I or L, so nothing can be misread");
+  // --- the family is the Yomple household code: WORD-XXXX, typed any way ---
+  ["maple k7q2", "MAPLEK7Q2", "maple-k7q2", "MAPLE-K7Q2", " Maple - k7q2 ", "maple_k7q2", "maple.k7q2", "\tmaple\nk7q2 "].forEach(function (t) {
+    assert.strictEqual(Y.normaliseCode(t), "MAPLE-K7Q2", JSON.stringify(t) + " reads as the household code");
+    assert.ok(Y.validCode(t), JSON.stringify(t) + " is a valid code");
   });
-  assert.ok(!/[01OIL]/.test(Y.CODE_ALPHABET) && Y.CODE_ALPHABET.length === 31);
+  Y.WORDS.forEach(function (w) {
+    assert.strictEqual(Y.normaliseCode(w.toLowerCase() + "2abc"), w + "-2ABC", w + ": every Yomple word reads");
+  });
+  assert.strictEqual(Y.WORDS.join(" "), "OAK MAPLE PINE CEDAR ELM BIRCH WILLOW ASPEN LAUREL HOLLY", "the Yomple word list, in Yomple's order");
+  assert.strictEqual(Y.CODE_ALPHABET, "23456789ABCDEFGHJKMNPQRSTUVWXYZ", "the Yomple tail alphabet");
+  ["MAPLE-K7Q0", "MAPLE-K7QO", "MAPLE-K7Q1", "MAPLE-K7QI", "MAPLE-K7QL"].forEach(function (c) {
+    assert.ok(!Y.validCode(c), c + ": the tail has no 0, O, 1, I or L, so nothing can be misread");
+  });
+  ["", "CEDAR", "MAPLE-K7Q", "MAPLE-K7Q25", "TREE-K7Q2", "9XPNE8T5", "K7Q2-MAPLE", "MAPLER-K7Q2"].forEach(function (c) {
+    assert.ok(!Y.validCode(c), JSON.stringify(c) + " is not a household code");
+  });
+  assert.strictEqual(Y.normaliseCode("9xpn-e8t5"), "9XPNE8T5", "a non-code is only cleaned, never forced into shape");
+  assert.ok(Y.CODE_MAX >= 12, "the code box takes at least 12 characters: MAPLE-K7Q2 must never be cut to MAPLEK7Q");
+  const html = require("fs").readFileSync(require("path").join(__dirname, "..", "web", "index.html"), "utf8");
+  const box = html.match(/<input id="fam-code-input"[^>]*>/);
+  assert.ok(box && Number((box[0].match(/maxlength="(\d+)"/) || [])[1]) >= 12, "index.html: the code input accepts at least 12 characters");
+  for (let i = 0; i < 200; i++) {
+    const m = Y.mintCode();
+    assert.ok(Y.validCode(m) && Y.normaliseCode(m) === m, m + ": a minted code is canonical");
+  }
+  assert.strictEqual(Y.mintCode(() => 0), "OAK-2222");
+  assert.strictEqual(Y.mintCode(() => 0.9999), "HOLLY-ZZZZ");
   assert.strictEqual(Y.normalisePin("12a345"), "1234", "pins are four digits");
   assert.ok(Y.validPin("1234") && !Y.validPin("123"), "a pin must be four digits");
   assert.strictEqual(Y.cleanName("  Sam<b> "), "Samb", "names lose markup and spaces");
-  assert.strictEqual(Y.codeFromSearch("?family=9xpn-e8t5"), "9XPNE8T5", "a share link carries the code");
-  assert.strictEqual(Y.codeFromSearch("?fast=1&family=9XPNE8T5#x"), "9XPNE8T5");
+  assert.strictEqual(Y.codeFromSearch("?family=maple-k7q2"), "MAPLE-K7Q2", "a share link carries the code");
+  assert.strictEqual(Y.codeFromSearch("?fast=1&family=MAPLE%20K7Q2#x"), "MAPLE-K7Q2");
+  assert.strictEqual(Y.codeFromSearch("?u=sam&from=yomple&f=MAPLE-K7Q2"), "MAPLE-K7Q2", "the Yomple hub's f= works too");
+  assert.strictEqual(Y.codeFromSearch("?family=OAK-2222&f=MAPLE-K7Q2"), "OAK-2222", "family= wins over f=");
   assert.strictEqual(Y.codeFromSearch("?family=nope"), null, "a broken link is ignored");
+  assert.strictEqual(Y.codeFromSearch("?family=9XPNE8T5"), null, "an old 8-character code is ignored");
   assert.strictEqual(Y.codeFromSearch(""), null);
-  assert.strictEqual(Y.shareText("9xpne8t5"),
-    "Join our Shockmate family: 9XPNE8T5 https://dirac1974.github.io/shockmate/?family=9XPNE8T5");
-  assert.deepStrictEqual(Y.syncSlots({ code: "9XPNE8T5", me: 0, pins: ["1111", "2222"] }), [0, 1], "the phone that made the family syncs both");
-  assert.deepStrictEqual(Y.syncSlots({ code: "9XPNE8T5", me: 1, pins: ["", "2222"] }), [1], "a phone that joined syncs its own kid");
+  assert.strictEqual(Y.yompleUser("?u=Sam&from=yomple"), "sam", "from yomple.com: who tapped Shockmate there");
+  assert.strictEqual(Y.yompleUser("?u=sam"), null, "u= alone is not from Yomple");
+  assert.strictEqual(Y.yompleUser("?u=%3Cx%3E&from=yomple"), null, "a mangled username is ignored");
+  assert.strictEqual(Y.shareText("maple k7q2"),
+    "Join our Shockmate family: MAPLE-K7Q2 https://dirac1974.github.io/shockmate/?family=MAPLE-K7Q2");
+  assert.deepStrictEqual(Y.syncSlots({ code: "MAPLE-K7Q2", me: 0, pins: ["1111", "2222"] }), [0, 1], "the phone that made the family syncs both");
+  assert.deepStrictEqual(Y.syncSlots({ code: "MAPLE-K7Q2", me: 1, pins: ["", "2222"] }), [1], "a phone that joined syncs its own kid");
   assert.deepStrictEqual(Y.syncSlots({ code: "", me: 0, pins: ["1111", ""] }), [], "no family, no sync");
-  assert.ok(Y.joined({ code: "9XPNE8T5", me: 1, pins: ["", "2222"] }));
-  assert.ok(!Y.joined({ code: "9XPNE8T5", me: 0, pins: ["", "2222"] }), "joined means this phone knows its own kid's PIN");
-  assert.ok(!Y.joined({ code: "9XPNE8T5", me: null, pins: ["1111", "2222"] }), "and has picked a kid");
+  assert.deepStrictEqual(Y.syncSlots({ code: "9XPNE8T5", me: 0, pins: ["1111", ""] }), [], "a v0.22 code no longer syncs");
+  assert.ok(Y.joined({ code: "MAPLE-K7Q2", me: 1, pins: ["", "2222"] }));
+  assert.ok(!Y.joined({ code: "MAPLE-K7Q2", me: 0, pins: ["", "2222"] }), "joined means this phone knows its own kid's PIN");
+  assert.ok(!Y.joined({ code: "MAPLE-K7Q2", me: null, pins: ["1111", "2222"] }), "and has picked a kid");
+
+  // --- the roster a kid picks from: Yomple's players across apps, deduped, Shockmate's first ---
+  const yrow = (table, username, display) => ({ table: table, username: username, display_name: display, avatar: "x", family_code: "MAPLE-K7Q2", has_pin: false });
+  const yrows = [
+    yrow("hop_players", "dad", "Dad"), yrow("bloom_players", "dad", "Dad"), yrow("garden_players", "dad", "Dad"),
+    yrow("hop_players", "sam", "Sam"), yrow("garden_players", "sammy", "sam"), yrow("star_players", "sam", "SAM"),
+    yrow("garden_players", "ben", "Ben"),
+    yrow("hop_players", "player-1", "Player 1"), yrow("garden_players", "player", "Player"),
+    yrow("bloom_players", "foxy-sarah-2054", "Foxy (Sarah)"), yrow("hop_players", "foxy-sarah-2054", "Foxy (Sarah)"),
+    yrow("bloom_players", "camp-0288", "camp"), yrow("bloom_players", "d-6484", "D"), yrow("bloom_players", "owls-5918", "Owls"),
+  ];
+  let roster = Y.buildRoster(yrows, [], null);
+  assert.deepStrictEqual(roster.map((r) => r.name), ["Dad", "Sam", "Ben", "Foxy (Sarah)", "camp", "D"],
+    "one entry per name whatever the case; real names before test ones; the most apps first; six at most");
+  assert.deepStrictEqual(roster[1].usernames, ["sam", "sammy"], "every Yomple username of that kid is kept");
+  assert.ok(roster.every((r) => r.slot === null && !r.me), "nobody has a Shockmate slot yet");
+  assert.ok(!roster.some((r) => /^player/i.test(r.name)), "Player / Player 1 are placeholders, not kids");
+  roster = Y.buildRoster(yrows, [{ slot: 1, name: "Ben" }, { slot: 0, name: "Zed" }], "sammy");
+  assert.deepStrictEqual(roster.slice(0, 3).map((r) => [r.name, r.slot, r.me]), [["Zed", 0, false], ["Ben", 1, false], ["Sam", null, true]],
+    "Shockmate players first by slot (Ben's Yomple rows fold into his slot), then the kid the hub named");
+  assert.strictEqual(roster.length, 6);
+  assert.deepStrictEqual(Y.buildRoster([], [], null), []);
+  assert.strictEqual(Y.freeSlot([]), 0);
+  assert.strictEqual(Y.freeSlot([{ slot: 0, name: "a" }]), 1);
+  assert.strictEqual(Y.freeSlot([{ slot: 1, name: "a" }]), 0);
+  assert.strictEqual(Y.freeSlot([{ slot: 0 }, { slot: 1 }]), undefined, "two slots, both taken");
 
   // --- merge: a card won on either device survives ---
   const phone = { won: 3, criticals: 1, hits: 5, bestStreak: 3, session: 4,
@@ -211,53 +262,121 @@ function run() {
   assert.ok(Y.configured({ url: "https://x.supabase.co", key: "sb_publishable_x" }));
   assert.ok(Y.configured({ url: "https://x.supabase.co", anonKey: "eyJx" }), "the old field name still reads");
   const calls = [];
-  const reply = { sm_family_create: { code: "9xpne8t5" }, sm_family_roster: [{ slot: 0, name: "Sam" }, { slot: 1, name: "Ben" }, { slot: 7, name: "x" }],
-    sm_pull: { won: 3 }, sm_push: { updated_at: "2026-09-18T10:00:00Z" }, sm_rename: { name: "Sammy" } };
+  const reply = { sm_family_create: { code: "maple-k7q2" }, sm_family_roster: [{ slot: 0, name: "Sam" }, { slot: 1, name: "Ben" }, { slot: 7, name: "x" }],
+    sm_pull: { won: 3 }, sm_push: { updated_at: "2026-09-18T10:00:00Z" }, sm_rename: { name: "Sammy" },
+    sm_family_adopt: { code: "MAPLE-K7Q2", slot: 1, name: "Ben" } };
   const fakeFetch = (url, opts) => { calls.push([url, opts]); const name = url.split("/").pop();
     return Promise.resolve({ ok: true, json: () => Promise.resolve(reply[name]) }); };
   const cfg = { url: "https://proj.supabase.co/", key: "sb_publishable_abc" };
   const body = (i) => JSON.parse(calls[i][1].body);
 
-  return Y.familyCreate(cfg, " The Smiths ", [{ name: " Sam ", pin: "1111" }, { name: "Ben", pin: "22-22" }], fakeFetch)
+  return Y.familyCreate(cfg, "maple k7q2", " The Smiths ", [{ name: " Sam ", pin: "1111" }, { name: "Ben", pin: "22-22" }], fakeFetch)
     .then((code) => {
-      assert.strictEqual(code, "9XPNE8T5", "the new code comes back normalised");
+      assert.strictEqual(code, "MAPLE-K7Q2", "the code comes back canonical");
       assert.strictEqual(calls[0][0], "https://proj.supabase.co/rest/v1/rpc/sm_family_create", "no double slash");
       assert.strictEqual(calls[0][1].method, "POST");
       assert.strictEqual(calls[0][1].headers.apikey, "sb_publishable_abc");
       assert.strictEqual(calls[0][1].headers.Authorization, undefined, "a publishable key is not sent as a bearer token");
-      assert.deepStrictEqual(body(0), { p_name: "The Smiths", p_kids: [{ name: "Sam", pin: "1111" }, { name: "Ben", pin: "2222" }] });
-      return Y.familyRoster(cfg, "9xpn e8t5", fakeFetch);
+      assert.deepStrictEqual(body(0), { p_code: "MAPLE-K7Q2", p_name: "The Smiths", p_kids: [{ name: "Sam", pin: "1111" }, { name: "Ben", pin: "2222" }] },
+        "the client sends the household code it minted");
+      return Y.familyRoster(cfg, "maple k7q2", fakeFetch);
     })
     .then((rows) => {
       assert.deepStrictEqual(rows, [{ slot: 0, name: "Sam" }, { slot: 1, name: "Ben" }], "roster is slots and names; a bad slot is dropped");
-      assert.deepStrictEqual(body(1), { p_code: "9XPNE8T5" }, "roster asks by code alone — it must never carry a pin");
-      return Y.pull(cfg, "9xpne8t5", 1, "2222", fakeFetch);
+      assert.deepStrictEqual(body(1), { p_code: "MAPLE-K7Q2" }, "roster asks by code alone — it must never carry a pin");
+      return Y.pull(cfg, "maplek7q2", 1, "2222", fakeFetch);
     })
     .then((remote) => {
       assert.deepStrictEqual(remote, { won: 3 });
-      assert.deepStrictEqual(body(2), { p_code: "9XPNE8T5", p_slot: 1, p_pin: "2222" });
-      return Y.push(cfg, "9XPNE8T5", 1, "2222", { won: 4 }, fakeFetch);
+      assert.deepStrictEqual(body(2), { p_code: "MAPLE-K7Q2", p_slot: 1, p_pin: "2222" });
+      return Y.push(cfg, "MAPLE-K7Q2", 1, "2222", { won: 4 }, fakeFetch);
     })
     .then(() => {
-      assert.deepStrictEqual(body(3), { p_code: "9XPNE8T5", p_slot: 1, p_pin: "2222", p_progress: { won: 4 } });
+      assert.deepStrictEqual(body(3), { p_code: "MAPLE-K7Q2", p_slot: 1, p_pin: "2222", p_progress: { won: 4 } });
       assert.ok(/\/rpc\/sm_push$/.test(calls[3][0]));
-      return Y.rename(cfg, "9XPNE8T5", 0, "1111", " Sammy<> ", fakeFetch);
+      return Y.rename(cfg, "MAPLE-K7Q2", 0, "1111", " Sammy<> ", fakeFetch);
     })
     .then(() => {
-      assert.deepStrictEqual(body(4), { p_code: "9XPNE8T5", p_slot: 0, p_pin: "1111", p_name: "Sammy" });
+      assert.deepStrictEqual(body(4), { p_code: "MAPLE-K7Q2", p_slot: 0, p_pin: "1111", p_name: "Sammy" });
       const jwt = [];
-      return Y.pull({ url: "https://p.supabase.co", anonKey: "eyJabc" }, "9XPNE8T5", 0, "1111",
+      return Y.pull({ url: "https://p.supabase.co", anonKey: "eyJabc" }, "MAPLE-K7Q2", 0, "1111",
         (u, o) => { jwt.push(o); return Promise.resolve({ ok: true, json: () => Promise.resolve({}) }); })
         .then(() => assert.strictEqual(jwt[0].headers.Authorization, "Bearer eyJabc", "a legacy anon JWT also goes as a bearer token"));
     })
-    .then(() => Y.familyCreate(cfg, "", [{ name: "Sam", pin: "12" }], fakeFetch).then(
+    .then(() => Y.familyAdopt(cfg, "maple-k7q2", 1, " Ben ", "3-3-3-3", fakeFetch))
+    .then((r) => {
+      assert.deepStrictEqual(body(5), { p_code: "MAPLE-K7Q2", p_slot: 1, p_name: "Ben", p_pin: "3333" }, "adopt: code, slot, name, new PIN");
+      assert.deepStrictEqual(r, { code: "MAPLE-K7Q2", slot: 1, name: "Ben" });
+      const n = calls.length;
+      return Y.familyAdopt(cfg, "MAPLE-K7Q2", 2, "Ben", "3333", fakeFetch).then(() => { throw new Error("slot 2 should be refused"); },
+        (err) => { assert.strictEqual(err.code, "input"); assert.strictEqual(calls.length, n, "nothing was sent"); });
+    })
+    .then(() => {
+      const taken = () => Promise.resolve({ ok: true, json: () => Promise.resolve({ error: "taken" }) });
+      return Y.familyAdopt(cfg, "MAPLE-K7Q2", 0, "Ben", "3333", taken).then(() => { throw new Error("taken should reject"); },
+        (err) => assert.strictEqual(err.code, "taken", "a slot someone has is its own error"));
+    })
+    .then(() => {
+      // --- Yomple: five tables asked by code, the anon JWT as a bearer, never a PIN in the body ---
+      const ycalls = [];
+      const ycfg = { url: "https://yomple.supabase.co", key: "eyJyomple" };
+      const yr = (table, username, display) => ({ username: username, display_name: display, table: table });
+      const ydata = { hop_players: [yr("hop_players", "sam", "Sam")], garden_players: [{ username: "ben", display_name: "Ben" }] };
+      const yfetch = (url, opts) => { ycalls.push([url, opts]);
+        const b = JSON.parse(opts.body), name = url.split("/").pop();
+        const out = name === "yomple_family_players" ? (b.p_code === "MAPLE-K7Q2" ? (ydata[b.p_table] || []) : [])
+          : name === "yomple_family_upsert" ? { ok: true, family_code: b.p_code }
+          : name === "sm_family_roster" ? (b.p_code === "OAK-2222" ? [{ slot: 0, name: "Zed" }] : []) : null;
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(out) }); };
+      return Y.yompleKids(ycfg, "maple k7q2", yfetch).then((rows) => {
+        assert.deepStrictEqual(ycalls.map((c) => JSON.parse(c[1].body)), Y.YOMPLE_TABLES.map((t) => ({ p_code: "MAPLE-K7Q2", p_table: t })),
+          "one call per Yomple app table, by code alone");
+        assert.deepStrictEqual(Y.YOMPLE_TABLES, ["hop_players", "bloom_players", "garden_players", "star_players", "field_players"]);
+        ycalls.forEach((c) => {
+          assert.strictEqual(c[0], "https://yomple.supabase.co/rest/v1/rpc/yomple_family_players");
+          assert.strictEqual(c[1].headers.apikey, "eyJyomple");
+          assert.strictEqual(c[1].headers.Authorization, "Bearer eyJyomple", "Yomple's anon JWT goes as a bearer too");
+        });
+        assert.deepStrictEqual(rows.map((r) => [r.table, r.username]), [["hop_players", "sam"], ["garden_players", "ben"]], "rows carry their table");
+        ycalls.length = 0;
+        return Y.yompleRegister(ycfg, "maplek7q2", yfetch);
+      }).then(() => {
+        assert.deepStrictEqual(JSON.parse(ycalls[0][1].body), { p_code: "MAPLE-K7Q2", p_email: null }, "a minted code is registered, with no email");
+        assert.ok(/\/rpc\/yomple_family_upsert$/.test(ycalls[0][0]));
+        ycalls.length = 0;
+        return Y.lookupFamily(cfg, ycfg, "maple k7q2", "sam", yfetch);
+      }).then((r) => {
+        assert.ok(r.found && r.yomple, "a Yomple household is found");
+        assert.deepStrictEqual(r.roster.map((x) => [x.name, x.slot, x.me]), [["Sam", null, true], ["Ben", null, false]]);
+        assert.strictEqual(r.free, 0, "first Shockmate player takes slot 0");
+        assert.ok(!ycalls.some((c) => /yomple_family_upsert/.test(c[0])), "a lookup never registers anything");
+        return Y.lookupFamily(cfg, ycfg, "oak 2222", null, yfetch);
+      }).then((r) => {
+        assert.ok(r.found && !r.yomple, "a Shockmate-only family is found too");
+        assert.deepStrictEqual(r.roster.map((x) => [x.name, x.slot]), [["Zed", 0]]);
+        assert.strictEqual(r.free, 1);
+        return Y.lookupFamily(cfg, ycfg, "PINE-2345", null, yfetch);
+      }).then((r) => {
+        assert.ok(!r.found && r.roster.length === 0, "nobody knows the code: not found");
+        return Y.lookupFamily(cfg, ycfg, "MAPLE-K7Q", null, yfetch).then(() => { throw new Error("a malformed code should be refused locally"); },
+          (err) => { assert.strictEqual(err.code, "input"); assert.ok(/MAPLE-K7Q2/.test(err.message), "the refusal shows what a code looks like"); });
+      }).then(() => {
+        const down = (url, opts) => /yomple\.supabase/.test(url) ? Promise.reject(new TypeError("Failed to fetch")) : yfetch(url, opts);
+        return Y.lookupFamily(cfg, ycfg, "OAK-2222", null, down).then((r) => assert.ok(r.found, "Yomple down: a Shockmate family still opens"))
+          .then(() => Y.lookupFamily(cfg, ycfg, "PINE-2345", null, down)).then(() => { throw new Error("offline with nothing found should reject"); },
+            (err) => assert.strictEqual(err.code, "offline", "and nothing found with Yomple down is 'offline', not 'not found'"));
+      });
+    })
+    .then(() => { const n = calls.length; return Y.familyCreate(cfg, "MAPLE-K7Q2", "", [{ name: "Sam", pin: "12" }], fakeFetch).then(
       () => { throw new Error("a short PIN should never reach the server"); },
-      (err) => { assert.strictEqual(err.code, "input"); assert.strictEqual(calls.length, 5, "nothing was sent"); }))
-    .then(() => Y.familyCreate(cfg, "", [{ name: "a", pin: "1111" }, { name: "b", pin: "2222" }, { name: "c", pin: "3333" }], fakeFetch).then(
+      (err) => { assert.strictEqual(err.code, "input"); assert.strictEqual(calls.length, n, "nothing was sent"); }); })
+    .then(() => Y.familyCreate(cfg, "9XPNE8T5", "", [{ name: "Sam", pin: "1111" }], fakeFetch).then(
+      () => { throw new Error("an old-style code should be refused"); }, (err) => assert.strictEqual(err.code, "input")))
+    .then(() => Y.familyCreate(cfg, "MAPLE-K7Q2", "", [{ name: "a", pin: "1111" }, { name: "b", pin: "2222" }, { name: "c", pin: "3333" }], fakeFetch).then(
       () => { throw new Error("three kids should be refused"); }, (err) => assert.strictEqual(err.code, "input")))
     .then(() => Y.familyRoster(cfg, "ABC", fakeFetch).then(
       () => { throw new Error("a bad code should be refused locally"); }, (err) => assert.strictEqual(err.code, "input")))
-    .then(() => Y.pull({ url: "", key: "" }, "9XPNE8T5", 0, "1111", fakeFetch).then(
+    .then(() => Y.pull({ url: "", key: "" }, "MAPLE-K7Q2", 0, "1111", fakeFetch).then(
       () => { throw new Error("unconfigured sync should refuse"); },
       (err) => assert.ok(/not set up/.test(err.message) && err.code === "config", "unconfigured sync refuses instead of calling out")))
     .then(() => {
@@ -282,7 +401,7 @@ function run() {
       return Y.pull(cfg, "9XPNE8T5", 0, "1111", offline).then(() => { throw new Error("offline should reject"); },
         (err) => assert.strictEqual(err.code, "offline", "no network is its own quiet failure"));
     })
-    .then(() => console.log("OK sync: family codes and links, slots and PINs, merge (order-free, idempotent, capped), backup round trip, games and game fights, flash counters and the imagine latch, sm_* rpc shapes, failure paths"));
+    .then(() => console.log("OK sync: household codes typed any way and links, the Yomple roster (deduped), slots and PINs, merge (order-free, idempotent, capped), backup round trip, games and game fights, flash counters and the imagine latch, sm_* and yomple_* rpc shapes, not-found and failure paths"));
 }
 
 run().catch((err) => { console.error(err); process.exit(1); });

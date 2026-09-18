@@ -395,10 +395,11 @@
       </div>
       <div class="set-card fam-card" id="fam-choose">
         <h3>Set up this phone</h3>
-        <button type="button" id="btn-fam-new" class="cta big">New family</button>
-        <p class="hint">The first phone in the house. Type the kids' names; each one picks a PIN.</p>
-        <button type="button" id="btn-fam-join" class="cta play ink">Join a family</button>
-        <p class="hint">Another phone already has a family code.</p>
+        <label>Enter your family code <input id="fam-code-input" type="text" maxlength="16" autocapitalize="characters"
+          autocomplete="off" spellcheck="false" placeholder="MAPLE-K7Q2" /></label>
+        <p class="hint">The same one your other apps use.</p>
+        <button type="button" id="btn-fam-find" class="cta big">Find my family</button>
+        <button type="button" id="btn-fam-new" class="link fam-alt">No code yet? Start a family</button>
         <button type="button" id="btn-fam-skip" class="link">Skip — this phone only</button>
       </div>
       <div class="set-card fam-card" id="fam-names" hidden>
@@ -416,7 +417,7 @@
       <div class="set-card fam-card" id="fam-code-card" hidden>
         <h3>Your family code</h3>
         <div class="fam-code" id="fam-code-big"></div>
-        <p class="hint">Open Shockmate on the other phone with this code. Share sends the link.</p>
+        <p class="hint">Open Shockmate on the other phone with this code. Your other Yomple apps take it too. Share sends the link.</p>
         <button type="button" id="btn-fam-share" class="cta play">Share</button>
         <div id="fam-me-row" hidden>
           <span class="set-label">This phone plays as</span>
@@ -424,15 +425,13 @@
         </div>
         <button type="button" id="btn-fam-done" class="cta big">Done</button>
       </div>
-      <div class="set-card fam-card" id="fam-join" hidden>
-        <h3>Join a family</h3>
-        <label>Family code <input id="fam-code-input" type="text" maxlength="10" autocapitalize="characters"
-          autocomplete="off" spellcheck="false" placeholder="8 letters and numbers" /></label>
-        <button type="button" id="btn-fam-find" class="cta">Find family</button>
-      </div>
       <div class="set-card fam-card" id="fam-pick" hidden>
-        <h3>Which one is this phone's player?</h3>
+        <h3>Which one are you?</h3>
         <div class="fam-roster" id="fam-roster"></div>
+        <div class="fam-other" id="fam-other" hidden>
+          <label>Your name <input id="fam-other-name" type="text" maxlength="16" autocapitalize="words" spellcheck="false" /></label>
+          <button type="button" id="btn-fam-other-go" class="cta">Next</button>
+        </div>
       </div>
       <p class="hint fam-state" id="fam-state"></p>
       <div class="actions"><button type="button" id="btn-fam-back" class="link">not now</button></div>

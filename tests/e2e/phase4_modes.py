@@ -265,7 +265,7 @@ async def versus_one_phone(b, base, fake):
 
 
 async def live_two_phones(b, base, fake):
-    code = "ABCDEFGH"
+    code = "MAPLE-K7Q2"
     fake.families[code] = {"name": "Family", "players": {0: {"name": "Ada", "pin": "1111", "progress": {}},
                                                          1: {"name": "Ben", "pin": "2222", "progress": {}}}}
     roster = [{"slot": 0, "name": "Ada"}, {"slot": 1, "name": "Ben"}]

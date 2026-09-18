@@ -163,15 +163,30 @@
     return out;
   }
 
-  /* ---------- identity: Shockmate's own family ----------
-     A family is an 8-character code from an alphabet with no 0/O/1/I/L, so it can be read out loud
-     and typed on a phone without a wrong guess. Each kid is a slot (0 or 1) with his own 4-digit PIN,
-     which the server keeps hashed and checks; the parent's coach PIN is separate and never leaves
-     the device. */
-  const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  const CODE_RE = /^[A-HJKMNP-Z2-9]{8}$/;
+  /* ---------- identity: the Yomple household code ----------
+     A family is the household code every Yomple app already shares: a tree word and four characters
+     from an alphabet with no 0/O/1/I/L, like MAPLE-K7Q2. It is typed forgivingly ("maple k7q2",
+     "MAPLEK7Q2") and always stored in one form. Each kid is a slot (0 or 1) with his own 4-digit
+     Shockmate PIN, which the server keeps hashed and checks; the coach PIN never leaves the device. */
+  const WORDS = ["OAK", "MAPLE", "PINE", "CEDAR", "ELM", "BIRCH", "WILLOW", "ASPEN", "LAUREL", "HOLLY"];
+  const CODE_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+  const CODE_RE = /^(OAK|MAPLE|PINE|CEDAR|ELM|BIRCH|WILLOW|ASPEN|LAUREL|HOLLY)-[2-9A-HJKMNP-Z]{4}$/;
+  const FLEX_RE = /^(OAK|MAPLE|PINE|CEDAR|ELM|BIRCH|WILLOW|ASPEN|LAUREL|HOLLY)([2-9A-HJKMNP-Z]{4})$/;
+  const CODE_MAX = 14;   // the code box: "LAUREL - K7Q2" and a stray space still fit
   const SITE = "https://dirac1974.github.io/shockmate/";
-  function normaliseCode(text) { return String(text || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8); }
+  // The canonical WORD-XXXX when the text is a household code typed any way; otherwise the text
+  // cleaned (caps, letters and digits), so the box can show what was read.
+  function normaliseCode(text) {
+    const flat = String(text || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const m = flat.match(FLEX_RE);
+    return m ? m[1] + "-" + m[2] : flat;
+  }
+  function mintCode(rand) {
+    const r = rand || Math.random;
+    let tail = "";
+    for (let i = 0; i < 4; i++) tail += CODE_ALPHABET.charAt(Math.floor(r() * CODE_ALPHABET.length));
+    return WORDS[Math.floor(r() * WORDS.length)] + "-" + tail;
+  }
   function normalisePin(text) { return String(text == null ? "" : text).replace(/[^0-9]/g, "").slice(0, 4); }
   function validCode(code) { return CODE_RE.test(normaliseCode(code)); }
   function validPin(pin) { return normalisePin(pin).length === 4; }
@@ -179,16 +194,76 @@
   function cleanName(text) {
     return String(text || "").split("").filter((c) => c.charCodeAt(0) >= 32 && c !== "<" && c !== ">").join("").trim().slice(0, 16);
   }
-  // ?family=CODE on the page URL, as a share link opens it. Null when absent or malformed.
-  function codeFromSearch(search) {
-    const m = String(search || "").match(/[?&]family=([^&#]*)/i);
+  function param(search, name) {
+    const m = String(search || "").match(new RegExp("[?&]" + name + "=([^&#]*)", "i"));
     if (!m) return null;
-    let raw = m[1]; try { raw = decodeURIComponent(raw); } catch (e) {}
+    let raw = m[1]; try { raw = decodeURIComponent(raw.replace(/\+/g, " ")); } catch (e) {}
+    return raw;
+  }
+  // ?family=CODE on the page URL, as a share link opens it; the Yomple hub sends ?f=CODE. Null when
+  // absent or malformed.
+  function codeFromSearch(search) {
+    const raw = param(search, "family") || param(search, "f");
+    if (raw == null) return null;
     const code = normaliseCode(raw);
     return CODE_RE.test(code) ? code : null;
   }
+  // Coming from yomple.com: ?u=<username>&from=yomple names the kid who tapped Shockmate there.
+  function yompleUser(search) {
+    if (!/^yomple$/i.test(param(search, "from") || "")) return null;
+    const u = String(param(search, "u") || "").trim().toLowerCase();
+    return /^[a-z0-9][a-z0-9-]{0,39}$/.test(u) ? u : null;
+  }
   function shareUrl(code) { return SITE + "?family=" + normaliseCode(code); }
   function shareText(code) { return "Join our Shockmate family: " + normaliseCode(code) + " " + shareUrl(code); }
+
+  /* ---------- the household's kids, from Yomple ----------
+     yomple_family_players answers per app table; the same kid shows up in several apps, sometimes as
+     "Sam", sometimes as a test name like "Foxy (Sarah)" or "Player 1". The list the kid picks from is
+     his Shockmate siblings first, then real-looking names, the ones in the most apps first. */
+  const YOMPLE_TABLES = ["hop_players", "bloom_players", "garden_players", "star_players", "field_players"];
+  const ROSTER_MAX = 6;
+  const GENERIC = /^(player|kid|test|user|guest)( ?[0-9]+)?$/i;
+  function buildRoster(yompleRows, smRows, preferUser) {
+    const byName = {};
+    const order = [];
+    const add = function (name, extra) {
+      const n = cleanName(name); if (!n) return null;
+      const k = n.toLowerCase();
+      if (!byName[k]) { byName[k] = { name: n, slot: null, usernames: [], tables: {}, clean: true }; order.push(k); }
+      return Object.assign(byName[k], extra || {});
+    };
+    (smRows || []).forEach(function (r) { if (r && validSlot(r.slot)) add(r.name, { slot: r.slot }); });
+    (yompleRows || []).forEach(function (r) {
+      if (!r) return;
+      const shown = String(r.display_name || r.username || "");
+      if (GENERIC.test(cleanName(shown))) return;
+      const e = add(shown); if (!e) return;
+      const u = String(r.username || "").toLowerCase();
+      if (u && e.usernames.indexOf(u) < 0) e.usernames.push(u);
+      if (r.table) e.tables[r.table] = 1;
+      // A name with a bracket or a numbered username looks made up for a test.
+      if (/[()]/.test(shown) || /-[0-9]+$/.test(u)) e.clean = e.clean && e.slot != null;
+    });
+    const list = order.map(function (k) { return byName[k]; });
+    const rank = function (e) {
+      return [e.slot != null ? e.slot : 9, preferUser && e.usernames.indexOf(preferUser) >= 0 ? 0 : 1,
+        e.clean ? 0 : 1, -Object.keys(e.tables).length];
+    };
+    list.sort(function (a, b) {
+      const x = rank(a), y = rank(b);
+      for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] - y[i];
+      return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+    });
+    return list.slice(0, Math.max(ROSTER_MAX, list.filter(function (e) { return e.slot != null; }).length))
+      .map(function (e) { return { name: e.name, slot: e.slot, usernames: e.usernames,
+        me: !!(preferUser && e.usernames.indexOf(preferUser) >= 0) }; });
+  }
+  // The slot a new kid would take: the first one nobody has.
+  function freeSlot(smRows) {
+    const used = (smRows || []).map(function (r) { return r && r.slot; });
+    return [0, 1].filter(function (s) { return used.indexOf(s) < 0; })[0];
+  }
 
   // Which slots this phone can sync: the ones whose PIN it knows.
   function syncSlots(family) {
@@ -233,7 +308,8 @@
   // Errors carry `.code`: "pin" and "locked" from the server's PIN check, "ply"/"turn"/"over"/"same"
   // from a live game, "http" for anything the server refused outright, "offline" for no network.
   function fail(code, message, extra) { const e = new Error(message); e.code = code; if (extra) Object.assign(e, extra); return e; }
-  const MESSAGES = { pin: "That PIN is not right.", locked: "Too many wrong PINs. Try again in 15 minutes.",
+  const MESSAGES = { taken: "That spot is already taken.", name: "That name is already in the family.",
+    pin: "That PIN is not right.", locked: "Too many wrong PINs. Try again in 15 minutes.",
     ply: "The game moved on.", turn: "Not your turn.", over: "That game is over.", same: "Both phones are the same player." };
 
   function rpc(cfg, name, body, fetchImpl) {
@@ -258,18 +334,57 @@
       });
   }
 
-  function familyCreate(cfg, name, kids, fetchImpl) {
+  function familyCreate(cfg, code, name, kids, fetchImpl) {
     const list = (kids || []).map((k) => ({ name: cleanName(k && k.name), pin: normalisePin(k && k.pin) }));
+    if (!validCode(code)) return Promise.reject(fail("input", "That is not a family code."));
     if (!list.length || list.length > 2 || list.some((k) => !k.name || !validPin(k.pin))) {
       return Promise.reject(fail("input", "Each kid needs a name and a 4-digit PIN."));
     }
-    return rpc(cfg, "sm_family_create", { p_name: String(name || "").trim().slice(0, 32), p_kids: list }, fetchImpl)
+    return rpc(cfg, "sm_family_create", { p_code: normaliseCode(code), p_name: String(name || "").trim().slice(0, 32), p_kids: list }, fetchImpl)
       .then((r) => normaliseCode(r && r.code));
   }
+  // A kid of a household that already exists claims a Shockmate slot with a new PIN.
+  function familyAdopt(cfg, code, slot, name, pin, fetchImpl) {
+    const n = cleanName(name), p = normalisePin(pin);
+    if (!validCode(code) || !validSlot(slot) || !n || !validPin(p)) {
+      return Promise.reject(fail("input", "A name and a 4-digit PIN, please."));
+    }
+    return rpc(cfg, "sm_family_adopt", { p_code: normaliseCode(code), p_slot: slot, p_name: n, p_pin: p }, fetchImpl)
+      .then((r) => ({ code: normaliseCode(r && r.code), slot: r && r.slot, name: String((r && r.name) || n) }));
+  }
   function familyRoster(cfg, code, fetchImpl) {
-    if (!validCode(code)) return Promise.reject(fail("input", "A family code is 8 letters and numbers."));
+    if (!validCode(code)) return Promise.reject(fail("input", "Codes look like MAPLE-K7Q2."));
     return rpc(cfg, "sm_family_roster", { p_code: normaliseCode(code) }, fetchImpl)
       .then((rows) => (rows || []).filter((r) => r && validSlot(r.slot)).map((r) => ({ slot: r.slot, name: String(r.name || "") })));
+  }
+
+  /* ---------- Yomple, read-mostly ----------
+     The household's kids come from Yomple's own project (its anon key is public by design; every
+     table there is closed and each function checks its input). Shockmate only ever reads players by
+     code, and registers a code it minted itself so the other apps accept it later. */
+  function yompleKids(ycfg, code, fetchImpl) {
+    if (!validCode(code)) return Promise.reject(fail("input", "Codes look like MAPLE-K7Q2."));
+    const c = normaliseCode(code);
+    return Promise.all(YOMPLE_TABLES.map((t) => rpc(ycfg, "yomple_family_players", { p_code: c, p_table: t }, fetchImpl)
+      .then((rows) => (Array.isArray(rows) ? rows : []).map((r) => Object.assign({ table: t }, r)))))
+      .then((lists) => [].concat.apply([], lists));
+  }
+  function yompleRegister(ycfg, code, fetchImpl) {
+    if (!validCode(code)) return Promise.reject(fail("input", "That is not a family code."));
+    return rpc(ycfg, "yomple_family_upsert", { p_code: normaliseCode(code), p_email: null }, fetchImpl);
+  }
+  /* What a typed code opens: Yomple's kids and Shockmate's players, together. `found` is false only
+     when neither knows the code. A Yomple outage still lets a Shockmate family in. */
+  function lookupFamily(cfg, ycfg, code, preferUser, fetchImpl) {
+    if (!validCode(code)) return Promise.reject(fail("input", "Codes look like MAPLE-K7Q2."));
+    const y = configured(ycfg) ? yompleKids(ycfg, code, fetchImpl).then((r) => ({ rows: r }), (e) => ({ rows: [], err: e }))
+      : Promise.resolve({ rows: [] });
+    return Promise.all([y, familyRoster(cfg, code, fetchImpl)]).then((both) => {
+      const yr = both[0], sm = both[1];
+      if (!yr.rows.length && !sm.length && yr.err) throw yr.err;
+      return { code: normaliseCode(code), found: yr.rows.length > 0 || sm.length > 0, players: sm,
+        yomple: yr.rows.length > 0, roster: buildRoster(yr.rows, sm, preferUser), free: freeSlot(sm) };
+    });
   }
   function auth(code, slot, pin) { return { p_code: normaliseCode(code), p_slot: slot, p_pin: normalisePin(pin) }; }
   function pull(cfg, code, slot, pin, fetchImpl) { return rpc(cfg, "sm_pull", auth(code, slot, pin), fetchImpl); }
@@ -281,8 +396,10 @@
   }
 
   const api = { mergeStats, mergeCard, normaliseCode, normalisePin, validCode, validPin, validSlot, cleanName,
-    codeFromSearch, shareUrl, shareText, syncSlots, joined, CODE_ALPHABET, SITE,
-    exportBlob, importBlob, parentOf, configured, rpc, auth, familyCreate, familyRoster, pull, push, rename,
+    codeFromSearch, yompleUser, shareUrl, shareText, syncSlots, joined, mintCode, buildRoster, freeSlot,
+    CODE_ALPHABET, CODE_MAX, WORDS, YOMPLE_TABLES, ROSTER_MAX, SITE,
+    exportBlob, importBlob, parentOf, configured, rpc, auth, familyCreate, familyAdopt, familyRoster,
+    yompleKids, yompleRegister, lookupFamily, pull, push, rename,
     LEDGER_MAX, TIERS_MAX, GAMES_RECENT, GAME_FIGHTS_MAX, BEST_MOVES_MAX, FLASH_WINDOW, LEVEL_ORDER };
   root.ShockmateSync = api;
   if (typeof module !== "undefined") module.exports = api;
