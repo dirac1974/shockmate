@@ -214,10 +214,30 @@ h3 { font-size: 20px; font-weight: 700; margin: 0 0 6px; }
 .sq.gate-ok { box-shadow: inset 0 0 0 5px var(--sun); }
 .sq.gate-hint { box-shadow: inset 0 0 0 5px var(--ink); animation: breathe .6s ease infinite; }
 .sq.nope { animation: shake .3s ease; }
+.chip.nope { animation: shake .3s ease; }
 .ritual { text-align: center; font-weight: 700; color: var(--ink); background: var(--paper-2);
   border: 2.5px dashed var(--ink); border-radius: 12px 15px 11px 14px; padding: 7px 10px;
   margin: 2px 6px 8px; font-size: 16px; line-height: 1.35; }
 .ritual[hidden] { display: none; }
+
+/* ---------- flash: a ring that empties, and four chips ----------
+   The ring is a meter, not a control, so it lives with the blitz bar and the think meter rather than
+   with the three kinds of button. It empties; it never counts. */
+.flash-ring { display: flex; justify-content: center; margin: 2px 0 4px; }
+.flash-ring[hidden] { display: none; }
+.flash-ring svg { width: 40px; height: 40px; transform: rotate(-90deg); }
+.flash-ring circle { fill: none; stroke-width: 5; stroke-linecap: round; }
+.flash-ring .track { stroke: var(--hair); }
+.flash-ring .run { stroke: var(--grape); stroke-dasharray: 106.8; stroke-dashoffset: 0; }
+.flash-ring.ghost .run { stroke: var(--sun); }
+.flash-chips { justify-content: center; margin: 6px 0 0; }
+.flash-chips[hidden] { display: none; }
+.flash-chips .chip { min-width: 58px; min-height: 52px; font-size: 22px; font-weight: 800; justify-content: center; }
+/* The ghost move: an arrow that says the move once and then stops helping. */
+.ghost-arrow { position: absolute; inset: 0; pointer-events: none; }
+.ghost-arrow line { stroke: var(--grape); stroke-width: 7; stroke-linecap: round; opacity: .85; }
+.ghost-arrow circle { fill: var(--grape); opacity: .85; }
+.sq.flash-from { box-shadow: inset 0 0 0 5px var(--grape); }
 
 /* ---------- cards and the collection ---------- */
 .why-card, .room, .prog-kid, .agent, .modal-card, .next-peek, .set-card, .gate-card {
@@ -484,6 +504,9 @@ button:disabled:active { transform: none; }
 .day-chip.camp .n { border-radius: 50% 14px 50% 14px; transform: rotate(6deg); background: var(--paper-2); font-size: 28px; }
 .day-chip.camp.done .n { background: var(--leaf); color: var(--card); }
 .day-chip.camp .t { margin-top: 5px; }
+.day-chip.flash .n { border-radius: 14px 50% 14px 50%; transform: rotate(-6deg); background: var(--paper-2); font-size: 26px; }
+.day-chip.flash.done .n { background: var(--leaf); color: var(--card); }
+.day-chip.flash .t { margin-top: 5px; }
 .day-chip:disabled { opacity: .45; box-shadow: none; border: 0; }
 .day-chip.prep .t { margin-top: 5px; }
 .blurb { text-align: center; font-size: 15px; color: var(--ink); margin: 2px 8px 0; }

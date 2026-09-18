@@ -24,6 +24,30 @@ function run() {
   });
   assert.strictEqual(Y.mergeStats({}, {}).camp, undefined, "no camp data invents none");
 
+  /* Flash. Same rule: every counter takes the larger side, days and rungs union by the larger, the
+     imagine latch is open if it is open anywhere, and the rolling window follows the device that has
+     actually answered more items rather than being spliced out of two half-windows. */
+  const flashA = { flash: { items: 30, correct: 24, fast: 4, bestRun: 7, cleanDays: 2, imagineOpen: false,
+      byType: { recall: { items: 20, correct: 16 }, gone: { items: 10, correct: 8 } },
+      days: { "2026-09-18": { items: 6, correct: 6 }, "2026-09-19": { items: 6, correct: 4 } },
+      last12: [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1] } };
+  const flashB = { flash: { items: 18, correct: 15, fast: 9, bestRun: 4, cleanDays: 3, imagineOpen: true,
+      byType: { recall: { items: 12, correct: 11 }, imagine: { items: 6, correct: 4 } },
+      days: { "2026-09-19": { items: 4, correct: 4 }, "2026-09-20": { items: 6, correct: 5 } },
+      last12: [1, 0, 1] } };
+  [Y.mergeStats(flashA, flashB), Y.mergeStats(flashB, flashA)].forEach(function (m) {
+    assert.deepStrictEqual([m.flash.items, m.flash.correct], [30, 24], "flash counts take the larger side, never the sum");
+    assert.deepStrictEqual([m.flash.fast, m.flash.bestRun, m.flash.cleanDays], [9, 7, 3], "and so does every other one");
+    assert.strictEqual(m.flash.imagineOpen, true, "a rung opened on either phone stays open on both");
+    assert.strictEqual(m.flash.byType.imagine.items, 6, "a rung only one phone has seen survives");
+    assert.deepStrictEqual(m.flash.byType.recall, { items: 20, correct: 16 });
+    assert.strictEqual(Object.keys(m.flash.days).length, 3, "flash days union across devices");
+    assert.deepStrictEqual(m.flash.days["2026-09-19"], { items: 6, correct: 4 }, "a day both phones saw takes the larger counts");
+    assert.strictEqual(m.flash.last12.length, 12, "the rolling window comes off the device that did the drilling");
+    assert.ok(m.flash.last12.length <= Y.FLASH_WINDOW);
+  });
+  assert.strictEqual(Y.mergeStats({}, {}).flash, undefined, "a kid who has never flashed invents no flash");
+
   /* Play. Games played and won only ever climb, so two devices take the larger of each; the best
      level beaten takes the higher rung whichever side it came from; `recent` unions by when the
      game ended, because the level suggestion reads it and half a history suggests the wrong crony;
@@ -258,7 +282,7 @@ function run() {
       return Y.pull(cfg, "9XPNE8T5", 0, "1111", offline).then(() => { throw new Error("offline should reject"); },
         (err) => assert.strictEqual(err.code, "offline", "no network is its own quiet failure"));
     })
-    .then(() => console.log("OK sync: family codes and links, slots and PINs, merge (order-free, idempotent, capped), backup round trip, games and game fights, sm_* rpc shapes, failure paths"));
+    .then(() => console.log("OK sync: family codes and links, slots and PINs, merge (order-free, idempotent, capped), backup round trip, games and game fights, flash counters and the imagine latch, sm_* rpc shapes, failure paths"));
 }
 
 run().catch((err) => { console.error(err); process.exit(1); });

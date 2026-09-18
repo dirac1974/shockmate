@@ -900,6 +900,75 @@
     famFound: lineTable("taunt", "g-family-found", ["Found them. Which one of you is holding this phone?"]),
     famNames: lineTable("taunt", "g-family-names", ["Names first. I'll be rude to both equally."]),
     famJoin: lineTable("taunt", "g-family-join", ["Got a code? Type it in."]),
+    /* Flash. The reveal line is said as the board arrives and then he shuts up: the five seconds of
+       looking are a think window like any other. The poof, the reaction and the debrief are loud. */
+    flashReveal: lineTable("smug", "g-flash-reveal", [
+      "Memorise THAT. Go on.",
+      "Look fast. I'm taking it away.",
+      "Study my beautiful board. Briefly.",
+      "Photograph it with your eyes. Ha! You can't.",
+      "Look now. Regret later.",
+      "This board is only visiting.",
+      "Stare hard. It won't help.",
+      "Here it is. Enjoy. Briefly.",
+      "Eyes open, brain on. Good luck.",
+      "One board. One look. Off you go.",
+      "Drink it in. I'm thirsty for your mistakes."]),
+    flashHide: lineTable("smug", "g-flash-hide", [
+      "Poof. Timeline wiped.",
+      "Gone! Where did it go? I know. You don't.",
+      "Whoops. I deleted the board.",
+      "Vanished. Like my rating. No, wait, forget that.",
+      "Empty. Just you and your memory.",
+      "I put it in a drawer. In another timeline.",
+      "Board's gone. Panic now.",
+      "Erased! That is my favourite trick.",
+      "Poof! And the snacks went with it.",
+      "Nothing left. Except the question."]),
+    flashRight: lineTable("nervous", "g-flash-right", [
+      "You REMEMBERED that?",
+      "How? It wasn't even there!",
+      "Stop seeing things that aren't on the board!",
+      "Ugh. Right again. My poof is broken.",
+      "Nobody has a memory like that. Nobody.",
+      "Five seconds. FIVE. And you saw it.",
+      "Fine! Yes. That one. Hmph.",
+      "My beautiful trick, ruined by a child.",
+      "I'm going to need a bigger poof.",
+      "Right. I'm confiscating your eyes."]),
+    flashWrong: lineTable("smug", "g-flash-wrong", [
+      "Wrong! The board would tell you. If it existed.",
+      "Nope. Gone means gone.",
+      "Ha! Your memory has holes in it.",
+      "Not that one. Think harder. Or don't.",
+      "Wrong square. I am delighted.",
+      "Nope! My poof works perfectly.",
+      "Missed it. Five seconds wasn't enough, was it.",
+      "Wrong. I'm writing this in my rating book.",
+      "Nope. Picture it again. Slowly.",
+      "Ooh, no. Close. Not really."]),
+    flashImagine: lineTable("taunt", "g-flash-imagine", [
+      "Don't move it. IMAGINE it.",
+      "In your head. Not with your hands.",
+      "Play it in your brain. The board stays put.",
+      "No touching. Only thinking. Horrible, isn't it.",
+      "Move it in your mind. I'll wait. I hate waiting.",
+      "See the move without making it. Go on.",
+      "The board will not help you. Imagine.",
+      "Hands off. Head on.",
+      "Picture it, then tell me what it bites.",
+      "Pretend you played it. Now what's in trouble?"]),
+    flashDone: lineTable("nervous", "g-flash-done", [
+      "That's Flash. I need a lie-down.",
+      "Done. My poof machine is overheating.",
+      "Finished. I'm inventing a slower trick.",
+      "That is enough looking for one day.",
+      "Flash over. My eyes hurt, and I wasn't even looking.",
+      "Done! Come back tomorrow. Or don't. Please don't.",
+      "That's it. I'm off to hide some boards.",
+      "Flash finished. I'll be in the fridge.",
+      "Over! I need new tricks. Better ones.",
+      "Done. Two minutes, and I aged nine thousand years."]),
     // The blitz hint lands inside the think window, so it is shown and never spoken.
     blitz: lineTable("nervous", "g-fight-blitz", [
       "Too slow! Here, I'll narrow it down. Ugh.",
@@ -1001,11 +1070,11 @@
       return c.wrong ? "That is what he was attacking. Ask that question after every move he makes." : "Straight away. That is the question to ask after every move he makes.";
     }
     if (kind === "campStart") {
-      if (s === "numbers") return "Camp: 3 spot checks, 4 fights, 2 counters.";
-      return "Camp. First spot what he is attacking, then four fights, then two where you are the one being attacked.";
+      if (s === "numbers") return "Camp: 2 flash, 2 spot checks, 4 fights, 2 counters.";
+      return "Camp. Two boards that vanish, then spot what he is attacking, then four fights, then two where you are the one being attacked.";
     }
     if (kind === "phase") {
-      if (c.phase === "warm") return s === "numbers" ? "Spot the attack. 3 boards." : "Three boards. After each move of his, say what it attacks.";
+      if (c.phase === "warm") return s === "numbers" ? "Spot the attack. 2 boards." : "Two boards. After each move of his, say what it attacks.";
       if (c.phase === "fights") return s === "numbers" ? "4 fights. Two questions before every move." : "Four fights. Ask both questions out loud before you touch a piece.";
       if (c.phase === "counter") return s === "numbers" ? "2 counters. You are the one under attack." : "Two boards where he is attacking you. Look for a bigger attack before you retreat.";
       return "";
@@ -1017,6 +1086,28 @@
       const label = c.motifLabel || "";
       const lead = label ? "The thing that cost you most today was " + label + "." : "You got through every board today without a miss to fix.";
       return lead + " " + (c.principle || PRINCIPLES.counting);
+    }
+    /* Flash. Same rule as everywhere else in Camp: the numbers kid is told what to count and how long
+       he has, the words kid is told what to look for. Neither register ever mentions a score. */
+    if (kind === "flashStart") {
+      const secs = Math.max(1, Math.round((c.revealMs || 5000) / 1000));
+      if (s === "numbers") return "Flash: " + Math.max(0, c.count || 6) + " boards, " + secs + " seconds each.";
+      return "Flash. Look at the whole board, then it vanishes and I ask you one thing about it.";
+    }
+    if (kind === "flashLook") return s === "numbers" ? "Look. Then it goes." : "Look at the whole board, not just the piece he moved.";
+    if (kind === "flashGone") return s === "numbers" ? "One piece will go. Tap its square." : "One of these pieces is about to disappear. Tap where it was.";
+    if (kind === "flashImagine") return s === "numbers" ? "Move it in your head. Do not touch it." : "Play the move in your head. The board is not going to change for you.";
+    if (kind === "flashRight") return s === "numbers" ? "Right." : "Yes. That is the one.";
+    if (kind === "flashHint") {
+      if (c.chip) return s === "numbers" ? "Not that number. Count them again." : "Count them again in your head.";
+      return s === "numbers" ? "One square. Look again." : "Picture the board again. Where was it?";
+    }
+    if (kind === "flashGive") return s === "numbers" ? "That was it." : "That was the one. Look longer next time.";
+    if (kind === "flashDone") {
+      const got = Math.max(0, c.correct || 0), of = Math.max(0, c.count || 0);
+      if (s === "numbers") return "Flash: " + got + "/" + of + " first look. Best run " + Math.max(0, c.run || 0) + ".";
+      return got === of ? "Every board, first look. That is board vision."
+        : "The boards you had to look at twice are the ones to look at longest tomorrow.";
     }
     if (kind === "lookFirst") return s === "numbers" ? "Look first. Tap what he attacked." : "Look first. What did that move just attack? Tap it.";
     if (kind === "lookSeen") return "Seen. Now your move.";
@@ -1068,20 +1159,28 @@
     return c;
   }
 
-  /* The session plan. Three warm-ups (boards he has already won first, and only boards where Glitch's
-     arriving move actually attacks something), four prep fights, two counter-attack fights. No fight
-     appears twice. `hasThreat` is injected, so this file never has to know about the board. */
+  /* The session plan. The warm-up is now two Flash items and two "spot the attack" boards — same
+     minutes, twice the kind of looking — then four prep fights and two counter-attack fights. No
+     board appears twice anywhere in the session. `hasThreat` and `supports` are injected, so this
+     file never has to know what a board looks like. */
   function campPlan(stats, encounters, opts) {
     const o = opts || {}, all = (encounters || []).slice();
     const hasThreat = typeof o.hasThreat === "function" ? o.hasThreat : function () { return true; };
-    const nWarm = o.warmups == null ? 3 : o.warmups;
+    const nWarm = o.warmups == null ? 2 : o.warmups;
+    const nFlash = o.flash == null ? 2 : o.flash;
     const nFight = o.fights == null ? 4 : o.fights;
     const nCounter = o.counters == null ? 2 : o.counters;
     const earned = (stats && stats.cardsEarned) || {};
     const used = {}, warmups = [];
+    // Flash is picked first, so it gets the boards he knows best. A board out of his own game is
+    // held back from it for the same reason it is held back from a warm-up: that is the position he
+    // most needs to sit down and play properly, and the fights are where he does that.
+    const flash = flashPlan(stats, all.filter(function (e) { return e.pack !== "game"; }), nFlash,
+      { supports: o.supports, imagine: o.imagine }).items;
+    flash.forEach(function (it) { used[it.id] = true; });
     // A board out of his own game is never spent as a warm-up. It is the one he most needs to play
     // properly, so it is reserved for the fights, where prepFights puts it first.
-    const pool = all.filter(function (e) { return e.pack !== "game" && hasThreat(e); });
+    const pool = all.filter(function (e) { return e.pack !== "game" && !used[e.id] && hasThreat(e); });
     const takeWarm = function (e) { if (!used[e.id] && warmups.length < nWarm) { used[e.id] = true; warmups.push(e); } };
     pool.forEach(function (e) { if (earned[e.id]) takeWarm(e); });   // a board he has already won reads faster
     pool.forEach(takeWarm);
@@ -1103,8 +1202,9 @@
     fights.forEach(function (e) { used[e.id] = true; });
     // No defence pack yet: the counter slots become two more prep fights, picked after the four.
     if (counters.length < nCounter) prepFights(stats, left(), nCounter - counters.length, o.avoid).forEach(takeCounter);
-    return { warmups: warmups, fights: fights, counters: counters,
-      boards: fights.concat(counters), all: warmups.concat(fights).concat(counters),
+    return { flash: flash, warmups: warmups, fights: fights, counters: counters,
+      boards: fights.concat(counters),
+      all: flash.map(function (it) { return it.enc; }).concat(warmups, fights, counters),
       hasDefence: counters.some(function (e) { return e.pack === "defence"; }) };
   }
 
@@ -1121,6 +1221,113 @@
     return { line: coachLine(style, ctx), say: coachLine(style, { kind: "say", question: question }),
       question: question, motif: weak ? weak.motif : null, principle: ctx.principle,
       threatsAsked: asked, threatsFound: found, firstTry: ctx.firstTry, fights: ctx.fights, streak: ctx.streak };
+  }
+
+  /* ---------- flash: two minutes of board vision ----------
+     Six positions out of his own material. Each one is shown for a few seconds and then taken away,
+     and he is asked ONE thing about what it meant — what was hanging, where Glitch's queen stood,
+     what the last move hit, how many pieces were on his king. The point is not the memory: it is
+     that answering a question about meaning forces him to look at the whole board instead of the
+     piece that just moved, which is exactly what he does not do at a real board.
+
+     Every counter here only ever climbs. The rolling window and the current run are working memory
+     for the adaptive rule and are never drawn on a screen. */
+  const FLASH_N = 6, FLASH_REVEAL_MS = 5000, FLASH_FAST_MS = 3000;
+  const FLASH_WINDOW = 12, FLASH_FAST_AT = 0.8, FLASH_CLEAN_DAYS = 3, FLASH_CLEAN_MIN = 4;
+  const FLASH_TYPES = ["recall", "imagine", "gone"];
+  function emptyFlash() { return { items: 0, correct: 0, fast: 0, byType: {}, days: {}, run: 0, bestRun: 0, cleanDays: 0, imagineOpen: false, last12: [] }; }
+  function flashOf(stats) {
+    const f = Object.assign(emptyFlash(), (stats && stats.flash) || {});
+    f.byType = Object.assign({}, f.byType);
+    FLASH_TYPES.forEach(function (t) { f.byType[t] = Object.assign({ items: 0, correct: 0 }, f.byType[t]); });
+    f.days = Object.assign({}, f.days);
+    Object.keys(f.days).forEach(function (k) { f.days[k] = Object.assign({ items: 0, correct: 0 }, f.days[k]); });
+    f.last12 = (f.last12 || []).slice(-FLASH_WINDOW).map(function (x) { return x ? 1 : 0; });
+    return f;
+  }
+  function flashRate(stats) { const f = flashOf(stats); return f.items ? f.correct / f.items : 0; }
+  // The last twelve items, whatever day they were answered on. The adaptive rule reads this and
+  // nothing else, so a good morning does not shorten the reveal on the strength of a good March.
+  function flashRolling(stats) {
+    const l = flashOf(stats).last12, got = l.filter(function (x) { return x; }).length;
+    return { n: l.length, correct: got, rate: l.length ? got / l.length : 0, full: l.length >= FLASH_WINDOW };
+  }
+  // Silent, like the rest of the app: nothing on screen says the window got shorter. Never below 3 s.
+  function flashRevealMs(stats) {
+    const r = flashRolling(stats);
+    return Math.max(FLASH_FAST_MS, r.full && r.rate >= FLASH_FAST_AT ? FLASH_FAST_MS : FLASH_REVEAL_MS);
+  }
+  function flashDayClean(day) { const d = day || {}; return (d.items || 0) >= FLASH_CLEAN_MIN && (d.correct || 0) >= (d.items || 0); }
+  function flashCleanDays(stats) { return flashOf(stats).cleanDays || 0; }
+  /* The imagine rung. Holding a move in your head while the board refuses to move is the hard one; it
+     opens after three clean days. `cleanDays` is counted live off the days map, so a fifth item that
+     spoils a clean morning stops that morning counting — but the rung itself is a latch and never
+     shuts again, because taking a rung away is taking something off the screen. */
+  function flashUnlocked(stats) { const f = flashOf(stats); return !!f.imagineOpen || (f.cleanDays || 0) >= FLASH_CLEAN_DAYS; }
+  function flashDoneToday(stats, ts) { return !!flashOf(stats).days[dateKey(ts || Date.now())]; }
+  function flashDaysDone(stats) { return Object.keys(flashOf(stats).days).length; }
+  function recordFlash(stats, res) {
+    const r = res || {}, next = Object.assign({}, stats || {});
+    const f = flashOf(stats);
+    const type = FLASH_TYPES.indexOf(r.type) >= 0 ? r.type : "recall";
+    const correct = !!r.correct, key = dateKey(r.t || Date.now());
+    const day = Object.assign({ items: 0, correct: 0 }, f.days[key]);
+    f.items += 1; f.byType[type].items += 1; day.items += 1;
+    if (correct) { f.correct += 1; f.byType[type].correct += 1; day.correct += 1; }
+    if (r.revealMs > 0 && r.revealMs <= FLASH_FAST_MS) f.fast += 1;
+    f.days[key] = day;
+    f.run = correct ? (f.run || 0) + 1 : 0;
+    f.bestRun = Math.max(f.bestRun || 0, f.run);
+    f.last12 = f.last12.concat(correct ? 1 : 0).slice(-FLASH_WINDOW);
+    f.cleanDays = Object.keys(f.days).filter(function (k) { return flashDayClean(f.days[k]); }).length;
+    if (f.cleanDays >= FLASH_CLEAN_DAYS) f.imagineOpen = true;     // a latch, never a toggle
+    next.flash = f;
+    return { stats: next, flash: f, correct: correct, day: day, clean: flashDayClean(day) };
+  }
+
+  /* What the drill draws on, and what it asks of each board. His own games first, then boards he has
+     already won, then the hand-authored set, then the ladder: a position he has met carries meaning,
+     and meaning is the whole question. `supports` is injected the way campPlan takes `hasThreat`, so
+     this file still never has to know what a board looks like. */
+  const FLASH_MIX = ["gone", "recall", "recall", "recall", "gone", "recall"];
+  const FLASH_MIX_OPEN = ["gone", "recall", "recall", "imagine", "gone", "recall"];
+  function flashOrder(stats, encounters) {
+    const all = (encounters || []).slice(), earned = (stats && stats.cardsEarned) || {};
+    const seen = {}, out = [];
+    const take = function (e) { if (e && e.id && !seen[e.id]) { seen[e.id] = true; out.push(e); } };
+    all.forEach(function (e) { if (e.pack === "game") take(e); });
+    all.forEach(function (e) { if (earned[e.id]) take(e); });
+    all.forEach(function (e) { if (!e.generated) take(e); });
+    all.forEach(take);
+    return out;
+  }
+  function flashPlan(stats, encounters, n, opts) {
+    const o = opts || {}, want = n == null ? FLASH_N : Math.max(0, n);
+    const supports = typeof o.supports === "function" ? o.supports : function () { return true; };
+    const open = o.imagine == null ? flashUnlocked(stats) : !!o.imagine;
+    const mix = open ? FLASH_MIX_OPEN : FLASH_MIX;
+    const skip = {}; (o.avoid || []).forEach(function (id) { skip[id] = true; });
+    const pool = flashOrder(stats, encounters).filter(function (e) { return !skip[e.id]; });
+    const used = {}, items = [];
+    // A board carries one question and is then spent, so a drill never asks about the same position
+    // twice. A slot whose question no board can carry drops to an easier rung rather than vanishing.
+    const fallback = { imagine: ["recall", "gone"], recall: ["gone", "imagine"], gone: ["recall", "imagine"] };
+    for (let i = 0; i < want; i++) {
+      const wanted = mix[i % mix.length];
+      let type = wanted, pick = null;
+      [wanted].concat(fallback[wanted] || []).some(function (t) {
+        for (let j = 0; j < pool.length; j++) {
+          const e = pool[j];
+          if (!used[e.id] && supports(e, t)) { pick = e; type = t; return true; }
+        }
+        return false;
+      });
+      if (!pick) break;
+      used[pick.id] = true;
+      items.push({ type: type, id: pick.id, enc: pick, wanted: wanted });
+    }
+    return { items: items, n: items.length, imagine: open, revealMs: flashRevealMs(stats),
+      types: items.map(function (it) { return it.type; }) };
   }
 
   /* ---------- progress: what a parent can read off the data ----------
@@ -1173,11 +1380,50 @@
      general; every line is a reading of this kid's own numbers. The principle line deliberately uses
      the same words the app says on the card, so the parent and the app coach with one voice. */
   const RUSH_NOTE = "He is moving before he looks. Slow the hand: write the move on the scoresheet first.";
+
+  /* Is the drill worth the two minutes? The only honest answer is whether the thing it trains and the
+     thing it is supposed to help move together over weeks, so this reads last week against the week
+     before on BOTH numbers — Flash accuracy and first-try rate — and says so either way. It stays
+     quiet until there are two real weeks of each, because a week of five items says nothing. */
+  const FLASH_TREND_ITEMS = 6, FLASH_TREND_CARDS = 3;
+  const FLASH_TOGETHER = "Flash and first-try are climbing together. The looking is reaching the board.";
+  function flashTrend(stats, ts) {
+    const at = ts || Date.now(), f = flashOf(stats), week = 7 * DAY, keys = Object.keys(f.days);
+    if (!keys.length) return null;
+    const drill = function (from, to) {
+      let items = 0, correct = 0;
+      keys.forEach(function (k) {
+        const t = keyTime(k); if (t < from || t >= to) return;
+        items += f.days[k].items; correct += f.days[k].correct;
+      });
+      return { items: items, rate: items ? correct / items : 0 };
+    };
+    const earned = (stats && stats.cardsEarned) || {};
+    const first = function (from, to) {
+      const ids = Object.keys(earned).filter(function (id) { const t = (earned[id] || {}).t || 0; return t >= from && t < to; });
+      const got = ids.filter(function (id) { return (earned[id].tries || 1) <= 1; }).length;
+      return { cards: ids.length, rate: ids.length ? got / ids.length : 0 };
+    };
+    const end = at + DAY, mid = at - week, start = at - 2 * week;
+    const dNow = drill(mid, end), dWas = drill(start, mid);
+    if (dNow.items < FLASH_TREND_ITEMS || dWas.items < FLASH_TREND_ITEMS) return null;
+    const fNow = first(mid, end), fWas = first(start, mid);
+    if (fNow.cards < FLASH_TREND_CARDS || fWas.cards < FLASH_TREND_CARDS) return null;
+    return { flash: dNow.rate, flashWas: dWas.rate, firstTry: fNow.rate, firstTryWas: fWas.rate,
+      flashUp: dNow.rate > dWas.rate, firstTryUp: fNow.rate > fWas.rate };
+  }
+  function flashNote(t) {
+    if (!t) return "";
+    if (t.flashUp && t.firstTryUp) return FLASH_TOGETHER;
+    if (t.flashUp) return "Flash is climbing but first-try is not, two weeks running. What he sees in the drill has not reached his moves yet.";
+    if (t.firstTryUp) return "First-try is climbing while Flash is flat. The chess is moving without the drill; keep Flash short or drop it.";
+    return "Flash and first-try are both flat over two weeks. Sit through one drill and watch where his eyes go.";
+  }
   function coachNotes(parts) {
     const t = parts.threats, c = parts.camp, ft = parts.firstTry, notes = [];
     const rush = parts.rush || { moves: 0, rushed: 0, rate: 0 };
     if (!parts.cards && !t.asked && !parts.attempts) {
-      return ["Nothing played yet. Sit through one Camp with him: three spot checks, four fights, two counters.",
+      return ["Nothing played yet. Sit through one Camp with him: two flash boards, two spot checks, four fights, two counters.",
         "This page fills itself in from that."];
     }
     // Rushing is what loses him tournament games, so when the clock says so it leads.
@@ -1190,6 +1436,7 @@
       notes.push("He is tapping before he looks: " + t.wrongTaps + " wrong taps against " + t.asked +
         " asked. Slow him down — one question, then one tap.");
     }
+    if (parts.flashNote) notes.push(parts.flashNote);
     if (parts.focusMotif) notes.push("At the board, say: " + (principleFor(parts.focusMotif) || PRINCIPLES.counting));
     if (c.run >= 3) notes.push("Camp " + c.run + " days running. Keep the run going; the habit is the point, not the chess.");
     if (notes.length < 2 && !c.days) notes.push("No camp days yet. One camp a morning is the whole tournament habit.");
@@ -1227,6 +1474,13 @@
     /* Versus and best moments are this kid's own row and nothing else. progressSummary is called once
        per profile and never sees the other one, which is what keeps a scoreboard from existing. */
     const versus = versusOf(stats), bestMoves = bestMovesOf(stats);
+    /* Flash sits next to first-try rate and blunders per game on purpose: those two are what it is
+       supposed to move, and the parent can only judge the drill by reading the three together. */
+    const fl = flashOf(stats), trend = flashTrend(stats, at);
+    const flash = { items: fl.items, correct: fl.correct, rate: flashRate(stats), byType: fl.byType,
+      days: flashDaysDone(stats), best: fl.bestRun || 0, cleanDays: fl.cleanDays || 0,
+      unlocked: flashUnlocked(stats), doneToday: flashDoneToday(stats, at),
+      revealMs: flashRevealMs(stats), rolling: flashRolling(stats), trend: trend };
     return {
       rank: agentRank(stats), cards: cards, total: list.length,
       games: games, suggest: suggestLevel(stats), blunderTrend: blunderTrend,
@@ -1235,10 +1489,10 @@
       kos: b.kos, power: b.power, knockedOff: knockedOff(stats), motifs: motifs, byDay: cardsByDay(stats, 14, ts),
       goodAt: motifs.filter(function (m) { return m.verdict === "good"; }).map(function (m) { return m.label; }),
       focusOn: focus.map(function (m) { return m.label; }),
-      threats: threats, camp: camp, firstTry: ft, firstTryRate: ft.rate, thisWeek: week, rush: rush,
+      threats: threats, camp: camp, flash: flash, firstTry: ft, firstTryRate: ft.rate, thisWeek: week, rush: rush,
       cracked: crackedIds(stats).length,
       coachNotes: coachNotes({ threats: threats, camp: camp, firstTry: ft, cards: cards, attempts: attempts, rush: rush,
-        focusMotif: focus.length ? focus[0].motif : null }),
+        flashNote: flashNote(trend), focusMotif: focus.length ? focus[0].motif : null }),
     };
   }
 
@@ -1255,6 +1509,10 @@
     normalisePin, validPin, parentOf, parentSet, parentGate,
     PRINCIPLES, principleFor, MOTIF_LABEL, defaultCoachStyle, coachStyleOf, coachLine,
     emptyThreats, threatsOf, recordThreat, threatRate, campOf, campDoneToday, campDaysDone, recordCampDay, campPlan, campDebrief,
+    FLASH_N, FLASH_REVEAL_MS, FLASH_FAST_MS, FLASH_WINDOW, FLASH_FAST_AT, FLASH_CLEAN_DAYS, FLASH_CLEAN_MIN, FLASH_TYPES,
+    FLASH_MIX, FLASH_MIX_OPEN, FLASH_TOGETHER, emptyFlash, flashOf, flashRate, flashRolling, flashRevealMs,
+    flashDayClean, flashCleanDays, flashUnlocked, flashDoneToday, flashDaysDone, recordFlash, flashOrder, flashPlan,
+    flashTrend, flashNote,
     tellFree, useTell, bootsFree, useBoots, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;

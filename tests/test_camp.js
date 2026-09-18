@@ -2,12 +2,17 @@
 "use strict";
 /* Camp: the daily tournament-prep session. Holds the plan's shape, the warm-up targets, the threat
    counts, both coach registers, the principle map, and the once-a-day rule. Written to stay green
-   while the defence pack does not exist yet, and to stay green once it does. */
+   while the defence pack does not exist yet, and to stay green once it does.
+
+   v0.24: the warm-up is two Flash boards and two spot-the-attack boards. Flash itself is held by
+   tests/test_flash.js; what this file holds is that camp still composes without a repeat. */
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
 const S = require("../web/score.js");
 const F = require("../web/futures.js");
+const X = require("../web/flash.js");
+const supports = function (e, t) { return X.supports(e, t, { style: "words" }); };
 
 const raw = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "encounters.v2.json"), "utf8"));
 const ALL = Array.isArray(raw) ? raw : (raw.encounters || []);
@@ -35,47 +40,57 @@ function planShape() {
   const ids = function (list) { return list.map(function (e) { return e.id; }); };
 
   /* composition, with no defence pack in the data */
-  const st = statsOf([card("02", 3, 1, false), card("05", 4, 1, false)], ["01", "04"]);
-  const p = S.campPlan(st, ALL, { hasThreat: hasThreat });
-  assert.strictEqual(p.warmups.length, 3, "three warm-ups");
+  const st = statsOf([card("02", 3, 1, false), card("05", 4, 1, false)], ["01", "04", "10", "11"]);
+  const p = S.campPlan(st, ALL, { hasThreat: hasThreat, supports: supports });
+  assert.strictEqual(p.flash.length, 2, "two flash boards open the session");
+  assert.strictEqual(p.warmups.length, 2, "two spot-the-attack warm-ups");
   assert.strictEqual(p.fights.length, 4, "four fights");
   assert.strictEqual(p.counters.length, 2, "two counters");
   assert.strictEqual(p.boards.length, 6, "six boards to play after the warm-ups");
-  assert.strictEqual(new Set(ids(p.all)).size, 9, "no fight appears twice in a session: " + ids(p.all).join(","));
+  assert.strictEqual(new Set(ids(p.all)).size, 10, "no board appears twice in a session: " + ids(p.all).join(","));
+  p.flash.forEach(function (it) {
+    assert.ok(X.makeItem(it.enc, it.type, { style: "words" }), it.id + " was planned as a " + it.type + " it cannot carry");
+    assert.notStrictEqual(it.enc.pack, "game", "a board out of his own game is played, never flashed, inside camp");
+  });
   assert.strictEqual(p.hasDefence, ALL.some(function (e) { return e.pack === "defence"; }), "hasDefence reflects the data");
   if (p.hasDefence) p.counters.forEach(function (e) { assert.strictEqual(e.pack, "defence", "counters come from the defence pack when it exists: " + e.id); });
   p.warmups.forEach(function (e) { assert.ok(hasThreat(e), e.id + " is a warm-up but its arriving move attacks nothing"); });
-  assert.ok(ids(p.warmups).indexOf("01") >= 0 && ids(p.warmups).indexOf("04") >= 0,
-    "boards he has already won come first, so the position is familiar: " + ids(p.warmups).join(","));
+  // Flash and the warm-ups both want a board he has already won, and flash is picked first, so the
+  // two earned boards it takes are gone by the time the warm-ups are chosen.
+  assert.deepStrictEqual(ids(p.flash.map(function (it) { return it.enc; })), ["01", "04"],
+    "flash opens on the boards he has already won");
+  assert.ok(ids(p.warmups).indexOf("10") >= 0 && ids(p.warmups).indexOf("11") >= 0,
+    "and the warm-ups take the earned boards flash did not: " + ids(p.warmups).join(","));
   // 05 is a pin at 1/4 and 02 is a fork at 1/3, so the pin is the weaker motif and leads.
   assert.strictEqual(p.fights[0].id, "05", "the fights are prepFights: his weakest missed motif leads");
   assert.strictEqual(p.fights[1].id, "02", "then the miss in the next weakest motif");
 
   /* a fresh profile still gets a whole session */
-  const fresh = S.campPlan(statsOf([]), ALL, { hasThreat: hasThreat });
-  assert.strictEqual(fresh.warmups.length, 3);
+  const fresh = S.campPlan(statsOf([]), ALL, { hasThreat: hasThreat, supports: supports });
+  assert.strictEqual(fresh.flash.length, 2);
+  assert.strictEqual(fresh.warmups.length, 2);
   assert.strictEqual(fresh.fights.length, 4);
   assert.strictEqual(fresh.counters.length, 2);
-  assert.strictEqual(new Set(ids(fresh.all)).size, 9, "a fresh session repeats nothing either");
+  assert.strictEqual(new Set(ids(fresh.all)).size, 10, "a fresh session repeats nothing either");
 
   /* with the defence pack present, the counters come out of it and are counter/defend first */
-  const dp = S.campPlan(statsOf([]), withDefence(), { hasThreat: hasThreat });
+  const dp = S.campPlan(statsOf([]), withDefence(), { hasThreat: hasThreat, supports: supports });
   assert.strictEqual(dp.counters.length, 2);
   assert.ok(dp.hasDefence, "the counters come from the defence pack once it exists");
   assert.deepStrictEqual(dp.counters.map(function (e) { return e.motif; }).sort(), ["counter", "defend"],
     "counter and defend lead the counter slots, ahead of the pack's other motifs");
   assert.ok(dp.fights.some(function (e) { return e.pack === "defence"; }),
     "the defence pack also leads the four prep fights for a profile with no misses");
-  assert.strictEqual(new Set(dp.all.map(function (e) { return e.id; })).size, 9, "still no repeats with the pack in");
+  assert.strictEqual(new Set(dp.all.map(function (e) { return e.id; })).size, 10, "still no repeats with the pack in");
 
   /* a miss still outranks the pack, because drilling misses is the point of prep */
-  const missing = S.campPlan(statsOf([card("02", 3, 0, false)]), withDefence(), { hasThreat: hasThreat });
+  const missing = S.campPlan(statsOf([card("02", 3, 0, false)]), withDefence(), { hasThreat: hasThreat, supports: supports });
   assert.strictEqual(missing.fights[0].id, "02", "his miss leads even with a defence pack available");
 
   /* nothing to plan from at all, and a null profile during load */
-  assert.doesNotThrow(function () { S.campPlan(null, ALL, { hasThreat: hasThreat }); S.campPlan(null, [], {}); });
+  assert.doesNotThrow(function () { S.campPlan(null, ALL, { hasThreat: hasThreat, supports: supports }); S.campPlan(null, [], {}); });
   const empty = S.campPlan(null, [], {});
-  assert.deepStrictEqual([empty.warmups.length, empty.fights.length, empty.counters.length], [0, 0, 0]);
+  assert.deepStrictEqual([empty.flash.length, empty.warmups.length, empty.fights.length, empty.counters.length], [0, 0, 0, 0]);
 
   /* prepFights is untouched when no pack is preferred: the Prep chip behaves exactly as before */
   assert.deepStrictEqual(S.prepFights(statsOf([]), ALL, 4).map(function (e) { return e.id; }),
@@ -323,4 +338,4 @@ threatStats();
 coaching();
 principles();
 doneToday();
-console.log("OK camp: look-first gate decision and pacing nudge, 3 warm-ups + 4 fights + 2 counters with no repeats and no defence pack needed, threat targets on every real board, threat counts only climb, both coach registers, a principle and an icon per motif, camp counts once a day");
+console.log("OK camp: look-first gate decision and pacing nudge, 2 flash + 2 warm-ups + 4 fights + 2 counters with no repeats and no defence pack needed, threat targets on every real board, threat counts only climb, both coach registers, a principle and an icon per motif, camp counts once a day");
