@@ -10,6 +10,7 @@ Run:  python3 tools/voice/extract_lines.py
 """
 import json
 import pathlib
+import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -30,6 +31,12 @@ def main() -> None:
     data = json.loads((ROOT / "data" / "encounters.v2.json").read_text(encoding="utf-8"))
     encounters = data if isinstance(data, list) else data.get("encounters", [])
 
+    # Short-register lines are hand-authored in web/short-lines.js; node reads the one copy.
+    short = json.loads(subprocess.run(
+        ["node", "-e", "console.log(JSON.stringify(require('./web/short-lines.js').SHORT))"],
+        cwd=ROOT, capture_output=True, text=True, check=True,
+    ).stdout)
+
     lines: list[dict] = []
 
     def add(key: str, voice: str, text) -> None:
@@ -41,6 +48,7 @@ def main() -> None:
         g = e.get("glitch") or {}
         add(f"{e['id']}-hook", "narrator", e.get("hook"))
         add(f"{e['id']}-why", "narrator", e.get("why"))
+        add(f"{e['id']}-short", "narrator", short.get(e["id"]))
         add(f"{e['id']}-taunt", "glitch", g.get("taunt"))
         add(f"{e['id']}-gloat", "glitch", g.get("gloat"))
         add(f"{e['id']}-rage", "glitch", g.get("rage"))

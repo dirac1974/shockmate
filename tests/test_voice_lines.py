@@ -23,6 +23,11 @@ def main() -> None:
     assert all(l["voice"] in ("glitch", "narrator") for l in lines), "only two voices"
 
     by_key = {l["key"]: l for l in lines}
+    # The short lines in the game and in the audio must be the same words.
+    short = json.loads(subprocess.run(
+        ["node", "-e", "console.log(JSON.stringify(require('./web/short-lines.js').SHORT))"],
+        cwd=ROOT, capture_output=True, text=True, check=True,
+    ).stdout)
     for e in encs:
         for kind, voice in (("hook", "narrator"), ("why", "narrator"), ("taunt", "glitch"), ("gloat", "glitch"), ("rage", "glitch")):
             k = f"{e['id']}-{kind}"
@@ -30,6 +35,8 @@ def main() -> None:
             assert by_key[k]["voice"] == voice, f"{k} should be spoken by {voice}"
         assert by_key[f"{e['id']}-hook"]["text"] == e["hook"].strip(), f"{e['id']} hook drifted from the data"
         assert by_key[f"{e['id']}-why"]["text"] == e["why"].strip(), f"{e['id']} why drifted from the data"
+        assert f"{e['id']}-short" in by_key, f"{e['id']}-short missing; re-run extract_lines.py"
+        assert by_key[f"{e['id']}-short"]["text"] == short[e["id"]], f"{e['id']} short line drifted from web/short-lines.js"
 
     # The two questions in the game and in the audio must be the same words.
     out = subprocess.run(

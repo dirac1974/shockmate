@@ -15,6 +15,11 @@
   "text": "NOOOO. That was my WHOLE QUEEN!"
  },
  {
+  "key": "01-short",
+  "voice": "narrator",
+  "text": "Take the queen. A pawn is a crumb."
+ },
+ {
   "key": "01-taunt",
   "voice": "glitch",
   "text": "Psst. Free pawn on h5. Grab it. Nobody's looking."
@@ -38,6 +43,11 @@
   "key": "02-rage",
   "voice": "glitch",
   "text": "Two heads?! That's cheating!"
+ },
+ {
+  "key": "02-short",
+  "voice": "narrator",
+  "text": "One jump bites king and rook."
  },
  {
   "key": "02-taunt",
@@ -65,6 +75,11 @@
   "text": "A PAWN did that?!"
  },
  {
+  "key": "03-short",
+  "voice": "narrator",
+  "text": "Your smallest pawn checks him and eats the rook."
+ },
+ {
   "key": "03-taunt",
   "voice": "glitch",
   "text": "Careful, careful. Just move your king somewhere safe."
@@ -88,6 +103,11 @@
   "key": "04-rage",
   "voice": "glitch",
   "text": "You COUNTED? Who taught you that?"
+ },
+ {
+  "key": "04-short",
+  "voice": "narrator",
+  "text": "Count the guards. Take the one nobody defends."
  },
  {
   "key": "04-taunt",
@@ -115,6 +135,11 @@
   "text": "Glued?! Unglue it! UNGLUE IT!"
  },
  {
+  "key": "05-short",
+  "voice": "narrator",
+  "text": "Pin the knight. It is glued to its king."
+ },
+ {
   "key": "05-taunt",
   "voice": "glitch",
   "text": "Queen takes knight. Big and loud. Do it."
@@ -138,6 +163,11 @@
   "key": "06-rage",
   "voice": "glitch",
   "text": "You piled ON?! That's not fair!"
+ },
+ {
+  "key": "06-short",
+  "voice": "narrator",
+  "text": "It cannot run. Hit it again."
  },
  {
   "key": "06-taunt",
@@ -165,6 +195,11 @@
   "text": "Through the KING?! That's a shish kebab!"
  },
  {
+  "key": "07-short",
+  "voice": "narrator",
+  "text": "Check him. The rook behind him dies."
+ },
+ {
   "key": "07-taunt",
   "voice": "glitch",
   "text": "Rook to h7 wins a pawn next move. Slow and safe."
@@ -188,6 +223,11 @@
   "key": "08-rage",
   "voice": "glitch",
   "text": "MY OWN PAWNS locked the door?!"
+ },
+ {
+  "key": "08-short",
+  "voice": "narrator",
+  "text": "Mate beats a pawn hunt."
  },
  {
   "key": "08-taunt",
@@ -215,6 +255,11 @@
   "text": "The ROOK was the lunch?!"
  },
  {
+  "key": "09-short",
+  "voice": "narrator",
+  "text": "Rook to the back row. Mate."
+ },
+ {
   "key": "09-taunt",
   "voice": "glitch",
   "text": "Knight on d4. Free. Yum. Take it."
@@ -238,6 +283,11 @@
   "key": "10-rage",
   "voice": "glitch",
   "text": "Mate?! I was offering you a QUEEN!"
+ },
+ {
+  "key": "10-short",
+  "voice": "narrator",
+  "text": "Mate ends it. Her queen can wait."
  },
  {
   "key": "10-taunt",
@@ -265,6 +315,11 @@
   "text": "A LASER?! Behind the HORSE?!"
  },
  {
+  "key": "11-short",
+  "voice": "narrator",
+  "text": "Move the knight. The rook fires through it."
+ },
+ {
   "key": "11-taunt",
   "voice": "glitch",
   "text": "Knight takes f7 with check! Pawn AND check!"
@@ -288,6 +343,11 @@
   "key": "12-rage",
   "voice": "glitch",
   "text": "CROWNS?! You skipped the cookie?!"
+ },
+ {
+  "key": "12-short",
+  "voice": "narrator",
+  "text": "Two crowns beat one cookie."
  },
  {
   "key": "12-taunt",
@@ -315,6 +375,11 @@
   "text": "Mate on the back row?! I wanted a draw!"
  },
  {
+  "key": "g1-short",
+  "voice": "narrator",
+  "text": "Mate on the back row. The other move draws."
+ },
+ {
   "key": "g1-taunt",
   "voice": "glitch",
   "text": "Bring the queen closer. Squeeze him. Squeeze!"
@@ -338,6 +403,11 @@
   "key": "g2-rage",
   "voice": "glitch",
   "text": "A LADDER?! Who taught you the ladder?!"
+ },
+ {
+  "key": "g2-short",
+  "voice": "narrator",
+  "text": "Second rook mates. The first guards the escape."
  },
  {
   "key": "g2-taunt",
@@ -365,6 +435,11 @@
   "text": "You just... ate it? With the KING?!"
  },
  {
+  "key": "g3-short",
+  "voice": "narrator",
+  "text": "Take the pawn. Checking loses your rook."
+ },
+ {
   "key": "g3-taunt",
   "voice": "glitch",
   "text": "Check with the rook! Drive him off! Go go go!"
@@ -388,6 +463,11 @@
   "key": "g4-rage",
   "voice": "glitch",
   "text": "The KING went first?! That's not how pawns work!"
+ },
+ {
+  "key": "g4-short",
+  "voice": "narrator",
+  "text": "King first. The pawn can wait."
  },
  {
   "key": "g4-taunt",
@@ -415,6 +495,11 @@
   "text": "Mate?! I was one square from a free draw!"
  },
  {
+  "key": "g5-short",
+  "voice": "narrator",
+  "text": "Queen to the back row. Hugging him is stalemate."
+ },
+ {
   "key": "g5-taunt",
   "voice": "glitch",
   "text": "Queen right next to him! Smother him! Do it!"
@@ -438,6 +523,11 @@
   "key": "o1-rage",
   "voice": "glitch",
   "text": "Blocked?! By a PAWN?!"
+ },
+ {
+  "key": "o1-short",
+  "voice": "narrator",
+  "text": "One pawn step. Her queen is blocked."
  },
  {
   "key": "o1-taunt",
@@ -465,6 +555,11 @@
   "text": "My ROOK too?! That pawn move was a MISTAKE?!"
  },
  {
+  "key": "o2-short",
+  "voice": "narrator",
+  "text": "Her queen came out early. Punish the loose square."
+ },
+ {
   "key": "o2-taunt",
   "voice": "glitch",
   "text": "Your queen is trapped! Run her home to f3."
@@ -488,6 +583,11 @@
   "key": "o3-rage",
   "voice": "glitch",
   "text": "A CHECK? I forgot about the diagonal!"
+ },
+ {
+  "key": "o3-short",
+  "voice": "narrator",
+  "text": "Check first. The loose pawn is still there after."
  },
  {
   "key": "o3-taunt",
@@ -515,6 +615,11 @@
   "text": "NOT f7! Anything but f7!"
  },
  {
+  "key": "o4-short",
+  "voice": "narrator",
+  "text": "Horse eats beside his king. Nowhere to hide."
+ },
+ {
   "key": "o4-taunt",
   "voice": "glitch",
   "text": "Just trade bishop for horse on d5. Simple. Even."
@@ -540,6 +645,11 @@
   "text": "My rook can't MOVE?! Who designed this?!"
  },
  {
+  "key": "o6-short",
+  "voice": "narrator",
+  "text": "Hit the rook in the corner. It is trapped."
+ },
+ {
   "key": "o6-taunt",
   "voice": "glitch",
   "text": "Develop the knight like a good little student."
@@ -563,6 +673,11 @@
   "key": "o7-rage",
   "voice": "glitch",
   "text": "You just... took it? No flair at all!"
+ },
+ {
+  "key": "o7-short",
+  "voice": "narrator",
+  "text": "Two guards. Take the horse back."
  },
  {
   "key": "o7-taunt",

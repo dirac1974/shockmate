@@ -6,8 +6,8 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.12";
-  const Y = window.ShockmateSync;
+  const BUILD = "v0.13";
+  const Y = window.ShockmateSync, H = window.ShockmateShort;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
   const T = (ms) => (FAST ? Math.min(ms, 20) : ms);
@@ -25,7 +25,7 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", day: 1, tournament: false, readAloud: true, seats: 1, syncedAt: 0,
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], short: [false, false], pack: "tactics", day: 1, tournament: false, readAloud: true, seats: 1, syncedAt: 0,
       sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
     mode: "solo", pack: "tactics", active: 0, nav: 0, prep: false, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
@@ -122,6 +122,7 @@
   function load() {
     try { Object.assign(state.settings, JSON.parse(localStorage.getItem(KEY + ":settings") || "{}")); } catch (e) {}
     if (!Array.isArray(state.settings.blitz)) state.settings.blitz = [false, false];
+    if (!Array.isArray(state.settings.short)) state.settings.short = [false, false];
     if (!(state.settings.day >= 1 && state.settings.day <= D.DAYS.length)) state.settings.day = 1;
     const sy = state.settings.sync = Object.assign({ url: "", anonKey: "", code: "", players: [] }, state.settings.sync);
     sy.players = [0, 1].map((i) => Object.assign({ username: "", pin: "" }, sy.players[i]));
@@ -382,6 +383,8 @@
       .then(function (m) { VOICE.manifest = m && m.files ? m : null; })
       .catch(function () { VOICE.manifest = null; });
   }
+  // The parent picks the register per kid. Never inferred from age or rank.
+  function wantsShort() { return !!(state.settings.short && state.settings.short[state.active]); }
   function voiceOn() { return !!(state.settings.readAloud !== false && VOICE.manifest); }
   function voicePlay(key) {
     if (!voiceOn()) return false;
@@ -614,8 +617,9 @@
     state.phase = "card"; renderPath(); $("prompt").classList.remove("gate-prompt");
     $("card-title").textContent = crit ? "CRITICAL KNOCKDOWN" : (state.tries > 0 ? "YOU BEAT GLITCH after " + (state.tries + 1) + " tries" : "YOU BEAT GLITCH");
     if ($("card-spoils")) { $("card-spoils").hidden = false; $("card-spoils").textContent = "Spoils: the " + enc.title + " card"; }
-    voice(enc.id + "-why");
-    $("why-mascot").textContent = enc.mascot; $("why-text").textContent = enc.why; $("why-long").textContent = enc.whyLong;
+    const short = wantsShort();
+    if (!(short && voice(enc.id + "-short"))) voice(enc.id + "-why");
+    $("why-mascot").textContent = enc.mascot; $("why-text").textContent = H.whyFor(enc, short); $("why-long").textContent = enc.whyLong;
     $("glitch-line-2").textContent = "Glitch: " + enc.glitch.rage;
     $("btn-peek").hidden = !(tier === "good" && state.lastUci !== enc.best);
     const before = state.ratingBefore, after = S.glitchRating(state.stats), fell = (before || after.real) - after.real;
@@ -781,7 +785,7 @@
         const c = earned[e.id], f = document.createElement("div");
         f.className = "fig" + (c ? (c.critical ? " crit" : "") : " locked");
         const art = window.ShockmateMotifs ? window.ShockmateMotifs.icon(e.motif, 28) : "";
-        f.innerHTML = '<div class="art">' + art + '</div><div class="txt"><b>' + (c ? (c.critical ? "★ " : "") + e.title : "Locked") + "</b><small>" + (c ? e.why : "Beat Glitch on this board to unlock.") + "</small></div>";
+        f.innerHTML = '<div class="art">' + art + '</div><div class="txt"><b>' + (c ? (c.critical ? "★ " : "") + e.title : "Locked") + "</b><small>" + (c ? H.whyFor(e, wantsShort()) : "Beat Glitch on this board to unlock.") + "</small></div>";
         div.appendChild(f);
       });
       root.appendChild(div);
@@ -802,6 +806,7 @@
     $("opt-name-0").value = state.settings.names[0]; $("opt-name-1").value = state.settings.names[1]; $("opt-cap").value = state.settings.cap;
     $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry; if ($("opt-tournament")) $("opt-tournament").checked = !!state.settings.tournament; if ($("opt-readaloud")) $("opt-readaloud").checked = state.settings.readAloud !== false;
     $("opt-blitz-0").checked = !!state.settings.blitz[0]; $("opt-blitz-1").checked = !!state.settings.blitz[1];
+    $("opt-short-0").checked = !!state.settings.short[0]; $("opt-short-1").checked = !!state.settings.short[1];
     const s = state.settings.sync || {};
     if ($("opt-code")) {
       $("opt-code").value = Y.normaliseCode(s.code);
@@ -887,6 +892,7 @@
       state.settings.cap = Math.max(3, Math.min(12, Number($("opt-cap").value) || 6));
       state.settings.sound = $("opt-sound").checked; state.settings.coords = $("opt-coords").checked; state.settings.hurry = $("opt-hurry").checked; if ($("opt-tournament")) state.settings.tournament = $("opt-tournament").checked; if ($("opt-readaloud")) state.settings.readAloud = $("opt-readaloud").checked;
       state.settings.blitz = [$("opt-blitz-0").checked, $("opt-blitz-1").checked];
+      state.settings.short = [$("opt-short-0").checked, $("opt-short-1").checked];
       save(); hud(); setSeats(state.settings.seats); show("screen-title");
       if (syncOn()) syncNow(true);
     };
