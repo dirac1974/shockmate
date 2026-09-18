@@ -2,43 +2,48 @@
 
 ## Harness
 
-`tests/e2e/harness.py` serves `web/` over http on a free port and opens a 390×844 phone with `?fast=1`.
-Before the app runs it seeds localStorage once per wipe: family skipped, sound and read-aloud off,
-and a coach `{name: "Test", pin: "1234"}`. `unlock_settings()` types the PIN on the keypad. Any
-console error or page error fails the suite. Google Fonts get an empty stylesheet.
+`tests/e2e/harness.py` serves `web/` over http and opens a 390×844 phone at `?fast=1`. Before the
+app runs, it seeds localStorage with the family skipped, sound off and coach PIN 1234. Any console
+error or page error fails the suite.
 
-**Network stub.** Every `*.supabase.co` request goes to `FakeSupabase`, an in-memory copy of the
-eleven `sm_*` RPCs in migrations 0002–0003: codes, PIN checks, roster, pull/push, and the live-game
-turn/ply rules. Phones that share one instance share a backend. No suite touches the real project.
+**Network stub.** Requests to `*.supabase.co` go to `FakeSupabase`, an in-memory copy of the eleven
+`sm_*` RPCs: PINs, roster, pull/push and the live turn/ply rules. Two phones can share one fake.
+Nothing touches the real project.
 
 ## Suites
 
-- **phase0** plays Day 1 from the map into Day 2. Every hand-authored fight (32) goes down three
-  paths: best; bait → second try → blunder → confession → guided, which must give a cracked card;
-  and good-tier with the peek (5 fights have one). It also runs 10 sampled ladder fights. Counts
-  come from the data.
-- **phase2** covers the coach keypad (wrong, then right), Blitz for one kid, co-op, duel, a
-  mixed-pack day, and the binder.
-- **phase3_family** covers the backup round trip and merge, new family → code, a second phone
-  joining by `?family=`, a wrong-then-right PIN, a card synced B → A, and an offline reload through
-  the service worker.
-- **phase4_modes** covers Camp (3 warm-ups, 4 fights, 2 defence counters, debrief), look-first in
-  Tournament week, one-phone versus (fool's mate → two cards), and a live game on two phones
-  (invite, accept, moves both ways, resign, one card each). Play vs Sleepy uses the real WASM
-  engine: python-chess hangs a piece, then wins, and that move becomes a game fight played to a card.
+- **phase0**
+  - Day 1 into Day 2 from the map.
+  - All 32 hand-authored fights on three paths: best; bait → second try → confession → guided,
+    which gives a cracked card; and good + peek, which 5 fights have.
+  - 10 ladder fights. Counts come from the data.
+- **phase2**
+  - The coach keypad, wrong PIN then right.
+  - Blitz, co-op, duel, a mixed-pack day, the binder.
+- **phase3_family**
+  - Backup round trip and merge.
+  - New family → code.
+  - Join by `?family=`, wrong PIN then right.
+  - A card synced from phone B to phone A.
+  - Offline reload through the service worker.
+- **phase4_modes**
+  - Camp: 3 warm-ups, 4 fights, 2 defence counters, debrief.
+  - Look-first in Tournament week.
+  - One-phone versus: fool's mate → two cards.
+  - Two-phone live: invite, accept, moves both ways, resign, one card each.
+  - Play vs Sleepy on the real WASM engine: python-chess hangs a piece and wins; that move
+    becomes a game fight, played to a card.
 
 ## Runtime and flakiness
 
-CI (bundled Chromium): phase0 117 s, phase2 10 s, phase3 12 s, phase4 31 s. The job takes about
-4 minutes. Sleepy's moves are random. An early two-ply kid lost 2 of 5 local runs to mate; the
-current three-ply search won 6 of 6. The engine gets 90 s to wake.
+CI: phase0 118 s, phase2 10 s, phase3 12 s, phase4 36 s. Sleepy plays randomly: a two-ply test player lost 2 of 5
+local games; three plies won 6 of 6. The engine gets 90 s to boot.
 
 ## Running locally
 
-`pip install playwright chess`, then `python tests/e2e/phase0.py` (or any suite) from the repo
-root. On Windows the harness uses installed Chrome (`channel="chrome"`), so no `playwright
-install` is needed. Set `E2E_CHANNEL=chrome` to force Chrome elsewhere.
+`pip install playwright chess`, then `python tests/e2e/<suite>.py`. Windows uses installed Chrome
+(`channel="chrome"`, no `playwright install`); `E2E_CHANNEL=chrome` forces it elsewhere.
 
 ## App bugs found
 
-None. Every flow ran as the reports describe.
+None.

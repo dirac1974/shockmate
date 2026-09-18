@@ -1,7 +1,7 @@
 name: tests
 
-# Every push to main and every PR runs the unit and data suites. They are the gate: red blocks the merge.
-# The browser suites (tests/e2e) run in their own job on bundled Chromium, against web/ served over
+# Every push to main and every PR runs the unit and data suites and the browser suites. Both jobs are
+# the gate: red blocks the merge. The browser suites (tests/e2e) run in their own job on bundled Chromium, against web/ served over
 # http, with every Supabase call answered by the in-memory fake in tests/e2e/harness.py. See
 # docs/reports/e2e.md.
 
@@ -42,7 +42,6 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
