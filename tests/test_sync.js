@@ -24,6 +24,42 @@ function run() {
   });
   assert.strictEqual(Y.mergeStats({}, {}).camp, undefined, "no camp data invents none");
 
+  /* Play. Games played and won only ever climb, so two devices take the larger of each; the best
+     level beaten takes the higher rung whichever side it came from; `recent` unions by when the
+     game ended, because the level suggestion reads it and half a history suggests the wrong crony;
+     boards made out of his own games union by position and cap like a binder room. */
+  const playA = { games: { played: 4, wins: 3, draws: 0, losses: 1, bestLevelWon: "cadet",
+      byLevel: { cadet: { played: 3, wins: 2 }, rookie: { played: 1, wins: 1 } },
+      recent: [{ level: "cadet", result: "win", blunders: 1, moves: 30, t: 300 },
+               { level: "cadet", result: "loss", blunders: 5, moves: 28, t: 100 }] },
+    gameFights: [{ id: "G01", fen: "fen-a", t: 300 }, { id: "G02", fen: "fen-shared", t: 100 }] };
+  const playB = { games: { played: 6, wins: 2, draws: 1, losses: 3, bestLevelWon: "agent",
+      byLevel: { cadet: { played: 2, wins: 1 }, agent: { played: 4, wins: 1 } },
+      recent: [{ level: "agent", result: "win", blunders: 0, moves: 41, t: 400 },
+               { level: "cadet", result: "loss", blunders: 5, moves: 28, t: 100 }] },
+    gameFights: [{ id: "G03", fen: "fen-b", t: 400 }, { id: "G04", fen: "fen-shared", t: 100 }] };
+  [Y.mergeStats(playA, playB), Y.mergeStats(playB, playA)].forEach(function (m) {
+    assert.strictEqual(m.games.played, 6, "games played takes the larger side, never the sum");
+    assert.strictEqual(m.games.wins, 3, "so do wins");
+    assert.strictEqual(m.games.bestLevelWon, "agent", "the higher rung beaten wins the merge");
+    assert.strictEqual(m.games.byLevel.cadet.played, 3, "per level too");
+    assert.strictEqual(m.games.byLevel.agent.wins, 1, "including a level only one device has seen");
+    assert.strictEqual(m.games.recent.length, 3, "the same game on both devices is one row");
+    assert.deepStrictEqual(m.games.recent.map(function (r) { return r.t; }), [400, 300, 100], "newest first");
+    assert.strictEqual(m.gameFights.length, 3, "one fight per position across both devices");
+    assert.strictEqual(m.gameFights[0].fen, "fen-b", "newest first here as well");
+  });
+  const wide = { games: { recent: [] } };
+  for (let i = 0; i < 9; i++) wide.games.recent.push({ level: "rookie", result: "draw", blunders: 0, moves: 9, t: 1000 + i });
+  const other = { games: { recent: [{ level: "agent", result: "win", blunders: 0, moves: 30, t: 2000 }] } };
+  assert.strictEqual(Y.mergeStats(wide, other).games.recent.length, Y.GAMES_RECENT, "the recent window is capped after merging");
+  const manyA = [], manyB = [];
+  for (let i = 0; i < 15; i++) { manyA.push({ fen: "a" + i, t: i }); manyB.push({ fen: "b" + i, t: 100 + i }); }
+  assert.strictEqual(Y.mergeStats({ gameFights: manyA }, { gameFights: manyB }).gameFights.length, Y.GAME_FIGHTS_MAX,
+    "and so is the room they live in");
+  assert.strictEqual(Y.mergeStats({}, {}).games, undefined, "a profile that has never played a game invents none");
+  assert.strictEqual(Y.mergeStats({}, {}).gameFights, undefined);
+
   // --- the family login shared with the other kid apps ---
   assert.strictEqual(Y.normaliseCode("abcd 1234"), "ABCD1234", "codes are read out in caps");
   assert.strictEqual(Y.normaliseUser("  Mia_B "), "mia_b", "usernames are lowercase");
@@ -134,7 +170,7 @@ function run() {
         (err) => assert.ok(/401/.test(err.message), "server errors surface with their status")
       );
     })
-    .then(() => console.log("OK sync: family login, merge (order-free, idempotent, capped), backup round trip, chess_* rpc shape, failure paths"));
+    .then(() => console.log("OK sync: family login, merge (order-free, idempotent, capped), backup round trip, games and game fights, chess_* rpc shape, failure paths"));
 }
 
 run().catch((err) => { console.error(err); process.exit(1); });

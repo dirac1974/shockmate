@@ -63,6 +63,10 @@
       <div class="dock">
         <button id="btn-start" class="cta big">Fight</button>
         <button id="btn-anyway" class="link anyway" hidden>Day 1 anyway</button>
+        <div class="play-row" id="play-row">
+          <button id="btn-play" class="cta play">Play Glitch</button>
+          <button id="btn-resume" class="chip" hidden>Resume</button>
+        </div>
         <div id="step-two" hidden>
           <div class="duo">
             <button id="btn-coop" class="cta">Team up</button>
@@ -128,6 +132,49 @@
         </div>
         <button id="btn-skip" class="link skip">skip this board</button>
       </div>
+      <div class="play-foot" id="play-foot" hidden>
+        <span class="move-n" id="play-moves">Move 1</span>
+        <button id="btn-resign" class="link">resign</button>
+      </div>
+    </section>
+    <section id="screen-pregame" class="screen">
+      <div class="glitch-row">
+        <div id="pre-glitch"></div>
+        <div class="bubble" id="pre-line"></div>
+      </div>
+      <div class="set-card pre-card">
+        <h3>Who are you playing?</h3>
+        <div class="chip-row levels" id="level-row"></div>
+        <p class="hint" id="pre-why"></p>
+        <p class="hint">Pick any of them, any time. Nothing here locks.</p>
+      </div>
+      <div class="actions stack">
+        <button id="btn-play-go" class="cta big">Play</button>
+        <button id="btn-play-back" class="link">not now</button>
+      </div>
+    </section>
+    <section id="screen-gameover" class="screen">
+      <div class="future-title" id="over-title">You beat Glitch</div>
+      <div class="why-card" id="over-card">
+        <div class="card-head"><span class="mascot" id="over-mascot">FULL GAME</span><span class="card-name" id="over-level"></span></div>
+        <div class="card-art" id="over-art"></div>
+        <p id="over-text"></p>
+        <p class="why-long" id="over-sub"></p>
+      </div>
+      <div class="card-foot"><p class="said" id="over-said"></p></div>
+      <button id="btn-review" class="cta big">The moment it turned</button>
+      <div class="actions quiet"><button id="btn-over-home" class="chip">Done</button></div>
+    </section>
+    <section id="screen-review" class="screen">
+      <div class="future-title">The moment it turned</div>
+      <div class="why-card" id="review-card">
+        <div class="card-head"><span class="mascot" id="review-mascot"></span><span class="card-name" id="review-title"></span></div>
+        <div class="card-art" id="review-art"></div>
+        <p id="review-text"></p>
+        <p class="why-long" id="review-long"></p>
+      </div>
+      <button id="btn-fight-now" class="cta big">Fight it now</button>
+      <div class="actions quiet"><button id="btn-fight-later" class="chip">Later</button></div>
     </section>
     <section id="screen-card" class="screen">
       <div class="future-title" id="card-title">You beat Glitch</div>
@@ -333,6 +380,9 @@
   <script src="short-lines.js"></script>
   <script src="sync-config.js"></script>
   <script src="sync.js"></script>
+  <!-- play.js is pure and tiny and the binder needs its text tables; vendor/chess.js and engine.js
+       are 650 KB of Stockfish and are fetched only when Play is opened (see loadEngine in game.js). -->
+  <script src="play.js"></script>
   <script src="game.js"></script>
   <script>
     if ("serviceWorker" in navigator && location.protocol !== "file:") {

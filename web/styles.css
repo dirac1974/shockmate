@@ -551,6 +551,9 @@ body[data-screen="screen-play"] .topbar { padding-bottom: 4px; }
 .pw.armed svg { background: var(--sun); transform: translateY(-3px); }
 .pw.armed span::after { content: " \2713"; }
 .skip { display: block; margin: 12px auto 0; }
+/* `display` on a class beats the browser's own [hidden], and a skip link that is still tappable
+   during an animation — or in the middle of a whole game — walks the kid off the board. */
+.skip[hidden] { display: none; }
 
 
 /* ---------- the card screen: a card being dealt to you ---------- */
@@ -704,3 +707,54 @@ body[data-screen="screen-play"] .topbar { padding-bottom: 4px; }
 .day-chip.ladder.current .n { background: repeating-linear-gradient(0deg, transparent 0 13px, #2a211833 13px 16px), var(--sun); }
 .day-chip.ladder.done .n { background: var(--leaf); color: var(--card); }
 .day-chip.ladder.locked .n { background: var(--paper-2); }
+
+/* ============================================================
+   v0.20: PLAY. A whole game against Glitch.
+   No new kinds of control: the dock gets a second arcade button, the levels are a chip row, and
+   Resign is a quiet link rather than a thing a thumb can hit by accident. Nothing here shows a
+   number except the move count, and the move count only ever climbs.
+   ============================================================ */
+.play-row { display: flex; gap: 10px; align-items: stretch; margin-top: 10px; }
+.play-row > .cta.play { flex: 1 1 auto; }
+.play-row > .chip { flex: 0 0 auto; min-height: 52px; }
+.play-row[hidden] { display: none !important; }
+/* the second button is his colour, so "play Glitch" reads as going at him, not as another mode */
+.cta.play { background: var(--grape); color: var(--card); font-size: 19px; min-height: 52px;
+  box-shadow: 0 6px 0 var(--ink), inset 0 -5px 0 #5a2c77, inset 0 3px 0 #ffffff33; }
+.cta.play:active { box-shadow: 0 2px 0 var(--ink), inset 0 -2px 0 #5a2c77, inset 0 2px 0 #ffffff33; }
+
+/* pre-game: who are you playing. The suggested crony is marked, never enforced. */
+#pre-glitch { flex-shrink: 0; width: 84px; }
+#pre-glitch .glitch-svg { width: 84px; height: 84px; }
+.pre-card { margin: 8px auto; max-width: 440px; padding: 12px 14px; border-radius: 16px 20px 15px 19px; }
+.pre-card h3 { margin: 0 0 8px; }
+.chip-row.levels { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip.level { display: flex; flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.15; padding: 6px 12px; }
+.chip.level small { font-family: "Atkinson Hyperlegible", sans-serif; font-size: 11px; color: var(--ink-2); font-weight: 400; }
+.chip.level.active small { color: var(--sun); }
+/* the suggestion: a pinned tag, so it reads as an offer rather than as the only live control */
+.chip.level.suggest { position: relative; border-color: var(--grape); box-shadow: 0 3px 0 var(--grape); }
+.chip.level.suggest::after { content: "his pick"; position: absolute; top: -10px; right: -6px; background: var(--grape);
+  color: var(--card); border: 2px solid var(--ink); border-radius: 7px; font-size: 10px; font-weight: 800;
+  letter-spacing: .04em; padding: 0 5px; transform: rotate(-4deg); }
+
+/* in game: the board is the whole screen. The fight furniture stays out of it. */
+body[data-play="1"] #powers, body[data-play="1"] .path, body[data-play="1"] #boss,
+body[data-play="1"] .gate-dots:empty { display: none; }
+.play-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  max-width: 420px; margin: 8px auto 0; }
+.play-foot[hidden] { display: none; }
+.move-n { font-family: "Baloo 2", sans-serif; font-weight: 700; font-size: 14px; color: var(--ink-2);
+  letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.play-foot .link { font-size: 13px; }
+
+/* the game-over card and the review card are trading cards, like every other card in the app */
+#over-art, #review-art { min-height: 0; }
+.card-name { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--ink-2);
+  letter-spacing: .06em; text-transform: uppercase; }
+.card-head { display: flex; align-items: center; gap: 8px; }
+
+/* Progress: the Games tile and the blunders-per-game trend. The parent's numbers, not the kid's. */
+.prog-bars.blunders i { background: var(--tomato); }
+.prog-suggest { margin: 6px 0 2px; font-size: 14px; color: var(--ink-2); }
+.prog-suggest b { color: var(--ink); }

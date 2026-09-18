@@ -188,7 +188,30 @@ function run() {
   assert.strictEqual(pcr.cards, 2, "a cracked card is still an earned card");
   assert.strictEqual(pcr.cracked, 1);
 
-  console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, threats, camp days and runs, first-try rate, Monday-to-Sunday week, coach notes in priority order, rushed moves and the scoresheet note, cracked cards still count, null-safe");
+  /* the Games tile: played, won, the best crony beaten, the blunder trend and the suggestion line
+     the parent reads. Nothing on this tile can go down, including after a losing streak. */
+  const noGames = S.progressSummary(statsOf([], {}), ALL, TODAY);
+  assert.deepStrictEqual([noGames.games.played, noGames.games.wins], [0, 0], "a profile with no games still renders");
+  assert.strictEqual(noGames.games.bestLevelWon, null);
+  assert.deepStrictEqual(noGames.blunderTrend, [], "no games, no trend");
+  assert.strictEqual(noGames.suggest.level, "rookie", "and the suggestion is where a first game starts");
+  assert.ok(noGames.suggest.reason, "the parent gets a sentence, not a rung id");
+  assert.strictEqual(noGames.gameFights, 0);
+
+  let gs = statsOf([], {});
+  gs = S.recordGame(gs, { level: "rookie", result: "win", blunders: 2, moves: 30, t: TODAY }).stats;
+  gs = S.recordGame(gs, { level: "cadet", result: "win", blunders: 1, moves: 34, t: TODAY + 1 }).stats;
+  gs = S.recordGame(gs, { level: "agent", result: "loss", blunders: 7, moves: 28, t: TODAY + 2 }).stats;
+  gs.gameFights = [{ id: "G1", fen: "x" }, { id: "G2", fen: "y" }];
+  const pg = S.progressSummary(gs, ALL, TODAY);
+  assert.deepStrictEqual([pg.games.played, pg.games.wins, pg.games.losses], [3, 2, 1], "played, won and lost");
+  assert.strictEqual(pg.games.bestLevelWon, "cadet", "the best crony beaten, which a later loss does not touch");
+  assert.deepStrictEqual(pg.blunderTrend.map(function (d) { return d.blunders; }), [2, 1, 7], "oldest left, newest right");
+  assert.ok(pg.blunderTrend.every(function (d) { return d.moves > 0 && d.level; }), "each bar knows its level and its length");
+  assert.strictEqual(pg.gameFights, 2, "and how many of his own boards are waiting");
+  assert.ok(pg.suggest.level && pg.suggest.reason, "the suggestion line is always there for the parent");
+
+  console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, threats, camp days and runs, first-try rate, Monday-to-Sunday week, coach notes in priority order, rushed moves and the scoresheet note, cracked cards still count, the Games tile and the blunder trend, null-safe");
 }
 
 run();
