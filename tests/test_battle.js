@@ -122,7 +122,76 @@ function run() {
   assert.ok(!S.resolveMiss(S.emptyBattle()).shielded, "no shield, nothing absorbed");
   assert.ok(!S.resolveMiss(shielded.battle).shielded, "a spent shield does not absorb twice");
 
-  console.log("OK battle: boss health floors and KOs, power climbs and caps and only falls on spend, abilities arm and disarm, Double Strike / Overcharge / Time Shield resolve by the rules, merge keeps power, KOs, bonus and card tiers");
+  /* Gear. Slots open with rank, gear opens with rank, and every passive stays off the board. */
+  const fake = []; for (let i = 0; i < 23; i++) fake.push("f" + i);
+  const rankAt = function (n) { return S.agentRank(statsWith(fake.slice(0, n))); };
+  assert.strictEqual(S.slotsUnlocked(rankAt(0)), 0, "a Rookie has no gear slots");
+  assert.strictEqual(S.slotsUnlocked(rankAt(2)), 1, "Cadet opens slot 1");
+  assert.strictEqual(S.slotsUnlocked(rankAt(5)), 2, "Field Agent opens slot 2");
+  assert.strictEqual(S.slotsUnlocked(rankAt(9)), 3, "Senior Agent opens slot 3");
+  assert.strictEqual(S.slotsUnlocked(rankAt(23)), S.SLOTS, "slots never exceed the three there are");
+  assert.deepStrictEqual(S.gearUnlocked(rankAt(2)).map(function (g) { return g.id; }), ["gauntlets"], "a Cadet has exactly the gauntlets");
+  assert.strictEqual(S.gearUnlocked(rankAt(14)).length, S.GEAR.length, "a Timeline Warden has every piece");
+
+  const cadet = rankAt(2), warden = rankAt(14);
+  const g1 = S.equipGear(S.emptyBattle(), 1, "gauntlets", cadet);
+  assert.strictEqual(g1.gear.slot1, "gauntlets", "a Cadet can equip the gauntlets");
+  assert.ok(!S.equipGear(S.emptyBattle(), 2, "goggles", cadet).gear.slot2, "a locked slot refuses gear");
+  assert.ok(!S.equipGear(S.emptyBattle(), 1, "visor", cadet).gear.slot1, "gear above your rank is refused");
+  assert.ok(!S.equipGear(S.emptyBattle(), 1, "goggles", warden).gear.slot1, "gear only fits its own slot");
+  assert.ok(!S.unequipGear(g1, 1).gear.slot1, "unequip empties the slot");
+  const swapped = S.equipGear(g1, 1, "visor", warden);
+  assert.strictEqual(swapped.gear.slot1, "visor", "a slot holds one piece; the new one replaces the old");
+  assert.ok(!S.hasGear(swapped, "gauntlets"), "the replaced piece is gone");
+  assert.ok(S.hasGear(swapped, "visor"));
+
+  assert.strictEqual(S.earnPower(g1, false).power, 2, "Shock Gauntlets add a power to every win");
+  let capped = g1; for (let i = 0; i < 6; i++) capped = S.earnPower(capped, true);
+  assert.strictEqual(capped.power, S.POWER_CAP, "the gauntlets still respect the cap");
+
+  const visor = S.equipGear(S.emptyBattle(), 1, "visor", warden);
+  assert.ok(S.resolveCritical(visor, "best", false, false, false, 0.2).crit, "the Visor turns a 0.2 roll into a Critical");
+  assert.ok(!S.resolveCritical(S.emptyBattle(), "best", false, false, false, 0.2).crit, "without it, 0.2 is not a Critical");
+  assert.ok(!S.resolveCritical(visor, "best", false, false, false, 0.3).crit, "the Visor is one in four, not a guarantee");
+
+  /* Weakness. Beating a crony with the motif he fears hits half again as hard. That is where the chess lesson pays out. */
+  const weakHit = S.resolveWeakness(S.emptyBattle(), 100, "fork", "fork", KEY);
+  assert.strictEqual(weakHit.dmg, 150, "a matching motif hits half again as hard");
+  assert.ok(weakHit.weak);
+  assert.strictEqual(weakHit.battle.bonus[KEY], 50, "the extra half lands on the boss as bonus damage");
+  const plainHit = S.resolveWeakness(S.emptyBattle(), 100, "pin", "fork", KEY);
+  assert.strictEqual(plainHit.dmg, 100, "a different motif is a normal hit");
+  assert.ok(!plainHit.weak);
+  assert.strictEqual(plainHit.battle.bonus[KEY] || 0, 0);
+  assert.strictEqual(S.resolveWeakness(S.emptyBattle(), 100, "fork", null, KEY).dmg, 100, "a crony with no weakness takes normal damage");
+  S.CRONIES.forEach(function (c) {
+    assert.ok(c.weak, c.name + " needs a weakness");
+    assert.ok(S.motifLabel(c.weak).length > 0, c.name + "'s weakness needs a label the kid can read");
+  });
+
+  /* Daily gear: the Goggles and the Boots each fire once a day, then wait for tomorrow. */
+  const goggles = S.equipGear(S.emptyBattle(), 2, "goggles", warden);
+  assert.ok(S.tellFree(goggles, KEY), "Tell Goggles give a free Tell");
+  assert.ok(!S.tellFree(S.useTell(goggles, KEY), KEY), "only one a day");
+  assert.ok(S.tellFree(S.useTell(goggles, KEY), S.dateKey(new Date(2026, 8, 19, 12).getTime())), "tomorrow it is free again");
+  assert.ok(!S.tellFree(S.emptyBattle(), KEY), "no goggles, no free Tell");
+  const boots = S.equipGear(S.emptyBattle(), 3, "boots", warden);
+  assert.ok(S.bootsFree(boots, KEY), "Rewind Boots offer a free shield");
+  const booted = S.useBoots(boots, KEY);
+  assert.ok(booted.next.shield, "the boots arm a shield");
+  assert.ok(!S.bootsFree(booted, KEY), "once a day");
+  assert.ok(!S.bootsFree(S.emptyBattle(), KEY), "no boots, no free shield");
+
+  /* Merge: daily-use marks are a union, so a Tell used on the phone is not free again on the tablet. */
+  const pa = statsWith(["01"], [], Object.assign(S.emptyBattle(), { gear: { slot1: "gauntlets" }, tellUsed: { [KEY]: true } }));
+  const tb = statsWith(["02"], [], Object.assign(S.emptyBattle(), { gear: { slot2: "goggles" }, bootsUsed: { [KEY]: true } }));
+  const mg = Y.mergeStats(pa, tb);
+  assert.ok(mg.battle.tellUsed[KEY] && mg.battle.bootsUsed[KEY], "daily-use marks merge as a union");
+  assert.strictEqual(mg.battle.gear.slot1, "gauntlets"); assert.strictEqual(mg.battle.gear.slot2, "goggles");
+  assert.doesNotThrow(function () { S.battleOf({ battle: { power: 2 } }); }, "an old battle record without daily marks gets defaults");
+  assert.deepStrictEqual(S.battleOf({ battle: { power: 2 } }).tellUsed, {});
+
+  console.log("OK battle: boss health floors and KOs, power climbs and caps and only falls on spend, abilities arm and disarm, Double Strike / Overcharge / Time Shield resolve by the rules, gear gates by rank and stays off the board, weakness pays out the lesson, merge keeps power, KOs, bonus, tiers and daily marks");
 }
 
 run();

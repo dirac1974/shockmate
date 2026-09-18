@@ -4,7 +4,7 @@ Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines 
 
 **Date:** 2026-09-17
 **Repo:** https://github.com/dirac1974/shockmate
-**Live:** https://dirac1974.github.io/shockmate/ — `1189ad0`, marker `v0.7 · 23 fights · 6 days`
+**Live:** https://dirac1974.github.io/shockmate/ — still `v0.6 · 23 fights · 3 packs`. PR #5 carries v0.7 (marker `v0.7 · 23 fights · 6 days`), held until the whole battle layer is in.
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
@@ -13,12 +13,12 @@ ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeli
 
 Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the future plays out on the board → why-gate (tap the pieces) → card earned → next fight or cliffhanger.
 
-## Actual state — v0.7 is live
+## Actual state — v0.7 built on PR #5, not yet live
 
 Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistence and family sync landed on top of them, ahead of the plan.
 
 - Live at `1189ad0`. Pages serves `main` / root and rebuilds in about 40 seconds. Verify a deploy by the home-screen build marker, never by eye.
-- Four suites green on the deployed commit: `test_futures.js`, `test_score.js`, `test_sync.js`, `test_encounters.py`.
+- Six suites green on the PR branch: `test_futures.js`, `test_score.js`, `test_sync.js`, `test_days.js`, `test_battle.js`, `test_encounters.py`.
 - `tests/e2e/*.py` did NOT run. Application Control on David's PC blocks the greenlet DLL that Playwright loads. The e2e suite currently has no machine to run on.
 - Data is generated: edit `data/encounters.src.json`, `openings.src.json` or `endgames.src.json`, run `python3 tools/build_encounters.py --sf <stockfish>`. Never hand-edit `v2.json` or `web/encounters.js`.
 - Six lesson days cover all 23 fights and deliberately mix packs, so a session cannot dead-end inside one pack. Days are picked on the home screen; `pack` survives only as a data label.
@@ -26,6 +26,7 @@ Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistenc
 - The kid has a rank that only ever climbs, Rookie through Time Marshal, shown in the top bar and on every card.
 - Glitch's own rating still falls permanently and never recovers. A different crony fronts for him each calendar day, so there is always a fresh brag to knock down without yesterday's win being taken back.
 - Glitch physically wilts as his rating sinks, via `data-wilt` on his sprite.
+- Battle layer, at the parent's direction from gate-0 feedback ("it doesn't count as a win", "there is no game", "how do I battle Glitch"). Today's crony is a boss with a health bar; correct moves land as HITs; the floor is a KNOCKOUT. Wins earn Power (cap 5) for four abilities: Double Strike, Glitch's Tell, Time Shield, Overcharge. Gear slots and gear open with rank; each crony has a motif weakness that hits half again as hard. Abilities never touch the board. Every rule resolves through a pure function in `web/score.js` and is held by `tests/test_battle.js`. See `docs/reports/battle.md`.
 - Phase 1 skin: Timeline Split colours, Glitch with five moods, charging bars, critical zoom, path pips, tap-to-skip.
 - Phase 2: co-op, handicapped duel, per-player Blitz, silent adaptive difficulty, collection art.
 - Glitch brags a rating that deflates as cards are earned. It is the only falling number in the app and it belongs to the villain.
@@ -60,6 +61,6 @@ Bump `BUILD` in `web/game.js` and `CACHE` in `web/sw.js` together, or phones kee
 ## Next session start
 
 1. Read this file, then `docs/PLAN.md` §5–§9.
-2. Run the four suites and record what is red.
+2. Run the six suites and record what is red.
 3. Ask whether gate 0 has been reported. If not, do not start a phase; take item 3 above.
 4. Before ending: update this file (what shipped, what is red, next three steps). Keep it under 80 lines.

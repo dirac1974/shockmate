@@ -272,3 +272,19 @@ select, input[type=number], input[type=text] { display: block; width: 100%; marg
 .pw:disabled { opacity: 0.4; cursor: not-allowed; }
 .pw.armed { border-color: var(--gold, #ffcc33); color: var(--gold, #ffcc33); box-shadow: 0 0 8px rgba(255,204,51,0.5); }
 .pw.armed::after { content: " \2713"; }
+
+/* ---------- the kid's agent: rank and gear ---------- */
+.agent { margin: 10px auto 0; max-width: 420px; padding: 8px 10px; border: 2px solid var(--line, #33406b); border-radius: 12px; background: rgba(0,0,0,0.18); }
+.agent-row { display: flex; justify-content: space-between; align-items: baseline; font-weight: 800; letter-spacing: 0.04em; }
+.agent-row b { color: var(--cyan, #33e0ff); }
+.agent-row span { color: var(--gold, #ffcc33); }
+.gear { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 6px; }
+.gear-slot { border: 2px dashed var(--line, #33406b); border-radius: 10px; padding: 6px; min-height: 58px; font-size: 0.8rem; text-align: center; }
+.gear-slot.locked { opacity: 0.45; }
+.gear-slot .slot-n { display: block; font-size: 0.7rem; opacity: 0.7; letter-spacing: 0.06em; }
+.gear-slot .equipped { display: block; font-weight: 800; color: var(--gold, #ffcc33); margin: 2px 0; }
+.gear-slot .pick { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-top: 4px; }
+.gear-slot .pick button { font: inherit; font-size: 0.72rem; padding: 3px 7px; border-radius: 8px; border: 1px solid var(--line, #33406b); background: transparent; color: inherit; cursor: pointer; }
+.gear-slot .pick button.on { border-color: var(--gold, #ffcc33); color: var(--gold, #ffcc33); }
+.gear-slot.filled { border-style: solid; border-color: var(--gold, #ffcc33); }
+@media (max-width: 400px) { .gear { grid-template-columns: 1fr; } }

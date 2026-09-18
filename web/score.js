@@ -220,12 +220,12 @@
   ];
   const POWER_CAP = 5;
   function emptyBattle() {
-    return { power: 0, kos: 0, bonus: {}, next: { double: false, shield: false, overcharge: false }, gear: {} };
+    return { power: 0, kos: 0, bonus: {}, next: { double: false, shield: false, overcharge: false }, gear: {}, tellUsed: {}, bootsUsed: {} };
   }
   function battleOf(stats) {
     const b = Object.assign(emptyBattle(), (stats && stats.battle) || {});
     b.next = Object.assign({ double: false, shield: false, overcharge: false }, b.next);
-    b.bonus = Object.assign({}, b.bonus); b.gear = Object.assign({}, b.gear);
+    b.bonus = Object.assign({}, b.bonus); b.gear = Object.assign({}, b.gear); b.tellUsed = Object.assign({}, b.tellUsed); b.bootsUsed = Object.assign({}, b.bootsUsed);
     return b;
   }
   // Boss health is the crony's rating minus any extra damage abilities dealt today. Floored like everything else.
@@ -239,7 +239,7 @@
   // Power is the kid's number. It climbs on wins and only falls when he chooses to spend it.
   function earnPower(battle, crit) {
     const b = battleOf({ battle: battle });
-    b.power = Math.min(POWER_CAP, b.power + 1 + (crit ? 1 : 0));
+    b.power = Math.min(POWER_CAP, b.power + 1 + (crit ? 1 : 0) + (hasGear(b, "gauntlets") ? 1 : 0));
     return b;
   }
   function abilityById(id) { return ABILITIES.filter((a) => a.id === id)[0] || null; }
@@ -271,7 +271,7 @@
     let b = battleOf({ battle: battle });
     const eligible = tier === "best" && !guided;      // a guided win was shown the answer; it cannot crit
     const forced = eligible && b.next.overcharge;
-    const natural = eligible && !lastCritical && (!!isBoss || roll < 1 / 6);
+    const natural = eligible && !lastCritical && (!!isBoss || roll < (hasGear(b, "visor") ? 1 / 4 : 1 / 6));
     if (forced) b = disarm(b, "overcharge");
     return { battle: b, crit: forced || natural, forced: forced };
   }
@@ -281,7 +281,48 @@
     return { battle: disarm(b, "shield"), shielded: true };
   }
 
-  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
+  /* ---------- gear: passive powers on the kid's Time Agent ----------
+     Slots open with rank and gear opens with rank. Two pieces share slot 1, so there is a real choice.
+     Every passive is off the board: more power, a free Tell, a free shield, a better Critical roll. */
+  const SLOTS = 3;
+  const GEAR = [
+    { id: "gauntlets", name: "Shock Gauntlets", slot: 1, rank: 1, blurb: "Every win charges one extra power." },
+    { id: "goggles", name: "Tell Goggles", slot: 2, rank: 2, blurb: "One free Glitch's Tell every day." },
+    { id: "boots", name: "Rewind Boots", slot: 3, rank: 3, blurb: "Your first miss each day is shielded for free." },
+    { id: "visor", name: "Critical Visor", slot: 1, rank: 4, blurb: "Criticals land one time in four, not one in six." },
+  ];
+  function rankIndex(rank) { return rank && typeof rank.index === "number" ? rank.index : 0; }
+  function slotsUnlocked(rank) { return Math.max(0, Math.min(SLOTS, rankIndex(rank))); }
+  function gearById(id) { return GEAR.filter((g) => g.id === id)[0] || null; }
+  function gearUnlocked(rank) { const i = rankIndex(rank); return GEAR.filter((g) => g.rank <= i); }
+  function hasGear(battle, id) { const g = battleOf({ battle: battle }).gear; return Object.keys(g).some((k) => g[k] === id); }
+  function equipGear(battle, slot, id, rank) {
+    const b = battleOf({ battle: battle }), g = gearById(id);
+    if (!g || g.slot !== slot || slot < 1 || slot > slotsUnlocked(rank)) return b;
+    if (!gearUnlocked(rank).some((x) => x.id === id)) return b;
+    Object.keys(b.gear).forEach((k) => { if (b.gear[k] === id) delete b.gear[k]; });
+    b.gear["slot" + slot] = id;
+    return b;
+  }
+  function unequipGear(battle, slot) { const b = battleOf({ battle: battle }); delete b.gear["slot" + slot]; return b; }
+
+  // A crony's weakness is a chess motif. Beating him with that motif hits half again as hard. That is the lesson.
+  const MOTIF_LABEL = { fork: "forks", pawnFork: "pawn forks", royalFork: "royal forks", counting: "counting", pin: "pins",
+    skewer: "skewers", backRank: "the back rank", hanging: "free pieces", mateOverMaterial: "mate first", discovery: "hidden attacks",
+    mateThreat: "mate threats", trapped: "trapped pieces", stalemateTrap: "stalemate traps", kingMarch: "king marches" };
+  function motifLabel(m) { return MOTIF_LABEL[m] || m || ""; }
+  function resolveWeakness(battle, dmg, motif, weak, dateKey) {
+    const b = battleOf({ battle: battle }), base = Math.max(0, Math.round(dmg));
+    if (!weak || motif !== weak) return { battle: b, dmg: base, weak: false };
+    const extra = Math.round(base / 2);
+    return { battle: addBonus(b, dateKey, extra), dmg: base + extra, weak: true };
+  }
+  function tellFree(battle, dateKey) { const b = battleOf({ battle: battle }); return hasGear(b, "goggles") && !b.tellUsed[dateKey]; }
+  function useTell(battle, dateKey) { const b = battleOf({ battle: battle }); b.tellUsed[dateKey] = true; return b; }
+  function bootsFree(battle, dateKey) { const b = battleOf({ battle: battle }); return hasGear(b, "boots") && !b.bootsUsed[dateKey]; }
+  function useBoots(battle, dateKey) { const b = battleOf({ battle: battle }); b.bootsUsed[dateKey] = true; b.next.shield = true; return b; }
+
+  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, tellFree, useTell, bootsFree, useBoots, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

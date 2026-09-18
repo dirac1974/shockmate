@@ -60,6 +60,7 @@
     out.battle = Object.assign({}, ba, bb, {
       power: bigger(ba.power, bb.power), kos: bigger(ba.kos, bb.kos),
       next: Object.assign({}, ba.next, bb.next), gear: Object.assign({}, ba.gear, bb.gear), bonus: {},
+      tellUsed: Object.assign({}, ba.tellUsed, bb.tellUsed), bootsUsed: Object.assign({}, ba.bootsUsed, bb.bootsUsed),
     });
     Object.keys(Object.assign({}, ba.bonus, bb.bonus)).forEach((k) => {
       out.battle.bonus[k] = bigger((ba.bonus || {})[k], (bb.bonus || {})[k]);

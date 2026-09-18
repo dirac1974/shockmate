@@ -242,7 +242,7 @@
     const b = S.bossHp(state.stats, now());
     box.hidden = state.phase === "home";
     box.classList.toggle("ko", b.ko);
-    $("boss-name").textContent = b.ko ? b.name + " \u00b7 KO" : b.name;
+    $("boss-name").textContent = b.ko ? b.name + " \u00b7 KO" : b.name + (b.weak ? "  \u00b7  weak to " + S.motifLabel(b.weak) : "");
     $("boss-hp").textContent = b.ko ? "DOWN" : String(b.hp);
     $("boss-fill").style.width = Math.round(Math.max(0, Math.min(1, b.fraction)) * 100) + "%";
   }
@@ -256,13 +256,44 @@
       btn.disabled = state.phase !== "think" || (!armed && !S.canAfford(b, id));
     });
   }
+  function renderAgent() {
+    const box = $("agent"); if (!box) return;
+    const rank = S.agentRank(state.stats), b = S.battleOf(state.stats), open = S.slotsUnlocked(rank);
+    $("agent-rank").textContent = rank.title;
+    $("agent-next").textContent = rank.top ? "Top rank. Every slot is yours."
+      : rank.cardsToNext + " more card" + (rank.cardsToNext === 1 ? "" : "s") + " to " + rank.next + ".";
+    const host = $("gear-slots"); let html = "";
+    for (let s = 1; s <= S.SLOTS; s++) {
+      const eq = b.gear["slot" + s], piece = eq ? S.gearById(eq) : null;
+      if (s > open) {
+        const need = S.RANKS[s] ? S.RANKS[s].title : "";
+        html += '<div class="gear-slot locked"><span class="slot-n">SLOT ' + s + '</span>Locked<small><br>reach ' + need + '</small></div>';
+        continue;
+      }
+      const choices = S.gearUnlocked(rank).filter(function (g) { return g.slot === s; });
+      html += '<div class="gear-slot' + (piece ? " filled" : "") + '"><span class="slot-n">SLOT ' + s + '</span>' +
+        (piece ? '<span class="equipped">' + piece.name + '</span><small>' + piece.blurb + '</small>' : '<span class="equipped">Empty</span>') +
+        '<div class="pick">' + choices.map(function (g) {
+          return '<button data-slot="' + s + '" data-gear="' + g.id + '" class="' + (eq === g.id ? "on" : "") + '">' + g.name + '</button>';
+        }).join("") + '</div></div>';
+    }
+    host.innerHTML = html;
+    Array.prototype.forEach.call(host.querySelectorAll("button[data-gear]"), function (btn) {
+      btn.onclick = function () {
+        const s = Number(btn.dataset.slot), id = btn.dataset.gear, cur = S.battleOf(state.stats).gear["slot" + s];
+        state.stats.battle = cur === id ? S.unequipGear(state.stats.battle, s) : S.equipGear(state.stats.battle, s, id, S.agentRank(state.stats));
+        save(); renderAgent();
+        toast(cur === id ? "Unequipped." : S.gearById(id).name + " equipped. " + S.gearById(id).blurb, 2000);
+      };
+    });
+  }
   function prompt(text) { $("prompt").textContent = text; }
   function hud() {
     $("stat-won").textContent = state.stats.won || 0;
     $("stat-crit").textContent = state.stats.criticals || 0;
     $("stat-cards").textContent = Object.keys(state.stats.cardsEarned || {}).length;
     if ($("stat-rank")) $("stat-rank").textContent = S.agentRank(state.stats).title;
-    renderCrony(); renderBoss();
+    renderCrony(); renderBoss(); renderAgent();
     if ($("two-hint")) $("two-hint").textContent = state.settings.names[0] + " and " + state.settings.names[1]
       + " take turns on this phone. You both play White.";
     // During play the board never flips, so the note doubles as "whose go is it" in co-op.
@@ -429,9 +460,11 @@
     state.stats.battle = S.earnPower(state.stats.battle, crit);
     let hpNow = S.bossHp(state.stats, now());
     const hit = S.resolveHitDamage(state.stats.battle, (state.hpBefore || hpNow.hp) - hpNow.hp, hpNow.dateKey);
-    state.stats.battle = hit.battle; hpNow = S.bossHp(state.stats, now());
-    const dmg = hit.dmg;
-    banner((hit.doubled ? "DOUBLE STRIKE!  -" : crit ? "CRITICAL HIT!  -" : "HIT!  -") + dmg, (crit || hit.doubled) ? "crit" : "win");
+    state.stats.battle = hit.battle;
+    const wk = S.resolveWeakness(state.stats.battle, hit.dmg, enc.motif, S.bossHp(state.stats, now()).weak, hpNow.dateKey);
+    state.stats.battle = wk.battle; hpNow = S.bossHp(state.stats, now());
+    const dmg = wk.dmg;
+    banner((wk.weak ? "WEAKNESS HIT!  -" : hit.doubled ? "DOUBLE STRIKE!  -" : crit ? "CRITICAL HIT!  -" : "HIT!  -") + dmg, (crit || hit.doubled || wk.weak) ? "crit" : "win");
     renderPowers();
     renderBoss(); await sleep(650);
     if (hpNow.ko && state.koShown !== hpNow.dateKey) {
@@ -629,6 +662,11 @@
     state.settings.lastPlayed = now(); state.sitting = (state.sitting || 0) + 1;
     state.session = { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 };
     useProfile(state.mode === "solo" ? state.settings.profile : 0);
+    const dk0 = S.dateKey(now());
+    if (S.bootsFree(state.stats.battle, dk0)) {
+      state.stats.battle = S.useBoots(state.stats.battle, dk0); save();
+      toast("Rewind Boots: your first miss today is shielded.", 2200);
+    }
     state.index = pickNext(-1); startEncounter();
   }
   function goHome() { state.mode = "solo"; state.duel = null; state.phase = "home"; stopBlitz(); useProfile(state.settings.profile); renderTeam(); renderPath(); hud(); show("screen-title"); }
@@ -778,8 +816,11 @@
     });
     $("btn-hint").onclick = function () {
       if (state.phase !== "think") return; const enc = current();
-      if (!S.canAfford(state.stats.battle, "tell")) { toast("Glitch's Tell needs 1 power. Win a fight.", 1800); return; }
-      state.stats.battle = S.armAbility(state.stats.battle, "tell"); save(); renderPowers();
+      const dkT = S.dateKey(now());
+      if (S.tellFree(state.stats.battle, dkT)) { state.stats.battle = S.useTell(state.stats.battle, dkT); toast("Tell Goggles: free today.", 1400); }
+      else if (!S.canAfford(state.stats.battle, "tell")) { toast("Glitch's Tell needs 1 power. Win a fight.", 1800); return; }
+      else state.stats.battle = S.armAbility(state.stats.battle, "tell");
+      save(); renderPowers();
       const el = sq(enc.tempting.slice(2, 4)); if (el) el.classList.add("tempt-glow"); toast("Glitch flinches at THAT one. So don't.", 2000);
     };
     $("btn-skip").onclick = function () { if (state.phase !== "think") return; nextEncounter(); };
