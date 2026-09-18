@@ -257,6 +257,25 @@
       "Neither of you can mate with that. Draw.",
       "Two kings staring. Thrilling. Draw.",
       "Not enough wood left to finish anyone. Draw."] },
+    // Two phones. {name} is always the kid the line is about, never a pairing of the two.
+    invite: { mood: "taunt", lines: [
+      "{name} wants to play! On a whole other phone. Sneaky.",
+      "Psst. {name} is challenging you. From over there.",
+      "{name} wants a game. I'll referee from both phones.",
+      "Incoming! {name} wants to play you."] },
+    waiting: { mood: "taunt", lines: [
+      "Waiting for {name}… I'm counting ceiling tiles.",
+      "{name} is thinking. Or eating. Hard to tell from here.",
+      "Still {name}'s go. I'll just float here.",
+      "Waiting for {name}. Resign is there if you get bored."] },
+    unfinished: { mood: "nervous", lines: [
+      "Nobody finished this one. It doesn't count for anyone.",
+      "The game wandered off. No result, no harm.",
+      "Unfinished. I'll pretend I didn't see it."] },
+    same: { mood: "nervous", lines: [
+      "Both phones think they're {name}! One of you pick the other name in Settings.",
+      "Two {name}s? No. One phone has to be the other kid.",
+      "I can't referee {name} against {name}. Switch one phone."] },
     resign: { mood: "smug", lines: [
       "{name} is giving up. Noted. Filed. Laminated.",
       "Resigning?! Against your own sibling? Say it louder.",
@@ -314,7 +333,24 @@
     return { t: t, kind: g.kind || "mate", cards: cards };
   }
 
-  const api = { BAR, BEST_GAIN, FIGHT_CAP, BEST_CAP, SAY,
+  /* Two phones: each phone builds ONLY its own kid's card. Its record holds only his moves (the
+     other phone scored the other kid's), his sibling's name never reaches it, and there is no second
+     card to put next to it. An unfinished game (abandoned, expired) reports no result at all. */
+  function liveResult(game, opts) {
+    const g = game || {}, me = g.me === 1 ? 1 : 0;
+    const names = ["", ""]; names[me] = (g.names || [])[me] || ("Player " + (me + 1));
+    const kind = g.kind || "abandon";
+    const all = resultCards({ kind: kind, records: (g.records || []).filter(function (r) { return r && r.profile === me; }),
+      names: names, white: g.white, loser: g.loser, t: g.t }, opts);
+    const card = all.cards.filter(function (c) { return c.profile === me; })[0];
+    if (card && g.unfinished) {
+      const l = say("unfinished", (opts || {}).sayIndex, names[me]);
+      card.result = "unfinished"; card.say = l.text; card.mood = l.mood;
+    }
+    return { t: all.t, kind: kind, live: true, cards: card ? [card] : [] };
+  }
+
+  const api = { BAR, BEST_GAIN, FIGHT_CAP, BEST_CAP, SAY, liveResult,
     mirrorSquare, mirrorUci, mirrorFen, mirrorPack, mirrorRow,
     rowsFor, dropOf, gainOf, isBlunderRow, matchedBest, deliversMate, worstMoment, bestMoment, momentCard,
     punishTakes, summarise, kidFights, nextWhite, seatsFor, colourOf, swapSeats,

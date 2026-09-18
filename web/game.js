@@ -6,8 +6,8 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.21";
-  const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus;
+  const BUILD = "v0.22";
+  const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
   let CHESS = null;                                 // vendor/chess.js, loaded with it
   const EVAL_DEPTH = 10;                            // the depth the judge scores at. Never shown, never spoken.
@@ -34,7 +34,9 @@
     flip: false, vs: null, versusResult: null,
     settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: true, hurry: false, profile: 0, blitz: [false, false], short: [false, false], coach: [null, null], pack: "tactics", day: 1, tournament: false, readAloud: true, seats: 1, syncedAt: 0,
       parent: { name: "", pin: "" }, play: [null, null], versus: { lastWhite: null, saved: null },
-      sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
+      // The family this phone belongs to: the code, which kid this phone plays as (`me`), the kids'
+      // PINs this phone knows, and the roster names. `skipped` means "this phone only", asked once.
+      family: { code: "", me: null, pins: ["", ""], roster: [], skipped: false }, live: null },
     mode: "solo", pack: "tactics", active: 0, nav: 0, prep: false, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
   };
@@ -48,45 +50,51 @@
   }
   function useProfile(i) { state.active = i; state.stats = state.profiles[i]; }
 
-  // API details come from this device's settings first, then any baked-in sync-config.js.
-  function syncCfg() {
-    const s = state.settings.sync || {};
-    if (s.url && s.anonKey) return { url: s.url, anonKey: s.anonKey };
-    return window.SHOCKMATE_SYNC && window.SHOCKMATE_SYNC.url ? window.SHOCKMATE_SYNC : null;
-  }
-  function syncSlots() { return (state.settings.sync && state.settings.sync.players) || [{}, {}]; }
-  function syncOn() {
-    const s = state.settings.sync || {};
-    return !!(Y && Y.configured(syncCfg()) && Y.validCode(s.code) && syncSlots().some(Y.boundSlot));
-  }
+  /* ---------- family sync ----------
+     The URL and publishable key are baked into sync-config.js; nothing about the backend is ever
+     typed on a phone. A slot syncs when this phone knows that kid's PIN: the phone that made the
+     family knows both, a phone that joined knows its own kid's. */
+  function syncCfg() { return window.SHOCKMATE_SYNC && window.SHOCKMATE_SYNC.url ? window.SHOCKMATE_SYNC : null; }
+  function fam() { return state.settings.family; }
+  function blankFamily(skipped) { return { code: "", me: null, pins: ["", ""], roster: [], skipped: !!skipped }; }
+  function syncOn() { return !!(Y && Y.configured(syncCfg()) && Y.syncSlots(fam()).length); }
+  function familyJoined() { return !!(Y && Y.configured(syncCfg()) && Y.joined(fam())); }
 
   function applyMerged(profiles, names) {
     state.profiles = [0, 1].map((i) => Object.assign(freshStats(), profiles[i]));
     if (names && names[0]) state.settings.names = [names[0], names[1] || state.settings.names[1]];
     useProfile(state.settings.profile); save(); renderPath(); hud();
   }
+  // Roster names are the family's names: the server is where a rename lands, so it wins here.
+  function applyRoster(rows) {
+    const f = fam(); if (!rows || !rows.length) return;
+    f.roster = rows.map((r) => ({ slot: r.slot, name: r.name }));
+    rows.forEach((r) => { if (r.name) state.settings.names[r.slot] = r.name; });
+  }
 
-  // One round trip per profile: pull the other device's copy, merge both ways, push the result.
-  // Merging (never overwriting) means an old device coming back online cannot delete a new card.
+  // One round trip per slot this phone can sync: pull the other phone's copy, merge both ways, push
+  // the result. Merging (never overwriting) means an old phone coming back online cannot delete a card.
+  let syncing = null;
   function syncNow(quiet) {
     if (!syncOn()) return Promise.resolve(false);
-    const code = state.settings.sync.code, slots = syncSlots();
-    // Only a slot with a username and PIN syncs; an unbound slot stays device-local.
-    const jobs = [0, 1].filter((i) => Y.boundSlot(slots[i])).map((i) => Y.pull(syncCfg(), code, slots[i])
-      .then((remote) => {
-        const merged = Y.mergeStats(state.profiles[i], remote || {});
-        state.profiles[i] = Object.assign(freshStats(), merged);
-        return Y.push(syncCfg(), code, slots[i], state.profiles[i]);
-      }));
-    return Promise.all(jobs).then(() => {
-      state.settings.syncedAt = Date.now(); useProfile(state.settings.profile); save(); renderPath(); hud(); renderSyncState();
+    if (syncing) return syncing;
+    const f = fam(), cfg = syncCfg(), code = f.code;
+    const jobs = Y.syncSlots(f).map((i) => Y.pull(cfg, code, i, f.pins[i]).then((remote) => {
+      state.profiles[i] = Object.assign(freshStats(), Y.mergeStats(state.profiles[i], remote || {}));
+      return Y.push(cfg, code, i, f.pins[i], state.profiles[i]);
+    }));
+    jobs.push(Y.familyRoster(cfg, code).then(applyRoster).catch(() => {}));
+    syncing = Promise.all(jobs).then(() => {
+      state.settings.syncedAt = Date.now(); useProfile(state.settings.profile); save(); renderPath(); hud(); renderFamilyCard();
       if (!quiet) toast("Cards synced.", 1800);
       return true;
     }).catch((err) => {
-      renderSyncState(String(err && err.message || err));
-      if (!quiet) toast("Sync could not finish. Cards are safe on this device.", 2600);
+      // Silent and non-destructive: nothing local is touched by a failed sync.
+      renderFamilyCard(String((err && err.message) || err));
+      if (!quiet) toast("Sync could not finish. Cards are safe on this phone.", 2600);
       return false;
-    });
+    }).then((ok) => { syncing = null; return ok; });
+    return syncing;
   }
 
   let syncTimer = null;
@@ -95,19 +103,23 @@
     syncTimer = setTimeout(() => { syncTimer = null; syncNow(true); }, 4000);
   }
 
-  function renderSyncState(problem) {
-    const off = $("sync-off"), on = $("sync-on");
-    if (!off || !on) return;
-    const ready = !!(Y && Y.configured(syncCfg()));
-    off.hidden = ready; on.hidden = !ready;
-    if (!ready) return;
-    const el = $("sync-state"), s = state.settings.sync;
+  function renderFamilyCard(problem) {
+    const on = $("family-on"), off = $("family-off");
+    if (!on || !off) return;
+    const f = fam(), has = Y.validCode(f.code);
+    on.hidden = !has; off.hidden = has;
+    if (!has) return;
+    $("family-code").textContent = f.code;
+    const me = Y.validSlot(f.me) ? state.settings.names[f.me] : "";
+    $("family-who").textContent = me ? "This phone plays as " + me + "." : "This phone has not picked a player.";
+    const el = $("sync-state");
     if (problem) el.textContent = problem;
-    else if (!Y.validCode(s.code)) el.textContent = "Type the family code from the spelling or maths app.";
-    else if (!syncSlots().some(Y.boundSlot)) el.textContent = "Add a username and 4-digit PIN for at least one player.";
+    else if (!Y.syncSlots(f).length) el.textContent = "Pick this phone's player to sync.";
     else if (!state.settings.syncedAt) el.textContent = "Ready. Nothing synced yet.";
     else el.textContent = "Last synced " + new Date(state.settings.syncedAt).toLocaleString() + ".";
   }
+  // Kept for the old name: the e2e suite and window.__shockmate callers use it.
+  function renderSyncState(problem) { renderFamilyCard(problem); }
 
   function exportBackup() {
     const blob = new Blob([JSON.stringify(Y.exportBlob(state.settings, state.profiles), null, 1)], { type: "application/json" });
@@ -144,8 +156,13 @@
     if (!state.settings.coordsV2) { state.settings.coords = true; state.settings.coordsV2 = true; }
     if (!(state.settings.day >= 1 && state.settings.day <= D.DAYS.length)) state.settings.day = 1;
     state.settings.parent = Object.assign({ name: "", pin: "" }, state.settings.parent);
-    const sy = state.settings.sync = Object.assign({ url: "", anonKey: "", code: "", players: [] }, state.settings.sync);
-    sy.players = [0, 1].map((i) => Object.assign({ username: "", pin: "" }, sy.players[i]));
+    // v0.21 and earlier kept a hand-typed URL, key and username login here; the backend is baked in now.
+    delete state.settings.sync;
+    const fm = state.settings.family = Object.assign(blankFamily(false), state.settings.family);
+    fm.code = Y.validCode(fm.code) ? Y.normaliseCode(fm.code) : "";
+    fm.pins = [0, 1].map((i) => Y.normalisePin((fm.pins || [])[i]));
+    fm.me = Y.validSlot(fm.me) ? fm.me : null;
+    if (!Array.isArray(fm.roster)) fm.roster = [];
     setSeats(state.settings.seats === 2 ? 2 : 1);
     setDay(state.settings.day);
     loadVoiceManifest(); loadStats();
@@ -481,7 +498,7 @@
     if ($("turn-note")) $("turn-note").textContent = activeName() + " is White.";  // the co-op turn banner already says whose go it is
     [0, 1].forEach((i) => { const b = $("prof-" + i); b.textContent = state.settings.names[i]; b.classList.toggle("active", state.seats !== 2 && (state.mode === "solo" ? state.settings.profile : state.active) === i); });
     if ($("build-tag")) $("build-tag").textContent = BUILD + " \u00b7 " + ALL.length + " fights \u00b7 " + D.DAYS.length + " days";
-    renderBrag(); renderPath(); renderTeam(); renderResume(); renderVersusResume();
+    renderBrag(); renderPath(); renderTeam(); renderResume(); renderVersusResume(); renderLive();
   }
 
   // Glitch's number, never the kid's. It only ever falls, and his claim never moves.
@@ -1148,9 +1165,11 @@
   }
   function playSquare(name) {
     const g = state.game; if (!g) return;
+    // Two phones: only his own pieces, only on his own move.
+    if (g.live && (state.phase !== "think" || g.chess.turn() !== g.colour)) return;
     if (state.selected) {
       const opt = (g.legal[state.selected] || []).filter(function (m) { return m.to === name; })[0];
-      if (opt) return g.versus ? versusMove(opt) : kidMove(opt);
+      if (opt) return g.live ? liveMove(opt) : g.versus ? versusMove(opt) : kidMove(opt);
     }
     const p = state.pieces[name];
     // Against Glitch the side to move is always White. In versus it is whoever's turn it is.
@@ -1827,6 +1846,545 @@
     startVersus(vs.seats, c, saved);
   }
 
+  /* ================= FAMILY: one-tap setup =================
+     First launch, a ?family=CODE link, or Settings -> Family. New family: the kids' names, each kid
+     picks his own 4-digit PIN on the keypad (twice), and the phone gets a code to share. Join: the
+     code, the roster, "which one is this phone's player?", his PIN, done. Skip keeps the phone local.
+     The coach PIN is a different thing and never leaves the phone. */
+  const FAM = { step: "choose", mode: "new", from: "first", names: ["", ""], pins: ["", ""], kid: 0,
+    typed: "", first: "", code: "", roster: [], pick: null, busy: false, me: 0 };
+  const FAM_STEPS = ["choose", "names", "pin", "code-card", "join", "pick"];
+  function famLine(text, mood) {
+    const g = window.ShockmateGlitch;
+    if (g && $("fam-glitch")) $("fam-glitch").innerHTML = g.svg(mood || "taunt");
+    if ($("fam-line")) { $("fam-line").textContent = text || ""; $("fam-line").hidden = !text; }
+  }
+  function famState(text) { if ($("fam-state")) $("fam-state").textContent = text || ""; }
+  function famShow(step) {
+    FAM.step = step;
+    FAM_STEPS.forEach(function (id) { const el = $("fam-" + id); if (el) el.hidden = id !== step; });
+    // "Skip" already says it on the first card, and "Done" says it once there is a code.
+    if ($("btn-fam-back")) $("btn-fam-back").hidden = (step === "choose" && FAM.from === "first") || step === "code-card";
+    famState("");
+    show("screen-family");
+  }
+  function openFamily(from, code) {
+    Object.assign(FAM, { step: "choose", mode: "new", from: from || "first", names: ["", ""], pins: ["", ""], kid: 0,
+      typed: "", first: "", code: "", roster: [], pick: null, busy: false, me: 0 });
+    if (!Y.configured(syncCfg())) { toast("Family sync is not set up on this build.", 2600); return goHome(); }
+    if (code) {
+      famLine("A family code! Let's see who's in it.", "taunt");
+      famShow("join"); $("fam-code-input").value = code; return famFind();
+    }
+    famLine("New phone? I need to know who I'm tormenting.", "smug");
+    famShow("choose");
+  }
+  function famLeave() {
+    const from = FAM.from;
+    if (!Y.validCode(fam().code) && from === "first") fam().skipped = true;
+    save(); restartLivePoller();
+    if (from === "settings") { renderSettings(); return show("screen-settings"); }
+    goHome();
+  }
+  function renderFamKeypad() {
+    const host = $("fam-keypad"); if (!host || host.childElementCount) return;
+    const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "back", "0"];
+    host.innerHTML = keys.map(function (k) {
+      return k === "back" ? '<button type="button" class="token key del" data-fkey="back" aria-label="Delete">&#9003;</button>'
+        : '<button type="button" class="token key" data-fkey="' + k + '">' + k + "</button>";
+    }).join("") + "<span></span>";
+    Array.prototype.forEach.call(host.querySelectorAll("button[data-fkey]"), function (b) {
+      b.onclick = function () { famKey(b.dataset.fkey); };
+    });
+  }
+  function famDots() {
+    const host = $("fam-pin-dots"); if (!host) return;
+    let h = ""; for (let i = 0; i < 4; i++) h += '<span class="' + (i < FAM.typed.length ? "on" : "") + '"></span>';
+    host.innerHTML = h;
+  }
+  function famShake(msg) {
+    const c = $("fam-pin"); if (c) { c.classList.remove("wrong"); void c.offsetWidth; c.classList.add("wrong"); }
+    sfx("nope"); FAM.typed = ""; famDots(); if (msg) famState(msg);
+  }
+  function famPin() {
+    renderFamKeypad(); FAM.typed = "";
+    const who = FAM.mode === "new" ? FAM.names[FAM.kid] : (FAM.roster.filter(function (r) { return r.slot === FAM.pick; })[0] || {}).name;
+    $("fam-pin-title").textContent = FAM.mode === "new"
+      ? (FAM.first ? who + ", type it again" : who + ", pick a secret PIN")
+      : who + ", type your PIN";
+    $("fam-pin-hint").textContent = FAM.mode === "new"
+      ? "Four digits only you know. It joins your games and keeps your cards safe. The coach's PIN is a different one."
+      : "The four digits you picked when the family was made.";
+    famDots(); famShow("pin");
+  }
+  function famKey(k) {
+    if (FAM.busy) return;
+    if (k === "back") { FAM.typed = FAM.typed.slice(0, -1); return famDots(); }
+    if (FAM.typed.length >= 4) return;
+    FAM.typed += k; sfx("select"); famDots();
+    if (FAM.typed.length === 4) setTimeout(famPinDone, T(160));
+  }
+  function famPinDone() {
+    const typed = FAM.typed;
+    if (FAM.mode === "join") return famJoinPin(typed);
+    if (!FAM.first) { FAM.first = typed; return famPin(); }
+    if (typed !== FAM.first) { FAM.first = ""; famPin(); return famShake("Those two did not match. Pick again."); }
+    FAM.pins[FAM.kid] = typed; FAM.first = "";
+    if (FAM.kid === 0 && FAM.names[1]) { FAM.kid = 1; return famPin(); }
+    famCreate();
+  }
+  function famCreate() {
+    const kids = FAM.names.map(function (n, i) { return { name: n, pin: FAM.pins[i] }; }).filter(function (k) { return k.name; });
+    FAM.busy = true; famState("Making your family…");
+    Y.familyCreate(syncCfg(), "", kids).then(function (code) {
+      FAM.busy = false; FAM.code = code;
+      state.settings.family = { code: code, me: 0, pins: [FAM.pins[0] || "", FAM.pins[1] || ""],
+        roster: kids.map(function (k, i) { return { slot: i, name: k.name }; }), skipped: false };
+      kids.forEach(function (k, i) { state.settings.names[i] = k.name; });
+      state.settings.profile = 0; useProfile(0); save(); hud();
+      syncNow(true);
+      famLine("A family. Two phones, twice the trouble. Share that code.", "smug");
+      renderFamCode(); famShow("code-card");
+    }).catch(function (err) {
+      FAM.busy = false; FAM.kid = 0; FAM.first = "";
+      famShow("names"); famState(err && err.code === "offline" ? "No connection. Try again with signal." : String((err && err.message) || err));
+    });
+  }
+  function renderFamCode() {
+    const f = fam();
+    $("fam-code-big").textContent = f.code;
+    const host = $("fam-me"); if (!host) return;
+    const both = (f.roster || []).length > 1;
+    $("fam-me-row").hidden = !both;
+    host.innerHTML = (f.roster || []).map(function (r) {
+      return '<button type="button" class="chip' + (r.slot === f.me ? " active" : "") + '" data-me="' + r.slot + '">' + esc(r.name) + "</button>";
+    }).join("");
+    Array.prototype.forEach.call(host.querySelectorAll("button[data-me]"), function (b) {
+      b.onclick = function () {
+        const slot = Number(b.dataset.me); fam().me = slot; state.settings.profile = slot; useProfile(slot); save(); hud(); renderFamCode();
+      };
+    });
+  }
+  function shareFamily(code) {
+    const text = Y.shareText(code);
+    const copy = function () {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        // A clipboard write can hang waiting on a permission; after a second and a half, show the text.
+        const slow = new Promise(function (r) { setTimeout(function () { r("slow"); }, 1500); });
+        return Promise.race([navigator.clipboard.writeText(text).then(function () { return "ok"; }), slow])
+          .then(function (how) { toast(how === "ok" ? "Copied. Paste it to the other phone." : text, how === "ok" ? 2400 : 6000); },
+            function () { toast(text, 6000); });
+      }
+      toast(text, 6000); return Promise.resolve();
+    };
+    if (navigator.share) return navigator.share({ title: "Shockmate", text: text }).catch(function (err) {
+      if (err && err.name === "AbortError") return; return copy();
+    });
+    return copy();
+  }
+  function famFind() {
+    const code = Y.normaliseCode($("fam-code-input").value);
+    $("fam-code-input").value = code;
+    if (!Y.validCode(code)) return famState("A family code is 8 letters and numbers.");
+    FAM.busy = true; famState("Looking for that family…");
+    Y.familyRoster(syncCfg(), code).then(function (rows) {
+      FAM.busy = false;
+      if (!rows.length) return famState("No family has that code. Check it with whoever set it up.");
+      FAM.code = code; FAM.roster = rows; FAM.mode = "join";
+      famLine("Found them. Which one of you is holding this phone?", "taunt");
+      const host = $("fam-roster");
+      host.innerHTML = rows.map(function (r) { return '<button type="button" class="cta play" data-pick="' + r.slot + '">' + esc(r.name) + "</button>"; }).join("");
+      Array.prototype.forEach.call(host.querySelectorAll("button[data-pick]"), function (b) {
+        b.onclick = function () { FAM.pick = Number(b.dataset.pick); famPin(); };
+      });
+      famShow("pick");
+    }).catch(function (err) {
+      FAM.busy = false;
+      famState(err && err.code === "offline" ? "No connection. Try again with signal." : String((err && err.message) || err));
+    });
+  }
+  // The PIN is checked by pulling his own progress, which is also the first half of his first sync.
+  function famJoinPin(pin) {
+    const slot = FAM.pick, code = FAM.code;
+    FAM.busy = true; famState("Checking…");
+    Y.pull(syncCfg(), code, slot, pin).then(function (remote) {
+      FAM.busy = false;
+      const was = fam(), same = was.code === code;
+      const pins = same ? was.pins.slice() : ["", ""]; pins[slot] = pin;
+      state.settings.family = { code: code, me: slot, pins: pins, roster: FAM.roster.slice(), skipped: false };
+      applyRoster(FAM.roster);
+      state.profiles[slot] = Object.assign(freshStats(), Y.mergeStats(state.profiles[slot], remote || {}));
+      state.settings.profile = slot; setSeats(1); useProfile(slot); save(); hud();
+      syncNow(true);
+      toast("This phone is " + state.settings.names[slot] + "'s now.", 2400);
+      FAM.from === "settings" ? (renderSettings(), show("screen-settings")) : goHome();
+      restartLivePoller();
+    }).catch(function (err) {
+      FAM.busy = false;
+      if (err && err.code === "pin") return famShake("Not that one. Try again.");
+      if (err && err.code === "locked") return famShake("Too many wrong tries. Wait 15 minutes.");
+      famShake(err && err.code === "offline" ? "No connection. Try again with signal." : String((err && err.message) || err));
+    });
+  }
+  function bindFamily() {
+    if (!$("screen-family")) return;
+    $("btn-fam-new").onclick = function () {
+      FAM.mode = "new";
+      [0, 1].forEach(function (i) {
+        const n = state.settings.names[i];
+        $("fam-name-" + i).value = /^Player [12]$/.test(n) ? "" : n;
+      });
+      famLine("Names first. I'll be rude to both equally.", "taunt");
+      famShow("names");
+    };
+    $("btn-fam-join").onclick = function () { famLine("Got a code? Type it in.", "taunt"); famShow("join"); };
+    $("btn-fam-skip").onclick = function () { fam().skipped = true; save(); famLeave(); };
+    $("btn-fam-names-go").onclick = function () {
+      FAM.names = [Y.cleanName($("fam-name-0").value), Y.cleanName($("fam-name-1").value)];
+      if (!FAM.names[0]) return famState("The first kid needs a name.");
+      FAM.kid = 0; FAM.first = ""; FAM.pins = ["", ""]; famPin();
+    };
+    $("btn-fam-find").onclick = famFind;
+    $("fam-code-input").onkeydown = function (ev) { if (ev.key === "Enter") famFind(); };
+    $("btn-fam-share").onclick = function () { shareFamily(fam().code); };
+    $("btn-fam-done").onclick = function () { famLeave(); };
+    $("btn-fam-back").onclick = function () {
+      if (FAM.step === "choose" || FAM.from === "settings" || FAM.step === "code-card") return famLeave();
+      FAM.first = ""; famShow("choose");
+    };
+  }
+
+  /* ================= LIVE: two phones, one game =================
+     Each phone shows its own kid's colour at the bottom and never flips. Each phone scores only its
+     own kid's moves, at the same depth one-phone versus uses, and builds only his card. The other
+     kid's moves arrive over sm_live_get, animate in with the last-move highlight, and get a line
+     from the referee. There is no tally anywhere, on either phone. */
+  const LIVE = { poller: null, pollerSlot: null, session: null, sent: {}, invites: [], resumable: [], same: false, scratch: null };
+  function siblingSlot() { return fam().me === 1 ? 0 : 1; }
+  function hasSibling() { return (fam().roster || []).some(function (r) { return r.slot === siblingSlot(); }); }
+  function liveTransport() { const f = fam(); return L.transport(Y, syncCfg(), { code: f.code, slot: f.me, pin: f.pins[f.me] }); }
+  function liveReady() { return !!(L && familyJoined() && hasSibling()); }
+  function sentIds() {
+    const out = Object.assign({}, LIVE.sent);
+    if (state.settings.live && state.settings.live.id && state.settings.live.sent) out[state.settings.live.id] = 1;
+    return out;
+  }
+  function restartLivePoller() {
+    if (LIVE.poller) { LIVE.poller.stop(); LIVE.poller = null; }
+    LIVE.invites = []; LIVE.resumable = []; LIVE.same = false;
+    if (!liveReady()) return renderLive();
+    LIVE.pollerSlot = fam().me;
+    LIVE.poller = L.homePoller({ transport: { list: function () { return liveTransport().list(); } }, slot: fam().me,
+      sent: sentIds,
+      when: function () { return document.body.dataset.screen === "screen-title" && !document.hidden && navigator.onLine !== false; },
+      onList: function (r) { LIVE.invites = r.invites; LIVE.resumable = r.resumable; LIVE.same = r.sameProfile; renderLive(); },
+      onError: function () {} });
+    LIVE.poller.start();
+    renderLive();
+  }
+  function renderLive() {
+    const row = $("live-row"), card = $("live-invite");
+    if (!row || !card) return;
+    const ready = liveReady();
+    row.hidden = !ready;
+    card.hidden = true;
+    if (!ready) return;
+    const sib = state.settings.names[siblingSlot()], me = state.settings.names[fam().me];
+    const res = LIVE.resumable[0] || null;
+    const inv = LIVE.invites[0] || null;
+    // One open game per family: while one is open (or offered), the way in is that game, not a new
+    // invite that would replace it.
+    $("btn-live-invite").textContent = "Play " + sib + " on their phone";
+    $("btn-live-invite").hidden = !!(res || inv || LIVE.same);
+    $("btn-live-resume").hidden = !res;
+    if (res) $("btn-live-resume").textContent = res.status === "invited" ? "Waiting for " + sib + " · open" : "Resume game with " + sib;
+    if (!LIVE.same && !inv) return;
+    const l = LIVE.same ? V.say("same", 0, me) : V.say("invite", (String(inv.id).charCodeAt(0) % V.SAY.invite.lines.length) - 1, state.settings.names[inv.inviter_slot]);
+    card.hidden = false;
+    card.classList.toggle("same", !!LIVE.same);
+    if (window.ShockmateGlitch && $("live-invite-glitch")) $("live-invite-glitch").innerHTML = window.ShockmateGlitch.svg(l.mood);
+    $("live-invite-line").textContent = l.text;
+    $("btn-live-accept").hidden = !!LIVE.same;
+    $("btn-live-decline").hidden = !!LIVE.same;
+  }
+
+  function liveInvite() {
+    if (!liveReady()) return;
+    const f = fam(), last = (state.settings.versus || {}).lastWhite;
+    const white = V.nextWhite(last == null ? (f.me === 0 ? 1 : 0) : last);
+    const btn = $("btn-live-invite"); if (btn) btn.disabled = true;
+    liveTransport().invite(siblingSlot(), white).then(function (id) {
+      if (btn) btn.disabled = false;
+      LIVE.sent[id] = 1;
+      state.settings.live = { id: id, rec: [], sent: true, at: now() }; save();
+      return openLive({ id: id, white_slot: white, black_slot: white === f.me ? siblingSlot() : f.me, inviter_slot: f.me,
+        status: "invited", moves: [], updated_at: now() });
+    }).catch(function (err) {
+      if (btn) btn.disabled = false;
+      toast(err && err.code === "offline" ? "No connection. The other phone can't hear you." : String((err && err.message) || err), 2600);
+    });
+  }
+  function liveAccept() {
+    const inv = LIVE.invites[0]; if (!inv) return;
+    $("btn-live-accept").disabled = true;
+    liveTransport().accept(inv.id).then(function (game) {
+      $("btn-live-accept").disabled = false;
+      state.settings.live = { id: game.id, rec: [], sent: false, at: now() }; save();
+      openLive(game);
+    }).catch(function (err) {
+      $("btn-live-accept").disabled = false;
+      if (err && err.code === "same") { LIVE.same = true; return renderLive(); }
+      toast(String((err && err.message) || err), 2600);
+      if (LIVE.poller) LIVE.poller.poke();
+    });
+  }
+  function liveDecline() {
+    const inv = LIVE.invites[0]; if (!inv) return;
+    LIVE.invites = []; renderLive();
+    liveTransport().end(inv.id, "declined").catch(function () {});
+  }
+  function liveResume() {
+    const res = LIVE.resumable[0]; if (!res) return;
+    liveTransport().get(res.id).then(function (game) {
+      if (game.status === "over") { toast("That game has finished.", 2000); if (LIVE.poller) LIVE.poller.poke(); return; }
+      openLive(game);
+    }).catch(function (err) { toast(String((err && err.message) || err), 2600); });
+  }
+  function stopLiveSession() { if (LIVE.session) { LIVE.session.stop(); LIVE.session = null; } }
+
+  // Replays the server's list on a fresh board, as far as chess.js can play it.
+  function replayMoves(list) {
+    const c = new CHESS(); const played = []; let last = null;
+    for (let i = 0; i < (list || []).length; i++) {
+      const pack = P.packList(P.boardList(c));
+      const m = P.moveAt(c, list[i]); if (!m) break;
+      c.move(m.san); played.push(list[i]); last = { uci: m.lan, pack: pack };
+    }
+    return { chess: c, moves: played, last: last };
+  }
+
+  async function openLive(game) {
+    if (!L) return;
+    let watched = true;
+    try { await loadEngine(); } catch (e) { watched = false; if (!CHESS && window.Chess) CHESS = window.Chess; }
+    if (!CHESS) { toast("The board did not load on this phone.", 3000); return goHome(); }
+    const f = fam(), me = f.me, colour = L.colourOf(game, me);
+    if (!colour) { toast("That game is not this phone's.", 2400); return goHome(); }
+    const saved = state.settings.live && state.settings.live.id === game.id ? state.settings.live : null;
+    const replay = replayMoves(game.moves || []);
+    stopLiveSession();
+    state.vs = null; state.review = null; state.fromGame = false; state.versusResult = null;
+    state.camp = null; state.duel = null; state.mode = "solo"; state.prep = false;
+    state.selected = null; state.gate = null; state.playIdx = {};
+    state.settings.lastPlayed = now();
+    state.settings.live = { id: game.id, rec: (saved && saved.rec) || [], sent: !!(saved && saved.sent) || game.inviter_slot === me, at: now() };
+    const names = state.settings.names.slice();
+    state.game = { versus: true, live: true, id: game.id, me: me, colour: colour, opp: L.opponentOf(game, me),
+      seats: { white: game.white_slot, black: game.black_slot }, names: names,
+      chess: replay.chess, legal: {}, rec: state.settings.live.rec, jobs: [], moves: replay.moves.length,
+      lastMove: replay.last, watched: watched && !!E(), sayIdx: {}, done: false, startedAt: now(), status: game.status };
+    const g = state.game;
+    if (g.watched) E().setLevel(null);
+    // His own colour at the bottom, the whole game. Nobody slides this phone across a table.
+    state.flip = colour === "b";
+    useProfile(me);
+    document.body.dataset.play = "1";
+    clearMarks(); $("fx").innerHTML = ""; $("board").classList.remove("dim"); $("gate-dots").innerHTML = "";
+    $("btn-hint").hidden = true; $("btn-skip").hidden = true; $("timelines").hidden = true;
+    if ($("ritual")) $("ritual").hidden = true;
+    banner("", ""); show("screen-play"); hud(); renderPlayFoot();
+    save();
+    LIVE.session = L.gameSession({ transport: liveTransport(), id: game.id, slot: me,
+      game: Object.assign({}, game, { moves: replay.moves }),
+      legal: function (uci, ply) {
+        if (state.game !== g) return false;
+        if (!LIVE.scratch || ply === g.chess.history().length) LIVE.scratch = new CHESS(g.chess.fen());
+        const m = P.moveAt(LIVE.scratch, uci); if (!m) return false;
+        LIVE.scratch.move(m.san); return true;
+      },
+      prefix: function (list) { return replayMoves(list).moves; },
+      on: {
+        accepted: function () {
+          if (state.game !== g) return;
+          g.status = "active"; sfx("select");
+          versusSay("start", names[g.seats.white]); openLiveTurn();
+        },
+        moves: function (played) { liveArrived(g, played); },
+        resync: function (moves) { liveResync(g, moves); },
+        illegal: function () { if (state.game === g) toast("That move did not arrive right. Catching up…", 1800); },
+        waiting: function (on) { liveWaiting(g, on); },
+        over: function (game2, out) { liveServerOver(g, game2, out); },
+      } });
+    if (game.status === "invited") {
+      g.status = "invited";
+      syncBoard(null); renderVersusChip();
+      prompt("Waiting for " + names[g.opp] + " to say yes…");
+      versusSay("waiting", names[g.opp]);
+      state.phase = "wait";
+    } else {
+      if (!g.moves) versusSay("start", names[g.seats.white]);
+      openLiveTurn();
+    }
+    LIVE.session.start();
+  }
+  function liveMine(g) { return g.chess.turn() === g.colour; }
+  function openLiveTurn() {
+    const g = state.game; if (!g || !g.live || g.done) return;
+    g.legal = playLegal(g.chess); state.selected = null;
+    syncBoard(g.lastMove ? { from: g.lastMove.uci.slice(0, 2), to: g.lastMove.uci.slice(2, 4) } : null);
+    renderVersusChip(); renderPlayFoot();
+    banner("", ""); clearMarks(); $("btn-skip").hidden = true;
+    if (liveMine(g)) {
+      const turn = V.say("turn", g.sayIdx.turn, g.names[g.me]); g.sayIdx.turn = turn.index;
+      prompt(g.chess.isCheck() ? g.names[g.me] + ", you are in check. Get out of it." : turn.text);
+      state.phase = "think"; state.thinkAt = now();
+      paintPlay(); startThinkMeter();
+      if (g.watched) warmEval(g.chess.fen());
+    } else {
+      state.phase = "wait"; stopThinkMeter(); paintPlay();
+      prompt(g.names[g.opp] + "'s move.");
+    }
+  }
+  // The other kid's move, from his phone. Played on this board, highlighted, and refereed — never scored.
+  function liveArrived(g, played) {
+    if (state.game !== g || g.done) return;
+    played.forEach(function (p) {
+      const packBefore = P.packList(P.boardList(g.chess));
+      const m = P.moveAt(g.chess, p.uci); if (!m) return;
+      g.chess.move(m.san); g.moves += 1;
+      g.lastMove = { uci: m.lan, pack: packBefore };
+      syncBoard({ from: m.from, to: m.to });
+      const dest = sq(m.to) && sq(m.to).querySelector(".piece"); if (dest) dest.classList.add("pop");
+      sfx("move"); if (m.captured) explode(m.to, false);
+      versusSay(P.moveKind(m.san), g.names[g.opp]);
+    });
+    saveLive();
+    const kind = versusOutcome(g.chess);
+    if (kind) return finishLive(g, kind);
+    openLiveTurn();
+  }
+  function liveResync(g, moves) {
+    if (state.game !== g || g.done) return;
+    const r = replayMoves(moves);
+    g.chess = r.chess; g.moves = r.moves.length; g.lastMove = r.last;
+    // Drop scored rows for moves that are no longer on the board.
+    g.rec = g.rec.filter(function (row) { return (row.ply == null ? 0 : row.ply) < r.moves.length; });
+    state.settings.live.rec = g.rec;
+    saveLive(); openLiveTurn();
+  }
+  function liveWaiting(g, on) {
+    if (state.game !== g || g.done) return;
+    if (on && !liveMine(g)) { prompt("Waiting for " + g.names[g.opp] + "…"); versusSay("waiting", g.names[g.opp]); }
+    else if (!on && !liveMine(g) && g.status !== "invited") prompt(g.names[g.opp] + "'s move.");
+  }
+  function liveServerOver(g, game, out) {
+    if (state.game !== g || g.done) return;
+    if (out.unfinished) return endLive("abandon", null, true, out.why);
+    endLive(out.kind, out.loser, false);
+  }
+  async function liveMove(opt) {
+    const g = state.game, nav = state.nav;
+    if (!g || !g.live || g.done || !liveMine(g) || state.phase !== "think") return;
+    state.phase = "busy"; state.selected = null; paintPlay(); stopThinkMeter();
+    const side = g.chess.turn(), ply = g.chess.history().length;
+    const fenBefore = g.chess.fen(), packBefore = P.packList(P.boardList(g.chess));
+    const m = g.chess.move(opt.san);
+    if (!m) { state.phase = "think"; return; }
+    if (!LIVE.session || !LIVE.session.move(m.lan, g.chess.fen())) {
+      g.chess.undo(); state.phase = "think"; toast("Hang on, catching up with the other phone.", 1600);
+      if (LIVE.session) LIVE.session.poke();
+      return openLiveTurn();
+    }
+    syncBoard({ from: m.from, to: m.to });
+    const dest = sq(m.to) && sq(m.to).querySelector(".piece"); if (dest) dest.classList.add("pop");
+    sfx("move"); if (m.captured) explode(m.to, false);
+    g.moves += 1; renderPlayFoot();
+    const rec = { n: Number(String(fenBefore).split(" ")[5]) || 1, side: side, profile: g.me, ply: ply,
+      fen: fenBefore, bait: { uci: m.lan, san: m.san }, took: !!m.captured,
+      arrive: g.lastMove ? g.lastMove.uci : null, arrivePosition: g.lastMove ? g.lastMove.pack : null };
+    g.rec.push(rec);
+    g.lastMove = { uci: m.lan, pack: packBefore };
+    const kind = versusOutcome(g.chess);
+    // His own move only, scored exactly the way one-phone versus scores it.
+    let job = Promise.resolve();
+    if (g.watched) {
+      const fenAfter = g.chess.fen();
+      job = Promise.all([
+        E().evaluate(fenBefore, { depth: EVAL_DEPTH }).then(function (s) {
+          rec.before = { cp: s.cp, mate: s.mate };
+          rec.best = { uci: s.best, san: sanOf(fenBefore, s.best), pv: (s.pv || []).slice(0, 4) };
+        }).catch(function () {}),
+        kind ? Promise.resolve() : E().evaluate(fenAfter, { depth: EVAL_DEPTH }).then(function (s) {
+          rec.after = { cp: s.cp, mate: s.mate }; rec.punish = (s.pv || []).slice(0, 3);
+        }).catch(function () {}),
+      ]).then(function () { saveLive(); versusReact(nav, g, rec); });
+      g.jobs.push(job.catch(function () {}));
+    }
+    saveLive();
+    if (kind) { await job.catch(function () {}); return finishLive(g, kind); }
+    if (!g.watched) versusSay(P.moveKind(m.san), g.names[g.me]);
+    openLiveTurn();
+  }
+  // Mate and the draws: both boards see them; whichever phone gets there first tells the server.
+  function finishLive(g, kind) {
+    if (LIVE.session) LIVE.session.end(kind).catch(function () {});
+    endLive(kind, kind === "mate" ? g.chess.turn() : null, false);
+  }
+  function liveResign() {
+    const g = state.game; if (!g || !g.live || g.done) return;
+    if (LIVE.session) LIVE.session.end(g.status === "invited" ? "abandon" : "resign").catch(function () {});
+    if (g.status === "invited") return endLive("abandon", null, true, "abandon");
+    endLive("resign", g.colour, false);
+  }
+  function saveLive() {
+    const g = state.game; if (!g || !g.live) return;
+    state.settings.live = Object.assign({}, state.settings.live || {}, { id: g.id, rec: g.rec, at: now() });
+    save();
+  }
+  const LIVE_TITLE = { abandon: "NOBODY FINISHED" };
+  async function endLive(kind, loser, unfinished, why) {
+    const g = state.game; if (!g || !g.live || g.done) return;
+    const nav = state.nav;
+    g.done = true; state.phase = "busy"; stopThinkMeter();
+    stopLiveSession();
+    const title = unfinished ? LIVE_TITLE.abandon : (VERSUS_TITLE[kind] || "GAME OVER");
+    banner(title, kind === "mate" || kind === "resign" ? "win" : "tease");
+    if (!unfinished) versusSay(kind, loser ? g.names[loser === "w" ? g.seats.white : g.seats.black] : g.names[g.seats.white]);
+    sfx(kind === "mate" ? "win" : "select");
+    await Promise.race([Promise.all(g.jobs.map(function (j) { return j.catch(function () {}); })), sleep(4000)]);
+    const t = now();
+    let res = { t: t, kind: kind, live: true, cards: [] };
+    try {
+      res = V.liveResult({ me: g.me, names: g.names, kind: kind, records: g.rec, white: g.seats.white, loser: loser, t: t,
+        unfinished: !!unfinished }, { Chess: CHESS, F: F });
+    } catch (e) { res = { t: t, kind: kind, live: true, cards: [] }; }
+    const c = res.cards[0];
+    if (c && g.rec.length) {
+      let st = state.profiles[g.me] || freshStats();
+      if (c.fights && c.fights.length) st = Object.assign({}, st, { gameFights: P.storeFights(st.gameFights, c.fights) });
+      if (!unfinished) {
+        st = S.recordVersus(st, { colour: c.colour, result: c.result, blunders: c.blunders, matched: c.matched,
+          moves: c.moves, bestMoves: c.best ? [c.best] : [], t: t }).stats;
+      } else if (c.best) st = Object.assign({}, st, { bestMoves: S.storeBestMoves(S.bestMovesOf(st), [c.best], S.BEST_MOVES_MAX) });
+      state.profiles[g.me] = st;
+    }
+    if (!unfinished) state.settings.versus = Object.assign({ lastWhite: null, saved: null }, state.settings.versus, { lastWhite: g.seats.white });
+    state.settings.live = null;
+    state.game = null; state.flip = false; document.body.dataset.play = "";
+    renderPlayFoot(); renderVersusChip();
+    if (E()) E().quit();
+    useProfile(state.settings.profile); save(); hud(); syncSoon();
+    state.versusResult = res;
+    if (stale(nav)) return;
+    if (unfinished && !g.rec.length) {
+      toast(why === "declined" ? g.names[g.opp] + " said not now." : "No game this time.", 2400);
+      return goHome();
+    }
+    showVersusOver(res, unfinished ? "abandon" : kind, loser, g);
+    $("vs-over-title").textContent = title;
+    $("vs-over-sub").textContent = "Your card. The other phone has its own — there is no score between you.";
+  }
+
   /* ---------- session ---------- */
   function pickNext(cur) {
     const list = state.encounters; if (cur === undefined) cur = state.index;
@@ -1935,7 +2493,9 @@
     const leavingCamp = campOn();
     // A game in progress is kept, not dropped: the resume chip on the map picks it back up on the
     // move he left it on. Stockfish is let go, because 40 MB of idle WASM on a phone is not free.
-    if (state.game && !state.game.done) { if (state.game.versus) saveVersus(); else saveGame(); }
+    // A two-phone game stays open on the server; the Resume chip picks it up from sm_live_get.
+    if (state.game && !state.game.done) { if (state.game.live) saveLive(); else if (state.game.versus) saveVersus(); else saveGame(); }
+    stopLiveSession();
     if (state.game) { state.game = null; if (E()) E().quit(); }
     state.flip = false; state.vs = null; state.versusResult = null;
     stopThinkMeter(); if ($("versus-turn")) $("versus-turn").hidden = true;
@@ -1943,7 +2503,8 @@
     state.mode = "solo"; state.duel = null; state.camp = null; state.phase = "home"; stopBlitz();
     useProfile(state.settings.profile);
     if (leavingCamp) setDay(state.settings.day || 1);   // camp is not a stop on the map; put the map back on a real day
-    renderTeam(); renderPath(); hud(); show("screen-title"); renderDayStrip(); }
+    renderTeam(); renderPath(); hud(); show("screen-title"); renderDayStrip();
+    if (LIVE.poller) LIVE.poller.poke(); }
 
   function renderMini(enc) {
     const host = $("next-mini"); if (!host) return;
@@ -1983,15 +2544,6 @@
   }
 
   /* ---------- bindings ---------- */
-  function readLogin() {
-    if (!$("opt-code")) return;
-    const s = state.settings.sync;
-    s.code = Y.normaliseCode($("opt-code").value);
-    s.players = [0, 1].map((i) => ({ username: Y.normaliseUser($("opt-user-" + i).value), pin: Y.normalisePin($("opt-pin-" + i).value) }));
-    $("opt-code").value = s.code;
-    [0, 1].forEach((i) => { $("opt-user-" + i).value = s.players[i].username; $("opt-pin-" + i).value = s.players[i].pin; });
-    save();
-  }
   /* Three control kinds only, so every checkbox and select on this screen became a chip that fills
      when it is on. `state.settings` keeps the exact shapes it always had; only the thing the parent
      taps changed. Fights per session is an <output>, whose .value is its text, so the old read still works. */
@@ -2025,16 +2577,7 @@
       // Shows the style in force, which is the short-lines default until the parent picks one.
       setPair("opt-coach-" + i, coachStyle(i));
     });
-    const s = state.settings.sync || {};
-    if ($("opt-code")) {
-      $("opt-code").value = Y.normaliseCode(s.code);
-      $("opt-url").value = s.url || ""; $("opt-key").value = s.anonKey || "";
-      [0, 1].forEach((i) => {
-        $("opt-user-" + i).value = (s.players && s.players[i] && s.players[i].username) || "";
-        $("opt-pin-" + i).value = (s.players && s.players[i] && s.players[i].pin) || "";
-      });
-    }
-    renderSyncState();
+    renderFamilyCard();
   }
   function switchProfile(i) { setSeats(1); state.settings.profile = i; useProfile(i); save(); hud(); }
 
@@ -2147,6 +2690,7 @@
     };
     if ($("btn-resign")) $("btn-resign").onclick = function () {
       if (!playing() || state.game.done) return;
+      if (state.game.live) return liveResign();
       if (state.game.versus) return endVersus(state.nav, "resign", state.game.chess.turn());
       playSay("quit");
       endGame(state.nav, "quit");
@@ -2162,6 +2706,12 @@
     if ($("btn-vs-go")) $("btn-vs-go").onclick = versusGo;
     if ($("btn-vs-back")) $("btn-vs-back").onclick = function () { state.vs = null; goHome(); };
     if ($("btn-vs-done")) $("btn-vs-done").onclick = goHome;
+    // Two phones: invite the sibling, accept or wave off his invite, pick a game back up.
+    if ($("btn-live-invite")) $("btn-live-invite").onclick = liveInvite;
+    if ($("btn-live-accept")) $("btn-live-accept").onclick = liveAccept;
+    if ($("btn-live-decline")) $("btn-live-decline").onclick = liveDecline;
+    if ($("btn-live-resume")) $("btn-live-resume").onclick = liveResume;
+    bindFamily();
     if ($("btn-review")) $("btn-review").onclick = runReview;
     if ($("btn-over-home")) $("btn-over-home").onclick = goHome;
     if ($("btn-fight-now")) $("btn-fight-now").onclick = fightFromGame;
@@ -2201,38 +2751,27 @@
       r.onerror = function () { toast("Could not read that file.", 2400); };
       r.readAsText(file); ev.target.value = "";
     };
-    $("btn-save-api").onclick = function () {
-      state.settings.sync.url = $("opt-url").value.trim().replace(/\/+$/, "");
-      state.settings.sync.anonKey = $("opt-key").value.trim();
-      save(); renderSettings();
-      toast(Y.configured(syncCfg()) ? "API details saved on this device." : "Both fields are needed.", 2200);
-    };
-    $("btn-roster").onclick = function () {
-      readLogin();
-      if (!Y.validCode(state.settings.sync.code)) { $("roster-state").textContent = "That family code is too short."; return; }
-      $("roster-state").textContent = "Looking up the family…";
-      Y.roster(syncCfg(), state.settings.sync.code).then((rows) => {
-        const list = $("roster-list"); list.innerHTML = "";
-        (rows || []).forEach((r) => { const o = document.createElement("option"); o.value = r.username; o.label = r.display_name || r.username; list.appendChild(o); });
-        if (!rows || !rows.length) { $("roster-state").textContent = "No players found for that code."; return; }
-        $("roster-state").textContent = "Found: " + rows.map((r) => (r.display_name || r.username)).join(", ") + ". Pick two and add their PINs.";
-        // Names follow the other apps, so the cards say what the kids are used to seeing.
-        [0, 1].forEach((i) => {
-          const match = (rows || []).filter((r) => r.username === Y.normaliseUser($("opt-user-" + i).value))[0];
-          if (match && match.display_name) { state.settings.names[i] = match.display_name; $("opt-name-" + i).value = match.display_name; }
-        });
-        save(); hud();
-      }).catch((err) => { $("roster-state").textContent = String(err && err.message || err); });
+    // Settings -> Family: the code, Share, sync now, change player, leave (local only), or set up.
+    if ($("btn-family-setup")) $("btn-family-setup").onclick = function () { openFamily("settings"); };
+    if ($("btn-family-share")) $("btn-family-share").onclick = function () { shareFamily(fam().code); };
+    if ($("btn-family-switch")) $("btn-family-switch").onclick = function () { openFamily("settings", fam().code); };
+    if ($("btn-family-leave")) $("btn-family-leave").onclick = function () {
+      if (!confirm("Leave the family on this phone? Cards stay here; this phone just stops syncing.")) return;
+      state.settings.family = blankFamily(true); state.settings.syncedAt = 0; state.settings.live = null;
+      restartLivePoller(); save(); renderFamilyCard(); toast("This phone is on its own now.", 2200);
     };
     $("btn-sync").onclick = function () {
-      readLogin();
-      if (!Y.validCode(state.settings.sync.code)) { renderSyncState("That family code is too short."); return; }
-      if (!syncSlots().some(Y.boundSlot)) { renderSyncState("Add a username and 4-digit PIN for at least one player."); return; }
-      renderSyncState("Syncing…"); syncNow(false);
+      if (!syncOn()) { renderFamilyCard("Pick this phone's player to sync."); return; }
+      renderFamilyCard("Syncing…"); syncNow(false);
     };
     $("btn-close-settings").onclick = function () {
+      const oldNames = state.settings.names.slice();
       state.settings.names = [$("opt-name-0").value.trim() || "Player 1", $("opt-name-1").value.trim() || "Player 2"];
-      readLogin();
+      // A rename reaches the family when this phone knows that kid's PIN; otherwise the roster wins next sync.
+      Y.syncSlots(fam()).forEach(function (i) {
+        if (state.settings.names[i] === oldNames[i]) return;
+        Y.rename(syncCfg(), fam().code, i, fam().pins[i], state.settings.names[i]).catch(function () {});
+      });
       state.settings.cap = Math.max(3, Math.min(12, Number($("opt-cap").value) || 6));
       state.settings.sound = chipOn("opt-sound"); state.settings.coords = chipOn("opt-coords"); state.settings.hurry = chipOn("opt-hurry");
       state.settings.tournament = chipOn("opt-tournament"); state.settings.readAloud = chipOn("opt-readaloud");
@@ -2312,8 +2851,23 @@
     else console.log("Shockmate self-test passed: " + ALL.length + " fights across " + PACKS.length + " packs.");
   }
   load(); bind(); hud(); selfTest();
+  // First launch, or a ?family=CODE share link: the one-tap setup card. "Skip" is remembered.
+  (function firstRun() {
+    const link = Y.codeFromSearch(location.search);
+    if (link && !(fam().code === link && familyJoined())) return openFamily("first", link);
+    if (!Y.validCode(fam().code) && !fam().skipped) return openFamily("first");
+  })();
+  restartLivePoller();
+  // Back from the background: ask the server straight away rather than waiting out a poll.
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) return;
+    if (LIVE.session) LIVE.session.poke();
+    if (LIVE.poller) LIVE.poller.poke();
+  });
+  window.addEventListener("online", function () { if (LIVE.poller) LIVE.poller.poke(); if (LIVE.session) LIVE.session.poke(); });
   window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, startCamp, campOn, coachStyle, setDay, setSeats, syncNow, exportBackup, importBackup, openParent, gateKey, renderProgress, renderSettings, renderCollection, save, all: ALL, BUILD,
     openPregame, startGame, resumeGame, loadEngine, playing, kidMove, runReview, fightFromGame, playPool, gameFightsOf,
     openVersusPre, versusGo, startVersus, versusMove, versusOn, endVersus, versusFightNow, renderVersusCards,
+    openFamily, openLive, liveInvite, liveAccept, liveResign, restartLivePoller, live: LIVE, fam: fam,
     engine: E, chess: function () { return CHESS; } };
 })();

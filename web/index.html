@@ -67,13 +67,26 @@
           <button id="btn-play" class="cta play">Play Glitch</button>
           <button id="btn-resume" class="chip" hidden>Resume</button>
         </div>
+        <!-- Two phones: shown once this phone has joined a family with two kids in it. -->
+        <div class="live-invite" id="live-invite" hidden>
+          <div class="li-glitch" id="live-invite-glitch"></div>
+          <p class="li-line" id="live-invite-line"></p>
+          <div class="li-actions">
+            <button id="btn-live-accept" class="cta play">Play!</button>
+            <button id="btn-live-decline" class="link">not now</button>
+          </div>
+        </div>
+        <div class="play-row live-row" id="live-row" hidden>
+          <button id="btn-live-invite" class="chip live">Play on two phones</button>
+          <button id="btn-live-resume" class="chip" hidden>Resume game</button>
+        </div>
         <div id="step-two" hidden>
           <div class="duo">
             <button id="btn-coop" class="cta">Team up</button>
             <button id="btn-duel" class="chip">Duel</button>
           </div>
           <div class="play-row versus-row">
-            <button id="btn-versus" class="cta play">Play each other</button>
+            <button id="btn-versus" class="cta play ink">Play each other</button>
             <button id="btn-versus-resume" class="chip" hidden>Resume</button>
           </div>
           <p class="hint" id="two-hint">Take turns on this phone. You both play White.</p>
@@ -336,8 +349,8 @@
 
       <div class="set-card">
         <h3>Backup</h3>
-        <p class="hint">Progress lives on this device only. iOS clears it after about a week
-          without a visit, so add Shockmate to the home screen and keep a backup file.</p>
+        <p class="hint">Progress lives on this device unless the family below syncs it. iOS clears it
+          after about a week without a visit, so add Shockmate to the home screen and keep a backup file.</p>
         <div class="chip-row">
           <button id="btn-export" class="chip">Save backup file</button>
           <button id="btn-import" class="chip">Restore from file</button>
@@ -345,35 +358,76 @@
         <input id="file-import" type="file" accept="application/json,.json" hidden />
       </div>
 
-      <details class="drawer">
-        <summary>Family login (same as the other apps)</summary>
-        <div id="sync-on" hidden>
-          <label>Family code <input id="opt-code" type="text" maxlength="12" autocapitalize="characters"
-            spellcheck="false" placeholder="e.g. ABCD1234" /></label>
-          <div class="actions"><button id="btn-roster" class="chip">Load family</button></div>
-          <p class="hint" id="roster-state">The same code and 4-digit PINs the spelling and maths apps use.</p>
-          <label>First player <input id="opt-user-0" type="text" list="roster-list" maxlength="15"
-            autocapitalize="none" spellcheck="false" placeholder="username" /></label>
-          <label>First PIN <input id="opt-pin-0" type="text" inputmode="numeric" maxlength="4" placeholder="4 digits" /></label>
-          <label>Second player <input id="opt-user-1" type="text" list="roster-list" maxlength="15"
-            autocapitalize="none" spellcheck="false" placeholder="username" /></label>
-          <label>Second PIN <input id="opt-pin-1" type="text" inputmode="numeric" maxlength="4" placeholder="4 digits" /></label>
-          <datalist id="roster-list"></datalist>
-          <div class="actions"><button id="btn-sync" class="chip">Sync now</button></div>
+      <div class="set-card" id="family-card">
+        <h3>Family</h3>
+        <div id="family-on" hidden>
+          <div class="fam-code small" id="family-code"></div>
+          <p class="hint" id="family-who"></p>
+          <div class="chip-row">
+            <button type="button" id="btn-family-share" class="chip">Share</button>
+            <button type="button" id="btn-sync" class="chip">Sync now</button>
+            <button type="button" id="btn-family-switch" class="chip">Change player</button>
+            <button type="button" id="btn-family-leave" class="chip danger">Leave family</button>
+          </div>
           <p class="hint" id="sync-state">Not synced yet.</p>
+          <p class="hint">Leaving only forgets the family on this phone. The cards stay here.</p>
         </div>
-        <div id="sync-off">
-          <p class="hint">Paste this project's API details once per device. They are kept on the
-            device, never in the repo.</p>
-          <label>Supabase URL <input id="opt-url" type="text" autocapitalize="none" spellcheck="false"
-            placeholder="https://xxxx.supabase.co" /></label>
-          <label>Anon key <input id="opt-key" type="password" autocapitalize="none" spellcheck="false"
-            placeholder="paste key" /></label>
-          <div class="actions"><button id="btn-save-api" class="chip">Save API details</button></div>
+        <div id="family-off">
+          <p class="hint">Sync cards between phones, and let the two of them play each other on two phones.</p>
+          <button type="button" id="btn-family-setup" class="cta">Set up this phone</button>
         </div>
-      </details>
+      </div>
 
       <button id="btn-close-settings" class="cta big">Done</button>
+    </section>
+    <section id="screen-family" class="screen">
+      <div class="glitch-row">
+        <div id="fam-glitch"></div>
+        <div class="bubble" id="fam-line"></div>
+      </div>
+      <div class="set-card fam-card" id="fam-choose">
+        <h3>Set up this phone</h3>
+        <button type="button" id="btn-fam-new" class="cta big">New family</button>
+        <p class="hint">The first phone in the house. Type the kids' names; each one picks a PIN.</p>
+        <button type="button" id="btn-fam-join" class="cta play ink">Join a family</button>
+        <p class="hint">Another phone already has a family code.</p>
+        <button type="button" id="btn-fam-skip" class="link">Skip — this phone only</button>
+      </div>
+      <div class="set-card fam-card" id="fam-names" hidden>
+        <h3>Who plays?</h3>
+        <label>First kid <input id="fam-name-0" type="text" maxlength="16" autocapitalize="words" spellcheck="false" /></label>
+        <label>Second kid <input id="fam-name-1" type="text" maxlength="16" autocapitalize="words" spellcheck="false" placeholder="optional" /></label>
+        <button type="button" id="btn-fam-names-go" class="cta">Next</button>
+      </div>
+      <div class="set-card fam-card gate-card" id="fam-pin" hidden>
+        <h3 id="fam-pin-title">Pick a PIN</h3>
+        <p class="hint" id="fam-pin-hint"></p>
+        <div class="pin-dots" id="fam-pin-dots"></div>
+        <div class="keypad" id="fam-keypad"></div>
+      </div>
+      <div class="set-card fam-card" id="fam-code-card" hidden>
+        <h3>Your family code</h3>
+        <div class="fam-code" id="fam-code-big"></div>
+        <p class="hint">Open Shockmate on the other phone with this code. Share sends the link.</p>
+        <button type="button" id="btn-fam-share" class="cta play">Share</button>
+        <div id="fam-me-row" hidden>
+          <span class="set-label">This phone plays as</span>
+          <div class="chip-row" id="fam-me"></div>
+        </div>
+        <button type="button" id="btn-fam-done" class="cta big">Done</button>
+      </div>
+      <div class="set-card fam-card" id="fam-join" hidden>
+        <h3>Join a family</h3>
+        <label>Family code <input id="fam-code-input" type="text" maxlength="10" autocapitalize="characters"
+          autocomplete="off" spellcheck="false" placeholder="8 letters and numbers" /></label>
+        <button type="button" id="btn-fam-find" class="cta">Find family</button>
+      </div>
+      <div class="set-card fam-card" id="fam-pick" hidden>
+        <h3>Which one is this phone's player?</h3>
+        <div class="fam-roster" id="fam-roster"></div>
+      </div>
+      <p class="hint fam-state" id="fam-state"></p>
+      <div class="actions"><button type="button" id="btn-fam-back" class="link">not now</button></div>
     </section>
     <section id="screen-progress" class="screen">
       <h2>Progress</h2>
@@ -421,6 +475,8 @@
   <script src="play.js"></script>
   <!-- versus.js is pure too, and the result cards and Progress read its tables, so it is not lazy. -->
   <script src="versus.js"></script>
+  <!-- live.js: two-phone versus, pure rules plus the polling loops; the transport rides on sync.js. -->
+  <script src="live.js"></script>
   <script src="game.js"></script>
   <script>
     if ("serviceWorker" in navigator && location.protocol !== "file:") {
