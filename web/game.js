@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.10";
+  const BUILD = "v0.11";
   const Y = window.ShockmateSync;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -25,7 +25,7 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", day: 1, tournament: false, seats: 1, syncedAt: 0,
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", day: 1, tournament: false, readAloud: true, seats: 1, syncedAt: 0,
       sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
     mode: "solo", pack: "tactics", active: 0, nav: 0, prep: false, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
@@ -127,7 +127,7 @@
     sy.players = [0, 1].map((i) => Object.assign({ username: "", pin: "" }, sy.players[i]));
     setSeats(state.settings.seats === 2 ? 2 : 1);
     setDay(state.settings.day);
-    loadStats();
+    loadVoiceManifest(); loadStats();
     if (syncOn()) syncNow(true);
   }
   function save() {
@@ -370,6 +370,30 @@
       g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + dur); o.stop(ac.currentTime + dur);
     } catch (e) {}
   }
+  /* ---------- voice: spoken lines, if the parent has generated them ----------
+     web/voice/manifest.json lists what exists. If it is missing, every call here is a silent no-op,
+     so the feature ships before any audio does. One channel: a new line stops the one before it.
+     For a kid whose listening is far ahead of his reading, the hook and the why are the lines that matter. */
+  const VOICE = { manifest: null, current: null, queue: [] };
+  function loadVoiceManifest() {
+    if (typeof fetch !== "function") return;
+    fetch("voice/manifest.json", { cache: "no-cache" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (m) { VOICE.manifest = m && m.files ? m : null; })
+      .catch(function () { VOICE.manifest = null; });
+  }
+  function voiceOn() { return !!(state.settings.readAloud !== false && VOICE.manifest); }
+  function voicePlay(key) {
+    if (!voiceOn()) return false;
+    const file = VOICE.manifest.files[key]; if (!file) return false;
+    if (VOICE.current) { try { VOICE.current.pause(); } catch (e) {} }
+    const a = new Audio("voice/" + file); VOICE.current = a;
+    a.onended = function () { VOICE.current = null; const next = VOICE.queue.shift(); if (next) voicePlay(next); };
+    a.play().catch(function () {});
+    return true;
+  }
+  function voice(key) { VOICE.queue = []; return voicePlay(key); }
+  function voiceSeq(keys) { if (!keys || !keys.length) return; VOICE.queue = keys.slice(1); voicePlay(keys[0]); }
   function sfx(kind) {
     if (kind === "select") beep(220, 0.06);
     if (kind === "move") beep(180, 0.08, "triangle");
@@ -461,6 +485,7 @@
     setPieces(F.piecesFromList(enc.pieces)); clearMarks(); $("fx").innerHTML = ""; $("board").classList.remove("dim");
     banner(""); glitchSay(enc.glitch.taunt, "taunt"); prompt(enc.hook); $("gate-dots").innerHTML = "";
     if ($("ritual")) { $("ritual").hidden = !state.settings.tournament; $("ritual").textContent = S.PREP_QUESTIONS.join("   "); }
+    if (state.settings.tournament) voiceSeq([enc.id + "-hook", "prep-q1", "prep-q2"]); else voice(enc.id + "-hook");
     $("btn-hint").hidden = false; $("btn-skip").hidden = false; show("screen-play");
     state.helpThisFight = needsHelp(state.stats) || (state.mode === "duel" && state.duel && state.duel.helpSeat === state.active);
     paintSelection(); renderTeam(); startBlitz(); hud(); renderPowers();
@@ -482,7 +507,7 @@
   }
   async function hitFlow(enc, move, tier, afterMap) {
     const nav = state.nav;
-    banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage");
+    banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage"); voice(enc.id + "-rage");
     state.stats = S.recordAttempt(state.stats, enc, { correct: true, san: move.san, t: now(), hurry: state.settings.hurry }).stats;
     (state.stats.tiers = state.stats.tiers || []).push(tier); if (state.stats.tiers.length > 8) state.stats.tiers.shift();
     let map = afterMap;
@@ -521,7 +546,7 @@
     if (hpNow.ko && state.koShown !== hpNow.dateKey) {
       state.koShown = hpNow.dateKey;
       state.stats.battle = S.recordKo(state.stats.battle);
-      banner("KNOCKOUT!  " + hpNow.name + " is done", "crit"); sfx("crit");
+      banner("KNOCKOUT!  " + hpNow.name + " is done", "crit"); sfx("crit"); voice("sys-ko");
       glitchSay(hpNow.name + "? Never heard of him.", "hide"); await sleep(1100);
     }
     syncSoon();
@@ -536,7 +561,7 @@
     const nav = state.nav;
     const missRes = S.resolveMiss(state.stats.battle); state.stats.battle = missRes.battle;
     if (missRes.shielded) { banner("TIME SHIELD", "tease"); glitchSay("Hey! Where did my gloat go?", "nervous"); renderPowers(); }
-    else { banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug"); }
+    else { banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug"); voice(enc.id + "-gloat"); }
     state.stats = S.recordAttempt(state.stats, enc, { correct: false, san: move.san, t: now() }).stats;
     (state.stats.tiers = state.stats.tiers || []).push(tier); if (state.stats.tiers.length > 8) state.stats.tiers.shift(); save();
     if (move.uci === enc.tempting && enc.temptingLineUci.length > 1) await playLine(enc.temptingLineUci.slice(1), afterMap);
@@ -546,7 +571,7 @@
     if (state.mode === "duel") return duelSeatDone(enc, false);
     state.tries += 1;
     if (state.tries === 1) {
-      banner("SECOND TRY", "tease"); setPieces(start); clearMarks(); glitchSay("Sweating? Me? Never.", "nervous"); prompt("Try again. Glitch is sweating.");
+      banner("SECOND TRY", "tease"); setPieces(start); clearMarks(); glitchSay("Sweating? Me? Never.", "nervous"); prompt("Try again. Glitch is sweating."); voice("sys-second");
       state.phase = "think"; paintSelection(); renderPowers(); return;
     }
     // confession: show the better future, then the kid plays it
@@ -589,6 +614,7 @@
     state.phase = "card"; renderPath(); $("prompt").classList.remove("gate-prompt");
     $("card-title").textContent = crit ? "CRITICAL KNOCKDOWN" : (state.tries > 0 ? "YOU BEAT GLITCH after " + (state.tries + 1) + " tries" : "YOU BEAT GLITCH");
     if ($("card-spoils")) { $("card-spoils").hidden = false; $("card-spoils").textContent = "Spoils: the " + enc.title + " card"; }
+    voice(enc.id + "-why");
     $("why-mascot").textContent = enc.mascot; $("why-text").textContent = enc.why; $("why-long").textContent = enc.whyLong;
     $("glitch-line-2").textContent = "Glitch: " + enc.glitch.rage;
     $("btn-peek").hidden = !(tier === "good" && state.lastUci !== enc.best);
@@ -774,7 +800,7 @@
   }
   function renderSettings() {
     $("opt-name-0").value = state.settings.names[0]; $("opt-name-1").value = state.settings.names[1]; $("opt-cap").value = state.settings.cap;
-    $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry; if ($("opt-tournament")) $("opt-tournament").checked = !!state.settings.tournament;
+    $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry; if ($("opt-tournament")) $("opt-tournament").checked = !!state.settings.tournament; if ($("opt-readaloud")) $("opt-readaloud").checked = state.settings.readAloud !== false;
     $("opt-blitz-0").checked = !!state.settings.blitz[0]; $("opt-blitz-1").checked = !!state.settings.blitz[1];
     const s = state.settings.sync || {};
     if ($("opt-code")) {
@@ -859,7 +885,7 @@
       state.settings.names = [$("opt-name-0").value.trim() || "Player 1", $("opt-name-1").value.trim() || "Player 2"];
       readLogin();
       state.settings.cap = Math.max(3, Math.min(12, Number($("opt-cap").value) || 6));
-      state.settings.sound = $("opt-sound").checked; state.settings.coords = $("opt-coords").checked; state.settings.hurry = $("opt-hurry").checked; if ($("opt-tournament")) state.settings.tournament = $("opt-tournament").checked;
+      state.settings.sound = $("opt-sound").checked; state.settings.coords = $("opt-coords").checked; state.settings.hurry = $("opt-hurry").checked; if ($("opt-tournament")) state.settings.tournament = $("opt-tournament").checked; if ($("opt-readaloud")) state.settings.readAloud = $("opt-readaloud").checked;
       state.settings.blitz = [$("opt-blitz-0").checked, $("opt-blitz-1").checked];
       save(); hud(); setSeats(state.settings.seats); show("screen-title");
       if (syncOn()) syncNow(true);

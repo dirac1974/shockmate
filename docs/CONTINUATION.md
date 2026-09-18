@@ -4,7 +4,7 @@ Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines 
 
 **Date:** 2026-09-17
 **Repo:** https://github.com/dirac1974/shockmate
-**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.8.1 · 23 fights · 6 days`.
+**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.11 · 23 fights · 6 days`.
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
@@ -18,7 +18,7 @@ Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the 
 Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistence and family sync landed on top of them, ahead of the plan.
 
 - Live at `364f67f`, marker `v0.8.1 · 23 fights · 6 days`. Pages serves `main` / root and rebuilds in about 35 seconds. Verify a deploy by the home-screen build marker, never by eye.
-- Six suites green on the live commit: `test_futures.js`, `test_score.js`, `test_sync.js`, `test_days.js`, `test_battle.js`, `test_encounters.py`.
+- Nine suites green on the live commit: the six unit and data suites plus `test_prep.js`, `test_progress.js` and `test_voice_lines.py`.
 - `tests/e2e/*.py` did NOT run. Application Control on David's PC blocks the greenlet DLL that Playwright loads. The e2e suite currently has no machine to run on.
 - Data is generated: edit `data/encounters.src.json`, `openings.src.json` or `endgames.src.json`, run `python3 tools/build_encounters.py --sf <stockfish>`. Never hand-edit `v2.json` or `web/encounters.js`.
 - Six lesson days cover all 23 fights and deliberately mix packs, so a session cannot dead-end inside one pack. Days are picked on the home screen; `pack` survives only as a data label.
@@ -48,10 +48,10 @@ Engine is judge. Animation is teacher. No eval numbers on screen. No loot, no pu
 The two players are a strong quantitative reasoner with grade-level reading (8) and a strong verbal, systems-level thinker (10). Both are easily bored and easily distracted. The chess can be pitched above their ages; the text cannot. Put difficulty in the position, never in the sentence.
 
 1. **Tournament week, to about 2026-09-25.** Not their first: both have played rated scholastic events before, rated about 200 US Chess, one winning about a third of games, one rarely winning. This one is 5th grade and under, rated, open by rating, so round one will likely pair them up against a much stronger kid; that is the Swiss system, not them, and round two is where their tournament starts. They lose to rushing and to opponents who know a trap they do not. Neither is a reasoning gap. Prep is two questions before every move, said slowly: what did that move just attack, and why is he letting me take that. Writing the move on the scoresheet before playing it is legal under US Chess rules and buys the pause. Shockmate is the trap library; a real board with a clock is the rehearsal. This is gate 0 in all but name.
-2. **Parent progress view.** Behind Settings. Per kid: cards over time, first-try rate per motif, retries per motif. Good at means high first-try motifs; focus on means motifs with misses. The data already exists in `stats.cards` joined to encounter motif, and in `cardsEarned`. Moved from Phase 3 to first, because it is what makes the kid data useful to the parent.
-3. **Tournament prep mode.** A day built from the weakest motifs of that kid, chosen from the same data, plus a think-phase prompt for the defensive habit. Small, data-driven, and the first feature that treats the two profiles differently.
+2. **Parent progress view.** Shipped v0.10. Behind Settings. Per kid: cards over time, first-try rate per motif, retries per motif. Good at means high first-try motifs; focus on means motifs with misses. The data already exists in `stats.cards` joined to encounter motif, and in `cardsEarned`. Moved from Phase 3 to first, because it is what makes the kid data useful to the parent.
+3. **Tournament prep mode.** Shipped v0.9 as a Prep chip and a Tournament week toggle. A day built from the weakest motifs of that kid, chosen from the same data, plus a think-phase prompt for the defensive habit. Small, data-driven, and the first feature that treats the two profiles differently.
 4. **Per-profile text register.** Short lines and spoken cues for the younger reader; fuller lines for the older. Cross-cutting; it touches every kid-facing string.
-5. **Recorded Glitch voice lines.** Promoted from Phase 3. For a kid whose listening is far ahead of his reading, audio is the channel.
+5. **Voice lines.** Pipeline shipped v0.11, audio pending the parent. `tools/voice/extract_lines.py` writes 123 lines; `tools/voice/generate.py` calls ElevenLabs with the key from ELEVENLABS_API_KEY and writes `web/voice/*.mp3` plus a manifest; the game reads the hook, why, rage, gloat, knockout and second-try lines aloud once the manifest exists and is silent until then. The key is never in the repo. After generating, commit `web/voice/` so Pages can serve it. For a kid whose listening is far ahead of his reading, audio is the channel.
 6. **Prove the family sync once, backup first.** Parent, needs credentials. Unchanged.
 7. **Give the e2e suite a home in CI.** Unchanged. A live run found a defect that six green suites missed.
 8. **Second tactics pack, then tablet layout.** After the above.
