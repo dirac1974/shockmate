@@ -349,6 +349,32 @@ async def look_first(pg):
     return False
 
 
+async def flash_item(pg, wrong_first=False):
+    """Answer whatever Flash item is up. Returns the item. One tap, or one chip."""
+    await pg.wait_for_function("() => { const s = window.__shockmate.state;"
+                               " return s.phase === 'flash' && s.gate && s.gate.flash; }")
+    item = await pg.evaluate("window.__shockmate.state.gate.item")
+    i = await pg.evaluate("window.__shockmate.state.flash.i")
+    if wrong_first:
+        if item["kind"] == "chip":
+            bad = next(n for n in (1, 2, 3, 4) if n != item["count"])
+            await pg.click('#flash-chips button[data-flash="%d"]' % bad)
+        else:
+            await tap(pg, next(f + r for f in "abcdefgh" for r in "12345678" if f + r not in item["squares"]))
+        assert await pg.evaluate("window.__shockmate.state.phase") == "flash", "a wrong answer keeps the question up"
+    if item["kind"] == "chip":
+        await pg.click('#flash-chips button[data-flash="%d"]' % item["count"])
+    else:
+        await tap(pg, item["squares"][0])
+    await pg.wait_for_function("n => { const s = window.__shockmate.state; return !s.flash || s.flash.i >= n; }", arg=i + 1)
+    return item
+
+
+async def flash_drill(pg, n, wrong_on=-1):
+    """Answer n Flash items in a row. Returns the items."""
+    return [await flash_item(pg, wrong_first=(i == wrong_on)) for i in range(n)]
+
+
 async def win_fight(pg, answer_look=True):
     """Whatever fight is up: look first if asked, best move, why-gate, card. Returns the fight."""
     if answer_look:

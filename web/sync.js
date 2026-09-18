@@ -7,7 +7,7 @@
   // summing would double-count the fights both devices already saw.
 
   const LEDGER_MAX = 40, TIERS_MAX = 8;
-  const GAMES_RECENT = 10, GAME_FIGHTS_MAX = 20, BEST_MOVES_MAX = 20;
+  const GAMES_RECENT = 10, GAME_FIGHTS_MAX = 20, BEST_MOVES_MAX = 20, FLASH_WINDOW = 12;
   // The rungs, weakest first. Mirrors S.LEVELS in score.js; kept here so merging never has to load
   // the game's own rules. If a rung is ever added there, add it here too.
   const LEVEL_ORDER = ["sleepy", "rookie", "cadet", "agent", "marshal"];
@@ -83,6 +83,23 @@
       out.camp = Object.assign({}, ca, cb, { days: days, total: Object.keys(days).length,
         best: bigger(ca.best, cb.best), last: lastA >= lastB ? lastA : lastB,
         run: lastA === lastB ? bigger(ca.run, cb.run) : (lastA > lastB ? (ca.run || 0) : (cb.run || 0)) });
+    }
+    /* Flash. Items, correct, the best run and the clean days are the kid's numbers, so two devices
+       take the larger of each rather than summing a drill both of them saw. Days union the same way
+       camp days do. `last12` is the adaptive rule's working memory, not a counter: the side that has
+       answered more items owns it, because a half-window would shorten the reveal on thin evidence. */
+    if (a.flash || b.flash) {
+      const fa = a.flash || {}, fb = b.flash || {}, days = {}, byType = {};
+      const pair = (x, y) => ({ items: bigger((x || {}).items, (y || {}).items), correct: bigger((x || {}).correct, (y || {}).correct) });
+      Object.keys(Object.assign({}, fa.days, fb.days)).forEach((k) => { days[k] = pair((fa.days || {})[k], (fb.days || {})[k]); });
+      Object.keys(Object.assign({}, fa.byType, fb.byType)).forEach((k) => { byType[k] = pair((fa.byType || {})[k], (fb.byType || {})[k]); });
+      const lead = (Number(fa.items) || 0) >= (Number(fb.items) || 0) ? fa : fb;
+      out.flash = Object.assign({}, fa, fb, {
+        items: bigger(fa.items, fb.items), correct: bigger(fa.correct, fb.correct), fast: bigger(fa.fast, fb.fast),
+        run: bigger(fa.run, fb.run), bestRun: bigger(fa.bestRun, fb.bestRun), cleanDays: bigger(fa.cleanDays, fb.cleanDays),
+        imagineOpen: !!(fa.imagineOpen || fb.imagineOpen),
+        days: days, byType: byType, last12: (lead.last12 || []).slice(-FLASH_WINDOW),
+      });
     }
     /* Play. Games played and won are the kid's numbers, so two devices take the larger of each and
        `bestLevelWon` takes the higher rung — a phone that never saw Tuesday's win cannot undo it.
@@ -266,7 +283,7 @@
   const api = { mergeStats, mergeCard, normaliseCode, normalisePin, validCode, validPin, validSlot, cleanName,
     codeFromSearch, shareUrl, shareText, syncSlots, joined, CODE_ALPHABET, SITE,
     exportBlob, importBlob, parentOf, configured, rpc, auth, familyCreate, familyRoster, pull, push, rename,
-    LEDGER_MAX, TIERS_MAX, GAMES_RECENT, GAME_FIGHTS_MAX, BEST_MOVES_MAX, LEVEL_ORDER };
+    LEDGER_MAX, TIERS_MAX, GAMES_RECENT, GAME_FIGHTS_MAX, BEST_MOVES_MAX, FLASH_WINDOW, LEVEL_ORDER };
   root.ShockmateSync = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

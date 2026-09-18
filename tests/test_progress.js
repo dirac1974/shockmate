@@ -182,6 +182,25 @@ function run() {
   assert.deepStrictEqual({ m: pl.rush.moves, r: pl.rush.rushed }, { m: 5, r: 4 });
   assert.strictEqual(pl.coachNotes[0], S.RUSH_NOTE);
 
+  /* the Flash tile: accuracy, days and the best run, beside first-try rate and the blunder trend
+     because those are the two numbers the drill is supposed to move */
+  assert.deepStrictEqual([empty.flash.items, empty.flash.correct, empty.flash.days, empty.flash.best], [0, 0, 0, 0],
+    "a profile that has never drilled still renders a tile");
+  assert.strictEqual(empty.flash.rate, 0, "never NaN");
+  assert.strictEqual(empty.flash.unlocked, false);
+  assert.strictEqual(empty.flash.trend, null);
+  let fl = statsOf([], {});
+  fl = S.recordFlash(fl, { type: "recall", correct: true, revealMs: 5000, t: TODAY }).stats;
+  fl = S.recordFlash(fl, { type: "gone", correct: true, revealMs: 5000, t: TODAY }).stats;
+  fl = S.recordFlash(fl, { type: "gone", correct: false, revealMs: 5000, t: YESTERDAY }).stats;
+  const pfl = S.progressSummary(fl, ALL, TODAY);
+  assert.deepStrictEqual([pfl.flash.items, pfl.flash.correct], [3, 2]);
+  assert.ok(Math.abs(pfl.flash.rate - 2 / 3) < 1e-9, "accuracy is correct over items");
+  assert.strictEqual(pfl.flash.days, 2, "two calendar days of drill");
+  assert.strictEqual(pfl.flash.best, 2, "and the best run of right answers, which only climbs");
+  assert.strictEqual(pfl.flash.doneToday, true);
+  assert.strictEqual(pfl.flash.byType.gone.items, 2, "per rung, so the parent can see which one he is finding hard");
+
   /* cracked cards still count as cards */
   const cr = statsOf([], { "01": TODAY, "02": TODAY }); cr.cardsEarned["01"].clean = false;
   const pcr = S.progressSummary(cr, ALL, TODAY);
@@ -235,7 +254,7 @@ function run() {
   assert.deepStrictEqual(S.suggestLevel(vsStats), S.suggestLevel(statsOf([], {})),
     "and versus never moves which crony he is offered");
 
-  console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, threats, camp days and runs, first-try rate, Monday-to-Sunday week, coach notes in priority order, rushed moves and the scoresheet note, cracked cards still count, the Games tile and the blunder trend, null-safe");
+  console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, threats, camp days and runs, first-try rate, Monday-to-Sunday week, coach notes in priority order, rushed moves and the scoresheet note, cracked cards still count, the Games tile and the blunder trend, the Flash tile beside first-try, null-safe");
 }
 
 run();

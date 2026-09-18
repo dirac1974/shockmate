@@ -132,6 +132,11 @@
       <div class="blitz" id="blitz" hidden><i><span id="blitz-fill"></span></i></div>
       <div class="path" id="path"></div>
       <div class="banner" id="banner" hidden></div>
+      <!-- Flash: the reveal window as a ring that empties. No digits: a number counting down is a
+           number on screen going down, and it would be the only one in the app. -->
+      <div class="flash-ring" id="flash-ring" hidden aria-hidden="true">
+        <svg viewBox="0 0 40 40"><circle class="track" cx="20" cy="20" r="17"/><circle class="run" id="flash-ring-run" cx="20" cy="20" r="17"/></svg>
+      </div>
       <div class="board-wrap">
         <div id="board" class="board" aria-label="Chess board"></div>
         <div id="fx" class="fx" aria-hidden="true"></div>
@@ -144,6 +149,9 @@
       <p id="turn-note" hidden>You are White.</p>
       <div class="ritual" id="ritual" hidden></div>
       <div class="gate-dots" id="gate-dots"></div>
+      <!-- Flash counting questions: one chip, one answer. Tapping that many squares is a dexterity
+           test, and the question is about the board, not about his thumbs. -->
+      <div class="chip-row flash-chips" id="flash-chips" hidden></div>
       <div class="actions">
         <div class="powers" id="powers">
           <div class="pips" id="power-pips" aria-label="Power"></div>
@@ -467,6 +475,8 @@
   <script src="motifs.js"></script>
   <script src="days.js"></script>
   <script src="score.js"></script>
+  <!-- flash.js is pure and tiny; it reads futures.js for the board and score.js for the coach line. -->
+  <script src="flash.js"></script>
   <script src="short-lines.js"></script>
   <script src="sync-config.js"></script>
   <script src="sync.js"></script>

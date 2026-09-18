@@ -2365,6 +2365,311 @@
   "text": "If you tap the right pieces, I scream."
  },
  {
+  "key": "g-flash-done-1",
+  "voice": "glitch",
+  "text": "That's Flash. I need a lie-down."
+ },
+ {
+  "key": "g-flash-done-10",
+  "voice": "glitch",
+  "text": "Done. Two minutes, and I aged nine thousand years."
+ },
+ {
+  "key": "g-flash-done-2",
+  "voice": "glitch",
+  "text": "Done. My poof machine is overheating."
+ },
+ {
+  "key": "g-flash-done-3",
+  "voice": "glitch",
+  "text": "Finished. I'm inventing a slower trick."
+ },
+ {
+  "key": "g-flash-done-4",
+  "voice": "glitch",
+  "text": "That is enough looking for one day."
+ },
+ {
+  "key": "g-flash-done-5",
+  "voice": "glitch",
+  "text": "Flash over. My eyes hurt, and I wasn't even looking."
+ },
+ {
+  "key": "g-flash-done-6",
+  "voice": "glitch",
+  "text": "Done! Come back tomorrow. Or don't. Please don't."
+ },
+ {
+  "key": "g-flash-done-7",
+  "voice": "glitch",
+  "text": "That's it. I'm off to hide some boards."
+ },
+ {
+  "key": "g-flash-done-8",
+  "voice": "glitch",
+  "text": "Flash finished. I'll be in the fridge."
+ },
+ {
+  "key": "g-flash-done-9",
+  "voice": "glitch",
+  "text": "Over! I need new tricks. Better ones."
+ },
+ {
+  "key": "g-flash-hide-1",
+  "voice": "glitch",
+  "text": "Poof. Timeline wiped."
+ },
+ {
+  "key": "g-flash-hide-10",
+  "voice": "glitch",
+  "text": "Nothing left. Except the question."
+ },
+ {
+  "key": "g-flash-hide-2",
+  "voice": "glitch",
+  "text": "Gone! Where did it go? I know. You don't."
+ },
+ {
+  "key": "g-flash-hide-3",
+  "voice": "glitch",
+  "text": "Whoops. I deleted the board."
+ },
+ {
+  "key": "g-flash-hide-4",
+  "voice": "glitch",
+  "text": "Vanished. Like my rating. No, wait, forget that."
+ },
+ {
+  "key": "g-flash-hide-5",
+  "voice": "glitch",
+  "text": "Empty. Just you and your memory."
+ },
+ {
+  "key": "g-flash-hide-6",
+  "voice": "glitch",
+  "text": "I put it in a drawer. In another timeline."
+ },
+ {
+  "key": "g-flash-hide-7",
+  "voice": "glitch",
+  "text": "Board's gone. Panic now."
+ },
+ {
+  "key": "g-flash-hide-8",
+  "voice": "glitch",
+  "text": "Erased! That is my favourite trick."
+ },
+ {
+  "key": "g-flash-hide-9",
+  "voice": "glitch",
+  "text": "Poof! And the snacks went with it."
+ },
+ {
+  "key": "g-flash-imagine-1",
+  "voice": "glitch",
+  "text": "Don't move it. IMAGINE it."
+ },
+ {
+  "key": "g-flash-imagine-10",
+  "voice": "glitch",
+  "text": "Pretend you played it. Now what's in trouble?"
+ },
+ {
+  "key": "g-flash-imagine-2",
+  "voice": "glitch",
+  "text": "In your head. Not with your hands."
+ },
+ {
+  "key": "g-flash-imagine-3",
+  "voice": "glitch",
+  "text": "Play it in your brain. The board stays put."
+ },
+ {
+  "key": "g-flash-imagine-4",
+  "voice": "glitch",
+  "text": "No touching. Only thinking. Horrible, isn't it."
+ },
+ {
+  "key": "g-flash-imagine-5",
+  "voice": "glitch",
+  "text": "Move it in your mind. I'll wait. I hate waiting."
+ },
+ {
+  "key": "g-flash-imagine-6",
+  "voice": "glitch",
+  "text": "See the move without making it. Go on."
+ },
+ {
+  "key": "g-flash-imagine-7",
+  "voice": "glitch",
+  "text": "The board will not help you. Imagine."
+ },
+ {
+  "key": "g-flash-imagine-8",
+  "voice": "glitch",
+  "text": "Hands off. Head on."
+ },
+ {
+  "key": "g-flash-imagine-9",
+  "voice": "glitch",
+  "text": "Picture it, then tell me what it bites."
+ },
+ {
+  "key": "g-flash-reveal-1",
+  "voice": "glitch",
+  "text": "Memorise THAT. Go on."
+ },
+ {
+  "key": "g-flash-reveal-10",
+  "voice": "glitch",
+  "text": "One board. One look. Off you go."
+ },
+ {
+  "key": "g-flash-reveal-11",
+  "voice": "glitch",
+  "text": "Drink it in. I'm thirsty for your mistakes."
+ },
+ {
+  "key": "g-flash-reveal-2",
+  "voice": "glitch",
+  "text": "Look fast. I'm taking it away."
+ },
+ {
+  "key": "g-flash-reveal-3",
+  "voice": "glitch",
+  "text": "Study my beautiful board. Briefly."
+ },
+ {
+  "key": "g-flash-reveal-4",
+  "voice": "glitch",
+  "text": "Photograph it with your eyes. Ha! You can't."
+ },
+ {
+  "key": "g-flash-reveal-5",
+  "voice": "glitch",
+  "text": "Look now. Regret later."
+ },
+ {
+  "key": "g-flash-reveal-6",
+  "voice": "glitch",
+  "text": "This board is only visiting."
+ },
+ {
+  "key": "g-flash-reveal-7",
+  "voice": "glitch",
+  "text": "Stare hard. It won't help."
+ },
+ {
+  "key": "g-flash-reveal-8",
+  "voice": "glitch",
+  "text": "Here it is. Enjoy. Briefly."
+ },
+ {
+  "key": "g-flash-reveal-9",
+  "voice": "glitch",
+  "text": "Eyes open, brain on. Good luck."
+ },
+ {
+  "key": "g-flash-right-1",
+  "voice": "glitch",
+  "text": "You REMEMBERED that?"
+ },
+ {
+  "key": "g-flash-right-10",
+  "voice": "glitch",
+  "text": "Right. I'm confiscating your eyes."
+ },
+ {
+  "key": "g-flash-right-2",
+  "voice": "glitch",
+  "text": "How? It wasn't even there!"
+ },
+ {
+  "key": "g-flash-right-3",
+  "voice": "glitch",
+  "text": "Stop seeing things that aren't on the board!"
+ },
+ {
+  "key": "g-flash-right-4",
+  "voice": "glitch",
+  "text": "Ugh. Right again. My poof is broken."
+ },
+ {
+  "key": "g-flash-right-5",
+  "voice": "glitch",
+  "text": "Nobody has a memory like that. Nobody."
+ },
+ {
+  "key": "g-flash-right-6",
+  "voice": "glitch",
+  "text": "Five seconds. FIVE. And you saw it."
+ },
+ {
+  "key": "g-flash-right-7",
+  "voice": "glitch",
+  "text": "Fine! Yes. That one. Hmph."
+ },
+ {
+  "key": "g-flash-right-8",
+  "voice": "glitch",
+  "text": "My beautiful trick, ruined by a child."
+ },
+ {
+  "key": "g-flash-right-9",
+  "voice": "glitch",
+  "text": "I'm going to need a bigger poof."
+ },
+ {
+  "key": "g-flash-wrong-1",
+  "voice": "glitch",
+  "text": "Wrong! The board would tell you. If it existed."
+ },
+ {
+  "key": "g-flash-wrong-10",
+  "voice": "glitch",
+  "text": "Ooh, no. Close. Not really."
+ },
+ {
+  "key": "g-flash-wrong-2",
+  "voice": "glitch",
+  "text": "Nope. Gone means gone."
+ },
+ {
+  "key": "g-flash-wrong-3",
+  "voice": "glitch",
+  "text": "Ha! Your memory has holes in it."
+ },
+ {
+  "key": "g-flash-wrong-4",
+  "voice": "glitch",
+  "text": "Not that one. Think harder. Or don't."
+ },
+ {
+  "key": "g-flash-wrong-5",
+  "voice": "glitch",
+  "text": "Wrong square. I am delighted."
+ },
+ {
+  "key": "g-flash-wrong-6",
+  "voice": "glitch",
+  "text": "Nope! My poof works perfectly."
+ },
+ {
+  "key": "g-flash-wrong-7",
+  "voice": "glitch",
+  "text": "Missed it. Five seconds wasn't enough, was it."
+ },
+ {
+  "key": "g-flash-wrong-8",
+  "voice": "glitch",
+  "text": "Wrong. I'm writing this in my rating book."
+ },
+ {
+  "key": "g-flash-wrong-9",
+  "voice": "glitch",
+  "text": "Nope. Picture it again. Slowly."
+ },
+ {
   "key": "g-level-agent",
   "voice": "glitch",
   "text": "Agent. He counts. You do not. This will be short."

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Phase 4: the modes that are more than one fight.
 
-  - Camp: three spot-the-attack warm-ups, four fights, two counters from the defence pack, the debrief,
-    and the chip reading "done today".
+  - Flash: six board-vision items from the map chip, one tap or one chip each, a wrong answer that
+    does not end the item, the debrief and the chip reading "done today".
+  - Camp: two Flash boards, two spot-the-attack warm-ups, four fights, two counters from the defence
+    pack, the debrief, and the chip reading "done today".
   - Play vs Sleepy with the real WASM engine: the kid (python-chess, three plies of alpha-beta on material) hangs a
     piece on purpose, then plays to Glitch's resignation or to mate; the move he hung comes back as a
     game fight, played through to a card.
@@ -99,6 +101,41 @@ def ucis(board, m):
 
 # ---------------------------------------------------------------- suites
 
+async def flash(b, base, fake):
+    """The Flash chip: six items, one tap or one chip each, a wrong answer that does not end it,
+    the debrief, and the once-a-day counter on the map."""
+    ph = await h.phone(b, base, fake)
+    pg = ph.page
+    await h.boot(ph)
+    assert "2 minutes" in (await pg.text_content('.day-chip[data-day="-2"]'))
+    await pg.click('.day-chip[data-day="-2"]')
+    await pg.wait_for_function("() => !!window.__shockmate.state.flash")
+    plan = await pg.evaluate("() => { const f = window.__shockmate.state.flash;"
+                             " return { n: f.items.length, types: f.items.map(i => i.type), reveal: f.revealMs,"
+                             " kinds: f.items.map(i => i.kind), ids: f.items.map(i => i.encId) }; }")
+    assert plan["n"] == 6, plan
+    assert len(set(plan["ids"])) == 6, ("no board is asked about twice", plan)
+    assert "imagine" not in plan["types"], ("the hard rung is shut on a fresh profile", plan)
+    assert plan["types"].count("gone") >= 2, plan
+    assert plan["reveal"] == 5000, plan
+    # The reveal window really is a window: the board goes up, then it goes away.
+    await pg.wait_for_function("() => Object.keys(window.__shockmate.state.pieces).length > 4")
+    assert not await pg.is_hidden("#flash-ring"), "the ring counts the reveal down without a digit"
+    items = await h.flash_drill(pg, 6, wrong_on=1)
+    await pg.wait_for_selector("#session-end:not([hidden])")
+    assert "Flash done" in (await pg.text_content("#end-title"))
+    st = await pg.evaluate("window.__shockmate.state.stats.flash")
+    assert st["items"] == 6, st
+    assert st["correct"] == 5, ("one wrong answer, honestly counted", st)
+    assert st["byType"]["gone"]["items"] >= 2, st
+    await pg.click("#btn-end-ok")
+    await h.screen(pg, "screen-title")
+    assert "done today" in (await pg.text_content('.day-chip[data-day="-2"]'))
+    ph.check("flash")
+    await ph.ctx.close()
+    return [i["type"] for i in items]
+
+
 async def camp(b, base, fake):
     ph = await h.phone(b, base, fake)
     pg = ph.page
@@ -106,9 +143,13 @@ async def camp(b, base, fake):
     await pg.click('.day-chip[data-day="-1"]')
     await pg.wait_for_function("() => !!window.__shockmate.state.camp")
     plan = await pg.evaluate("() => { const p = window.__shockmate.state.camp.plan;"
-                             " return { warm: p.warmups.length, fights: p.fights.length, counters: p.counters.map(e => e.pack) }; }")
-    assert plan["warm"] == 3 and plan["fights"] == 4 and len(plan["counters"]) == 2, plan
+                             " return { flash: p.flash.length, warm: p.warmups.length, fights: p.fights.length,"
+                             " counters: p.counters.map(e => e.pack), ids: p.all.map(e => e.id) }; }")
+    assert plan["flash"] == 2 and plan["warm"] == 2 and plan["fights"] == 4 and len(plan["counters"]) == 2, plan
     assert plan["counters"] == ["defence", "defence"], ("counters come from the defence pack", plan)
+    assert len(set(plan["ids"])) == len(plan["ids"]), ("no board appears twice in a camp", plan)
+    # The warm-up is two flash boards, then two spot-the-attack boards. Same minutes, two kinds of looking.
+    await h.flash_drill(pg, plan["flash"])
     for i in range(plan["warm"]):
         await pg.wait_for_function("() => { const s = window.__shockmate.state; return s.phase === 'threat' && s.gate && s.gate.camp; }")
         assert ("SPOT THE ATTACK  %d/%d" % (i + 1, plan["warm"])) in (await pg.text_content("#banner"))
@@ -128,6 +169,8 @@ async def camp(b, base, fake):
     assert await pg.is_visible("#end-say"), "the debrief ends on the line to say tomorrow"
     camp_stats = await pg.evaluate("window.__shockmate.state.stats.threats")
     assert camp_stats and camp_stats.get("asked", camp_stats.get("targets", 1)), camp_stats
+    flash_stats = await pg.evaluate("window.__shockmate.state.stats.flash")
+    assert flash_stats and flash_stats["items"] == plan["flash"], ("camp's flash items are counted too", flash_stats)
     await pg.click("#btn-end-ok")
     await h.screen(pg, "screen-title")
     assert "done today" in (await pg.text_content('.day-chip[data-day="-1"]'))
@@ -302,6 +345,7 @@ async def main():
     try:
         async with async_playwright() as p:
             b = await h.launch(p)
+            types = await flash(b, base, fake)
             await camp(b, base, fake)
             fid = await look_first(b, base, fake)
             white = await versus_one_phone(b, base, fake)
@@ -310,9 +354,11 @@ async def main():
             await b.close()
     finally:
         httpd.shutdown()
-    print("OK e2e phase4: camp 3 warm-ups + 4 fights + 2 counters + debrief; look-first on %s wrong then right; "
+    print("OK e2e phase4: flash 6 items (%s) with a wrong answer and the once-a-day chip; "
+          "camp 2 flash + 2 warm-ups + 4 fights + 2 counters + debrief; look-first on %s wrong then right; "
           "versus fool's mate (%s White) to two cards; two-phone invite/accept/moves/resign, one card each; "
-          "Sleepy beaten in %d moves (%s) after hanging %s, game fight played to a card" % (fid, white, n, title.strip(), hung))
+          "Sleepy beaten in %d moves (%s) after hanging %s, game fight played to a card"
+          % (",".join(types), fid, white, n, title.strip(), hung))
 
 
 h.run(main)

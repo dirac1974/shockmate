@@ -6,8 +6,9 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.23";
+  const BUILD = "v0.24";
   const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
+  const X = window.ShockmateFlash;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
   let CHESS = null;                                 // vendor/chess.js, loaded with it
   const EVAL_DEPTH = 10;                            // the depth the judge scores at. Never shown, never spoken.
@@ -28,7 +29,7 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    camp: null, seen: {}, lineHistory: {}, lastPlay: {}, thinkAt: 0, lastThinkMs: null, cardNews: null, sittingDays: [0, 0], look: null,
+    camp: null, flash: null, seen: {}, lineHistory: {}, lastPlay: {}, thinkAt: 0, lastThinkMs: null, cardNews: null, sittingDays: [0, 0], look: null,
     game: null, playIdx: {}, review: null, fromGame: false, pre: null, engineScripts: null,
     // versus: the board turns round to whoever is to move, so the arena needs to know which way up it is
     flip: false, vs: null, versusResult: null,
@@ -225,7 +226,12 @@
     const campDone = S.campDoneToday(state.stats, now());
     const campChip = '<button class="day-chip camp' + (campDone ? " done" : "") + '" data-day="-1"><span class="n">⚑</span>' +
       '<span class="t">Camp</span><small>' + (campDone ? "done today ✓" : "8 minutes") + '</small></button>';
-    host.innerHTML = campChip + prepChip + D.DAYS.map(function (d) {
+    // Flash is its own two minutes beside Camp, and it is also Camp's first four boards. Counted once
+    // a day like Camp, replayable as often as he likes, and nothing about it locks.
+    const flashDone = S.flashDoneToday(state.stats, now());
+    const flashChip = '<button class="day-chip flash' + (flashDone ? " done" : "") + '" data-day="-2"><span class="n">⚡</span>' +
+      '<span class="t">Flash</span><small>' + (flashDone ? "done today ✓" : "2 minutes") + '</small></button>';
+    host.innerHTML = campChip + flashChip + prepChip + D.DAYS.map(function (d) {
       const pr = D.dayProgress(state.stats, d.n), open = D.dayUnlocked(state.stats, d.n);
       const cls = ["day-chip"];
       // Ladder days are rungs, not numbered stops: a rung glyph, and the rating band off the blurb.
@@ -246,6 +252,7 @@
       b.onclick = function () {
         const n = Number(b.dataset.day);
         if (n === -1) return startCamp();
+        if (n === -2) return startFlash();
         if (n === 0) setPrepDay(); else setDay(n);
         renderPath(); hud();
       };
@@ -450,6 +457,9 @@
           tile(p.camp.days + " \u00b7 " + p.camp.best, "Camp days \u00b7 best run") +
           tile(p.threats.found + "/" + p.threats.asked, "Threats spotted") +
           tile(p.firstTry.cards ? Math.round(p.firstTryRate * 100) + "%" : "\u2014", "First try") +
+          /* Flash sits between first-try rate and the games row on purpose: those are the two numbers
+             the drill is supposed to move, and the only way to judge it is to read the three together. */
+          tile(p.flash.items ? Math.round(p.flash.rate * 100) + "% \u00b7 " + p.flash.days : "\u2014", "Flash \u00b7 days") +
           tile(p.thisWeek.campDays + " \u00b7 " + p.thisWeek.cards, "This week: camp \u00b7 cards") +
           // Wrong moves made in under four seconds, of all timed moves. The parent's number, never the kid's.
           tile(p.rush.moves ? p.rush.rushed + "/" + p.rush.moves : "\u2014", "Rushed") +
@@ -621,7 +631,7 @@
     }));
     paintSelection();
   }
-  function clearMarks() { document.querySelectorAll(".sq").forEach((el) => { el.className = el.className.replace(/\b(sel|legal|cap|cand|guide|best-glow|tempt-glow|gate-target|gate-ok|gate-hint|fork-glow|pin-freeze|skewer-stab|door-slam|laser|poison)\b/g, "").trim(); }); }
+  function clearMarks() { document.querySelectorAll(".sq").forEach((el) => { el.className = el.className.replace(/\b(sel|legal|cap|cand|guide|best-glow|tempt-glow|gate-target|gate-ok|gate-hint|flash-from|fork-glow|pin-freeze|skewer-stab|door-slam|laser|poison)\b/g, "").trim(); }); }
   function paintSelection() {
     if (playing()) return paintPlay();
     const enc = current();
@@ -641,6 +651,7 @@
   function onSquare(name) {
     if (state.phase === "gate") return gateTap(name);
     if (state.phase === "threat") return threatTap(name);
+    if (state.phase === "flash") return flashTap(name);
     if (state.phase !== "think") return;
     if (playing()) return playSquare(name);
     const enc = current();
@@ -956,9 +967,10 @@
   function startCamp() {
     useProfile(state.settings.profile);
     const style = coachStyle(state.active);
-    const plan = S.campPlan(state.stats, playPool(), { hasThreat: hasThreat });
-    state.camp = { plan: plan, style: style, stage: "warm", w: 0, i: 0,
-      threatsAsked: 0, threatsFound: 0, wrongTaps: 0, clean: 0, firstTry: 0, fights: 0 };
+    const plan = S.campPlan(state.stats, playPool(), { hasThreat: hasThreat, supports: flashSupports(style) });
+    state.camp = { plan: plan, style: style, stage: "flash", w: 0, i: 0,
+      threatsAsked: 0, threatsFound: 0, wrongTaps: 0, clean: 0, firstTry: 0, fights: 0,
+      flashAsked: 0, flashRight: 0 };
     state.prep = false; state.day = 0; state.mode = "solo"; state.duel = null;
     state.sitting = (state.sitting || 0) + 1;
     state.settings.lastPlayed = now();
@@ -967,10 +979,27 @@
     state.index = 0; state.phase = "busy";
     show("screen-play"); banner("CAMP", "tease"); glitchMoment("campStart");
     prompt(S.coachLine(style, { kind: "campStart" }));
-    toast(S.coachLine(style, { kind: "phase", phase: "warm" }), 2600);
     voiceNext(["prep-q1", "prep-q2"]);     // the two questions, at the start of every camp, after Glitch
     hud(); renderPowers();
-    setTimeout(nextWarmup, T(1200));
+    setTimeout(campFlash, T(1200));
+  }
+  // Camp opens on two Flash boards, then two spot-the-attack boards. Both are the same habit — look
+  // at the whole board before you touch anything — asked two different ways in the same four minutes.
+  function campFlash() {
+    const c = state.camp; if (!c) return;
+    const items = flashItems(c.plan.flash, c.style);
+    if (!items.length) return campWarmups();
+    openFlash(items, c.style, true);
+    toast(S.coachLine(c.style, { kind: "flashStart", count: items.length, revealMs: state.flash.revealMs }), 2600);
+    flashNext();
+  }
+  function campWarmups() {
+    const c = state.camp; if (!c) return;
+    c.stage = "warm"; c.w = 0;
+    state.encounters = c.plan.warmups.length ? c.plan.warmups : c.plan.boards;
+    state.index = 0;
+    toast(S.coachLine(c.style, { kind: "phase", phase: "warm" }), 2600);
+    nextWarmup();
   }
   async function nextWarmup() {
     const c = state.camp; if (!c) return;
@@ -1112,10 +1141,203 @@
     if ($("end-nudge")) $("end-nudge").hidden = true;
     if ($("btn-next-day")) $("btn-next-day").hidden = true;
     $("session-next").textContent = style === "numbers"
-      ? "Camp is 3 spot checks, 4 fights, 2 counters. Same tomorrow."
-      : "Tomorrow is the same shape: spot what he attacks, four fights, two where he attacks you.";
+      ? "Camp is 2 flash, 2 spot checks, 4 fights, 2 counters. Same tomorrow."
+      : "Tomorrow is the same shape: two flashes, spot what he attacks, four fights, two where he attacks you.";
     const mini = $("next-mini"); if (mini) { mini.innerHTML = ""; mini.hidden = true; }   // no next board to peek at
     voiceSeq(["prep-q1", "prep-q2"]);      // and again at the end, so they are the last thing he hears
+    $("session-end").hidden = false; state.phase = "end";
+  }
+
+  /* ---------- flash: two minutes of board vision ----------
+     A position goes up for a few seconds and is taken away, and he is asked one thing about what it
+     MEANT — what was hanging, where Glitch's queen stood, what the last move hit, how many pieces
+     were on his king. The harder rung leaves the board alone and makes him hold a move in his head.
+
+     Rules kept: the reveal window is quiet (Glitch says his line before the board arrives and then
+     shuts up), one tap or one chip per item, a hint after two wrong and the answer on the third, and
+     nothing on the screen counts down — the ring empties instead. Every question a board can carry
+     is computed in web/flash.js, which never touches the DOM. */
+  function flashOn() { return !!state.flash; }
+  function flashSupports(style) { return function (e, t) { return X.supports(e, t, { style: style }); }; }
+  function flashItems(planItems, style) {
+    const out = [];
+    (planItems || []).forEach(function (it) {
+      const item = X.makeItem(it.enc, it.type, { style: style });
+      if (item) { item.enc = it.enc; out.push(item); }
+    });
+    return out;
+  }
+  function openFlash(items, style, inCamp) {
+    state.flash = { items: items, i: 0, correct: 0, wrong: 0, style: style, inCamp: !!inCamp,
+      revealMs: S.flashRevealMs(state.stats) };
+    state.encounters = items.map(function (i) { return i.enc; });
+    state.index = 0; state.phase = "busy";
+  }
+  function startFlash() {
+    useProfile(state.settings.profile);
+    const style = coachStyle(state.active);
+    const plan = S.flashPlan(state.stats, playPool(), S.FLASH_N, { supports: flashSupports(style) });
+    const items = flashItems(plan.items, style);
+    if (!items.length) return toast("Flash needs a board or two first. Win a fight.", 2600);
+    state.camp = null; state.prep = false; state.day = 0; state.mode = "solo"; state.duel = null;
+    state.sitting = (state.sitting || 0) + 1; state.settings.lastPlayed = now();
+    state.session = { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 };
+    openFlash(items, style, false);
+    show("screen-play"); banner("FLASH", "tease"); glitchMoment("flashReveal");
+    prompt(S.coachLine(style, { kind: "flashStart", count: items.length, revealMs: state.flash.revealMs }));
+    hud(); renderPowers();
+    setTimeout(flashNext, T(1200));
+  }
+  // The ring is a meter: it empties over the reveal and is never a digit on screen.
+  const RING = 106.8;                     // 2 pi r for the r=17 circle in index.html
+  function flashRing(ms, ghost) {
+    const box = $("flash-ring"), run = $("flash-ring-run"); if (!box || !run) return;
+    box.hidden = false; box.classList.toggle("ghost", !!ghost);
+    run.style.transition = "none"; run.style.strokeDashoffset = "0";
+    void run.getBoundingClientRect();
+    run.style.transition = "stroke-dashoffset " + Math.max(60, T(ms)) + "ms linear";
+    run.style.strokeDashoffset = String(RING);
+  }
+  function flashRingOff() { const box = $("flash-ring"); if (box) box.hidden = true; }
+  // The imagine move, said once on the board and then withdrawn. After this he is on his own.
+  function ghostArrow(from, to) {
+    const fx = $("fx"), a = sq(from), b = sq(to); if (!fx || !a || !b) return;
+    const p = fx.getBoundingClientRect(), r1 = a.getBoundingClientRect(), r2 = b.getBoundingClientRect();
+    const x1 = r1.left - p.left + r1.width / 2, y1 = r1.top - p.top + r1.height / 2;
+    const x2 = r2.left - p.left + r2.width / 2, y2 = r2.top - p.top + r2.height / 2;
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "ghost-arrow");
+    svg.setAttribute("width", String(Math.round(p.width))); svg.setAttribute("height", String(Math.round(p.height)));
+    svg.innerHTML = '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>' +
+      '<circle cx="' + x2 + '" cy="' + y2 + '" r="11"/>';
+    fx.appendChild(svg);
+  }
+  function clearGhost() { const fx = $("fx"); if (fx) fx.innerHTML = ""; }
+  function flashChips(list, answered) {
+    const host = $("flash-chips"); if (!host) return;
+    if (!list) { host.hidden = true; host.innerHTML = ""; return; }
+    host.hidden = false;
+    host.innerHTML = list.map(function (n) { return '<button class="chip" data-flash="' + n + '">' + n + "</button>"; }).join("");
+    Array.prototype.forEach.call(host.querySelectorAll("button[data-flash]"), function (b) {
+      b.onclick = function () { flashAnswer(Number(b.dataset.flash), b); };
+    });
+    if (answered) answered.forEach(function (n) { const b = host.querySelector('[data-flash="' + n + '"]'); if (b) b.disabled = true; });
+  }
+  async function flashNext() {
+    const f = state.flash; if (!f) return;
+    if (f.i >= f.items.length) return flashEnd();
+    const nav = state.nav, item = f.items[f.i];
+    state.index = f.i; state.phase = "busy"; state.selected = null; state.gate = null;
+    clearMarks(); clearGhost(); flashChips(null); flashRingOff();
+    $("board").classList.remove("dim"); $("gate-dots").innerHTML = ""; $("prompt").classList.remove("gate-prompt");
+    $("btn-hint").hidden = true; $("btn-skip").hidden = true;
+    if ($("ritual")) $("ritual").hidden = true;
+    banner("FLASH  " + (f.i + 1) + "/" + f.items.length, "tease");
+    prompt(item.style);
+    show("screen-play"); renderPath(); hud(); renderPowers();
+    setPieces({});
+    // He says his line to an empty board, and then the looking happens in silence.
+    glitchMoment(item.type === "imagine" ? "flashImagine" : "flashReveal");
+    await sleep(900); if (stale(nav) || !state.flash) return;
+    setPieces(item.position);
+    if (item.type === "imagine") {
+      prompt(item.prompt);
+      if (sq(item.move.from)) sq(item.move.from).classList.add("flash-from");
+      ghostArrow(item.move.from, item.move.to);
+      flashRing(item.arrow.ms, true);
+      await sleep(item.arrow.ms); if (stale(nav) || !state.flash) return;
+      clearGhost(); clearMarks();
+    } else {
+      flashRing(f.revealMs, false);
+      await sleep(f.revealMs); if (stale(nav) || !state.flash) return;
+      setPieces(item.hidden);
+      glitchMoment("flashHide");
+    }
+    flashRingOff();
+    flashAsk(item);
+  }
+  function flashAsk(item) {
+    state.phase = "flash";
+    state.gate = { flash: true, item: item, wrong: 0, tried: [], targets: item.squares.slice(), found: [] };
+    prompt(item.type === "imagine" ? item.prompt + " " + item.question : item.question);
+    $("prompt").classList.add("gate-prompt");
+    $("gate-dots").innerHTML = "<span></span>";
+    flashChips(item.kind === "chip" ? X.CHIPS : null);
+    $("btn-skip").hidden = false;
+  }
+  function flashTap(name) {
+    const g = state.gate; if (!g || !g.flash || g.item.kind === "chip") return;
+    flashAnswer(name, sq(name));
+  }
+  function flashAnswer(answer, el) {
+    const g = state.gate, f = state.flash;
+    if (!g || !g.flash || !f) return;
+    const item = g.item;
+    if (X.check(item, answer)) {
+      if (el) el.classList.add(item.kind === "chip" ? "active" : "gate-ok");
+      sfx("win");
+      return flashSettle(true);
+    }
+    g.wrong += 1; g.tried.push(answer);
+    if (el) { el.classList.remove("nope"); void el.offsetWidth; el.classList.add("nope"); if (item.kind === "chip") el.disabled = true; }
+    sfx("nope"); glitchMoment("flashWrong");
+    if (g.wrong >= 3) return flashSettle(false);          // the answer on the third; it never holds him longer
+    if (g.wrong >= 2) {
+      // The hint narrows it: one more square lit, or one more number taken off the chip row.
+      if (item.kind === "chip") {
+        const host = $("flash-chips");
+        const dead = X.CHIPS.filter(function (n) { return n !== item.count && g.tried.indexOf(n) < 0; })[0];
+        const btn = dead != null && host ? host.querySelector('[data-flash="' + dead + '"]') : null;
+        if (btn) btn.disabled = true;
+      } else { const hint = X.hintFor(item); if (hint && sq(hint)) sq(hint).classList.add("gate-hint"); }
+      prompt(S.coachLine(f.style, { kind: "flashHint", chip: item.kind === "chip" }));
+    }
+  }
+  function flashSettle(correct) {
+    const g = state.gate, f = state.flash, c = state.camp; if (!g || !f) return;
+    const nav = state.nav, item = g.item;
+    state.gate = null; state.phase = "busy";
+    $("prompt").classList.remove("gate-prompt"); flashChips(null);
+    /* What is recorded is the FIRST look: he still gets two more tries and still hears "seen", but a
+       board he only found on the third tap is not a board he saw. That is the same rule as a card's
+       `tries`, which is why Progress can put Flash accuracy and first-try rate side by side at all. */
+    const first = correct && !g.wrong;
+    state.stats = S.recordFlash(state.stats, { type: item.type, correct: first,
+      revealMs: item.reveal ? f.revealMs : 0, t: now() }).stats;
+    save();
+    if (first) f.correct += 1; else f.wrong += 1;
+    if (c) { c.flashAsked += 1; c.flashRight += first ? 1 : 0; }
+    $("gate-dots").innerHTML = correct ? '<span class="on"></span>' : "";
+    if (correct) {
+      banner("SEEN", "win"); prompt(S.coachLine(f.style, { kind: "flashRight" })); glitchMoment("flashRight");
+    } else {
+      banner("THERE", "tease");
+      setPieces(item.position);                       // the board comes back so the answer has somewhere to stand
+      item.squares.forEach(function (s) { if (sq(s)) sq(s).classList.add("gate-ok"); });
+      prompt(S.coachLine(f.style, { kind: "flashGive" }) + " " + X.answerText(item));
+    }
+    f.i += 1;
+    setTimeout(function () { if (!stale(nav) && state.flash) flashNext(); }, T(correct ? 900 : 1700));
+  }
+  function flashEnd() {
+    const f = state.flash; if (!f) return;
+    const style = f.style, n = f.items.length, got = f.correct;
+    flashRingOff(); flashChips(null); clearGhost();
+    glitchMoment("flashDone");
+    if (f.inCamp) { state.flash = null; return campWarmups(); }
+    if (state.phase === "end") return;                 // a double tap must not write the debrief twice
+    state.flash = null;
+    const fl = S.flashOf(state.stats);
+    $("end-title").textContent = "Flash done, " + activeName() + "!";
+    $("session-summary").textContent = S.coachLine(style, { kind: "flashDone", correct: got, count: n, run: fl.bestRun });
+    $("end-rank").textContent = "Flash days: " + S.flashDaysDone(state.stats) + ". Best run: " + (fl.bestRun || 0) + ".";
+    if ($("end-say")) { $("end-say").hidden = false; $("end-say").textContent = S.coachLine(style, { kind: "say", question: S.PREP_QUESTIONS[0] }); }
+    if ($("end-nudge")) $("end-nudge").hidden = true;
+    if ($("btn-next-day")) $("btn-next-day").hidden = true;
+    $("session-next").textContent = style === "numbers"
+      ? "Flash is " + S.FLASH_N + " boards, a few seconds each. Same tomorrow."
+      : "Two minutes tomorrow. Looking at the whole board is the point, not the score.";
+    const mini = $("next-mini"); if (mini) { mini.innerHTML = ""; mini.hidden = true; }
     $("session-end").hidden = false; state.phase = "end";
   }
 
@@ -2542,7 +2764,8 @@
     // it, so Home during "spot the attack" used to throw and strand the kid on the board.
     if (state.gate) { const r = state.gate.resolve; state.gate = null; if (r) r(); }
     document.querySelectorAll(".modal").forEach((m) => { m.hidden = true; });
-    const leavingCamp = campOn();
+    const leavingCamp = campOn() || flashOn();
+    state.flash = null; flashRingOff(); flashChips(null); clearGhost();
     // A game in progress is kept, not dropped: the resume chip on the map picks it back up on the
     // move he left it on. Stockfish is let go, because 40 MB of idle WASM on a phone is not free.
     // A two-phone game stays open on the server; the Resume chip picks it up from sm_live_get.
@@ -2860,6 +3083,8 @@
       const el = sq(enc.tempting.slice(2, 4)); if (el) el.classList.add("tempt-glow"); toast("Glitch flinches at THAT one. So don't.", 2000);
     };
     $("btn-skip").onclick = function () {
+      // A flash item he cannot see: show the answer, count it as a miss, move on. Honest, and brief.
+      if (state.phase === "flash" && state.gate && state.gate.flash) return flashSettle(false);
       if (state.phase === "threat" && state.gate && state.gate.look) {   // skip the board from the look-first tap: count it honestly
         const g = state.gate; state.gate = null; state.phase = "busy";
         lookRecord(g, false); $("gate-dots").innerHTML = ""; $("prompt").classList.remove("gate-prompt");
@@ -2887,7 +3112,8 @@
       if (nxt) { setDay(nxt); save(); startSession(state.mode === "coop" ? "coop" : "solo"); }
       else goHome();
     };
-    document.querySelector(".board-wrap").addEventListener("click", function () { if (state.phase === "busy") skipAhead(); }, true);
+    // Tap to skip an animation — but never the flash reveal: the five seconds ARE the exercise.
+    document.querySelector(".board-wrap").addEventListener("click", function () { if (state.phase === "busy" && !flashOn()) skipAhead(); }, true);
   }
   function selfTest() {
     const errors = []; const list = ALL;
@@ -2917,6 +3143,7 @@
   });
   window.addEventListener("online", function () { if (LIVE.poller) LIVE.poller.poke(); if (LIVE.session) LIVE.session.poke(); });
   window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, startCamp, campOn, coachStyle, setDay, setSeats, syncNow, exportBackup, importBackup, openParent, gateKey, renderProgress, renderSettings, renderCollection, save, all: ALL, BUILD,
+    startFlash, flashOn, flashAnswer, flashItems,
     openPregame, startGame, resumeGame, loadEngine, playing, kidMove, runReview, fightFromGame, playPool, gameFightsOf,
     openVersusPre, versusGo, startVersus, versusMove, versusOn, endVersus, versusFightNow, renderVersusCards,
     openFamily, openLive, liveInvite, liveAccept, liveResign, restartLivePoller, live: LIVE, fam: fam,
