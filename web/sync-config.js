@@ -1,6 +1,13 @@
-// Optional. Leave blank and enter the API details once per device in parent settings —
-// that keeps the anon key out of this public repo. The sibling kid-app tables carry open
-// SELECT/UPDATE policies, so a published key would expose every family's rows there.
-// Shockmate's own table is closed: access goes through chess_roster / chess_pull / chess_push,
-// which require the family code and check the PIN (supabase/migrations/0001_chess_players.sql).
-window.SHOCKMATE_SYNC = { url: "", anonKey: "" };
+// Shockmate's own Supabase project. The publishable key is public on purpose: every table is RLS-on
+// with no policies and no grants, so the key can do nothing except call the sm_* functions, and each
+// of those checks the family code and the kid's PIN (hashed server-side) before touching a row.
+// See supabase/migrations/0002_shockmate_family.sql and 0003_live_games.sql.
+window.SHOCKMATE_SYNC = {
+  url: "https://dmcslbqmlogmtsibiyzq.supabase.co",
+  key: "sb_publishable_YXu7CBN6Tg_GGvA11GjVZQ_6PAhGk1E",
+};
+// Developer override, never shown in the UI: localStorage "shockmate-dev-sync" = {"url": ..., "key": ...}.
+try {
+  const dev = JSON.parse(localStorage.getItem("shockmate-dev-sync") || "null");
+  if (dev && dev.url && dev.key) window.SHOCKMATE_SYNC = { url: String(dev.url), key: String(dev.key) };
+} catch (e) {}

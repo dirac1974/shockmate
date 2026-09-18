@@ -2,11 +2,11 @@
   "use strict";
   // Progress sync. Two independent jobs:
   //   1. mergeStats — combine two copies of one kid's progress without ever losing a card.
-  //   2. transport  — a file the parent can keep, and an optional Supabase row keyed by a family code.
+  //   2. transport  — a file the parent can keep, and Shockmate's own Supabase family (sm_* RPCs).
   // Every counter here only ever grows, so merging takes the larger side rather than summing:
   // summing would double-count the fights both devices already saw.
 
-  const LEDGER_MAX = 40, TIERS_MAX = 8, CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const LEDGER_MAX = 40, TIERS_MAX = 8;
   const GAMES_RECENT = 10, GAME_FIGHTS_MAX = 20, BEST_MOVES_MAX = 20;
   // The rungs, weakest first. Mirrors S.LEVELS in score.js; kept here so merging never has to load
   // the game's own rules. If a rung is ever added there, add it here too.
@@ -146,15 +146,43 @@
     return out;
   }
 
-  // Identity is the family login the other kid apps already use: an uppercase family code,
-  // a lowercase username and a 4-digit pin. Shockmate never invents its own account.
-  function normaliseCode(text) { return String(text || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); }
-  function normaliseUser(text) { return String(text || "").toLowerCase().replace(/[^a-z0-9._-]/g, ""); }
-  function normalisePin(text) { return String(text || "").replace(/[^0-9]/g, "").slice(0, 4); }
-  function validCode(code) { return normaliseCode(code).length >= 6; }
+  /* ---------- identity: Shockmate's own family ----------
+     A family is an 8-character code from an alphabet with no 0/O/1/I/L, so it can be read out loud
+     and typed on a phone without a wrong guess. Each kid is a slot (0 or 1) with his own 4-digit PIN,
+     which the server keeps hashed and checks; the parent's coach PIN is separate and never leaves
+     the device. */
+  const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  const CODE_RE = /^[A-HJKMNP-Z2-9]{8}$/;
+  const SITE = "https://dirac1974.github.io/shockmate/";
+  function normaliseCode(text) { return String(text || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8); }
+  function normalisePin(text) { return String(text == null ? "" : text).replace(/[^0-9]/g, "").slice(0, 4); }
+  function validCode(code) { return CODE_RE.test(normaliseCode(code)); }
   function validPin(pin) { return normalisePin(pin).length === 4; }
-  function validUser(name) { return normaliseUser(name).length >= 3; }
-  function boundSlot(slot) { return !!(slot && validUser(slot.username) && validPin(slot.pin)); }
+  function validSlot(slot) { return slot === 0 || slot === 1; }
+  function cleanName(text) {
+    return String(text || "").split("").filter((c) => c.charCodeAt(0) >= 32 && c !== "<" && c !== ">").join("").trim().slice(0, 16);
+  }
+  // ?family=CODE on the page URL, as a share link opens it. Null when absent or malformed.
+  function codeFromSearch(search) {
+    const m = String(search || "").match(/[?&]family=([^&#]*)/i);
+    if (!m) return null;
+    let raw = m[1]; try { raw = decodeURIComponent(raw); } catch (e) {}
+    const code = normaliseCode(raw);
+    return CODE_RE.test(code) ? code : null;
+  }
+  function shareUrl(code) { return SITE + "?family=" + normaliseCode(code); }
+  function shareText(code) { return "Join our Shockmate family: " + normaliseCode(code) + " " + shareUrl(code); }
+
+  // Which slots this phone can sync: the ones whose PIN it knows.
+  function syncSlots(family) {
+    const f = family || {};
+    if (!validCode(f.code)) return [];
+    return [0, 1].filter((i) => validPin((f.pins || [])[i]));
+  }
+  function joined(family) {
+    const f = family || {};
+    return validCode(f.code) && validSlot(f.me) && validPin((f.pins || [])[f.me]);
+  }
 
   // The coach's name and PIN ride in the backup file, because "restore a backup" is the only answer
   // the Forgot? line can give. The PIN is a gate, not a secret, so it travels in clear like everything else.
@@ -179,36 +207,66 @@
       profiles: [0, 1].map((i) => mergeStats((profiles || [])[i], blob.profiles[i])) };
   }
 
-  function configured(cfg) { return !!(cfg && cfg.url && cfg.anonKey); }
-  function prettyCode(code) { return normaliseCode(code); }  // the family code is read out as-is
+  /* ---------- transport ----------
+     The URL and the publishable key are baked into sync-config.js: the database is closed to that
+     key except through the sm_* functions, which check the code and the kid's PIN themselves. */
+  function keyOf(cfg) { return (cfg && (cfg.key || cfg.anonKey)) || ""; }
+  function configured(cfg) { return !!(cfg && cfg.url && keyOf(cfg)); }
+
+  // Errors carry `.code`: "pin" and "locked" from the server's PIN check, "ply"/"turn"/"over"/"same"
+  // from a live game, "http" for anything the server refused outright, "offline" for no network.
+  function fail(code, message, extra) { const e = new Error(message); e.code = code; if (extra) Object.assign(e, extra); return e; }
+  const MESSAGES = { pin: "That PIN is not right.", locked: "Too many wrong PINs. Try again in 15 minutes.",
+    ply: "The game moved on.", turn: "Not your turn.", over: "That game is over.", same: "Both phones are the same player." };
 
   function rpc(cfg, name, body, fetchImpl) {
     const f = fetchImpl || (typeof fetch === "function" ? fetch : null);
-    if (!configured(cfg)) return Promise.reject(new Error("Sync is not set up on this build."));
-    if (!f) return Promise.reject(new Error("No network in this environment."));
-    return f(cfg.url.replace(/\/+$/, "") + "/rest/v1/rpc/" + name, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", apikey: cfg.anonKey, Authorization: "Bearer " + cfg.anonKey },
-      body: JSON.stringify(body)
-    }).then((res) => {
-      if (!res.ok) return res.text().then((t) => { throw new Error("Sync failed (" + res.status + ") " + t.slice(0, 120)); });
-      return res.json();
-    });
+    if (!configured(cfg)) return Promise.reject(fail("config", "Sync is not set up on this build."));
+    if (!f) return Promise.reject(fail("offline", "No network in this environment."));
+    const key = keyOf(cfg);
+    const headers = { "Content-Type": "application/json", apikey: key };
+    // A legacy anon JWT also goes in Authorization; a publishable key does not need to.
+    if (/^eyJ/.test(key)) headers.Authorization = "Bearer " + key;
+    return Promise.resolve().then(() => f(String(cfg.url).replace(/\/+$/, "") + "/rest/v1/rpc/" + name, {
+      method: "POST", headers: headers, body: JSON.stringify(body),
+    })).catch((err) => { throw fail("offline", "No connection. " + String((err && err.message) || err).slice(0, 80)); })
+      .then((res) => {
+        if (!res.ok) return res.text().then((t) => { throw fail("http", "Sync failed (" + res.status + ") " + String(t).slice(0, 120), { status: res.status }); });
+        return res.json();
+      }).then((data) => {
+        if (data && !Array.isArray(data) && typeof data === "object" && typeof data.error === "string") {
+          throw fail(data.error, MESSAGES[data.error] || data.error, { game: data.game || null });
+        }
+        return data;
+      });
   }
 
-  function roster(cfg, code, fetchImpl) {
-    return rpc(cfg, "chess_roster", { p_code: normaliseCode(code) }, fetchImpl);
+  function familyCreate(cfg, name, kids, fetchImpl) {
+    const list = (kids || []).map((k) => ({ name: cleanName(k && k.name), pin: normalisePin(k && k.pin) }));
+    if (!list.length || list.length > 2 || list.some((k) => !k.name || !validPin(k.pin))) {
+      return Promise.reject(fail("input", "Each kid needs a name and a 4-digit PIN."));
+    }
+    return rpc(cfg, "sm_family_create", { p_name: String(name || "").trim().slice(0, 32), p_kids: list }, fetchImpl)
+      .then((r) => normaliseCode(r && r.code));
   }
-  function pull(cfg, code, slot, fetchImpl) {
-    return rpc(cfg, "chess_pull", { p_code: normaliseCode(code), p_username: normaliseUser(slot.username), p_pin: normalisePin(slot.pin) }, fetchImpl);
+  function familyRoster(cfg, code, fetchImpl) {
+    if (!validCode(code)) return Promise.reject(fail("input", "A family code is 8 letters and numbers."));
+    return rpc(cfg, "sm_family_roster", { p_code: normaliseCode(code) }, fetchImpl)
+      .then((rows) => (rows || []).filter((r) => r && validSlot(r.slot)).map((r) => ({ slot: r.slot, name: String(r.name || "") })));
   }
-  function push(cfg, code, slot, stats, fetchImpl) {
-    return rpc(cfg, "chess_push", { p_code: normaliseCode(code), p_username: normaliseUser(slot.username), p_pin: normalisePin(slot.pin), p_progress: stats }, fetchImpl);
+  function auth(code, slot, pin) { return { p_code: normaliseCode(code), p_slot: slot, p_pin: normalisePin(pin) }; }
+  function pull(cfg, code, slot, pin, fetchImpl) { return rpc(cfg, "sm_pull", auth(code, slot, pin), fetchImpl); }
+  function push(cfg, code, slot, pin, stats, fetchImpl) {
+    return rpc(cfg, "sm_push", Object.assign(auth(code, slot, pin), { p_progress: stats || {} }), fetchImpl);
+  }
+  function rename(cfg, code, slot, pin, name, fetchImpl) {
+    return rpc(cfg, "sm_rename", Object.assign(auth(code, slot, pin), { p_name: cleanName(name) }), fetchImpl);
   }
 
-  const api = { mergeStats, mergeCard, normaliseCode, normaliseUser, normalisePin, validCode, validPin, validUser,
-    boundSlot, exportBlob, importBlob, parentOf, configured, roster, pull, push, LEDGER_MAX, TIERS_MAX,
-    GAMES_RECENT, GAME_FIGHTS_MAX, BEST_MOVES_MAX, LEVEL_ORDER };
+  const api = { mergeStats, mergeCard, normaliseCode, normalisePin, validCode, validPin, validSlot, cleanName,
+    codeFromSearch, shareUrl, shareText, syncSlots, joined, CODE_ALPHABET, SITE,
+    exportBlob, importBlob, parentOf, configured, rpc, auth, familyCreate, familyRoster, pull, push, rename,
+    LEDGER_MAX, TIERS_MAX, GAMES_RECENT, GAME_FIGHTS_MAX, BEST_MOVES_MAX, LEVEL_ORDER };
   root.ShockmateSync = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

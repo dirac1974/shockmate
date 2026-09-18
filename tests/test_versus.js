@@ -296,6 +296,24 @@ function run() {
   const quit = V.resultCards({ kind: "resign", records: game.records, names: NAMES, white: 0, loser: "b", t: T0 }, { Chess: Chess, F: F });
   assert.deepStrictEqual(quit.cards.map(function (c) { return c.result; }), ["win", "loss"], "resigning loses the game and nothing else");
 
+  /* Two phones: each phone builds only its own kid's card, from only its own kid's moves. The same
+     guard walks it, and the other kid's name may not appear anywhere in it. */
+  [0, 1].forEach(function (me) {
+    const live = V.liveResult({ me: me, names: NAMES, kind: "mate", records: game.records, white: 0, loser: "w", t: T0 },
+      { Chess: Chess, F: F });
+    assert.strictEqual(live.live, true);
+    assert.strictEqual(live.cards.length, 1, "one phone, one card: there is no second card to set beside it");
+    assert.strictEqual(live.cards[0].profile, me);
+    assert.strictEqual(live.cards[0].result, me === 0 ? "loss" : "win");
+    assert.strictEqual(live.cards[0].moves, 6, "built from his own six moves only");
+    assertNoScoreboard(live, "the live result on " + NAMES[me] + "'s phone", [NAMES, [NAMES[1], NAMES[0]]]);
+    assert.ok(JSON.stringify(live).indexOf(NAMES[1 - me]) < 0, "and the other kid is not in it at all");
+    const gone = V.liveResult({ me: me, names: NAMES, kind: "abandon", records: game.records, white: 0, t: T0, unfinished: true },
+      { Chess: Chess, F: F });
+    assert.strictEqual(gone.cards[0].result, "unfinished", "an abandoned game is nobody's win or loss");
+    assertNoScoreboard(gone, "an unfinished live result", [NAMES, [NAMES[1], NAMES[0]]]);
+  });
+
   /* Progress, per kid. Called once per profile, it can only ever see one of them, and nothing it
      returns pairs the two. */
   [0, 1].forEach(function (i) {

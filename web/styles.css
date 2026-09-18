@@ -722,6 +722,9 @@ body[data-screen="screen-play"] .topbar { padding-bottom: 4px; }
 .cta.play { background: var(--grape); color: var(--card); font-size: 19px; min-height: 52px;
   box-shadow: 0 6px 0 var(--ink), inset 0 -5px 0 #5a2c77, inset 0 3px 0 #ffffff33; }
 .cta.play:active { box-shadow: 0 2px 0 var(--ink), inset 0 -2px 0 #5a2c77, inset 0 2px 0 #ffffff33; }
+/* same weight, not his colour: for second buttons that have nothing to do with Glitch */
+.cta.play.ink { background: var(--ink); color: var(--sun); box-shadow: 0 6px 0 #000, inset 0 -5px 0 #120d09, inset 0 3px 0 #ffffff22; }
+.cta.play.ink:active { box-shadow: 0 2px 0 #000, inset 0 -2px 0 #120d09, inset 0 2px 0 #ffffff22; }
 
 /* pre-game: who are you playing. The suggested crony is marked, never enforced. */
 #pre-glitch { flex-shrink: 0; width: 84px; }
@@ -807,3 +810,28 @@ body[data-play="1"] .gate-dots:empty { display: none; }
 .vs-none { color: var(--ink-2); font-size: 14px; margin: 6px 0 0; }
 .vs-card .actions { margin: 10px 0 0; }
 .vs-card .said { margin: 8px 0 0; }
+
+/* ---------- v0.22 family setup and two-phone versus ---------- */
+.fam-card { max-width: 360px; margin: 14px auto; display: flex; flex-direction: column; gap: 10px; }
+.fam-card[hidden], #fam-me-row[hidden], .live-invite[hidden] { display: none !important; }
+.fam-card h3 { margin: 0; }
+.fam-card .hint { margin: 0; }
+.fam-card.gate-card { text-align: center; }
+.fam-card.gate-card.wrong { animation: shake .35s ease; }
+.fam-code { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: 40px; letter-spacing: 5px;
+  text-align: center; padding: 10px 6px; border: 3px dashed var(--ink); border-radius: 14px; background: var(--paper-2);
+  user-select: all; word-break: break-all; }
+.fam-code.small { font-size: 28px; letter-spacing: 3px; padding: 6px; }
+.fam-roster { display: flex; flex-direction: column; gap: 12px; }
+.fam-state { text-align: center; min-height: 1.2em; }
+.live-row { margin-top: 8px; }
+.live-row > .chip.live { flex: 1 1 auto; min-height: 52px; font-weight: 800; background: var(--grape); color: #fff; }
+.live-row > .chip.live:disabled { opacity: .6; }
+.live-invite { display: grid; grid-template-columns: 56px 1fr; gap: 4px 10px; align-items: center; margin-top: 10px;
+  padding: 10px 12px; border: 3px solid var(--ink); border-radius: 16px 20px 14px 22px; background: var(--card);
+  box-shadow: 0 4px 0 var(--ink); animation: shake .5s ease 1; }
+.live-invite .li-glitch svg { width: 56px; height: 56px; }
+.live-invite .li-line { margin: 0; font-weight: 700; font-size: 16px; line-height: 1.25; }
+.live-invite .li-actions { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; }
+.live-invite .li-actions .cta { flex: 1 1 auto; }
+.live-invite.same { border-color: var(--tomato); }
