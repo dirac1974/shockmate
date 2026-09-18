@@ -1,0 +1,56 @@
+name: tests
+
+# Every push to main and every PR runs the unit and data suites. They are the gate: red blocks the merge.
+# The browser suites (tests/e2e) run too, in their own job, because this is the first machine that can
+# run Playwright at all (Application Control on the family PC blocks it). They are informational until
+# they are brought up to date with the current screens; see docs/CONTINUATION.md.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  suites:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install chess==1.11.2
+      - name: JavaScript suites
+        run: |
+          set -e
+          for t in tests/test_*.js; do echo "== $t"; node "$t"; done
+      - name: Python suites
+        run: |
+          set -e
+          python tests/test_encounters.py
+          python tests/test_voice_lines.py
+      - name: Syntax check the shipped scripts
+        run: for f in web/*.js; do node --check "$f"; done
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install playwright chess==1.11.2 && python -m playwright install --with-deps chromium
+      - name: Browser suites
+        run: |
+          status=0
+          for t in tests/e2e/phase*.py; do echo "== $t"; python "$t" || status=1; done
+          exit $status
