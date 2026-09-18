@@ -24,8 +24,10 @@ One tap or one chip; a hint after two wrong, the answer on the third.
 
 ## Adaptive, quiet, tracked
 
-Reveal is 5 s, drawn as a ring that empties: no digit, because nothing on screen counts down. It
-shrinks to 3 s, never below, once the last 12 items are ≥ 80% right. Glitch speaks before the board
+Reveal is a ladder: 10 s, 7 s, 5 s, 3 s, drawn as a ring that empties (no digit, because nothing on
+screen counts down). A full window of 12 items at ≥ 80% steps down a rung; a full window under 50%
+steps back up; a step empties the window so the next decision is made at the new speed. The
+research's 5 s was for masters; a 400 on a twenty-piece board starts at 10 and earns the way down. Glitch speaks before the board
 arrives and again at the poof; the reveal is a think window.
 
 `stats.flash`: items, correct (first look), per rung, per day, best run, clean days. Counters climb;

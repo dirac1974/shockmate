@@ -1232,10 +1232,15 @@
 
      Every counter here only ever climbs. The rolling window and the current run are working memory
      for the adaptive rule and are never drawn on a screen. */
-  const FLASH_N = 6, FLASH_REVEAL_MS = 5000, FLASH_FAST_MS = 3000;
-  const FLASH_WINDOW = 12, FLASH_FAST_AT = 0.8, FLASH_CLEAN_DAYS = 3, FLASH_CLEAN_MIN = 4;
+  /* The reveal is a ladder, not a switch. The research's five seconds was for masters; a 400 with a
+     twenty-piece board needs longer to have any chance, and a first week of blank boards would end
+     the drill before it could help. Start at ten seconds; a full window (12 items) at 80% or better
+     steps down one rung, a full window under 50% steps back up; either step empties the window, so
+     the next decision is made on items at the new speed. Nothing on screen says which rung he is on. */
+  const FLASH_N = 6, FLASH_RUNGS = [10000, 7000, 5000, 3000], FLASH_REVEAL_MS = FLASH_RUNGS[0], FLASH_FAST_MS = FLASH_RUNGS[FLASH_RUNGS.length - 1];
+  const FLASH_WINDOW = 12, FLASH_FAST_AT = 0.8, FLASH_SLOW_AT = 0.5, FLASH_CLEAN_DAYS = 3, FLASH_CLEAN_MIN = 4;
   const FLASH_TYPES = ["recall", "imagine", "gone"];
-  function emptyFlash() { return { items: 0, correct: 0, fast: 0, byType: {}, days: {}, run: 0, bestRun: 0, cleanDays: 0, imagineOpen: false, last12: [] }; }
+  function emptyFlash() { return { items: 0, correct: 0, fast: 0, byType: {}, days: {}, run: 0, bestRun: 0, cleanDays: 0, imagineOpen: false, last12: [], rung: 0 }; }
   function flashOf(stats) {
     const f = Object.assign(emptyFlash(), (stats && stats.flash) || {});
     f.byType = Object.assign({}, f.byType);
@@ -1243,6 +1248,7 @@
     f.days = Object.assign({}, f.days);
     Object.keys(f.days).forEach(function (k) { f.days[k] = Object.assign({ items: 0, correct: 0 }, f.days[k]); });
     f.last12 = (f.last12 || []).slice(-FLASH_WINDOW).map(function (x) { return x ? 1 : 0; });
+    f.rung = Math.max(0, Math.min(FLASH_RUNGS.length - 1, Math.round(Number(f.rung) || 0)));
     return f;
   }
   function flashRate(stats) { const f = flashOf(stats); return f.items ? f.correct / f.items : 0; }
@@ -1252,10 +1258,14 @@
     const l = flashOf(stats).last12, got = l.filter(function (x) { return x; }).length;
     return { n: l.length, correct: got, rate: l.length ? got / l.length : 0, full: l.length >= FLASH_WINDOW };
   }
-  // Silent, like the rest of the app: nothing on screen says the window got shorter. Never below 3 s.
-  function flashRevealMs(stats) {
-    const r = flashRolling(stats);
-    return Math.max(FLASH_FAST_MS, r.full && r.rate >= FLASH_FAST_AT ? FLASH_FAST_MS : FLASH_REVEAL_MS);
+  function flashRung(stats) { return flashOf(stats).rung; }
+  function flashRevealMs(stats) { return FLASH_RUNGS[flashRung(stats)]; }
+  // Where the ladder goes after the item just recorded: down on a strong full window, up on a weak one.
+  function flashNextRung(rung, rolling) {
+    if (!rolling.full) return rung;
+    if (rolling.rate >= FLASH_FAST_AT) return Math.min(FLASH_RUNGS.length - 1, rung + 1);
+    if (rolling.rate < FLASH_SLOW_AT) return Math.max(0, rung - 1);
+    return rung;
   }
   function flashDayClean(day) { const d = day || {}; return (d.items || 0) >= FLASH_CLEAN_MIN && (d.correct || 0) >= (d.items || 0); }
   function flashCleanDays(stats) { return flashOf(stats).cleanDays || 0; }
@@ -1279,6 +1289,9 @@
     f.run = correct ? (f.run || 0) + 1 : 0;
     f.bestRun = Math.max(f.bestRun || 0, f.run);
     f.last12 = f.last12.concat(correct ? 1 : 0).slice(-FLASH_WINDOW);
+    const rolling = { full: f.last12.length >= FLASH_WINDOW, rate: f.last12.filter(function (x) { return x; }).length / Math.max(1, f.last12.length) };
+    const rung = flashNextRung(f.rung, rolling);
+    if (rung !== f.rung) { f.rung = rung; f.last12 = []; }     // a step empties the window
     f.cleanDays = Object.keys(f.days).filter(function (k) { return flashDayClean(f.days[k]); }).length;
     if (f.cleanDays >= FLASH_CLEAN_DAYS) f.imagineOpen = true;     // a latch, never a toggle
     next.flash = f;
@@ -1509,7 +1522,7 @@
     normalisePin, validPin, parentOf, parentSet, parentGate,
     PRINCIPLES, principleFor, MOTIF_LABEL, defaultCoachStyle, coachStyleOf, coachLine,
     emptyThreats, threatsOf, recordThreat, threatRate, campOf, campDoneToday, campDaysDone, recordCampDay, campPlan, campDebrief,
-    FLASH_N, FLASH_REVEAL_MS, FLASH_FAST_MS, FLASH_WINDOW, FLASH_FAST_AT, FLASH_CLEAN_DAYS, FLASH_CLEAN_MIN, FLASH_TYPES,
+    FLASH_N, FLASH_RUNGS, FLASH_REVEAL_MS, FLASH_FAST_MS, FLASH_WINDOW, FLASH_FAST_AT, FLASH_SLOW_AT, FLASH_CLEAN_DAYS, FLASH_CLEAN_MIN, FLASH_TYPES, flashRung, flashNextRung,
     FLASH_MIX, FLASH_MIX_OPEN, FLASH_TOGETHER, emptyFlash, flashOf, flashRate, flashRolling, flashRevealMs,
     flashDayClean, flashCleanDays, flashUnlocked, flashDoneToday, flashDaysDone, recordFlash, flashOrder, flashPlan,
     flashTrend, flashNote,
