@@ -422,6 +422,29 @@
     const c = (settings && settings.coach) || [];
     return c[i] === "numbers" || c[i] === "words" ? c[i] : defaultCoachStyle(settings, i);
   }
+  /* ---------- the coach: one parent per account, behind a 4-digit gate ----------
+     A speed bump, not security. The PIN sits in localStorage in clear and rides in the backup file,
+     and that is on purpose: its whole job is that a kid who taps the cog lands back on the map
+     instead of inside Progress. The kids' own screens never ask for anything. */
+  function normalisePin(text) { return String(text || "").replace(/[^0-9]/g, "").slice(0, 4); }
+  function validPin(pin) { return normalisePin(pin).length === 4; }
+  function parentOf(settings) {
+    const p = (settings && settings.parent) || {};
+    const pin = normalisePin(p.pin);
+    return { name: String(p.name || "").trim().slice(0, 16), pin: pin, set: pin.length === 4 };
+  }
+  function parentSet(settings) { return parentOf(settings).set; }
+  // The whole gate as one decision, so the screen only has to draw the answer. `typed` is whatever
+  // is on the keypad so far: fewer than four digits is neither right nor wrong, it is unfinished.
+  function parentGate(settings, typed) {
+    const p = parentOf(settings);
+    if (!p.set) return { open: false, need: "setup", wrong: false, name: p.name };
+    const t = normalisePin(typed);
+    if (t.length < 4) return { open: false, need: "pin", wrong: false, name: p.name };
+    if (t === p.pin) return { open: true, need: null, wrong: false, name: p.name };
+    return { open: false, need: "pin", wrong: true, name: p.name };   // shake, and let him try again forever
+  }
+
   function plural(n, one, many) { return n === 1 ? one : many; }
   // Every sentence Camp says goes through here, so the two registers live in one place and the tests
   // can hold the wording. Returns a string for every kind; an unknown kind returns "".
@@ -577,6 +600,61 @@
     }
     return out;
   }
+  // Monday-to-Sunday, in the parent's own timezone, because "this week" is the week the tournament
+  // is in, not a rolling seven days.
+  function weekStart(ts) {
+    const d = new Date(ts || Date.now());
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    return d.getTime();
+  }
+  function keyTime(key) {
+    const p = String(key).split("-").map(Number);
+    return new Date(p[0], (p[1] || 1) - 1, p[2] || 1, 12).getTime();
+  }
+  // `tries` on an earned card counts attempts, so 1 is "found it first go". A card from before the
+  // field existed has no tries and is read as a first try, which is how it was actually earned.
+  function firstTryRate(stats) {
+    const earned = (stats && stats.cardsEarned) || {}, ids = Object.keys(earned);
+    const first = ids.filter(function (id) { return (earned[id] && earned[id].tries || 1) <= 1; }).length;
+    return { cards: ids.length, first: first, rate: ids.length ? first / ids.length : 0 };
+  }
+  function thisWeek(stats, ts) {
+    const from = weekStart(ts), to = from + 7 * DAY;
+    const earned = (stats && stats.cardsEarned) || {}, days = campOf(stats).days;
+    const inWeek = function (t) { return t >= from && t < to; };
+    return { from: from, to: to,
+      cards: Object.keys(earned).filter(function (id) { return inWeek((earned[id] || {}).t || 0); }).length,
+      campDays: Object.keys(days).filter(function (k) { return inWeek(keyTime(k)); }).length };
+  }
+
+  /* Two to four sentences a parent can act on tonight, in priority order. Nothing here is advice in
+     general; every line is a reading of this kid's own numbers. The principle line deliberately uses
+     the same words the app says on the card, so the parent and the app coach with one voice. */
+  function coachNotes(parts) {
+    const t = parts.threats, c = parts.camp, ft = parts.firstTry, notes = [];
+    if (!parts.cards && !t.asked && !parts.attempts) {
+      return ["Nothing played yet. Sit through one Camp with him: three spot checks, four fights, two counters.",
+        "This page fills itself in from that."];
+    }
+    if (t.asked >= 4 && t.rate < 0.7) {
+      notes.push("He is not looking at what the last move attacked — " + t.found + " of " + t.asked +
+        " spotted. Make him answer that out loud before he touches a piece.");
+    }
+    if (t.asked > 0 && t.wrongTaps / t.asked > 0.5) {
+      notes.push("He is tapping before he looks: " + t.wrongTaps + " wrong taps against " + t.asked +
+        " asked. Slow him down — one question, then one tap.");
+    }
+    if (parts.focusMotif) notes.push("At the board, say: " + (principleFor(parts.focusMotif) || PRINCIPLES.counting));
+    if (c.run >= 3) notes.push("Camp " + c.run + " days running. Keep the run going; the habit is the point, not the chess.");
+    if (notes.length < 2 && !c.days) notes.push("No camp days yet. One camp a morning is the whole tournament habit.");
+    if (notes.length < 2 && ft.cards >= 3 && ft.rate >= 0.7) {
+      notes.push("First try on " + Math.round(ft.rate * 100) + "% of his cards. That is the habit holding.");
+    }
+    if (notes.length < 2) notes.push("Two questions before every move: " + PREP_QUESTIONS[0] + " " + PREP_QUESTIONS[1]);
+    return notes.slice(0, 4);
+  }
+
   function progressSummary(stats, encounters, ts) {
     const list = encounters || [], totals = {};
     list.forEach(function (e) { if (e.motif) totals[e.motif] = (totals[e.motif] || 0) + 1; });
@@ -587,15 +665,28 @@
       return Object.assign({}, m, { label: motifLabel(mo), total: totals[mo], verdict: motifVerdict(met[mo]) });
     }).sort(function (a, b) { return (order[a.verdict] - order[b.verdict]) || (a.rate - b.rate) || (b.misses - a.misses); });
     const b = battleOf(stats);
+    const at = ts || Date.now();
+    const th = threatsOf(stats), cp = campOf(stats), ft = firstTryRate(stats);
+    const threats = { asked: th.asked, found: th.found, wrongTaps: th.wrongTaps, rate: threatRate(stats) };
+    const camp = { days: cp.total || 0, best: cp.best || 0, run: cp.run || 0, doneToday: campDoneToday(stats, at) };
+    const week = thisWeek(stats, at);
+    const focus = motifs.filter(function (m) { return m.verdict === "focus"; });
+    const cards = Object.keys((stats && stats.cardsEarned) || {}).length;
+    const attempts = motifs.reduce(function (a, m) { return a + (m.attempts || 0); }, 0);
     return {
-      rank: agentRank(stats), cards: Object.keys((stats && stats.cardsEarned) || {}).length, total: list.length,
+      rank: agentRank(stats), cards: cards, total: list.length,
       kos: b.kos, power: b.power, knockedOff: knockedOff(stats), motifs: motifs, byDay: cardsByDay(stats, 14, ts),
       goodAt: motifs.filter(function (m) { return m.verdict === "good"; }).map(function (m) { return m.label; }),
-      focusOn: motifs.filter(function (m) { return m.verdict === "focus"; }).map(function (m) { return m.label; }),
+      focusOn: focus.map(function (m) { return m.label; }),
+      threats: threats, camp: camp, firstTry: ft, firstTryRate: ft.rate, thisWeek: week,
+      coachNotes: coachNotes({ threats: threats, camp: camp, firstTry: ft, cards: cards, attempts: attempts,
+        focusMotif: focus.length ? focus[0].motif : null }),
     };
   }
 
   const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, prepSource, PREP_QUESTIONS, offersBait, prepQuestionsFor, motifVerdict, cardsByDay, progressSummary,
+    weekStart, firstTryRate, thisWeek, coachNotes,
+    normalisePin, validPin, parentOf, parentSet, parentGate,
     PRINCIPLES, principleFor, MOTIF_LABEL, defaultCoachStyle, coachStyleOf, coachLine,
     emptyThreats, threatsOf, recordThreat, threatRate, campOf, campDoneToday, campDaysDone, recordCampDay, campPlan, campDebrief,
     tellFree, useTell, bootsFree, useBoots, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };

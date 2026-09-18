@@ -4,7 +4,7 @@ Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines 
 
 **Date:** 2026-09-18
 **Repo:** https://github.com/dirac1974/shockmate
-**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.17 · 32 fights · 8 days`.
+**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.18 · 32 fights · 8 days`.
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
@@ -13,12 +13,12 @@ ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeli
 
 Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the future plays out on the board → why-gate (tap the pieces) → card earned → next fight or cliffhanger.
 
-## Actual state — v0.17 is live
+## Actual state — v0.18 is live
 
 Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistence and family sync landed on top of them, ahead of the plan.
 
 - Pages serves `main` / root and rebuilds in about 35 seconds. Verify a deploy by the home-screen build marker, never by eye.
-- All suites green on the live commit: `tests/test_*.js` (9, incl. `test_camp.js`) and `tests/test_*.py` (2).
+- All suites green on the live commit: `tests/test_*.js` (10, incl. `test_camp.js`, `test_parent.js`) and `tests/test_*.py` (2).
 - `tests/e2e/*.py` did NOT run. Application Control on David's PC blocks the greenlet DLL that Playwright loads. The e2e suite currently has no machine to run on.
 - Data is generated: edit `data/encounters.src.json`, `openings.src.json` or `endgames.src.json`, run `python tools/build_encounters.py`. Stockfish 19 lives at `~/tools/stockfish/stockfish/stockfish-windows-x86-64-universal.exe` on David's PC and the script finds it (or `--sf`, or `STOCKFISH`). `--arrive-only` refreshes only the arriving moves, no engine. v0.16 is the first full re-score with Stockfish 19 on this PC. Never hand-edit `v2.json` or `web/encounters.js`.
 - Every fight opens on Glitch's arriving move (`arrive` in the source; opening fights use their last move), shaded like any chess site; every move after it is shaded too. The build proves each one legal and landing on the exact fight. Tournament week asks question 2 only when the bait is a capture (`S.prepQuestionsFor`).
@@ -30,6 +30,7 @@ Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistenc
 - A Home button in the top bar returns to the title screen from any screen at any moment. Leaving mid-fight keeps every card already earned and drops only the unfinished fight. A navigation counter stops an animation that is still running from dragging the kid back, and `goHome` releases a why-gate that is waiting on taps. The same counter stops a gate opening behind him when the animation reaches the why-gate after he has already left.
 - The solo entry is named for what it is: the section reads Battle and the button reads Battle plus the name of today opponent. It was headed Practise with a Play button, and the kid asked where the battle button was.
 - Battle layer, at the parent's direction from gate-0 feedback ("it doesn't count as a win", "there is no game", "how do I battle Glitch"). Today's crony is a boss with a health bar; correct moves land as HITs; the floor is a KNOCKOUT. Wins earn Power (cap 5) for four abilities: Double Strike, Glitch's Tell, Time Shield, Overcharge. Gear slots and gear open with rank; each crony has a motif weakness that hits half again as hard. Abilities never touch the board. Every rule resolves through a pure function in `web/score.js` and is held by `tests/test_battle.js`. See `docs/reports/battle.md`.
+- v0.18 parent side: `settings.parent = {name, pin}`. First tap on the Settings token asks "Who is the coach?" (name + 4-digit PIN on a keypad); after that Settings and Progress open only behind the keypad, kids' screens never ask. A speed bump, not security: PIN is in localStorage in clear and rides in the backup file. Settings is cardstock in the game layer (chip toggles, stepper, family login in a drawer; every id kept). Progress adds camp days/best run, threats spotted, first-try rate, this week, and "coach says" notes in the app's own principle words, plus a tournament checklist. Report: `docs/reports/parent.md`. `tests/e2e/phase0.py` and `phase3_sync.py` click `#btn-settings` and now need to pass the keypad (seed `settings.parent` in localStorage first); they still have no machine to run on.
 - v0.17 Camp: a daily tournament-prep session per kid from the Camp chip on the map. 3 "spot the attack" warm-ups (Glitch's arriving move plays, the kid taps what it attacks; `F.threatTargets`), 4 prep fights with the ritual forced on, 2 boards from the defence pack (one counter, one defend), then a debrief. Counts once per calendar day, replayable. Per-kid coach style `settings.coach[i]`: "numbers" (counts, one line to say tomorrow) or "words" (weakest motif + its principle from `S.PRINCIPLES`; the principle also shows under the why on normal cards). Settings has the control; default follows the Short-lines flag. Reports: `docs/reports/camp.md`, `camp-data.md`.
 - v0.17 data: 11 new fights, all Stockfish-verified at the 150cp bar: attackers t1–t3 (Day 5), goodBishop b1–b2 and tradeChoice k1–k2 (Day 7 "Trade Smart"), counter d1–d2 and defend d3–d4 (Day 8 "Hold the Line", pack defence). Retired 09 (duplicate of 08) and g5 (duplicate of g1); their cards vanish from the binder, nothing else breaks.
 - v0.17 fix: `save()` never re-pointed `state.profiles[active]` at the new stats object the pure recorders return, so per-card motif data was discarded on every save. Prep and Progress were always seeing a blank profile before this.

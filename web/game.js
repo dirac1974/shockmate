@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.17";
+  const BUILD = "v0.18";
   const Y = window.ShockmateSync, H = window.ShockmateShort;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -27,6 +27,7 @@
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
     camp: null, seen: {},
     settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: true, hurry: false, profile: 0, blitz: [false, false], short: [false, false], coach: [null, null], pack: "tactics", day: 1, tournament: false, readAloud: true, seats: 1, syncedAt: 0,
+      parent: { name: "", pin: "" },
       sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
     mode: "solo", pack: "tactics", active: 0, nav: 0, prep: false, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
@@ -114,7 +115,10 @@
 
   function importBackup(text) {
     try {
-      const merged = Y.importBlob(text, state.profiles);
+      // The coach comes back with the cards. A PIN already set on this device wins, so restoring an
+      // old file can never lock the parent out of the phone he is holding (see sync.importBlob).
+      const merged = Y.importBlob(text, state.profiles, state.settings);
+      if (merged.parent) state.settings.parent = { name: merged.parent.name || "", pin: merged.parent.pin || "" };
       applyMerged(merged.profiles, merged.names);
       renderSettings(); toast("Cards restored and merged.", 2200);
     } catch (err) { toast(String(err && err.message || err), 2600); }
@@ -128,6 +132,7 @@
     // Coordinates became the default, as on every chess site; older saved settings had them off.
     if (!state.settings.coordsV2) { state.settings.coords = true; state.settings.coordsV2 = true; }
     if (!(state.settings.day >= 1 && state.settings.day <= D.DAYS.length)) state.settings.day = 1;
+    state.settings.parent = Object.assign({ name: "", pin: "" }, state.settings.parent);
     const sy = state.settings.sync = Object.assign({ url: "", anonKey: "", code: "", players: [] }, state.settings.sync);
     sy.players = [0, 1].map((i) => Object.assign({ username: "", pin: "" }, sy.players[i]));
     setSeats(state.settings.seats === 2 ? 2 : 1);
@@ -342,19 +347,34 @@
   }
   // The parent view. Reads both profiles, never the live one only, so a kid who is not the active
   // profile still shows up. Everything here is derived; nothing is written.
+  function esc(t) { return String(t == null ? "" : t).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function tile(value, label) { return '<div class="tile"><b>' + esc(value) + "</b><small>" + esc(label) + "</small></div>"; }
   function renderProgress() {
     const root = $("progress-root"); if (!root) return;
-    const esc = function (t) { return String(t).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); };
+    const firsts = [];
     let html = "";
     [0, 1].forEach(function (i) {
-      const st = state.profiles[i]; const name = state.settings.names[i] || ("Player " + (i + 1));
-      if (!st) { html += '<section class="prog-kid"><h3>' + esc(name) + '</h3><p class="hint">Has not played yet.</p></section>'; return; }
+      const st = state.profiles[i] || freshStats(), name = state.settings.names[i] || ("Player " + (i + 1));
       const p = S.progressSummary(st, ALL, now());
+      firsts.push({ name: name, note: p.coachNotes[0] || "" });
       const max = Math.max.apply(null, p.byDay.map(function (d) { return d.n; }).concat([1]));
-      html += '<section class="prog-kid"><h3>' + esc(name) + '</h3>' +
-        '<p class="prog-line"><b>' + esc(p.rank.title) + '</b> \u00b7 ' + p.cards + " of " + p.total + " cards \u00b7 " + p.kos + " knockouts \u00b7 " + p.knockedOff + " off Glitch</p>" +
+      const initial = (name.trim().charAt(0) || "?").toUpperCase();
+      html += '<section class="prog-kid">' +
+        '<div class="prog-head"><div class="avatar sm">' + esc(initial) + "</div>" +
+          '<div class="prog-who"><h3>' + esc(name) + '</h3><span class="ribbon">' + esc(p.rank.title) + "</span></div>" +
+          '<b class="prog-cards">' + p.cards + "/" + p.total + "<small>cards</small></b></div>" +
+        '<div class="tiles">' +
+          tile(p.camp.days + " \u00b7 " + p.camp.best, "Camp days \u00b7 best run") +
+          tile(p.threats.found + "/" + p.threats.asked, "Threats spotted") +
+          tile(p.firstTry.cards ? Math.round(p.firstTryRate * 100) + "%" : "\u2014", "First try") +
+          tile(p.thisWeek.campDays + " \u00b7 " + p.thisWeek.cards, "This week: camp \u00b7 cards") +
+        "</div>" +
         '<p class="prog-line good"><b>Good at:</b> ' + (p.goodAt.length ? esc(p.goodAt.join(", ")) : "nothing yet, keep playing") + "</p>" +
         '<p class="prog-line focus"><b>Focus on:</b> ' + (p.focusOn.length ? esc(p.focusOn.join(", ")) : "nothing flagged") + "</p>" +
+        // The coach's own voice, in the villain's colour: this screen is behind the gate, not in the
+        // kid's world, so purple here reads as "not for you" rather than as a friendly control.
+        '<div class="coach-says"><b>Coach says</b>' +
+          p.coachNotes.map(function (n) { return "<p>" + esc(n) + "</p>"; }).join("") + "</div>" +
         '<div class="prog-bars" title="cards earned per day, last 14 days">' +
           p.byDay.map(function (d) { return '<i style="height:' + Math.round(4 + 36 * d.n / max) + 'px" title="' + esc(d.key) + ": " + d.n + '"></i>'; }).join("") +
         "</div>" +
@@ -365,6 +385,13 @@
         }).join("") +
         "</tbody></table></section>";
     });
+    // What the parent actually carries to the venue. The two questions verbatim, the scoresheet
+    // pause that is legal under US Chess rules, and one line per kid off his own data.
+    html += '<section class="prog-kid checklist"><h3>Tournament checklist</h3><ol class="check-list">' +
+      S.PREP_QUESTIONS.map(function (q) { return "<li>" + esc(q) + "</li>"; }).join("") +
+      "<li>Write the move on the scoresheet before playing it. It is legal, and it buys the pause.</li></ol>" +
+      firsts.map(function (f) { return '<p class="prog-line"><b>' + esc(f.name) + ":</b> " + esc(f.note) + "</p>"; }).join("") +
+      "</section>";
     root.innerHTML = html;
   }
   function prompt(text) { $("prompt").textContent = text; }
@@ -970,7 +997,9 @@
   function goHome() {
     // Leave at any moment. Cards already earned are saved; only the unfinished fight is dropped.
     state.nav += 1; skipAhead();
-    if (state.gate) { const r = state.gate.resolve; state.gate = null; r(); }   // release a why-gate waiting on taps
+    // Release a why-gate waiting on taps. A camp warm-up uses the same gate with no promise behind
+    // it, so Home during "spot the attack" used to throw and strand the kid on the board.
+    if (state.gate) { const r = state.gate.resolve; state.gate = null; if (r) r(); }
     document.querySelectorAll(".modal").forEach((m) => { m.hidden = true; });
     const leavingCamp = campOn();
     state.mode = "solo"; state.duel = null; state.camp = null; state.phase = "home"; stopBlitz();
@@ -1017,13 +1046,39 @@
     [0, 1].forEach((i) => { $("opt-user-" + i).value = s.players[i].username; $("opt-pin-" + i).value = s.players[i].pin; });
     save();
   }
+  /* Three control kinds only, so every checkbox and select on this screen became a chip that fills
+     when it is on. `state.settings` keeps the exact shapes it always had; only the thing the parent
+     taps changed. Fights per session is an <output>, whose .value is its text, so the old read still works. */
+  function setChip(id, on) {
+    const el = $(id); if (!el) return;
+    el.classList.toggle("active", !!on); el.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+  function chipOn(id) { const el = $(id); return !!(el && el.classList.contains("active")); }
+  function setPair(id, value) {
+    const host = $(id); if (!host) return;
+    host.dataset.value = value;
+    Array.prototype.forEach.call(host.querySelectorAll("button[data-coach]"), function (b) {
+      b.classList.toggle("active", b.dataset.coach === value);
+    });
+  }
+  function pairValue(id, fallback) { const host = $(id); return (host && host.dataset.value) || fallback; }
+  function stepCap(d) {
+    const el = $("opt-cap"); if (!el) return;
+    el.value = String(Math.max(3, Math.min(12, (Number(el.value) || 6) + d)));
+  }
   function renderSettings() {
-    $("opt-name-0").value = state.settings.names[0]; $("opt-name-1").value = state.settings.names[1]; $("opt-cap").value = state.settings.cap;
-    $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry; if ($("opt-tournament")) $("opt-tournament").checked = !!state.settings.tournament; if ($("opt-readaloud")) $("opt-readaloud").checked = state.settings.readAloud !== false;
-    $("opt-blitz-0").checked = !!state.settings.blitz[0]; $("opt-blitz-1").checked = !!state.settings.blitz[1];
-    $("opt-short-0").checked = !!state.settings.short[0]; $("opt-short-1").checked = !!state.settings.short[1];
-    // Shows the style in force, which is the short-lines default until the parent picks one.
-    [0, 1].forEach((i) => { if ($("opt-coach-" + i)) $("opt-coach-" + i).value = coachStyle(i); });
+    const coach = S.parentOf(state.settings);
+    if ($("settings-head")) $("settings-head").textContent = "Coach: " + (coach.name || "you");
+    if ($("opt-parent-name")) $("opt-parent-name").value = coach.name;
+    $("opt-name-0").value = state.settings.names[0]; $("opt-name-1").value = state.settings.names[1]; $("opt-cap").value = String(state.settings.cap);
+    setChip("opt-sound", state.settings.sound); setChip("opt-coords", state.settings.coords); setChip("opt-hurry", state.settings.hurry);
+    setChip("opt-tournament", !!state.settings.tournament); setChip("opt-readaloud", state.settings.readAloud !== false);
+    [0, 1].forEach(function (i) {
+      setChip("opt-blitz-" + i, !!state.settings.blitz[i]);
+      setChip("opt-short-" + i, !!state.settings.short[i]);
+      // Shows the style in force, which is the short-lines default until the parent picks one.
+      setPair("opt-coach-" + i, coachStyle(i));
+    });
     const s = state.settings.sync || {};
     if ($("opt-code")) {
       $("opt-code").value = Y.normaliseCode(s.code);
@@ -1036,6 +1091,79 @@
     renderSyncState();
   }
   function switchProfile(i) { setSeats(1); state.settings.profile = i; useProfile(i); save(); hud(); }
+
+  /* ---------- the coach's gate ----------
+     Say what it is in the hint: a speed bump, not security. The PIN is stored in clear and travels in
+     the backup file. Its whole job is that a kid who taps the cog lands back on the map instead of
+     inside Progress, so a wrong PIN only shakes and there is no lockout to lock a parent out with.
+     Modes: setup / setup2 (choose then confirm), change / change2, ask (unlock). S.parentGate holds
+     the decision; this only draws it. */
+  const GATE = { mode: null, target: "settings", typed: "", first: "" };
+  function renderPinDots() {
+    const host = $("pin-dots"); if (!host) return;
+    let h = ""; for (let i = 0; i < 4; i++) h += '<span class="' + (i < GATE.typed.length ? "on" : "") + '"></span>';
+    host.innerHTML = h;
+  }
+  function gateShake() {
+    const c = $("gate-card"); if (!c) return;
+    c.classList.remove("wrong"); void c.offsetWidth; c.classList.add("wrong"); sfx("nope");
+  }
+  function gateShow(mode, target) {
+    GATE.mode = mode; if (target) GATE.target = target;
+    GATE.typed = "";
+    if (mode === "setup" || mode === "change") GATE.first = "";
+    const setup = mode === "setup", name = S.parentOf(state.settings).name;
+    $("gate-name-row").hidden = !setup;
+    $("btn-forgot").hidden = mode !== "ask";
+    $("gate-forgot").hidden = true;
+    $("gate-title").textContent = setup ? "Who is the coach?"
+      : mode === "ask" ? (name ? name + "'s PIN" : "Coach PIN")
+      : mode === "change" ? "New PIN" : "Type it again";
+    $("gate-hint").textContent = setup
+      ? "Pick a 4-digit PIN. It keeps a kid out of Settings and Progress. It is a speed bump, not a lock: it is stored on this device in clear and it travels in the backup file."
+      : mode === "ask" ? "Four digits. Home, fights, cards and Camp never ask for this."
+      : "Four digits, and once more to be sure.";
+    if (setup && $("gate-name")) $("gate-name").value = name;
+    renderPinDots(); show("screen-gate");
+  }
+  function gateKey(k) {
+    if (k === "back") { GATE.typed = GATE.typed.slice(0, -1); return renderPinDots(); }
+    if (GATE.typed.length >= 4) return;
+    GATE.typed += k; sfx("select"); renderPinDots();
+    if (GATE.typed.length === 4) setTimeout(gateDone, T(160));
+  }
+  function gateDone() {
+    const m = GATE.mode, typed = GATE.typed;
+    if (m === "ask") {
+      if (!S.parentGate(state.settings, typed).open) {
+        GATE.typed = ""; renderPinDots(); gateShake(); toast("Not that one.", 1400); return;
+      }
+      return gateOpen();
+    }
+    if (m === "setup" || m === "change") { GATE.first = typed; return gateShow(m === "setup" ? "setup2" : "change2"); }
+    if (typed !== GATE.first) {
+      gateShake(); toast("Those two did not match.", 2200);
+      return gateShow(m === "setup2" ? "setup" : "change");
+    }
+    const was = S.parentOf(state.settings).name;
+    const name = m === "setup2" ? ((($("gate-name") || {}).value || "").trim().slice(0, 16) || was) : was;
+    state.settings.parent = { name: name, pin: typed };
+    save();
+    toast(m === "setup2" ? "Coach set. The cog asks for this from now on." : "PIN changed.", 2200);
+    gateOpen();
+  }
+  function gateOpen() {
+    const target = GATE.target;
+    GATE.mode = null; GATE.typed = ""; GATE.first = "";
+    if (target === "progress") { renderProgress(); return show("screen-progress"); }
+    renderSettings(); show("screen-settings");
+  }
+  // The one door into the parent's half of the app. No PIN set yet means the setup card, not the keypad.
+  function openParent(target) {
+    GATE.target = target || "settings";
+    gateShow(S.parentSet(state.settings) ? "ask" : "setup", GATE.target);
+  }
+
   function bind() {
     $("prof-0").onclick = () => switchProfile(0); $("prof-1").onclick = () => switchProfile(1);
     $("seat-1").onclick = () => { setSeats(1); save(); hud(); };
@@ -1062,9 +1190,27 @@
     $("btn-home").onclick = goHome;
     $("btn-collection").onclick = function () { renderCollection(); show("screen-collection"); };
     $("btn-back-play").onclick = function () { show(state.phase === "card" ? "screen-card" : state.phase === "duel" ? "screen-duel" : state.phase === "think" || state.phase === "gate" ? "screen-play" : "screen-title"); };
-    $("btn-settings").onclick = function () { renderSettings(); show("screen-settings"); };
+    $("btn-settings").onclick = function () { openParent("settings"); };
+    // Progress sits inside Settings, so reaching this button already meant passing the keypad.
     if ($("btn-progress")) $("btn-progress").onclick = function () { renderProgress(); show("screen-progress"); };
-    if ($("btn-progress-back")) $("btn-progress-back").onclick = function () { show("screen-settings"); };
+    if ($("btn-progress-back")) $("btn-progress-back").onclick = function () { renderSettings(); show("screen-settings"); };
+    Array.prototype.forEach.call(document.querySelectorAll("#keypad .key"), function (b) {
+      b.onclick = function () { gateKey(b.dataset.key); };
+    });
+    $("btn-gate-back").onclick = function () { GATE.mode = null; GATE.typed = ""; GATE.first = ""; goHome(); };
+    $("btn-forgot").onclick = function () { const el = $("gate-forgot"); el.hidden = !el.hidden; };
+    if ($("btn-change-pin")) $("btn-change-pin").onclick = function () { gateShow("change", "settings"); };
+    Array.prototype.forEach.call(document.querySelectorAll("#screen-settings .chip.toggle"), function (b) {
+      b.onclick = function () { setChip(b.id, !chipOn(b.id)); };
+    });
+    [0, 1].forEach(function (i) {
+      const host = $("opt-coach-" + i); if (!host) return;
+      Array.prototype.forEach.call(host.querySelectorAll("button[data-coach]"), function (b) {
+        b.onclick = function () { setPair("opt-coach-" + i, b.dataset.coach); };
+      });
+    });
+    if ($("cap-down")) $("cap-down").onclick = function () { stepCap(-1); };
+    if ($("cap-up")) $("cap-up").onclick = function () { stepCap(1); };
     $("btn-export").onclick = exportBackup;
     $("btn-import").onclick = function () { $("file-import").click(); };
     $("file-import").onchange = function (ev) {
@@ -1107,10 +1253,14 @@
       state.settings.names = [$("opt-name-0").value.trim() || "Player 1", $("opt-name-1").value.trim() || "Player 2"];
       readLogin();
       state.settings.cap = Math.max(3, Math.min(12, Number($("opt-cap").value) || 6));
-      state.settings.sound = $("opt-sound").checked; state.settings.coords = $("opt-coords").checked; state.settings.hurry = $("opt-hurry").checked; if ($("opt-tournament")) state.settings.tournament = $("opt-tournament").checked; if ($("opt-readaloud")) state.settings.readAloud = $("opt-readaloud").checked;
-      state.settings.blitz = [$("opt-blitz-0").checked, $("opt-blitz-1").checked];
-      state.settings.short = [$("opt-short-0").checked, $("opt-short-1").checked];
-      state.settings.coach = [0, 1].map((i) => ($("opt-coach-" + i) ? $("opt-coach-" + i).value : state.settings.coach[i]));
+      state.settings.sound = chipOn("opt-sound"); state.settings.coords = chipOn("opt-coords"); state.settings.hurry = chipOn("opt-hurry");
+      state.settings.tournament = chipOn("opt-tournament"); state.settings.readAloud = chipOn("opt-readaloud");
+      state.settings.blitz = [chipOn("opt-blitz-0"), chipOn("opt-blitz-1")];
+      state.settings.short = [chipOn("opt-short-0"), chipOn("opt-short-1")];
+      state.settings.coach = [0, 1].map((i) => pairValue("opt-coach-" + i, state.settings.coach[i]));
+      // The PIN is only ever changed through the keypad; this carries the name alone.
+      state.settings.parent = Object.assign({ name: "", pin: "" }, state.settings.parent,
+        { name: $("opt-parent-name") ? $("opt-parent-name").value.trim().slice(0, 16) : "" });
       save(); hud(); setSeats(state.settings.seats); show("screen-title");
       if (syncOn()) syncNow(true);
     };
@@ -1173,5 +1323,5 @@
     else console.log("Shockmate self-test passed: " + ALL.length + " fights across " + PACKS.length + " packs.");
   }
   load(); bind(); hud(); selfTest();
-  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, startCamp, campOn, coachStyle, setDay, setSeats, syncNow, exportBackup, importBackup, all: ALL, BUILD };
+  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, startCamp, campOn, coachStyle, setDay, setSeats, syncNow, exportBackup, importBackup, openParent, gateKey, renderProgress, renderSettings, save, all: ALL, BUILD };
 })();
