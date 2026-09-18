@@ -21,7 +21,8 @@
    "taunt": "Psst. Free pawn on h5. Grab it. Nobody's looking.",
    "gloat": "Ha! You ate a pawn. I eat your rook.",
    "rage": "NOOOO. That was my WHOLE QUEEN!"
-  }
+  },
+  "arrive": "d8a5"
  },
  {
   "id": "02",
@@ -46,7 +47,8 @@
    "taunt": "That pawn on d6 is begging to be eaten.",
    "gloat": "Rook takes horse. Thanks for lunch.",
    "rage": "Two heads?! That's cheating!"
-  }
+  },
+  "arrive": "a5d5"
  },
  {
   "id": "03",
@@ -71,7 +73,8 @@
    "taunt": "Careful, careful. Just move your king somewhere safe.",
    "gloat": "Nothing happened. Boring. My favorite.",
    "rage": "A PAWN did that?!"
-  }
+  },
+  "arrive": "c7b6"
  },
  {
   "id": "04",
@@ -95,7 +98,8 @@
    "taunt": "The bishop is right in the middle. Queen takes bishop!",
    "gloat": "Pawn takes queen. Best trade ever. For me.",
    "rage": "You COUNTED? Who taught you that?"
-  }
+  },
+  "arrive": "e6d5"
  },
  {
   "id": "05",
@@ -120,7 +124,8 @@
    "taunt": "Queen takes knight. Big and loud. Do it.",
    "gloat": "Pawn takes queen. You paid a queen for a horse.",
    "rage": "Glued?! Unglue it! UNGLUE IT!"
-  }
+  },
+  "arrive": "b8c6"
  },
  {
   "id": "06",
@@ -145,7 +150,8 @@
    "taunt": "Bishop takes knight! Cash it in now!",
    "gloat": "Pawn takes bishop. Even trade. You got nothing.",
    "rage": "You piled ON?! That's not fair!"
-  }
+  },
+  "arrive": "d8e8"
  },
  {
   "id": "07",
@@ -170,7 +176,8 @@
    "taunt": "Rook to h7 wins a pawn next move. Slow and safe.",
    "gloat": "Slow and safe. And nothing.",
    "rage": "Through the KING?! That's a shish kebab!"
-  }
+  },
+  "arrive": "e7e8"
  },
  {
   "id": "08",
@@ -196,7 +203,8 @@
    "taunt": "That h5 pawn is free. Go get it.",
    "gloat": "You went pawn hunting. The game goes on. And on.",
    "rage": "MY OWN PAWNS locked the door?!"
-  }
+  },
+  "arrive": "h6h5"
  },
  {
   "id": "09",
@@ -220,7 +228,8 @@
    "taunt": "Knight on d4. Free. Yum. Take it.",
    "gloat": "You took the horse. Still playing. Still my game.",
    "rage": "The ROOK was the lunch?!"
-  }
+  },
+  "arrive": "c6d4"
  },
  {
   "id": "10",
@@ -244,7 +253,8 @@
    "taunt": "A WHOLE QUEEN. Free. Take it take it take it.",
    "gloat": "You took the queen. I'm still alive. Rude.",
    "rage": "Mate?! I was offering you a QUEEN!"
-  }
+  },
+  "arrive": "d7h3"
  },
  {
   "id": "11",
@@ -269,7 +279,8 @@
    "taunt": "Knight takes f7 with check! Pawn AND check!",
    "gloat": "King takes knight. You gave me a horse for a pawn.",
    "rage": "A LASER?! Behind the HORSE?!"
-  }
+  },
+  "arrive": "b6c6"
  },
  {
   "id": "12",
@@ -294,6 +305,7 @@
    "taunt": "Pawn on a7. Free cookie. Eat it.",
    "gloat": "Rook takes horse. Cookie was a trap.",
    "rage": "CROWNS?! You skipped the cookie?!"
-  }
+  },
+  "arrive": "d7e8"
  }
 ]

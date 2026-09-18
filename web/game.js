@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.13";
+  const BUILD = "v0.14";
   const Y = window.ShockmateSync, H = window.ShockmateShort;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -25,7 +25,7 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], short: [false, false], pack: "tactics", day: 1, tournament: false, readAloud: true, seats: 1, syncedAt: 0,
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: true, hurry: false, profile: 0, blitz: [false, false], short: [false, false], pack: "tactics", day: 1, tournament: false, readAloud: true, seats: 1, syncedAt: 0,
       sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
     mode: "solo", pack: "tactics", active: 0, nav: 0, prep: false, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
@@ -123,6 +123,8 @@
     try { Object.assign(state.settings, JSON.parse(localStorage.getItem(KEY + ":settings") || "{}")); } catch (e) {}
     if (!Array.isArray(state.settings.blitz)) state.settings.blitz = [false, false];
     if (!Array.isArray(state.settings.short)) state.settings.short = [false, false];
+    // Coordinates became the default, as on every chess site; older saved settings had them off.
+    if (!state.settings.coordsV2) { state.settings.coords = true; state.settings.coordsV2 = true; }
     if (!(state.settings.day >= 1 && state.settings.day <= D.DAYS.length)) state.settings.day = 1;
     const sy = state.settings.sync = Object.assign({ url: "", anonKey: "", code: "", players: [] }, state.settings.sync);
     sy.players = [0, 1].map((i) => Object.assign({ username: "", pin: "" }, sy.players[i]));
@@ -150,8 +152,9 @@
       + " take turns on this phone. You both play White.";
   }
   function setPrepDay() {
+    const avoid = D.dayByNumber(state.settings.day || D.currentDay(state.stats)).ids;
     state.prep = true; state.day = 0;
-    state.encounters = S.prepFights(state.stats, ALL, 4); state.index = 0;
+    state.encounters = S.prepFights(state.stats, ALL, 4, avoid); state.index = 0;
     renderDayStrip();
   }
   function dayDone() {
@@ -170,7 +173,7 @@
     const cur = state.day || 1;
     const weak = S.weakestMotifs(state.stats).filter(function (m) { return m.rate < 1; }).slice(0, 2);
     const prepChip = '<button class="day-chip prep' + (state.prep ? " current" : "") + '" data-day="0"><span class="n">Prep</span>' +
-      (weak.length ? weak.map(function (m) { return S.motifLabel(m.motif); }).join(" + ") : "your misses") + '</button>';
+      (weak.length ? weak.map(function (m) { return S.motifLabel(m.motif); }).join(" + ") : "opening traps") + '</button>';
     host.innerHTML = prepChip + D.DAYS.map(function (d) {
       const pr = D.dayProgress(state.stats, d.n), open = D.dayUnlocked(state.stats, d.n);
       const cls = ["day-chip"];
@@ -183,7 +186,9 @@
       b.onclick = function () { const n = Number(b.dataset.day); if (n === 0) setPrepDay(); else setDay(n); renderPath(); hud(); };
     });
     if ($("day-blurb")) $("day-blurb").textContent = state.prep
-      ? "Four fights picked from what you have missed. Slow down. Ask the two questions."
+      ? (S.prepSource(state.stats) === "misses"
+        ? "Four fights picked from what you have missed. Slow down. Ask the two questions."
+        : "No misses yet, so Prep drills opening traps. Slow down. Ask the two questions.")
       : D.dayByNumber(cur).blurb;
   }
   /* adaptive: rolling tier history decides whether the next fight opens with candidates lit */
@@ -416,9 +421,11 @@
     for (let r = 8; r >= 1; r--) for (let f = 0; f < 8; f++) {
       const name = FILES[f] + r, cell = document.createElement("div");
       cell.className = "sq " + (((f + r) % 2 === 0) ? "dark" : "light"); cell.dataset.sq = name;
-      if (state.settings.coords && (f === 0 || r === 1)) { const c = document.createElement("span"); c.className = "coord"; c.textContent = f === 0 ? String(r) : FILES[f]; cell.appendChild(c); }
+      if (state.settings.coords && f === 0) { const c = document.createElement("span"); c.className = "coord rank"; c.textContent = String(r); cell.appendChild(c); }
+      if (state.settings.coords && r === 1) { const c = document.createElement("span"); c.className = "coord file"; c.textContent = FILES[f]; cell.appendChild(c); }
       const p = state.pieces[name];
       if (p) { const el = document.createElement("div"); el.className = "piece " + p.color; el.textContent = GLYPH[p.color + p.role]; cell.appendChild(el); }
+      if (state.last && (state.last.from === name || state.last.to === name)) cell.classList.add("last");
       cell.addEventListener("click", () => onSquare(name));
       board.appendChild(cell);
     }
@@ -438,7 +445,8 @@
       const el = sq(m.to); if (!el) return; el.classList.add("legal"); if (m.capture) el.classList.add("cap");
     });
   }
-  function setPieces(map) { state.pieces = F.clonePieces(map); renderBoard(); }
+  // `last` is the move that just happened, shaded on the board the way every chess site does it.
+  function setPieces(map, last) { state.pieces = F.clonePieces(map); state.last = last || null; renderBoard(); }
   function onSquare(name) {
     if (state.phase === "gate") return gateTap(name);
     if (state.phase !== "think") return;
@@ -471,7 +479,7 @@
   async function playLine(ucis, startMap) {
     let map = F.clonePieces(startMap);
     for (const uci of ucis) {
-      const step = F.applyUci(map, uci); map = step.pieces; setPieces(map);
+      const step = F.applyUci(map, uci); map = step.pieces; setPieces(map, step);
       const dest = sq(step.to) && sq(step.to).querySelector(".piece"); if (dest) dest.classList.add("pop"); sfx("move");
       if (step.captured) explode(step.to, false);
       await sleep(450);
@@ -483,19 +491,31 @@
   }
 
   /* ---------- fight flow ---------- */
-  function startEncounter() {
-    const enc = current(); state.selected = null; state.tries = 0; state.guided = false; state.lastTier = null; state.phase = "think";
-    setPieces(F.piecesFromList(enc.pieces)); clearMarks(); $("fx").innerHTML = ""; $("board").classList.remove("dim");
-    banner(""); glitchSay(enc.glitch.taunt, "taunt"); prompt(enc.hook); $("gate-dots").innerHTML = "";
-    if ($("ritual")) { $("ritual").hidden = !state.settings.tournament; $("ritual").textContent = S.PREP_QUESTIONS.join("   "); }
-    if (state.settings.tournament) voiceSeq([enc.id + "-hook", "prep-q1", "prep-q2"]); else voice(enc.id + "-hook");
-    $("btn-hint").hidden = false; $("btn-skip").hidden = false; show("screen-play");
+  // Every fight opens on Glitch's move, so "what did that move just attack?" has a move to point at.
+  async function startEncounter() {
+    const enc = current(), nav = state.nav, arrive = F.arriveOf(enc);
+    state.selected = null; state.tries = 0; state.guided = false; state.lastTier = null; state.phase = "arrive";
+    const start = F.piecesFromList(enc.pieces);
+    clearMarks(); $("fx").innerHTML = ""; $("board").classList.remove("dim"); $("gate-dots").innerHTML = "";
+    banner(""); glitchSay(enc.glitch.taunt, "taunt"); prompt(enc.hook);
+    $("btn-hint").hidden = true; $("btn-skip").hidden = true; if ($("ritual")) $("ritual").hidden = true; show("screen-play");
+    renderTeam(); hud(); renderPowers();
+    if (arrive && enc.arrivePosition) {
+      setPieces(F.piecesFromPack(enc.arrivePosition)); await sleep(T(650)); if (stale(nav)) return;
+      setPieces(start, arrive); const dest = sq(arrive.to) && sq(arrive.to).querySelector(".piece"); if (dest) dest.classList.add("pop"); sfx("move");
+      await sleep(T(350)); if (stale(nav)) return;
+    } else setPieces(start);
+    state.phase = "think";
+    const qs = S.prepQuestionsFor(enc);
+    if ($("ritual")) { $("ritual").hidden = !state.settings.tournament; $("ritual").textContent = qs.join("   "); }
+    if (state.settings.tournament) voiceSeq([enc.id + "-hook"].concat(qs.map((q, i) => "prep-q" + (i + 1)))); else voice(enc.id + "-hook");
+    $("btn-hint").hidden = false; $("btn-skip").hidden = false;
     state.helpThisFight = needsHelp(state.stats) || (state.mode === "duel" && state.duel && state.duel.helpSeat === state.active);
-    paintSelection(); renderTeam(); startBlitz(); hud(); renderPowers();
+    paintSelection(); startBlitz();
   }
   async function commitMove(move) {
     const enc = current(); state.phase = "busy"; state.selected = null; paintSelection();
-    const start = F.piecesFromList(enc.pieces); const step = F.applyUci(start, move.uci); setPieces(step.pieces);
+    const start = F.piecesFromList(enc.pieces); const step = F.applyUci(start, move.uci); setPieces(step.pieces, step);
     const dest = sq(step.to) && sq(step.to).querySelector(".piece"); if (dest) dest.classList.add("pop"); sfx("move");
     if (step.captured) explode(step.to, false);
     stopBlitz();
@@ -574,27 +594,42 @@
     if (state.mode === "duel") return duelSeatDone(enc, false);
     state.tries += 1;
     if (state.tries === 1) {
-      banner("SECOND TRY", "tease"); setPieces(start); clearMarks(); glitchSay("Sweating? Me? Never.", "nervous"); prompt("Try again. Glitch is sweating."); voice("sys-second");
+      banner("SECOND TRY", "tease"); setPieces(start, F.arriveOf(enc)); clearMarks(); glitchSay("Sweating? Me? Never.", "nervous"); prompt("Try again. Glitch is sweating."); voice("sys-second");
       state.phase = "think"; paintSelection(); renderPowers(); return;
     }
     // confession: show the better future, then the kid plays it
-    banner("THE BETTER FUTURE", "win"); glitchSay("Fine. FINE. Here is what I was scared of.", "nervous"); setPieces(start); await sleep(500);
+    banner("THE BETTER FUTURE", "win"); glitchSay("Fine. FINE. Here is what I was scared of.", "nervous"); setPieces(start, F.arriveOf(enc)); await sleep(500);
     await playLine(enc.bestLineUci, start); finisher(enc); await sleep(800);
-    banner("YOUR TURN", "tease"); setPieces(start); clearMarks(); state.guided = true; state.phase = "think";
+    banner("YOUR TURN", "tease"); setPieces(start, F.arriveOf(enc)); clearMarks(); state.guided = true; state.phase = "think";
     prompt("Now you play it: " + enc.bestSan); paintSelection(); renderPowers();
   }
   function whyGate(enc) {
     return new Promise((resolve) => {
       const targets = enc.whyTargets.squares.slice();
-      state.gate = { targets, found: [], wrong: 0, resolve }; state.phase = "gate";
+      state.gate = { targets, found: [], wrong: 0, resolve };
       // Rewind to the moment the reason is visible, so the prompt matches the board.
-      const start = F.piecesFromList(enc.pieces);
+      const start = F.piecesFromList(enc.pieces), nav = state.nav;
       const rewind = enc.whyTargets.at !== "after";
-      setPieces(rewind ? start : F.applyUci(start, enc.best).pieces);
-      banner(rewind ? "REWIND" : "LOCK IT IN", "tease");
-      glitchSay("Don't say it. Don't you DARE say why…", "hide");
-      prompt(enc.whyTargets.prompt);
-      clearMarks(); renderDots(); $("prompt").classList.add("gate-prompt");
+      const played = F.applyUci(start, enc.best);
+      // A good-but-not-best move still wins, but the gate is about the best move. Say so, and play it
+      // on the board from the start, so the board never changes to a move the kid did not see.
+      const other = state.lastUci && state.lastUci !== enc.best && !state.guided;
+      const open = () => {
+        if (stale(nav) || state.gate === null) return;
+        state.phase = "gate";
+        banner(rewind ? "REWIND" : "LOCK IT IN", "tease");
+        glitchSay("Don't say it. Don't you DARE say why…", "hide");
+        prompt(enc.whyTargets.prompt);
+        clearMarks(); renderDots(); $("prompt").classList.add("gate-prompt");
+      };
+      if (!other) { if (rewind) setPieces(start, F.arriveOf(enc)); else setPieces(played.pieces, played); return open(); }
+      state.phase = "busy"; setPieces(start, F.arriveOf(enc));
+      banner("BEST WAS " + enc.bestSan, "win"); prompt("Your move works. The best was " + enc.bestSan + ". Watch.");
+      setTimeout(() => {
+        if (stale(nav)) return;
+        if (!rewind) { setPieces(played.pieces, played); const d = sq(played.to) && sq(played.to).querySelector(".piece"); if (d) d.classList.add("pop"); sfx("move"); }
+        setTimeout(open, T(rewind ? 300 : 900));
+      }, T(1400));
     });
   }
   function renderDots() {

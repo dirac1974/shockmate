@@ -10,7 +10,7 @@
   "bestMove": "Qb8#",
   "baitMove": "Qc4",
   "hook": "One move ends it. One move throws it away.",
-  "why": "Mate on the back row. The other queen move leaves him no legal move at all \u2014 a draw.",
+  "why": "Mate on the back row. The other queen move leaves him no legal move at all — a draw.",
   "whyLong": "A stalemate turns a winning game into half a point. Always leave the enemy king a square, or give mate.",
   "whyTargets": {
    "prompt": "Tap the king you are mating.",
@@ -22,7 +22,8 @@
    "taunt": "Bring the queen closer. Squeeze him. Squeeze!",
    "gloat": "No legal moves! Stalemate! It's a DRAW! Hahaha!",
    "rage": "Mate on the back row?! I wanted a draw!"
-  }
+  },
+  "arrive": "g8h8"
  },
  {
   "id": "g2",
@@ -47,7 +48,8 @@
    "taunt": "Check him! Rook to h7! Checks are exciting!",
    "gloat": "You checked. I moved. We can do this all day.",
    "rage": "A LADDER?! Who taught you the ladder?!"
-  }
+  },
+  "arrive": "g8h8"
  },
  {
   "id": "g3",
@@ -72,7 +74,8 @@
    "taunt": "Check with the rook! Drive him off! Go go go!",
    "gloat": "Pawn takes rook. And now I get a QUEEN. Thank you!",
    "rage": "You just... ate it? With the KING?!"
-  }
+  },
+  "arrive": "a3a2"
  },
  {
   "id": "g4",
@@ -97,7 +100,8 @@
    "taunt": "PUSH IT! Pawns want to run! Push the pawn!",
    "gloat": "My king sits right in front. Draw. Nothing you can do.",
    "rage": "The KING went first?! That's not how pawns work!"
-  }
+  },
+  "arrive": "c7d8"
  },
  {
   "id": "g5",
@@ -122,6 +126,7 @@
    "taunt": "Queen right next to him! Smother him! Do it!",
    "gloat": "No moves and no check. STALEMATE. Draw! I'll take it!",
    "rage": "Mate?! I was one square from a free draw!"
-  }
+  },
+  "arrive": "b8a8"
  }
 ]

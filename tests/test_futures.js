@@ -126,6 +126,19 @@ function run() {
     assert.ok(e.whyTargets && e.whyTargets.squares.length >= 1 && e.whyTargets.prompt.split(" ").length <= 12, e.id + " why targets");
     assert.ok(e.candidates && e.candidates.length >= 1 && e.candidates.includes(e.best.slice(0, 2)), e.id + " candidates include the best origin");
   });
+  /* Every fight opens on Glitch's move: the arriving move replays from the stored position onto the
+     exact start, moves one of Glitch's pieces, and is what the board shades as the last move. */
+  list.forEach((e) => {
+    const a = futures.arriveOf(e);
+    assert.ok(a && e.arrivePosition, e.id + " has no arriving move");
+    const before = futures.piecesFromPack(e.arrivePosition);
+    assert.ok(before[a.from] && before[a.from].color === "b", e.id + " arrive must move one of Glitch's pieces: " + e.arrive);
+    const after = futures.applyUci(before, e.arrive).pieces, start = futures.piecesFromList(e.pieces);
+    assert.deepStrictEqual(Object.keys(after).sort(), Object.keys(start).sort(), e.id + " arrive does not land on the start squares");
+    Object.keys(start).forEach((s) => assert.deepStrictEqual(after[s], start[s], e.id + " arrive lands a different piece on " + s));
+  });
+  assert.strictEqual(futures.arriveOf({}), null, "a fight without an arrive move is safe");
+
   console.log("OK futures: " + list.length + " fights apply, hit+miss plans simulate, motif finishers, palace decoys.");
 }
 

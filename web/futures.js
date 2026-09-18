@@ -41,6 +41,17 @@
     return snapshots;
   }
 
+  // The build packs a board as "wra1bkg8...": colour, role, square, four characters a piece.
+  function piecesFromPack(p) {
+    const list = [];
+    for (let i = 0; i + 3 < (p || "").length; i += 4) list.push({ color: p[i], role: p[i + 1], sq: p.slice(i + 2, i + 4) });
+    return piecesFromList(list);
+  }
+  // Glitch's move into the fight, as the two squares to shade. Null when a fight has none.
+  function arriveOf(enc) {
+    const u = enc && enc.arrive;
+    return u && u.length >= 4 ? { from: u.slice(0, 2), to: u.slice(2, 4) } : null;
+  }
   function piecesFromList(list) {
     const map = {};
     (list || []).forEach((p) => {
@@ -288,6 +299,8 @@
     applyUci,
     applyLine,
     piecesFromList,
+    piecesFromPack,
+    arriveOf,
     occKey,
     findKing,
     attacksFrom,

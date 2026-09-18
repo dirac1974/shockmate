@@ -2,7 +2,7 @@
 """Build data/encounters.v2.json and web/encounters.js from data/encounters.src.json.
 Scores every legal move with Stockfish, assigns fairness tiers, derives futures lines from engine PVs,
 and asserts the authoring rule (best beats bait by >=150 cp or mate vs no mate). Run: python3 tools/build_encounters.py [--sf PATH]"""
-import json, re, sys, shutil, chess, chess.engine
+import json, os, re, sys, shutil, chess, chess.engine
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SRCS = [ROOT/"data/encounters.src.json", ROOT/"data/openings.src.json", ROOT/"data/endgames.src.json"]
@@ -11,7 +11,9 @@ MATE, GOOD_GAP, BEST_GAP, MARGIN, DEPTH, PV_DEPTH, BOSS = 10000, 60, 10, 150, 14
 
 def sf_path():
     if "--sf" in sys.argv: return sys.argv[sys.argv.index("--sf") + 1]
-    return shutil.which("stockfish") or "/tmp/sf/stockfish/stockfish-ubuntu-x86-64-avx2"
+    if os.environ.get("STOCKFISH"): return os.environ["STOCKFISH"]
+    win = Path.home() / "tools/stockfish/stockfish/stockfish-windows-x86-64-universal.exe"
+    return shutil.which("stockfish") or (str(win) if win.exists() else "/tmp/sf/stockfish/stockfish-ubuntu-x86-64-avx2")
 
 def cp_of(score):
     s = score.pov(chess.WHITE)
@@ -57,20 +59,43 @@ def parse_move(board, text):
         if mv in board.legal_moves: return mv
     raise AssertionError(f"move {text!r} is not legal in {board.fen()}")
 
+def unmove(board, e):
+    """Glitch's move into a FEN-authored fight: take back `arrive` (source orientation) and prove that
+    replaying it from the rebuilt position is legal and lands on exactly this board. A capture names the
+    taken piece in `arriveCaptured` (one letter), since a FEN cannot say what used to stand there."""
+    assert e.get("arrive"), f"{e['id']} has no arrive move; every fight opens on Glitch's last move"
+    mv = chess.Move.from_uci(e["arrive"]); prev = board.copy(stack=False)
+    piece = prev.remove_piece_at(mv.to_square)
+    assert piece is not None and piece.color != board.turn, f"{e['id']} arrive {mv} must move one of Glitch's pieces"
+    prev.set_piece_at(mv.from_square, piece)
+    if e.get("arriveCaptured"): prev.set_piece_at(mv.to_square, chess.Piece.from_symbol(
+        e["arriveCaptured"].upper() if board.turn == chess.WHITE else e["arriveCaptured"].lower()))
+    prev.turn = not board.turn; prev.ep_square = None; prev.halfmove_clock = 0
+    assert prev.is_valid(), f"{e['id']} position before arrive {mv} is not a legal position"
+    assert mv in prev.legal_moves, f"{e['id']} arrive {mv} is not legal before the fight"
+    after = prev.copy(); after.push(mv)
+    assert after.board_fen() == board.board_fen() and after.turn == board.turn, f"{e['id']} arrive {mv} does not land on the fight"
+    return prev, mv
+
 def prepare(e):
     """Resolve a source entry to a white-to-move position. Opening fights are often authored from
     Black's side; mirroring keeps one board orientation in the arena while teaching the same lesson."""
     e = dict(e)
     if "moves" in e:
         b = chess.Board()
-        for san in e["moves"]: b.push_san(san)
+        for san in e["moves"][:-1]: b.push_san(san)
+        prev, arrive = b.copy(), b.parse_san(e["moves"][-1])
+        b.push(arrive)
         e["fen"] = b.fen()
+    else:
+        prev, arrive = unmove(chess.Board(e["fen"]), e)
     board = chess.Board(e["fen"])
     best = parse_move(board, e.get("best") or e["bestMove"])
     bait = parse_move(board, e.get("bait") or e["baitMove"])
     if board.turn == chess.BLACK:
         m = lambda mv: chess.Move(chess.square_mirror(mv.from_square), chess.square_mirror(mv.to_square), promotion=mv.promotion)
         board = board.mirror(); best, bait = m(best), m(bait)
+        prev, arrive = prev.mirror(), m(arrive)
         e["fen"] = board.fen(); e["mirrored"] = True
         wt = dict(e["whyTargets"])
         wt["squares"] = [chess.square_name(chess.square_mirror(chess.parse_square(s))) for s in wt["squares"]]
@@ -85,7 +110,8 @@ def prepare(e):
         e["whyTargets"] = dict(e["whyTargets"], prompt=flip_text(e["whyTargets"]["prompt"]))
         e["glitch"] = {k: flip_text(v) for k, v in e["glitch"].items()}
     e["best"], e["bait"] = best.uci(), bait.uci()
-    e.pop("bestMove", None); e.pop("baitMove", None); e.pop("moves", None)
+    e["arrive"], e["arrivePosition"] = arrive.uci(), pack(prev)
+    e.pop("bestMove", None); e.pop("baitMove", None); e.pop("moves", None); e.pop("arriveCaptured", None)
     e.setdefault("pack", "tactics")
     return e
 
@@ -149,17 +175,29 @@ def emit_js(encs):
       "  window.SHOCKMATE_ENCOUNTERS = raw.map(unpack);", "})();"]
     OUT_JS.write_text("\n".join(js) + "\n")
 
+def arrive_only(src):
+    """Add or refresh only the arriving move on the built fights. No engine: legality is proved by
+    python-chess, and the scored data is left exactly as it was."""
+    built = json.loads(OUT_JSON.read_text(encoding="utf-8")); by = {e["id"]: e for e in src}
+    for out in built:
+        e = prepare(by[out["id"]])
+        assert e["fen"] == out["fen"], f"{out['id']} source no longer matches the built fight; run a full build"
+        out["arrive"], out["arrivePosition"] = e["arrive"], e["arrivePosition"]
+    OUT_JSON.write_text(json.dumps(built, indent=1), encoding="utf-8"); emit_js(built)
+    print(f"arrive moves on {len(built)} fights")
+
 def main():
     """--only id[,id] rebuilds just those fights and merges them into the existing output,
-    so fixing one board does not mean re-scoring every position."""
+    so fixing one board does not mean re-scoring every position. --arrive-only needs no engine."""
     only = None
     if "--only" in sys.argv: only = set(sys.argv[sys.argv.index("--only") + 1].split(","))
     src = []
     for path in SRCS:
-        if path.exists(): src += json.loads(path.read_text())
+        if path.exists(): src += json.loads(path.read_text(encoding="utf-8"))
     ids = [e["id"] for e in src]; assert len(ids) == len(set(ids)), "duplicate encounter ids"
+    if "--arrive-only" in sys.argv: return arrive_only(src)
     engine = chess.engine.SimpleEngine.popen_uci(sf_path())
-    done = {x["id"]: x for x in json.loads(OUT_JSON.read_text())} if (only and OUT_JSON.exists()) else {}
+    done = {x["id"]: x for x in json.loads(OUT_JSON.read_text(encoding="utf-8"))} if (only and OUT_JSON.exists()) else {}
     encs = []
     try:
         for e in src:
@@ -172,7 +210,7 @@ def main():
                 print("REJECTED", e["id"], e.get("title"), "->", err); continue
     finally:
         engine.quit()
-    OUT_JSON.write_text(json.dumps(encs, indent=1)); emit_js(encs)
+    OUT_JSON.write_text(json.dumps(encs, indent=1), encoding="utf-8"); emit_js(encs)
     for e in encs:
         m = e["moves"]; tiers = {t: sum(1 for v in m.values() if v["tier"] == t) for t in ("best", "good", "bait", "blunder")}
         print(f"{e['pack'][:4]} {e['id']} {e['title']:<20} best={m[e['best']]['cp']:>6} bait={m[e['bait']]['cp']:>6} {tiers} bestLine={e['bestLineUci']} baitLine={e['temptingLineUci']} cands={e['candidates']}")
