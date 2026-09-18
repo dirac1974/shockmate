@@ -298,3 +298,18 @@ select, input[type=number], input[type=text] { display: block; width: 100%; marg
 .ritual[hidden] { display: none; }
 .day-chip.prep { border-style: dashed; border-color: var(--magenta, #ff4fa3); color: var(--magenta, #ff4fa3); }
 .day-chip.prep.current { border-style: solid; }
+
+/* ---------- parent progress view ---------- */
+.prog-kid { margin: 10px auto; max-width: 480px; padding: 10px 12px; border: 2px solid var(--line, #33406b); border-radius: 12px; background: rgba(0,0,0,0.18); }
+.prog-kid h3 { margin: 0 0 4px; }
+.prog-line { margin: 3px 0; }
+.prog-line.good b { color: var(--gold, #ffcc33); }
+.prog-line.focus b { color: var(--magenta, #ff4fa3); }
+.prog-bars { display: flex; align-items: flex-end; gap: 3px; height: 44px; margin: 8px 0; }
+.prog-bars i { display: block; flex: 1; background: var(--cyan, #33e0ff); border-radius: 2px 2px 0 0; opacity: 0.85; min-width: 6px; }
+.prog-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 6px; }
+.prog-table th, .prog-table td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line, #33406b); }
+.prog-table th { opacity: 0.7; font-weight: 700; letter-spacing: 0.04em; font-size: 0.75rem; }
+.prog-table tr.focus td:last-child { color: var(--magenta, #ff4fa3); font-weight: 800; }
+.prog-table tr.good td:last-child { color: var(--gold, #ffcc33); font-weight: 800; }
+.prog-table tr.new td { opacity: 0.55; }

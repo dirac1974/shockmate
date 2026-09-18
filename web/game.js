@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.9";
+  const BUILD = "v0.10";
   const Y = window.ShockmateSync;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -307,6 +307,33 @@
         toast(cur === id ? "Unequipped." : S.gearById(id).name + " equipped. " + S.gearById(id).blurb, 2000);
       };
     });
+  }
+  // The parent view. Reads both profiles, never the live one only, so a kid who is not the active
+  // profile still shows up. Everything here is derived; nothing is written.
+  function renderProgress() {
+    const root = $("progress-root"); if (!root) return;
+    const esc = function (t) { return String(t).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); };
+    let html = "";
+    [0, 1].forEach(function (i) {
+      const st = state.profiles[i]; const name = state.settings.names[i] || ("Player " + (i + 1));
+      if (!st) { html += '<section class="prog-kid"><h3>' + esc(name) + '</h3><p class="hint">Has not played yet.</p></section>'; return; }
+      const p = S.progressSummary(st, ALL, now());
+      const max = Math.max.apply(null, p.byDay.map(function (d) { return d.n; }).concat([1]));
+      html += '<section class="prog-kid"><h3>' + esc(name) + '</h3>' +
+        '<p class="prog-line"><b>' + esc(p.rank.title) + '</b> \u00b7 ' + p.cards + " of " + p.total + " cards \u00b7 " + p.kos + " knockouts \u00b7 " + p.knockedOff + " off Glitch</p>" +
+        '<p class="prog-line good"><b>Good at:</b> ' + (p.goodAt.length ? esc(p.goodAt.join(", ")) : "nothing yet, keep playing") + "</p>" +
+        '<p class="prog-line focus"><b>Focus on:</b> ' + (p.focusOn.length ? esc(p.focusOn.join(", ")) : "nothing flagged") + "</p>" +
+        '<div class="prog-bars" title="cards earned per day, last 14 days">' +
+          p.byDay.map(function (d) { return '<i style="height:' + Math.round(4 + 36 * d.n / max) + 'px" title="' + esc(d.key) + ": " + d.n + '"></i>'; }).join("") +
+        "</div>" +
+        '<table class="prog-table"><thead><tr><th>Motif</th><th>Met</th><th>Hit rate</th><th>Misses</th><th></th></tr></thead><tbody>' +
+        p.motifs.map(function (m) {
+          return '<tr class="' + m.verdict + '"><td>' + esc(m.label) + "</td><td>" + m.fights + "/" + m.total + "</td><td>" +
+            (m.attempts ? Math.round(m.rate * 100) + "%" : "\u2014") + "</td><td>" + m.misses + "</td><td>" + m.verdict + "</td></tr>";
+        }).join("") +
+        "</tbody></table></section>";
+    });
+    root.innerHTML = html;
   }
   function prompt(text) { $("prompt").textContent = text; }
   function hud() {
@@ -788,6 +815,8 @@
     $("btn-collection").onclick = function () { renderCollection(); show("screen-collection"); };
     $("btn-back-play").onclick = function () { show(state.phase === "card" ? "screen-card" : state.phase === "duel" ? "screen-duel" : state.phase === "think" || state.phase === "gate" ? "screen-play" : "screen-title"); };
     $("btn-settings").onclick = function () { renderSettings(); show("screen-settings"); };
+    if ($("btn-progress")) $("btn-progress").onclick = function () { renderProgress(); show("screen-progress"); };
+    if ($("btn-progress-back")) $("btn-progress-back").onclick = function () { show("screen-settings"); };
     $("btn-export").onclick = exportBackup;
     $("btn-import").onclick = function () { $("file-import").click(); };
     $("file-import").onchange = function (ev) {

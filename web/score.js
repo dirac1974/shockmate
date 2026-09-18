@@ -356,7 +356,43 @@
   // The two questions that stop a rusher. The first stops hung pieces; the second is the trap defence.
   const PREP_QUESTIONS = ["What did that move just attack?", "Why is he letting you take that?"];
 
-  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, PREP_QUESTIONS, tellFree, useTell, bootsFree, useBoots, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
+  /* ---------- progress: what a parent can read off the data ----------
+     Per motif: met, hit rate, misses, and a verdict. Good is a high rate over more than one attempt.
+     Focus is a low rate or an open retry. New is not met yet. Cards by day gives the trend. */
+  function motifVerdict(m) {
+    if (!m || !m.attempts) return "new";
+    if (m.retry > 0 || m.rate < 0.5) return "focus";
+    if (m.attempts >= 2 && m.rate >= 0.75) return "good";
+    return "ok";
+  }
+  function cardsByDay(stats, days, ts) {
+    const earned = (stats && stats.cardsEarned) || {}, at = ts || Date.now(), n = days || 14, out = [];
+    const ids = Object.keys(earned);
+    for (let i = n - 1; i >= 0; i--) {
+      const key = dateKey(at - i * 24 * 60 * 60 * 1000);
+      out.push({ key: key, n: ids.filter(function (id) { return earned[id] && earned[id].t && dateKey(earned[id].t) === key; }).length });
+    }
+    return out;
+  }
+  function progressSummary(stats, encounters, ts) {
+    const list = encounters || [], totals = {};
+    list.forEach(function (e) { if (e.motif) totals[e.motif] = (totals[e.motif] || 0) + 1; });
+    const met = {}; motifStats(stats).forEach(function (m) { met[m.motif] = m; });
+    const order = { focus: 0, ok: 1, new: 2, good: 3 };
+    const motifs = Object.keys(totals).map(function (mo) {
+      const m = met[mo] || { motif: mo, attempts: 0, hits: 0, misses: 0, fights: 0, retry: 0, rate: 0 };
+      return Object.assign({}, m, { label: motifLabel(mo), total: totals[mo], verdict: motifVerdict(met[mo]) });
+    }).sort(function (a, b) { return (order[a.verdict] - order[b.verdict]) || (a.rate - b.rate) || (b.misses - a.misses); });
+    const b = battleOf(stats);
+    return {
+      rank: agentRank(stats), cards: Object.keys((stats && stats.cardsEarned) || {}).length, total: list.length,
+      kos: b.kos, power: b.power, knockedOff: knockedOff(stats), motifs: motifs, byDay: cardsByDay(stats, 14, ts),
+      goodAt: motifs.filter(function (m) { return m.verdict === "good"; }).map(function (m) { return m.label; }),
+      focusOn: motifs.filter(function (m) { return m.verdict === "focus"; }).map(function (m) { return m.label; }),
+    };
+  }
+
+  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, PREP_QUESTIONS, motifVerdict, cardsByDay, progressSummary, tellFree, useTell, bootsFree, useBoots, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
