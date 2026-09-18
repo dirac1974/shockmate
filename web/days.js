@@ -1,13 +1,15 @@
 /* Lesson days. A day is a themed set that mixes packs, so nobody dead-ends inside one pack.
-   Every fight belongs to exactly one day; the six days cover all 23. Bosses close days 1, 2 and 4. */
+   Every fight belongs to exactly one day; the eight days cover all 32. Bosses close days 1, 2 and 4. */
 (function (root) {
   const DAYS = [
-    { n: 1, title: "Free Lunch?", blurb: "Glitch leaves food lying around. One plate is poison.", ids: ["01", "09", "o7", "04"] },
+    { n: 1, title: "Free Lunch?", blurb: "Glitch leaves food lying around. One plate is poison.", ids: ["01", "o7", "o3", "04"] },
     { n: 2, title: "Two Throats", blurb: "One piece, two targets. He only gets to save one.", ids: ["02", "03", "o2", "12"] },
     { n: 3, title: "Straight Lines", blurb: "Pin him, skewer him, and open the hidden laser.", ids: ["05", "06", "07", "11"] },
     { n: 4, title: "Locked Doors", blurb: "His own pieces shut him in. Knock politely.", ids: ["o1", "g2", "10", "08"] },
-    { n: 5, title: "Count First", blurb: "He offers a trade. Count the guards before you take.", ids: ["o3", "o4", "o6", "g3"] },
-    { n: 6, title: "Finish It", blurb: "A won game is not won until it is finished.", ids: ["g4", "g1", "g5"] },
+    { n: 5, title: "Count First", blurb: "Count attackers, count guards, and only then take.", ids: ["o4", "g3", "t1", "t2", "t3"] },
+    { n: 6, title: "Finish It", blurb: "A won game is not won until it is finished.", ids: ["g4", "g1", "o6"] },
+    { n: 7, title: "Trade Smart", blurb: "Every swap is a choice. Keep the piece that works.", ids: ["b1", "b2", "k1", "k2"] },
+    { n: 8, title: "Hold the Line", blurb: "He attacks first. Answer without giving anything away.", ids: ["d1", "d2", "d3", "d4"] },
   ];
 
   function dayByNumber(n) { return DAYS.filter((d) => d.n === n)[0] || DAYS[0]; }

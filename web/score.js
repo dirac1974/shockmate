@@ -309,7 +309,9 @@
   // A crony's weakness is a chess motif. Beating him with that motif hits half again as hard. That is the lesson.
   const MOTIF_LABEL = { fork: "forks", pawnFork: "pawn forks", royalFork: "royal forks", counting: "counting", pin: "pins",
     skewer: "skewers", backRank: "the back rank", hanging: "free pieces", mateOverMaterial: "mate first", discovery: "hidden attacks",
-    mateThreat: "mate threats", trapped: "trapped pieces", stalemateTrap: "stalemate traps", kingMarch: "king marches" };
+    mateThreat: "mate threats", trapped: "trapped pieces", stalemateTrap: "stalemate traps", kingMarch: "king marches",
+    pinTake: "pins", attackers: "extra attackers", goodBishop: "good and bad bishops", tradeChoice: "choosing the trade",
+    counter: "counter-attacks", defend: "defending" };
   function motifLabel(m) { return MOTIF_LABEL[m] || m || ""; }
   function resolveWeakness(battle, dmg, motif, weak, dateKey) {
     const b = battleOf({ battle: battle }), base = Math.max(0, Math.round(dmg));
@@ -341,7 +343,9 @@
     return motifStats(stats).sort(function (a, b) { return (a.rate - b.rate) || (b.misses - a.misses) || (b.attempts - a.attempts); });
   }
   function strongestMotifs(stats) { return weakestMotifs(stats).slice().reverse(); }
-  function prepFights(stats, encounters, n, avoid) {
+  // `prefer` names packs to reach for straight after the misses, ahead of the weak motifs. Camp passes
+  // ["defence"] so a defence pack, once it exists, leads the drill. Left out, the order is unchanged.
+  function prepFights(stats, encounters, n, avoid, prefer) {
     const want = n || 4, all = encounters || [], skip = {};
     (avoid || []).forEach(function (id) { skip[id] = true; });
     const list = all.filter(function (e) { return !skip[e.id]; });
@@ -352,6 +356,8 @@
     const missed = function (e) { const c = cards[e.id]; return !!(c && c.lastCorrect !== true && c.attempts > 0); };
     weak.forEach(function (mo) { all.forEach(function (e) { if (e.motif === mo && missed(e)) take(e); }); });
     all.forEach(function (e) { if (missed(e)) take(e); });
+    (prefer || []).forEach(function (pk) { list.forEach(function (e) { if (e.pack === pk && !cards[e.id]) take(e); }); });
+    (prefer || []).forEach(function (pk) { list.forEach(function (e) { if (e.pack === pk) take(e); }); });
     weak.forEach(function (mo) { list.forEach(function (e) { if (e.motif === mo && !cards[e.id]) take(e); }); });
     list.forEach(function (e) { if (e.pack === "openings" && !cards[e.id]) take(e); });
     list.forEach(function (e) { if (e.pack === "openings") take(e); });
@@ -374,6 +380,184 @@
     return !!(m && m.san && m.san.indexOf("x") >= 0);
   }
   function prepQuestionsFor(enc) { return offersBait(enc) ? PREP_QUESTIONS.slice() : PREP_QUESTIONS.slice(0, 1); }
+
+  /* ---------- camp: one tournament-prep session a day, per kid ----------
+     Fixed shape, about eight minutes: three "spot the attack" warm-ups (the defend habit), four prep
+     fights with the tournament ritual on, two counter-attack fights, then a debrief. Nothing here is
+     scored against the sibling and nothing locks: a camp day can be replayed as often as he likes. */
+
+  // One rule per motif, in the voice of something you can carry to a real board. The words-style kid
+  // gets these under the why; the debrief picks the one for his weakest motif.
+  const PRINCIPLES = {
+    counting: "Count attackers and defenders before you take. If they are equal, the taker loses.",
+    hanging: "Before you move, look for a piece nobody is guarding. The free one is the move.",
+    fork: "One piece, two targets. He only gets to save one of them.",
+    pawnFork: "A pawn can attack two pieces at once, and nobody wants to trade a piece for a pawn.",
+    royalFork: "Hit the king and something else in one move. He has to answer the check, so the other one is yours.",
+    pin: "A piece in front of the king cannot move. Bring another attacker to it before you take.",
+    pinTake: "A pinned piece cannot run away. Attack it again, then take it.",
+    skewer: "Check the big piece first. What is standing behind it is yours when it steps aside.",
+    backRank: "A king with three pawns in front of him has no air. The back rank is a door.",
+    mateOverMaterial: "Mate ends the game and a free queen does not. Look for mate before you count material.",
+    discovery: "Move the front piece and the one behind it attacks. Move it somewhere that attacks too.",
+    mateThreat: "A threat to mate beats a threat to win a pawn. Answer mate first, every time.",
+    trapped: "A piece with nowhere to go is already yours. Take its last square away.",
+    stalemateTrap: "When you are winning, leave the enemy king a square. No moves and no check is a draw.",
+    kingMarch: "In the endgame the king is a fighter. Walk him towards the pawns.",
+    attackers: "Add one more attacker before you take.",
+    goodBishop: "Trade the bishop stuck behind your own pawns. Keep the free one.",
+    tradeChoice: "Knights love closed positions. Bishops love open ones. Trade toward the one that fits the pawns.",
+    counter: "When attacked, look for a bigger attack before you retreat.",
+    defend: "Defend with a move that also does something.",
+  };
+  function principleFor(motif) { return PRINCIPLES[motif] || ""; }
+
+  /* The parent sets a register per kid, never the app. "numbers" is counts and short lines; "words"
+     is reasons in full sentences. Default follows the short-lines flag, which the parent already set. */
+  function defaultCoachStyle(settings, i) {
+    const short = (settings && settings.short) || [];
+    return short[i] ? "numbers" : "words";
+  }
+  function coachStyleOf(settings, i) {
+    const c = (settings && settings.coach) || [];
+    return c[i] === "numbers" || c[i] === "words" ? c[i] : defaultCoachStyle(settings, i);
+  }
+  function plural(n, one, many) { return n === 1 ? one : many; }
+  // Every sentence Camp says goes through here, so the two registers live in one place and the tests
+  // can hold the wording. Returns a string for every kind; an unknown kind returns "".
+  function coachLine(style, ctx) {
+    const s = style === "numbers" ? "numbers" : "words";
+    const c = ctx || {}, kind = c.kind || "", n = Math.max(0, c.count || 0);
+    if (kind === "threat") {
+      if (s === "numbers") {
+        if (n === 1) return "He attacks 1 piece. Tap it.";
+        return "He attacks " + n + " pieces. " + (n === 2 ? "Tap both." : "Tap all " + n + ".");
+      }
+      return "What did that move just attack? Tap it.";
+    }
+    if (kind === "threatHint") {
+      if (s === "numbers") return "One left. Count his squares again.";
+      return "Follow the line his piece points down. Who is standing on it?";
+    }
+    if (kind === "threatDone") {
+      if (s === "numbers") return c.wrong ? "Got all " + n + ". " + c.wrong + " wrong " + plural(c.wrong, "tap", "taps") + "." : "All " + n + ", first go.";
+      return c.wrong ? "That is what he was attacking. Ask that question after every move he makes." : "Straight away. That is the question to ask after every move he makes.";
+    }
+    if (kind === "campStart") {
+      if (s === "numbers") return "Camp: 3 spot checks, 4 fights, 2 counters.";
+      return "Camp. First spot what he is attacking, then four fights, then two where you are the one being attacked.";
+    }
+    if (kind === "phase") {
+      if (c.phase === "warm") return s === "numbers" ? "Spot the attack. 3 boards." : "Three boards. After each move of his, say what it attacks.";
+      if (c.phase === "fights") return s === "numbers" ? "4 fights. Two questions before every move." : "Four fights. Ask both questions out loud before you touch a piece.";
+      if (c.phase === "counter") return s === "numbers" ? "2 counters. You are the one under attack." : "Two boards where he is attacking you. Look for a bigger attack before you retreat.";
+      return "";
+    }
+    if (kind === "debrief") {
+      const found = Math.max(0, c.threatsFound || 0), asked = Math.max(0, c.threatsAsked || 0);
+      const first = Math.max(0, c.firstTry || 0), fights = Math.max(0, c.fights || 0);
+      if (s === "numbers") return "Threats spotted " + found + "/" + asked + ". First try " + first + "/" + fights + ". Best streak " + Math.max(0, c.streak || 0) + ".";
+      const label = c.motifLabel || "";
+      const lead = label ? "The thing that cost you most today was " + label + "." : "You got through every board today without a miss to fix.";
+      return lead + " " + (c.principle || PRINCIPLES.counting);
+    }
+    if (kind === "say") {
+      const q = c.question || PREP_QUESTIONS[0];
+      if (s === "numbers") return "Tomorrow, say this every move: “" + q + "”";
+      return "One thing to say at the board tomorrow, out loud and slowly: “" + q + "”";
+    }
+    return "";
+  }
+
+  // Threat counts are the kid's own, so all three only ever climb. `asked` counts targets put in front
+  // of him, not boards, so "spotted 5/6" reads the way he would say it.
+  function emptyThreats() { return { asked: 0, found: 0, wrongTaps: 0 }; }
+  function threatsOf(stats) { return Object.assign(emptyThreats(), (stats && stats.threats) || {}); }
+  function recordThreat(stats, result) {
+    const r = result || {}, next = Object.assign({}, stats || {});
+    const t = threatsOf(stats);
+    const targets = Math.max(0, Math.round(r.targets || 0));
+    const found = Math.max(0, Math.min(targets, Math.round(r.found || 0)));
+    t.asked += targets; t.found += found; t.wrongTaps += Math.max(0, Math.round(r.wrongTaps || 0));
+    next.threats = t;
+    return { stats: next, threats: t, clean: !r.wrongTaps && targets > 0 && found === targets };
+  }
+  function threatRate(stats) { const t = threatsOf(stats); return t.asked ? t.found / t.asked : 0; }
+
+  function campOf(stats) {
+    const c = Object.assign({ days: {}, total: 0, best: 0, run: 0, last: "" }, (stats && stats.camp) || {});
+    c.days = Object.assign({}, c.days);
+    return c;
+  }
+  function campDoneToday(stats, ts) { return !!campOf(stats).days[dateKey(ts || Date.now())]; }
+  function campDaysDone(stats) { return campOf(stats).total || 0; }
+  function dayBefore(key) {
+    const p = String(key).split("-").map(Number);
+    return dateKey(new Date(p[0], (p[1] || 1) - 1, p[2] || 1).getTime() - 24 * 60 * 60 * 1000);
+  }
+  // A camp day counts once per calendar day; a replay adds nothing and takes nothing away. `best` is
+  // the longest run of days, so the only camp number on screen still only climbs.
+  function recordCampDay(camp, key) {
+    const c = campOf({ camp: camp });
+    if (c.days[key]) { c.days[key] += 1; return c; }
+    c.run = c.last === dayBefore(key) ? (c.run || 0) + 1 : 1;
+    c.days[key] = 1; c.total = (c.total || 0) + 1; c.last = key;
+    c.best = Math.max(c.best || 0, c.run);
+    return c;
+  }
+
+  /* The session plan. Three warm-ups (boards he has already won first, and only boards where Glitch's
+     arriving move actually attacks something), four prep fights, two counter-attack fights. No fight
+     appears twice. `hasThreat` is injected, so this file never has to know about the board. */
+  function campPlan(stats, encounters, opts) {
+    const o = opts || {}, all = (encounters || []).slice();
+    const hasThreat = typeof o.hasThreat === "function" ? o.hasThreat : function () { return true; };
+    const nWarm = o.warmups == null ? 3 : o.warmups;
+    const nFight = o.fights == null ? 4 : o.fights;
+    const nCounter = o.counters == null ? 2 : o.counters;
+    const earned = (stats && stats.cardsEarned) || {};
+    const used = {}, warmups = [];
+    const pool = all.filter(function (e) { return hasThreat(e); });
+    const takeWarm = function (e) { if (!used[e.id] && warmups.length < nWarm) { used[e.id] = true; warmups.push(e); } };
+    pool.forEach(function (e) { if (earned[e.id]) takeWarm(e); });   // a board he has already won reads faster
+    pool.forEach(takeWarm);
+    const left = function () { return all.filter(function (e) { return !used[e.id]; }); };
+    // The two counter boards are reserved out of the defence pack BEFORE the four fights are picked.
+    // A small pack would otherwise be swallowed whole by the fights and leave the counters as filler.
+    const counters = [];
+    const takeCounter = function (e) { if (!used[e.id] && counters.length < nCounter) { used[e.id] = true; counters.push(e); } };
+    // One counter-attack and one defence, a board he has not won yet before one he has, so the
+    // pair changes as he earns cards instead of being the same two every morning.
+    const earnedC = (stats && stats.cardsEarned) || {};
+    ["counter", "defend"].forEach(function (m) {
+      const pool = left().filter(function (e) { return e.pack === "defence" && e.motif === m; });
+      const pick = pool.filter(function (e) { return !earnedC[e.id]; })[0] || pool[0];
+      if (pick) takeCounter(pick);
+    });
+    left().forEach(function (e) { if (e.pack === "defence") takeCounter(e); });
+    const fights = prepFights(stats, left(), nFight, o.avoid, ["defence"]);
+    fights.forEach(function (e) { used[e.id] = true; });
+    // No defence pack yet: the counter slots become two more prep fights, picked after the four.
+    if (counters.length < nCounter) prepFights(stats, left(), nCounter - counters.length, o.avoid).forEach(takeCounter);
+    return { warmups: warmups, fights: fights, counters: counters,
+      boards: fights.concat(counters), all: warmups.concat(fights).concat(counters),
+      hasDefence: counters.some(function (e) { return e.pack === "defence"; }) };
+  }
+
+  // The debrief reads off the session and the profile. The weakest motif drives the words-style note;
+  // whichever habit slipped most drives the one line to say at the board tomorrow.
+  function campDebrief(stats, session, style) {
+    const s = session || {}, weak = weakestMotifs(stats).filter(function (m) { return m.rate < 1; })[0] || null;
+    const asked = Math.max(0, s.threatsAsked || 0), found = Math.max(0, s.threatsFound || 0);
+    const rate = asked ? found / asked : 1;
+    const question = rate < 0.8 ? PREP_QUESTIONS[0] : PREP_QUESTIONS[1];
+    const ctx = { kind: "debrief", threatsAsked: asked, threatsFound: found, firstTry: s.firstTry || 0,
+      fights: s.fights || 0, streak: (stats && stats.bestStreak) || 0,
+      motifLabel: weak ? motifLabel(weak.motif) : "", principle: weak ? principleFor(weak.motif) : PRINCIPLES.counting };
+    return { line: coachLine(style, ctx), say: coachLine(style, { kind: "say", question: question }),
+      question: question, motif: weak ? weak.motif : null, principle: ctx.principle,
+      threatsAsked: asked, threatsFound: found, firstTry: ctx.firstTry, fights: ctx.fights, streak: ctx.streak };
+  }
 
   /* ---------- progress: what a parent can read off the data ----------
      Per motif: met, hit rate, misses, and a verdict. Good is a high rate over more than one attempt.
@@ -411,7 +595,10 @@
     };
   }
 
-  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, prepSource, PREP_QUESTIONS, offersBait, prepQuestionsFor, motifVerdict, cardsByDay, progressSummary, tellFree, useTell, bootsFree, useBoots, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
+  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, prepSource, PREP_QUESTIONS, offersBait, prepQuestionsFor, motifVerdict, cardsByDay, progressSummary,
+    PRINCIPLES, principleFor, MOTIF_LABEL, defaultCoachStyle, coachStyleOf, coachLine,
+    emptyThreats, threatsOf, recordThreat, threatRate, campOf, campDoneToday, campDaysDone, recordCampDay, campPlan, campDebrief,
+    tellFree, useTell, bootsFree, useBoots, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

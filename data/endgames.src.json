@@ -104,29 +104,115 @@
   "arrive": "c7d8"
  },
  {
-  "id": "g5",
+  "id": "b1",
   "pack": "endgames",
-  "title": "Box Him In",
-  "motif": "stalemateTrap",
+  "title": "Swap the Duds",
+  "motif": "goodBishop",
   "palaceRoom": "Endgame Vault",
-  "mascot": "THE BOX",
-  "fen": "k7/8/1K6/8/8/8/8/3Q4 w - - 0 1",
-  "bestMove": "Qd8#",
-  "baitMove": "Qd6",
-  "hook": "He is in the corner. Finish it.",
-  "why": "The queen lands on the last row for mate. Hugging him with the queen is only a stalemate.",
-  "whyLong": "With king and queen, drive the king to the edge, then mate on the edge. Never take his last square without check.",
+  "mascot": "GOOD BISHOP",
+  "fen": "8/6pp/5k2/5p2/P3b3/5BK1/6PP/8 w - - 0 1",
+  "bestMove": "Bxe4",
+  "baitMove": "Bd1",
+  "bestTol": 45,
+  "hook": "His bishop guards the corner. Yours guards nothing.",
+  "why": "Trade your useless bishop for the one doing all his work.",
+  "whyLong": "His bishop is the only thing stopping your runner. Take it off and run.",
   "whyTargets": {
-   "prompt": "Tap the cornered king.",
+   "prompt": "Tap both bishops. One guards the corner.",
    "squares": [
-    "a8"
+    "e4",
+    "f3"
    ]
   },
   "glitch": {
-   "taunt": "Queen right next to him! Smother him! Do it!",
-   "gloat": "No moves and no check. STALEMATE. Draw! I'll take it!",
-   "rage": "Mate?! I was one square from a free draw!"
+   "taunt": "Keep your bishop! Bishops are precious! Tuck it away!",
+   "gloat": "My bishop sits on the corner forever. Nothing happens.",
+   "rage": "You swapped your WORST piece for my BEST one?!"
   },
-  "arrive": "b8a8"
+  "arrive": "d5e4"
+ },
+ {
+  "id": "b2",
+  "pack": "endgames",
+  "title": "Keep the Good One",
+  "motif": "goodBishop",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "GOOD BISHOP",
+  "fen": "8/3b4/3k4/1p3p1p/5K1P/P5P1/8/3B4 w - - 0 1",
+  "bestMove": "Bxh5",
+  "baitMove": "g4",
+  "bestTol": 60,
+  "hook": "His bishop cannot see that side of the board.",
+  "why": "Keep your bishop. Eat what his cannot guard.",
+  "whyLong": "His pawns sit on his own colour, so his bishop is stuck. Yours is free.",
+  "whyTargets": {
+   "prompt": "Tap the loose pawn and the bishop that cannot reach.",
+   "squares": [
+    "h5",
+    "d7"
+   ]
+  },
+  "glitch": {
+   "taunt": "Push a pawn! Pawns win endings! Push! Push!",
+   "gloat": "Pawns traded, bishops equal. Nothing happened. Perfect.",
+   "rage": "My bishop is the WRONG COLOUR?! Since when?!"
+  },
+  "arrive": "c8d7"
+ },
+ {
+  "id": "k1",
+  "pack": "endgames",
+  "title": "Horse Beats Bishop",
+  "motif": "tradeChoice",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "RIGHT SWAP",
+  "fen": "6k1/1pp1bppp/2np4/1B2p3/2P1P3/1P1P1N2/5PPP/6K1 w - - 0 1",
+  "bestMove": "Bxc6",
+  "baitMove": "Nxe5",
+  "bestTol": 45,
+  "hook": "The pawns are locked. Horses love locked boards.",
+  "why": "Trade your bishop for his horse. He keeps the bad one.",
+  "whyLong": "In a blocked position a horse jumps and a bishop sulks. Leave him the sulker.",
+  "whyTargets": {
+   "prompt": "Tap his horse and the bishop stuck behind pawns.",
+   "squares": [
+    "c6",
+    "e7"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free pawn in the middle! Jump on it! Yum!",
+   "gloat": "Your horse is gone for one pawn. Delicious.",
+   "rage": "You left me the bishop ON PURPOSE?! Rude!"
+  },
+  "arrive": "b8c6"
+ },
+ {
+  "id": "k2",
+  "pack": "endgames",
+  "title": "Trade Horses Only",
+  "motif": "tradeChoice",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "RIGHT SWAP",
+  "fen": "5nk1/pp3ppp/2n5/1B2p3/3N4/3P4/PP3PPP/6K1 w - - 0 1",
+  "bestMove": "Nxc6",
+  "baitMove": "Nf3",
+  "bestTol": 45,
+  "hook": "Open board. Bishops run. Horses plod.",
+  "why": "Swap horses and keep the bishop. It wins a pawn.",
+  "whyLong": "On an open board the bishop is worth more. Trade the horses, never the bishop.",
+  "whyTargets": {
+   "prompt": "Tap his horse and the bishop you are keeping.",
+   "squares": [
+    "c6",
+    "b5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Your horse is kicked! Hop it back home! Safe!",
+   "gloat": "You retreated. I fixed everything. Boring is good.",
+   "rage": "You traded HORSES?! I wanted your bishop!"
+  },
+  "arrive": "e7e5"
  }
 ]

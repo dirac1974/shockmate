@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.16";
+  const BUILD = "v0.17";
   const Y = window.ShockmateSync, H = window.ShockmateShort;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -25,7 +25,8 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: true, hurry: false, profile: 0, blitz: [false, false], short: [false, false], pack: "tactics", day: 1, tournament: false, readAloud: true, seats: 1, syncedAt: 0,
+    camp: null, seen: {},
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: true, hurry: false, profile: 0, blitz: [false, false], short: [false, false], coach: [null, null], pack: "tactics", day: 1, tournament: false, readAloud: true, seats: 1, syncedAt: 0,
       sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
     mode: "solo", pack: "tactics", active: 0, nav: 0, prep: false, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
@@ -123,6 +124,7 @@
     try { Object.assign(state.settings, JSON.parse(localStorage.getItem(KEY + ":settings") || "{}")); } catch (e) {}
     if (!Array.isArray(state.settings.blitz)) state.settings.blitz = [false, false];
     if (!Array.isArray(state.settings.short)) state.settings.short = [false, false];
+    if (!Array.isArray(state.settings.coach)) state.settings.coach = [null, null];
     // Coordinates became the default, as on every chess site; older saved settings had them off.
     if (!state.settings.coordsV2) { state.settings.coords = true; state.settings.coordsV2 = true; }
     if (!(state.settings.day >= 1 && state.settings.day <= D.DAYS.length)) state.settings.day = 1;
@@ -135,6 +137,9 @@
   }
   function save() {
     try {
+      // The recorders in score.js are pure and hand back a NEW stats object, so the live profile has
+      // to be pointed at it before anything is written, or a session's card stats never reach storage.
+      if (state.stats && state.profiles[state.active]) state.profiles[state.active] = state.stats;
       localStorage.setItem(KEY + ":settings", JSON.stringify(state.settings));
       state.profiles.forEach((p, i) => localStorage.setItem(KEY + ":p" + i, JSON.stringify(p)));
     } catch (e) {}
@@ -175,7 +180,11 @@
     // A map, not a menu: numbered stops on a path. Prep is the side quest at the start.
     const prepChip = '<button class="day-chip prep' + (state.prep ? " current" : "") + '" data-day="0"><span class="n">★</span>' +
       '<span class="t">Prep</span><small>' + (weak.length ? weak.map(function (m) { return S.motifLabel(m.motif); }).join(" + ") : "opening traps") + '</small></button>';
-    host.innerHTML = prepChip + D.DAYS.map(function (d) {
+    // Camp is a session, not a stop: tapping it starts one. It counts once a day and can be replayed.
+    const campDone = S.campDoneToday(state.stats, now());
+    const campChip = '<button class="day-chip camp' + (campDone ? " done" : "") + '" data-day="-1"><span class="n">⚑</span>' +
+      '<span class="t">Camp</span><small>' + (campDone ? "done today ✓" : "8 minutes") + '</small></button>';
+    host.innerHTML = campChip + prepChip + D.DAYS.map(function (d) {
       const pr = D.dayProgress(state.stats, d.n), open = D.dayUnlocked(state.stats, d.n);
       const cls = ["day-chip"];
       if (pr.complete) cls.push("done");
@@ -185,7 +194,12 @@
         '><span class="n">' + (pr.complete ? "✓" : d.n) + '</span><span class="t">' + d.title + '</span><small>' + pr.done + "/" + pr.total + '</small></button>';
     }).join("");
     Array.prototype.forEach.call(host.querySelectorAll(".day-chip"), function (b) {
-      b.onclick = function () { const n = Number(b.dataset.day); if (n === 0) setPrepDay(); else setDay(n); renderPath(); hud(); };
+      b.onclick = function () {
+        const n = Number(b.dataset.day);
+        if (n === -1) return startCamp();
+        if (n === 0) setPrepDay(); else setDay(n);
+        renderPath(); hud();
+      };
     });
     if ($("day-blurb")) $("day-blurb").textContent = state.prep
       ? (S.prepSource(state.stats) === "misses"
@@ -402,6 +416,9 @@
   }
   // The parent picks the register per kid. Never inferred from age or rank.
   function wantsShort() { return !!(state.settings.short && state.settings.short[state.active]); }
+  // The register the coach speaks in for this kid. Parent-set; falls back to the short-lines flag.
+  function coachStyle(i) { return S.coachStyleOf(state.settings, i == null ? state.active : i); }
+  function coach(ctx) { return S.coachLine(coachStyle(), ctx); }
   function voiceOn() { return !!(state.settings.readAloud !== false && VOICE.manifest); }
   function voicePlay(key) {
     if (!voiceOn()) return false;
@@ -461,6 +478,7 @@
   function setPieces(map, last) { state.pieces = F.clonePieces(map); state.last = last || null; renderBoard(); }
   function onSquare(name) {
     if (state.phase === "gate") return gateTap(name);
+    if (state.phase === "threat") return threatTap(name);
     if (state.phase !== "think") return;
     const enc = current();
     if (state.selected) {
@@ -519,8 +537,10 @@
     } else setPieces(start);
     state.phase = "think";
     const qs = S.prepQuestionsFor(enc);
-    if ($("ritual")) { $("ritual").hidden = !state.settings.tournament; $("ritual").textContent = qs.join("   "); }
-    if (state.settings.tournament) voiceSeq([enc.id + "-hook"].concat(qs.map((q, i) => "prep-q" + (i + 1)))); else voice(enc.id + "-hook");
+    // Camp runs the tournament ritual whatever the settings toggle says: the ritual IS the session.
+    const ritualOn = state.settings.tournament || campOn();
+    if ($("ritual")) { $("ritual").hidden = !ritualOn; $("ritual").textContent = qs.join("   "); }
+    if (ritualOn) voiceSeq([enc.id + "-hook"].concat(qs.map((q, i) => "prep-q" + (i + 1)))); else voice(enc.id + "-hook");
     $("btn-hint").hidden = false; $("btn-skip").hidden = false;
     state.helpThisFight = needsHelp(state.stats) || (state.mode === "duel" && state.duel && state.duel.helpSeat === state.active);
     paintSelection(); startBlitz();
@@ -544,6 +564,8 @@
     const nav = state.nav;
     banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage"); voice(enc.id + "-rage");
     state.stats = S.recordAttempt(state.stats, enc, { correct: true, san: move.san, t: now(), hurry: state.settings.hurry }).stats;
+    // `tries` counts the misses so far on this board, so zero means he found it first go.
+    if (campOn() && state.camp.stage !== "warm") { state.camp.fights += 1; if (!state.tries) state.camp.firstTry += 1; }
     (state.stats.tiers = state.stats.tiers || []).push(tier); if (state.stats.tiers.length > 8) state.stats.tiers.shift();
     let map = afterMap;
     if (move.uci === enc.best && enc.bestLineUci.length > 1) map = await playLine(enc.bestLineUci.slice(1), afterMap);
@@ -669,6 +691,15 @@
     const short = wantsShort();
     if (!(short && voice(enc.id + "-short"))) voice(enc.id + "-why");
     $("why-mascot").textContent = enc.mascot; $("why-text").textContent = H.whyFor(enc, short); $("why-long").textContent = enc.whyLong;
+    // The words-style kid gets the rule behind the fight, not just the fight. Once per motif per day,
+    // so a card he has seen four times does not keep repeating it. The map lives in memory on purpose.
+    const pl = $("card-principle");
+    if (pl) {
+      const rule = S.principleFor(enc.motif), seen = S.dateKey(now()) + ":" + state.active + ":" + enc.motif;
+      const showRule = coachStyle() === "words" && !!rule && !state.seen[seen];
+      pl.hidden = !showRule; pl.textContent = showRule ? rule : "";
+      if (showRule) state.seen[seen] = true;
+    }
     $("glitch-line-2").textContent = enc.glitch.rage;
     $("btn-peek").hidden = !(tier === "good" && state.lastUci !== enc.best);
     const before = state.ratingBefore, after = S.glitchRating(state.stats), fell = (before || after.real) - after.real;
@@ -722,6 +753,134 @@
     state.index = pickNext(); state.duel.encId = current().id; startEncounter();
   }
 
+  /* ---------- camp: the daily tournament-prep session ----------
+     Fixed shape, about eight to ten minutes, one per kid per day, and it never locks anything:
+       1. three "spot the attack" warm-ups — Glitch's arriving move plays, the kid taps what it hit
+       2. four prep fights with the ritual on
+       3. two counter-attack boards from the defence pack, or two more prep fights while it is absent
+       4. a debrief in his own register, and the two questions read aloud again.
+     Everything it says goes through S.coachLine, so the two kids get two different sessions off one
+     run of code. Warm-ups reuse the why-gate mechanics: same dots, same shake, same hint after two. */
+  function campOn() { return !!state.camp; }
+  function hasThreat(e) { return F.threatTargets(e).length > 0; }
+  function startCamp() {
+    useProfile(state.settings.profile);
+    const style = coachStyle(state.active);
+    const plan = S.campPlan(state.stats, ALL, { hasThreat: hasThreat });
+    state.camp = { plan: plan, style: style, stage: "warm", w: 0, i: 0,
+      threatsAsked: 0, threatsFound: 0, wrongTaps: 0, clean: 0, firstTry: 0, fights: 0 };
+    state.prep = false; state.day = 0; state.mode = "solo"; state.duel = null;
+    state.sitting = (state.sitting || 0) + 1;
+    state.settings.lastPlayed = now();
+    state.session = { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 };
+    state.encounters = plan.warmups.length ? plan.warmups : plan.boards;
+    state.index = 0; state.phase = "busy";
+    show("screen-play"); banner("CAMP", "tease"); glitchSay("Camp? You? This should be quick.", "smug");
+    prompt(S.coachLine(style, { kind: "campStart" }));
+    toast(S.coachLine(style, { kind: "phase", phase: "warm" }), 2600);
+    voiceSeq(["prep-q1", "prep-q2"]);      // the two questions, at the start of every camp
+    hud(); renderPowers();
+    setTimeout(nextWarmup, T(1200));
+  }
+  async function nextWarmup() {
+    const c = state.camp; if (!c) return;
+    const nav = state.nav;
+    if (c.w >= c.plan.warmups.length) return campFights();
+    state.encounters = c.plan.warmups; state.index = c.w;
+    const enc = c.plan.warmups[c.w], targets = F.threatTargets(enc);
+    if (!targets.length) { c.w += 1; return nextWarmup(); }   // a move that attacks nothing has no question
+    state.phase = "busy"; state.selected = null; state.tries = 0; state.guided = false; state.gate = null;
+    clearMarks(); $("fx").innerHTML = ""; $("board").classList.remove("dim"); $("gate-dots").innerHTML = "";
+    $("btn-hint").hidden = true; $("btn-skip").hidden = true; $("prompt").classList.remove("gate-prompt");
+    banner("SPOT THE ATTACK  " + (c.w + 1) + "/" + c.plan.warmups.length, "tease");
+    glitchSay("Watch closely. Or don't.", "smug"); prompt("Glitch is moving…");
+    if ($("ritual")) { $("ritual").hidden = false; $("ritual").textContent = S.PREP_QUESTIONS[0]; }
+    show("screen-play"); renderPath(); hud(); renderPowers();
+    const after = F.piecesFromList(enc.pieces), arrive = F.arriveOf(enc);
+    if (enc.arrivePosition) {
+      setPieces(F.piecesFromPack(enc.arrivePosition)); await sleep(650); if (stale(nav) || !state.camp) return;
+    }
+    setPieces(after, arrive);
+    const dest = sq(arrive.to) && sq(arrive.to).querySelector(".piece"); if (dest) dest.classList.add("pop");
+    sfx("move"); await sleep(400); if (stale(nav) || !state.camp) return;
+    state.phase = "threat";
+    state.gate = { targets: targets.slice(), found: [], wrong: 0, resolve: null, camp: true };
+    prompt(S.coachLine(c.style, { kind: "threat", count: targets.length }));
+    $("prompt").classList.add("gate-prompt"); renderDots(); voice("prep-q1");
+    $("btn-skip").hidden = false;
+  }
+  function threatTap(name) {
+    const g = state.gate, c = state.camp; if (!g || !c) return;
+    if (g.targets.indexOf(name) >= 0 && g.found.indexOf(name) < 0) {
+      g.found.push(name); sq(name).classList.add("gate-ok"); sq(name).classList.remove("gate-hint"); sfx("win"); renderDots();
+      if (g.found.length === g.targets.length) threatDone();
+      return;
+    }
+    if (g.found.indexOf(name) >= 0) return;
+    g.wrong += 1; const el = sq(name); el.classList.remove("nope"); void el.offsetWidth; el.classList.add("nope"); sfx("nope");
+    if (g.wrong === 1) toast("Glitch: not that one.");
+    if (g.wrong >= 2) {
+      const hint = g.targets.find((t) => g.found.indexOf(t) < 0);
+      if (hint) sq(hint).classList.add("gate-hint");
+      prompt(S.coachLine(c.style, { kind: "threatHint", count: g.targets.length - g.found.length }));
+    }
+  }
+  function threatDone() {
+    const g = state.gate, c = state.camp;
+    state.phase = "busy"; state.gate = null; $("gate-dots").innerHTML = ""; $("prompt").classList.remove("gate-prompt");
+    c.threatsAsked += g.targets.length; c.threatsFound += g.found.length; c.wrongTaps += g.wrong;
+    if (!g.wrong) c.clean += 1;
+    state.stats = S.recordThreat(state.stats, { targets: g.targets.length, found: g.found.length, wrongTaps: g.wrong }).stats;
+    save();
+    banner("SPOTTED", "win"); glitchSay("…lucky.", "nervous");
+    prompt(S.coachLine(c.style, { kind: "threatDone", count: g.targets.length, wrong: g.wrong }));
+    c.w += 1;
+    setTimeout(function () { if (state.camp) nextWarmup(); }, T(1100));
+  }
+  function campFights() {
+    const c = state.camp; if (!c) return;
+    c.stage = "fights"; c.i = 0;
+    state.encounters = c.plan.boards; state.index = 0;
+    if ($("ritual")) $("ritual").textContent = S.PREP_QUESTIONS.join("   ");
+    toast(S.coachLine(c.style, { kind: "phase", phase: "fights" }), 2600);
+    startEncounter();
+  }
+  function campNext() {
+    const c = state.camp;
+    c.i += 1;
+    if (c.i >= state.encounters.length) return endSession();
+    if (c.i === c.plan.fights.length) {
+      c.stage = "counter";
+      banner("COUNTER-ATTACK", "tease");
+      toast(S.coachLine(c.style, { kind: "phase", phase: "counter" }), 2800);
+    }
+    state.index = c.i; startEncounter();
+  }
+  function campEnd() {
+    const c = state.camp; if (!c || state.phase === "end") return;   // a double tap on the last card must not count twice
+    const style = c.style;
+    const at = now(), key = S.dateKey(at);
+    const already = S.campDoneToday(state.stats, at);   // read before the day is marked, so a replay can say so
+    state.stats.camp = S.recordCampDay(state.stats.camp, key);
+    const d = S.campDebrief(state.stats, { threatsAsked: c.threatsAsked, threatsFound: c.threatsFound,
+      firstTry: c.firstTry, fights: c.fights }, style);
+    save(); hud();
+    const who = activeName();
+    $("end-title").textContent = "Camp done, " + who + "!";
+    $("session-summary").textContent = d.line;
+    $("end-rank").textContent = already ? "That is camp again today. It counted once; the practice counts every time."
+      : "Camp days: " + S.campDaysDone(state.stats) + ". Best run: " + S.campOf(state.stats).best + ".";
+    if ($("end-say")) { $("end-say").hidden = false; $("end-say").textContent = d.say; }
+    if ($("end-nudge")) $("end-nudge").hidden = true;
+    if ($("btn-next-day")) $("btn-next-day").hidden = true;
+    $("session-next").textContent = style === "numbers"
+      ? "Camp is 3 spot checks, 4 fights, 2 counters. Same tomorrow."
+      : "Tomorrow is the same shape: spot what he attacks, four fights, two where he attacks you.";
+    const mini = $("next-mini"); if (mini) { mini.innerHTML = ""; mini.hidden = true; }   // no next board to peek at
+    voiceSeq(["prep-q1", "prep-q2"]);      // and again at the end, so they are the last thing he hears
+    $("session-end").hidden = false; state.phase = "end";
+  }
+
   /* ---------- session ---------- */
   function pickNext(cur) {
     const list = state.encounters; if (cur === undefined) cur = state.index;
@@ -741,6 +900,7 @@
   }
   function nextEncounter() {
     state.session.count += 1;
+    if (campOn()) return campNext();           // camp runs its own fixed order, not the adaptive picker
     if (dayDone()) return endSession();
     if (state.session.count >= state.settings.cap) return endSession();
     if (state.mode === "coop") { useProfile(state.active === 0 ? 1 : 0); toast(activeName() + "'s turn.", 1600); }
@@ -748,6 +908,7 @@
   }
   function endSession() {
     stopBlitz();
+    if (campOn()) return campEnd();            // camp closes on its own debrief card
     const prep = !!state.prep;
     const day = prep ? { n: 0, title: "Prep" } : D.dayByNumber(state.day || 1);
     const pr = prep
@@ -789,11 +950,12 @@
     } else {
       const peek = state.encounters[pickNext()] || D.fightsForDay(ALL, nxt || day.n)[0];
       $("session-next").textContent = "Next: " + (peek ? peek.hook : "a new trap.");
-      if (peek) renderMini(peek);
+      if (peek) { if ($("next-mini")) $("next-mini").hidden = false; renderMini(peek); }
     }
     $("session-end").hidden = false; state.phase = "end";
   }
   function startSession(mode) {
+    state.camp = null;
     state.mode = mode || "solo";
     state.settings.lastPlayed = now(); state.sitting = (state.sitting || 0) + 1;
     state.session = { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 };
@@ -810,7 +972,11 @@
     state.nav += 1; skipAhead();
     if (state.gate) { const r = state.gate.resolve; state.gate = null; r(); }   // release a why-gate waiting on taps
     document.querySelectorAll(".modal").forEach((m) => { m.hidden = true; });
-    state.mode = "solo"; state.duel = null; state.phase = "home"; stopBlitz(); useProfile(state.settings.profile); renderTeam(); renderPath(); hud(); show("screen-title"); }
+    const leavingCamp = campOn();
+    state.mode = "solo"; state.duel = null; state.camp = null; state.phase = "home"; stopBlitz();
+    useProfile(state.settings.profile);
+    if (leavingCamp) setDay(state.settings.day || 1);   // camp is not a stop on the map; put the map back on a real day
+    renderTeam(); renderPath(); hud(); show("screen-title"); }
 
   function renderMini(enc) {
     const host = $("next-mini"); if (!host) return;
@@ -856,6 +1022,8 @@
     $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry; if ($("opt-tournament")) $("opt-tournament").checked = !!state.settings.tournament; if ($("opt-readaloud")) $("opt-readaloud").checked = state.settings.readAloud !== false;
     $("opt-blitz-0").checked = !!state.settings.blitz[0]; $("opt-blitz-1").checked = !!state.settings.blitz[1];
     $("opt-short-0").checked = !!state.settings.short[0]; $("opt-short-1").checked = !!state.settings.short[1];
+    // Shows the style in force, which is the short-lines default until the parent picks one.
+    [0, 1].forEach((i) => { if ($("opt-coach-" + i)) $("opt-coach-" + i).value = coachStyle(i); });
     const s = state.settings.sync || {};
     if ($("opt-code")) {
       $("opt-code").value = Y.normaliseCode(s.code);
@@ -942,6 +1110,7 @@
       state.settings.sound = $("opt-sound").checked; state.settings.coords = $("opt-coords").checked; state.settings.hurry = $("opt-hurry").checked; if ($("opt-tournament")) state.settings.tournament = $("opt-tournament").checked; if ($("opt-readaloud")) state.settings.readAloud = $("opt-readaloud").checked;
       state.settings.blitz = [$("opt-blitz-0").checked, $("opt-blitz-1").checked];
       state.settings.short = [$("opt-short-0").checked, $("opt-short-1").checked];
+      state.settings.coach = [0, 1].map((i) => ($("opt-coach-" + i) ? $("opt-coach-" + i).value : state.settings.coach[i]));
       save(); hud(); setSeats(state.settings.seats); show("screen-title");
       if (syncOn()) syncNow(true);
     };
@@ -969,7 +1138,19 @@
       save(); renderPowers();
       const el = sq(enc.tempting.slice(2, 4)); if (el) el.classList.add("tempt-glow"); toast("Glitch flinches at THAT one. So don't.", 2000);
     };
-    $("btn-skip").onclick = function () { if (state.phase !== "think") return; nextEncounter(); };
+    $("btn-skip").onclick = function () {
+      if (state.phase === "threat" && state.camp) {      // a warm-up he cannot see: show it, count it honestly, move on
+        const g = state.gate, c = state.camp;
+        c.threatsAsked += g.targets.length; c.threatsFound += g.found.length; c.wrongTaps += g.wrong;
+        state.stats = S.recordThreat(state.stats, { targets: g.targets.length, found: g.found.length, wrongTaps: g.wrong }).stats; save();
+        g.targets.forEach((t) => sq(t) && sq(t).classList.add("gate-ok"));
+        state.phase = "busy"; state.gate = null; $("gate-dots").innerHTML = ""; $("prompt").classList.remove("gate-prompt");
+        prompt("That is what he was attacking."); c.w += 1;
+        setTimeout(function () { if (state.camp) nextWarmup(); }, T(1200));
+        return;
+      }
+      if (state.phase !== "think") return; nextEncounter();
+    };
     $("btn-end-ok").onclick = function () { $("session-end").hidden = true; goHome(); };
     if ($("btn-next-day")) $("btn-next-day").onclick = function () {
       const nxt = D.nextDay(state.day || 1);
@@ -981,7 +1162,7 @@
   }
   function selfTest() {
     const errors = []; const list = ALL;
-    if (ALL.filter((e) => e.pack === "tactics").length !== 12) errors.push("tactics pack should hold 12 fights");
+    if (ALL.filter((e) => e.pack === "tactics").length < 12) errors.push("tactics pack should hold at least the 12 original fights");
     PACKS.slice(1).forEach((p) => { if (!ALL.filter((e) => e.pack === p).length) errors.push(p + " pack is empty"); });
     list.forEach((e) => {
       if (!(e.legal[e.best.slice(0, 2)] || []).some((m) => m.uci === e.best)) errors.push(e.id + " best not legal");
@@ -992,5 +1173,5 @@
     else console.log("Shockmate self-test passed: " + ALL.length + " fights across " + PACKS.length + " packs.");
   }
   load(); bind(); hud(); selfTest();
-  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, setDay, setSeats, syncNow, exportBackup, importBackup, all: ALL };
+  window.__shockmate = { state, startEncounter, nextEncounter, current, startSession, startDuel, startCamp, campOn, coachStyle, setDay, setSeats, syncNow, exportBackup, importBackup, all: ALL, BUILD };
 })();

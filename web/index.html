@@ -135,6 +135,7 @@
         <div class="card-art" id="card-art"></div>
         <p id="why-text"></p>
         <p class="why-long" id="why-long"></p>
+        <p class="principle" id="card-principle" hidden></p>
         <p class="rank-line" id="card-rank" hidden></p>
       </div>
       <div class="card-foot">
@@ -165,6 +166,12 @@
       <label class="check"><input id="opt-blitz-1" type="checkbox" /> Blitz mode for the second player</label>
       <label class="check"><input id="opt-short-0" type="checkbox" /> Short lines for the first player</label>
       <label class="check"><input id="opt-short-1" type="checkbox" /> Short lines for the second player</label>
+      <label>Coach style for the first player
+        <select id="opt-coach-0"><option value="numbers">Numbers first</option><option value="words">Reasons first</option></select></label>
+      <label>Coach style for the second player
+        <select id="opt-coach-1"><option value="numbers">Numbers first</option><option value="words">Reasons first</option></select></label>
+      <p class="hint">Numbers first gives counts and short lines. Reasons first gives the principle in
+        full sentences. Camp uses this everywhere it speaks.</p>
       <label class="check"><input id="opt-tournament" type="checkbox" /> Tournament week: show the two questions before every move</label>
       <label class="check"><input id="opt-readaloud" type="checkbox" checked /> Read aloud (needs the voice files; silent until they exist)</label>
       <label class="check"><input id="opt-hurry" type="checkbox" /> Hurry rematch clock (testing)</label>
@@ -231,6 +238,7 @@
         <p id="session-summary"></p>
         <div class="next-peek"><div class="mini" id="next-mini"></div><p class="sub" id="session-next"></p></div>
         <p class="rank-line" id="end-rank"></p>
+        <p class="say-line" id="end-say" hidden></p>
         <p class="hint" id="end-nudge" hidden></p>
         <button id="btn-next-day" class="cta" hidden>Start the next day</button>
         <button id="btn-end-ok" class="ghost">Done for today</button>

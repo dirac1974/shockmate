@@ -12,9 +12,10 @@ def test():
     data = json.loads(DATA.read_text())
     packs = {}
     for e in data: packs.setdefault(e.get("pack", "tactics"), []).append(e)
-    assert len(packs["tactics"]) == 12, "tactics pack holds 12 fights"
+    assert len(packs["tactics"]) >= 12, "tactics pack holds at least the original 12 fights"
     assert len(packs.get("openings", [])) >= 5, "openings pack needs at least 5 fights"
     assert len(packs.get("endgames", [])) >= 4, "endgames pack needs at least 4 fights"
+    assert len(packs.get("defence", [])) >= 4, "defence pack needs at least 4 fights"
     ids = [e["id"] for e in data]; assert len(ids) == len(set(ids)), "ids unique across packs"
     for e in data:
         board = chess.Board(e["fen"]); assert board.is_valid(), e["id"]

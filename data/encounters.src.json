@@ -207,31 +207,6 @@
   "arrive": "h6h5"
  },
  {
-  "id": "09",
-  "title": "Leftover Loose",
-  "motif": "hanging",
-  "palaceRoom": "Hanging Buffet",
-  "mascot": "LOOSE LUNCH",
-  "fen": "r5k1/5ppp/8/8/3n4/8/5PPP/Q5K1 w - - 0 1",
-  "best": "a1a8",
-  "bait": "a1d4",
-  "hook": "Two lunches. One is mate.",
-  "why": "The rook on the back door is mate.",
-  "whyLong": "Eat the lunch that ends the game.",
-  "whyTargets": {
-   "prompt": "Tap the lunch that ends the game.",
-   "squares": [
-    "a8"
-   ]
-  },
-  "glitch": {
-   "taunt": "Knight on d4. Free. Yum. Take it.",
-   "gloat": "You took the horse. Still playing. Still my game.",
-   "rage": "The ROOK was the lunch?!"
-  },
-  "arrive": "c6d4"
- },
- {
   "id": "10",
   "title": "Their Future First",
   "motif": "mateOverMaterial",
@@ -307,5 +282,199 @@
    "rage": "CROWNS?! You skipped the cookie?!"
   },
   "arrive": "d7e8"
+ },
+ {
+  "id": "t1",
+  "title": "Two Beats One",
+  "motif": "attackers",
+  "palaceRoom": "Counting House",
+  "mascot": "PILE ON",
+  "fen": "2br2k1/pp3ppp/3p4/8/4P3/8/PP3PPP/2BR2K1 w - - 0 1",
+  "best": "c1f4",
+  "bait": "d1d6",
+  "bestTol": 45,
+  "hook": "One attacker is not enough. Bring a friend.",
+  "why": "Do not cash it in. Add a second attacker.",
+  "whyLong": "One attacker against one guard trades nothing. Two attackers win the pawn for free.",
+  "whyTargets": {
+   "prompt": "Tap the weak pawn and the rook guarding it.",
+   "squares": [
+    "d6",
+    "d8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Grab that pawn with the rook. Right now. Free food.",
+   "gloat": "Rook gone, pawn eaten. Best trade I ever sold.",
+   "rage": "You brought ANOTHER one?! That is not fair!"
+  },
+  "arrive": "d7c8"
+ },
+ {
+  "id": "t2",
+  "title": "Three Beats Two",
+  "motif": "attackers",
+  "palaceRoom": "Counting House",
+  "mascot": "PILE ON",
+  "fen": "4r1k1/pp3p1p/2b2n2/3n2p1/5N2/2N1B3/PP3PPP/3R2K1 w - - 0 1",
+  "best": "f4d5",
+  "bait": "f4e2",
+  "bestTol": 45,
+  "hook": "He guards it twice. You hit it three times.",
+  "why": "Three attackers beat two guards. Take it now.",
+  "whyLong": "Count both sides before you trade. The extra attacker wins a whole piece.",
+  "whyTargets": {
+   "prompt": "Tap the horse and both pieces guarding it.",
+   "squares": [
+    "d5",
+    "c6",
+    "f6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Your horse is attacked! Save it! Step back! Quick!",
+   "gloat": "You ran away. I keep everything. Lovely.",
+   "rage": "You COUNTED to three?! Nobody counts to three!"
+  },
+  "arrive": "g7g5"
+ },
+ {
+  "id": "t3",
+  "title": "Both Rooks In",
+  "motif": "attackers",
+  "palaceRoom": "Counting House",
+  "mascot": "PILE ON",
+  "fen": "2brr1k1/pp3ppp/3p4/8/4P3/5B2/PP1R1PPP/5RK1 w - - 0 1",
+  "best": "f1d1",
+  "bait": "d2d6",
+  "bestTol": 45,
+  "hook": "One rook is a poke. Two is a punch.",
+  "why": "Bring the second rook down. Then the pawn falls.",
+  "whyLong": "Do not grab first. Line both rooks up on the road, then take.",
+  "whyTargets": {
+   "prompt": "Tap the lonely pawn and its only guard.",
+   "squares": [
+    "d6",
+    "d8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Just take the pawn now! Rooks are for taking!",
+   "gloat": "One rook for one pawn. I love your maths.",
+   "rage": "TWO rooks?! On MY road?! Who allowed this?!"
+  },
+  "arrive": "d7d6"
+ },
+ {
+  "id": "d1",
+  "pack": "defence",
+  "title": "Check Him First",
+  "motif": "counter",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "r2qk2r/ppp2ppp/8/4p3/1b2P3/3P4/PP3PPP/R1BQR1K1 w kq - 0 1",
+  "best": "d1a4",
+  "bait": "e1f1",
+  "bestTol": 45,
+  "hook": "He hits your rook. Hit his king instead.",
+  "why": "Check first. The checking piece grabs the bishop next.",
+  "whyLong": "A check is a free move. Answer an attack with a bigger one.",
+  "whyTargets": {
+   "prompt": "Tap the bishop and the rook it is hunting.",
+   "squares": [
+    "b4",
+    "e1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Your rook! Move it! Tuck it away somewhere safe!",
+   "gloat": "You hid. I kept my bishop. Same as always.",
+   "rage": "CHECK?! You were supposed to be SCARED!"
+  },
+  "arrive": "f8b4"
+ },
+ {
+  "id": "d2",
+  "pack": "defence",
+  "title": "He Let Go",
+  "motif": "counter",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "5rk1/p4ppp/2n1p3/1p6/2R1P3/5N2/PP3PPP/6K1 w - - 0 1",
+  "best": "c4c6",
+  "bait": "c4c1",
+  "bestTol": 45,
+  "hook": "His pawn shoved your rook. See what it dropped.",
+  "why": "The pawn stopped guarding his horse. Take the horse.",
+  "whyLong": "Every pawn push stops guarding something. Ask what, before you run.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that moved and the horse it left.",
+   "squares": [
+    "b5",
+    "c6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Your rook is attacked! Run! Run home! Hurry!",
+   "gloat": "You ran. My horse is fine. Thanks for playing.",
+   "rage": "My pawn was GUARDING that?! Nobody told me!"
+  },
+  "arrive": "b7b5"
+ },
+ {
+  "id": "d3",
+  "pack": "defence",
+  "title": "Block With the Horse",
+  "motif": "defend",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "5rk1/pb3ppp/2q1pn2/8/8/8/PPBN1PPP/3Q1RK1 w - - 0 1",
+  "best": "d2f3",
+  "bait": "d1f3",
+  "bestTol": 45,
+  "hook": "Two pieces on one line, aimed at your king.",
+  "why": "Block the line with the horse, not the queen.",
+  "whyLong": "Blocking with the wrong piece just feeds him. The cheapest blocker does the job.",
+  "whyTargets": {
+   "prompt": "Tap the queen and the bishop lined up behind her.",
+   "squares": [
+    "c6",
+    "b7"
+   ]
+  },
+  "glitch": {
+   "taunt": "Give your king some air! A little pawn step!",
+   "gloat": "Air does not stop a queen. Mate. Bye.",
+   "rage": "The HORSE?! I wanted your QUEEN in the way!"
+  },
+  "arrive": "d7c6"
+ },
+ {
+  "id": "d4",
+  "pack": "defence",
+  "title": "One Move, Two Jobs",
+  "motif": "defend",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "5rk1/pp3ppp/3b1n2/8/7q/4B3/PP1N1PPP/3Q1RK1 w - - 0 1",
+  "best": "d2f3",
+  "bait": "e3f4",
+  "bestTol": 45,
+  "hook": "Queen and bishop both point at the same square.",
+  "why": "One horse move guards the square and chases the queen.",
+  "whyLong": "The best defence does two jobs. Blocking with a bishop just hands it over.",
+  "whyTargets": {
+   "prompt": "Tap the queen and the bishop aiming at your corner.",
+   "squares": [
+    "h4",
+    "d6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Block with your bishop! Bishops block! That is their job!",
+   "gloat": "Bishop eaten, and mate next. Two presents!",
+   "rage": "Your horse defends AND attacks?! That is cheating!"
+  },
+  "arrive": "h6h4"
  }
 ]
