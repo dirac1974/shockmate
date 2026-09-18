@@ -758,3 +758,52 @@ body[data-play="1"] .gate-dots:empty { display: none; }
 .prog-bars.blunders i { background: var(--tomato); }
 .prog-suggest { margin: 6px 0 2px; font-size: 14px; color: var(--ink-2); }
 .prog-suggest b { color: var(--ink); }
+
+/* ============================================================
+   VERSUS. The two of them on one phone, with Glitch refereeing.
+   Three control kinds only, as everywhere else: the arcade button starts it, chips swap and choose,
+   the round token is the top bar. There is no scoreboard here and there is no place to put one: the
+   result is two separate cards, one per kid, and neither card knows the other exists.
+   ============================================================ */
+.versus-row { margin-top: 8px; }
+.versus-row > .cta.play { background: var(--tomato); box-shadow: 0 6px 0 var(--ink), inset 0 -5px 0 #a3321f, inset 0 3px 0 #ffffff33; }
+.versus-row > .cta.play:active { box-shadow: 0 2px 0 var(--ink), inset 0 -2px 0 #a3321f, inset 0 2px 0 #ffffff33; }
+
+/* pre-game: the two seats, and the chip that swaps them. Colours alternate on their own. */
+#vs-glitch { flex-shrink: 0; width: 84px; }
+#vs-glitch .glitch-svg { width: 84px; height: 84px; }
+.vs-seats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 6px 0 2px; }
+.vs-seat { background: var(--paper-2); border: 2.5px solid var(--ink); border-radius: 12px 14px 11px 15px; padding: 8px 10px; min-width: 0; }
+.vs-seat .vs-role { display: block; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.vs-seat b { display: block; font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 19px; line-height: 1.15;
+  overflow: hidden; text-overflow: ellipsis; }
+.vs-seat.white { background: var(--card); }
+.vs-seat.black { background: var(--ink); color: var(--card); }
+.vs-seat.black .vs-role { color: var(--paper-2); }
+
+/* in game: whose go it is, said in words, because the board has just turned round under them.
+   The think meter only fills. It is not a clock, it does not run out, and nothing it shows goes down. */
+.versus-turn { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; }
+.versus-turn[hidden] { display: none; }
+.versus-turn .turn-chip { flex: 0 0 auto; }
+.think-meter { flex: 1 1 auto; }
+.think-meter i { display: block; height: 11px; background: var(--paper-2); border: 2.5px solid var(--ink); border-radius: 7px; overflow: hidden; }
+.think-meter i span { display: block; height: 100%; width: 0; background: var(--grape); }
+.think-meter.fill i span { transition: width 30s linear; width: 100%; }
+
+/* the result: one card per kid, stacked, never side by side — a row of two invites a comparison. */
+#vs-cards { max-width: 460px; margin: 0 auto; }
+.vs-card { margin-bottom: 14px; }
+.vs-card .card-head .mascot { font-size: 15px; }
+.vs-card .vs-mini { width: 108px; height: 108px; flex-shrink: 0; display: grid; grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr); border: 3px solid var(--ink); border-radius: 8px; overflow: hidden; }
+.vs-card .vs-mini div { min-width: 0; min-height: 0; position: relative; }
+.vs-card .vs-mini .light { background: var(--sq-light); } .vs-card .vs-mini .dark { background: var(--sq-dark); }
+.vs-card .vs-mini .hot { box-shadow: inset 0 0 0 3px var(--sun); }
+.vs-card .vs-mini svg { width: 100%; height: 100%; display: block; }
+.vs-moment { display: flex; gap: 10px; align-items: flex-start; margin: 8px 0 2px; }
+.vs-moment p { margin: 0; font-size: 14px; }
+.vs-moment .vs-move { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 20px; display: block; }
+.vs-none { color: var(--ink-2); font-size: 14px; margin: 6px 0 0; }
+.vs-card .actions { margin: 10px 0 0; }
+.vs-card .said { margin: 8px 0 0; }
