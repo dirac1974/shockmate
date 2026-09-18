@@ -4,7 +4,7 @@ Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines 
 
 **Date:** 2026-09-17
 **Repo:** https://github.com/dirac1974/shockmate
-**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.8 · 23 fights · 6 days`.
+**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.8.1 · 23 fights · 6 days`.
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
@@ -26,7 +26,7 @@ Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistenc
 - The kid has a rank that only ever climbs, Rookie through Time Marshal, shown in the top bar and on every card.
 - Glitch's own rating still falls permanently and never recovers. A different crony fronts for him each calendar day, so there is always a fresh brag to knock down without yesterday's win being taken back.
 - Glitch physically wilts as his rating sinks, via `data-wilt` on his sprite.
-- A Home button in the top bar returns to the title screen from any screen at any moment. Leaving mid-fight keeps every card already earned and drops only the unfinished fight. A navigation counter stops an animation that is still running from dragging the kid back, and `goHome` releases a why-gate that is waiting on taps.
+- A Home button in the top bar returns to the title screen from any screen at any moment. Leaving mid-fight keeps every card already earned and drops only the unfinished fight. A navigation counter stops an animation that is still running from dragging the kid back, and `goHome` releases a why-gate that is waiting on taps. The same counter stops a gate opening behind him when the animation reaches the why-gate after he has already left.
 - The solo entry is named for what it is: the section reads Battle and the button reads Battle plus the name of today opponent. It was headed Practise with a Play button, and the kid asked where the battle button was.
 - Battle layer, at the parent's direction from gate-0 feedback ("it doesn't count as a win", "there is no game", "how do I battle Glitch"). Today's crony is a boss with a health bar; correct moves land as HITs; the floor is a KNOCKOUT. Wins earn Power (cap 5) for four abilities: Double Strike, Glitch's Tell, Time Shield, Overcharge. Gear slots and gear open with rank; each crony has a motif weakness that hits half again as hard. Abilities never touch the board. Every rule resolves through a pure function in `web/score.js` and is held by `tests/test_battle.js`. See `docs/reports/battle.md`.
 - Phase 1 skin: Timeline Split colours, Glitch with five moods, charging bars, critical zoom, path pips, tap-to-skip.
