@@ -62,6 +62,16 @@ def main() -> None:
         add(key("taunt"), "glitch", g.get("taunt"))
         add(key("gloat"), "glitch", g.get("gloat"))
         add(key("rage"), "glitch", g.get("rage"))
+    # Everything Glitch says outside the fight data: moments, Play, cronies, the referee, the game
+    # fights. The tables live in web/*.js; node reads the one copy and hands back the spoken text.
+    glitch = json.loads(subprocess.run(
+        ["node", "tools/voice/glitch_lines.js"], cwd=ROOT, capture_output=True, text=True, check=True,
+        encoding="utf-8",
+    ).stdout)
+    for l in glitch:
+        assert "{" not in l["text"] and "}" not in l["text"], f"{l['key']} would speak a placeholder: {l['text']}"
+        add(l["key"], l["voice"], l["text"])
+
     for i, q in enumerate(PREP_QUESTIONS, 1):
         add(f"prep-q{i}", "narrator", q)
     for k, v in SYSTEM.items():

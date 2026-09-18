@@ -168,126 +168,283 @@
   /* ---------- the referee ----------
      Glitch is not playing. He is leaning on the board being unhelpful, and he is against both of
      them equally: every line names the kid it is about and nobody else, so a line can never turn
-     into a comparison. `{name}` is filled in by say(). */
+     into a comparison. `{name}` is filled in by say(). An entry is a string, or [shown, spoken]: the
+     bubble names the kid, the pre-generated audio (`vk-(i+1)`) says the same line without the name.
+     `turn` goes in the prompt at the start of the think window, so it is shown and never spoken. */
+  function tbl(mood, vk, entries, opts) {
+    const t = { mood: mood, vk: vk, lines: [], speak: [] };
+    entries.forEach(function (e) {
+      if (Array.isArray(e)) { t.lines.push(e[0]); t.speak.push(e[1]); } else { t.lines.push(e); t.speak.push(null); }
+    });
+    if (opts && opts.silent) t.silent = true;
+    return t;
+  }
   const SAY = {
-    start: { mood: "taunt", lines: [
+    start: tbl("taunt", "g-ref-start", [
       "I'll referee. I'm rooting against both of you.",
       "Two of you. One board. No adults. This is my favourite.",
       "I will be fair. Fairly rude. To both.",
       "Referee Glitch. No takebacks, no crying, no touching my whistle.",
-      "Whoever loses, I win. That is how refereeing works."] },
-    turn: { mood: "taunt", lines: [
+      "Whoever loses, I win. That is how refereeing works.",
+      "Referee time! I've got a whistle and no idea how to use it.",
+      "Two players! Double the mistakes. Double the fun.",
+      "I'm neutral. Neutrally hoping you both blunder.",
+      "Shake hands! Then ignore each other and look at the board.",
+      "Let the game begin! Snacks are for the referee only."]),
+    turn: tbl("taunt", "g-ref-turn", [
       "{name}. Your go. Look first.",
       "Over to {name}. Do something silly.",
       "{name} is up. I'm watching.",
       "Phone to {name}. Board's turned round for you.",
-      "{name}'s move. Two questions first, remember?"] },
-    blunder: { mood: "smug", lines: [
-      "OOH. {name}. That was bad. That was SO bad.",
-      "{name} just gave one away. In front of everyone.",
-      "Did {name} look before doing that? Did {name}?",
-      "That one is going in my scrapbook under {name}.",
-      "{name}! I did not even have to set that up.",
-      "Thank you, {name}. Genuinely. Thank you.",
-      "{name} has decided to be generous today."] },
-    great: { mood: "nervous", lines: [
-      "…{name}. Where did THAT come from.",
-      "No. No no. {name} is not supposed to find those.",
-      "Fine. {name} saw it. Anyone could have. Probably.",
-      "{name}, who taught you that. Was it me? It was me.",
-      "I am not nervous. {name} is just being annoying.",
-      "That is the move. {name} found the move. Boo."] },
-    check: { mood: "smug", lines: [
+      "{name}'s move. Two questions first, remember?",
+      "{name}, you're up. What did that move attack?",
+      "{name}'s go. Take your time. I'll hum.",
+      "Over to you, {name}. Look before you touch.",
+      "{name}. Board's yours. Don't break it.",
+      "Your turn, {name}. Checks, captures, threats.",
+      "{name} to move. I'm pretending not to watch.",
+      "Go on, {name}. Think first. Then tap.",
+      "{name}'s turn. The board turned round for you.",
+      "{name}. Why is that piece sitting there?",
+      "{name}, you're on. Slow is smooth.",
+      "{name}'s move. I'm rooting for chaos."], { silent: true }),
+    blunder: tbl("smug", "g-ref-blunder", [
+      ["OOH. {name}. That was bad. That was SO bad.", "OOH. That was bad. That was SO bad."],
+      ["{name} just gave one away. In front of everyone.", "Somebody just gave one away. In front of everyone."],
+      ["Did {name} look before doing that? Did {name}?", "Did you look before doing that? Did you?"],
+      ["That one is going in my scrapbook under {name}.", "That one is going in my scrapbook."],
+      ["{name}! I did not even have to set that up.", "I did not even have to set that up."],
+      ["Thank you, {name}. Genuinely. Thank you.", "Thank you. Genuinely. Thank you."],
+      ["{name} has decided to be generous today.", "Somebody has decided to be generous today."],
+      ["Ooh, {name}. That piece is feeling very lonely now.", "Ooh. That piece is feeling very lonely now."],
+      ["{name}! In my timeline, that's a gift.", "In my timeline, that's a gift."],
+      ["Uh oh, {name}. Something just came loose.", "Uh oh. Something just came loose."],
+      ["{name} left the door open. I love an open door.", "Somebody left the door open. I love an open door."],
+      ["Whoops, {name}. The other side is smiling.", "Whoops. The other side is smiling."],
+      ["{name}! Did you count? I don't think you counted.", "Did you count? I don't think you counted."],
+      ["{name} just made my whole day.", "Somebody just made my whole day."],
+      ["Yikes, {name}. Look what that move left behind.", "Yikes. Look what that move left behind."],
+      ["{name}, that one's going on my fridge.", "That one's going on my fridge."]]),
+    great: tbl("nervous", "g-ref-great", [
+      ["…{name}. Where did THAT come from.", "…Where did THAT come from."],
+      ["No. No no. {name} is not supposed to find those.", "No. No no. Nobody is supposed to find those."],
+      ["Fine. {name} saw it. Anyone could have. Probably.", "Fine. You saw it. Anyone could have. Probably."],
+      ["{name}, who taught you that. Was it me? It was me.", "Who taught you that? Was it me? It was me."],
+      ["I am not nervous. {name} is just being annoying.", "I am not nervous. You are just being annoying."],
+      ["That is the move. {name} found the move. Boo.", "That is the move. You found the move. Boo."],
+      ["{name}! That was the engine's move! Stop it!", "That was the engine's move! Stop it!"],
+      ["Whoa. {name} just played like a grown-up.", "Whoa. That was a grown-up move."],
+      ["{name}, that was sneaky. I respect sneaky.", "That was sneaky. I respect sneaky."],
+      ["Ugh. {name} found the best one. Again.", "Ugh. The best one. Again."],
+      ["{name} is playing in the good timeline. Unfair.", "Somebody is playing in the good timeline. Unfair."],
+      ["That move, {name}. I'm putting it in a museum.", "That move. I'm putting it in a museum."],
+      ["{name}! Wow. I mean... boo. Wow.", "Wow. I mean... boo. Wow."],
+      ["Big move, {name}. My rating just shivered.", "Big move. My rating just shivered."],
+      ["{name} saw it coming. I didn't. I'm the villain!", "You saw it coming. I didn't. I'm the villain!"],
+      ["Who gave {name} X-ray eyes? Give them back.", "Who gave you X-ray eyes? Give them back."]]),
+    check: tbl("smug", "g-ref-check", [
       "CHECK. Move that king. Go on.",
-      "{name} says check. The king has to answer.",
+      ["{name} says check. The king has to answer.", "Check. The king has to answer."],
       "Check! I love this bit.",
       "Run, little king. Run in a small circle.",
       "Knock knock. It's check.",
       "That is a check. You do have to deal with it.",
-      "King's in trouble. Not my king though."] },
-    capture: { mood: "smug", lines: [
-      "Gone. {name} ate it.",
+      "King's in trouble. Not my king though.",
+      "Check! Somebody's king is sweating.",
+      ["{name} pokes the king. Check!", "Poke! Check!"],
+      "Ding ding! Check!",
+      "Check. Out of the way, your majesty.",
+      ["Check from {name}. Find a safe square.", "Check. Find a safe square."],
+      "CHECK! The best word in chess.",
+      "King under attack! This is SO exciting.",
+      "Check. Block it, run, or take it.",
+      ["{name} is hunting kings now. Check!", "Somebody is hunting kings now. Check!"]]),
+    capture: tbl("smug", "g-ref-capture", [
+      ["Gone. {name} ate it.", "Gone. Eaten."],
       "Om nom. Off the board.",
-      "{name} takes. Somebody left something out.",
+      ["{name} takes. Somebody left something out.", "Taken. Somebody left something out."],
       "Into the bag it goes.",
-      "Snack acquired. By {name}, sadly.",
+      ["Snack acquired. By {name}, sadly.", "Snack acquired. Sadly, not by me."],
       "Was that one important? It looked important.",
-      "One fewer piece. I approve of fewer pieces."] },
-    quiet: { mood: "taunt", lines: [
+      "One fewer piece. I approve of fewer pieces.",
+      "Crunch! That one was crunchy.",
+      ["{name} grabs it. Yoink!", "Yoink!"],
+      "Taken! Straight off the board.",
+      ["{name} collects another one.", "Another one collected."],
+      "Chomp. Delicious.",
+      "Bye bye, little piece.",
+      ["Lunch for {name}.", "Lunch is served."],
+      "A piece falls! I'll hold a tiny funeral.",
+      ["{name} takes. Was it free? Check it was free.", "Taken. Was it free? Check it was free."]]),
+    quiet: tbl("taunt", "g-ref-quiet", [
       "Nothing happened. Probably.",
-      "Quiet move from {name}. The scary ones are quiet.",
-      "{name} is improving the position. Allegedly.",
+      ["Quiet move from {name}. The scary ones are quiet.", "Quiet move. The scary ones are quiet."],
+      ["{name} is improving the position. Allegedly.", "Improving the position. Allegedly."],
       "Look at that move properly before you answer it.",
       "That is a trap. Or it isn't. Good luck.",
-      "{name} moved. Somebody else's turn to be wrong.",
-      "Hm. I'd have taken something."] },
-    won: { mood: "hide", lines: [
-      "Fine. FINE. You win, {name}. Enjoy it, it never happens again.",
-      "{name} wins. I am appealing. To nobody.",
-      "Congratulations {name}, you beat a person. I remain undefeated by you.",
-      "{name} takes it. I was distracted. By the ceiling."] },
-    lost: { mood: "smug", lines: [
-      "Bad luck {name}. The rematch is one tap away.",
-      "{name} lost this one. It happens to me constantly.",
-      "Chin up, {name}. I enjoyed that enormously.",
-      "{name}! Again. I want to watch that again."] },
-    drew: { mood: "taunt", lines: [
+      ["{name} moved. Somebody else's turn to be wrong.", "Moved. Somebody else's turn to be wrong."],
+      "Hm. I'd have taken something.",
+      "Tiny move. Big plan? We'll see.",
+      ["{name} is setting something up. I can smell it.", "Somebody is setting something up. I can smell it."],
+      "Shuffle shuffle.",
+      "A quiet one. What does it attack now?",
+      ["Sneaky move, {name}. Or just a move.", "Sneaky move. Or just a move."],
+      "Hmm. Hmm. Interesting. I have no idea.",
+      "That piece looks comfy there.",
+      ["{name} is thinking ahead. I never do that.", "Thinking ahead. I never do that."],
+      "Ask the question. What did that move just do?"]),
+    won: tbl("hide", "g-ref-won", [
+      ["Fine. FINE. You win, {name}. Enjoy it, it never happens again.", "Fine. FINE. You win. Enjoy it, it never happens again."],
+      ["{name} wins. I am appealing. To nobody.", "A win. I am appealing. To nobody."],
+      ["Congratulations {name}, you beat a person. I remain undefeated by you.", "Congratulations, you beat a person. I remain undefeated by you."],
+      ["{name} takes it. I was distracted. By the ceiling.", "You take it. I was distracted. By the ceiling."],
+      ["{name} wins! I'll pretend I wasn't watching.", "A win! I'll pretend I wasn't watching."],
+      ["Winner: {name}. Referee's mood: grumpy.", "Winner! Referee's mood: grumpy."],
+      ["{name} did it. Take a bow. A small one.", "You did it. Take a bow. A small one."],
+      ["{name} wins! I blame this timeline.", "You win! I blame this timeline."],
+      ["Nice game, {name}. Don't let it go to your head.", "Nice game. Don't let it go to your head."],
+      ["{name} wins. I'm writing it in my book. In tiny letters.", "You win. I'm writing it in my book. In tiny letters."]]),
+    lost: tbl("smug", "g-ref-lost", [
+      ["Bad luck {name}. The rematch is one tap away.", "Bad luck. The rematch is one tap away."],
+      ["{name} lost this one. It happens to me constantly.", "Lost this one. It happens to me constantly."],
+      ["Chin up, {name}. I enjoyed that enormously.", "Chin up. I enjoyed that enormously."],
+      ["{name}! Again. I want to watch that again.", "Again! I want to watch that again."],
+      ["Not this time, {name}. Your fight is waiting in the binder.", "Not this time. Your fight is waiting in the binder."],
+      ["{name}, that one got away. The next one won't.", "That one got away. The next one won't."],
+      ["Tough one, {name}. Even I lose. Mostly on purpose.", "Tough one. Even I lose. Mostly on purpose."],
+      ["{name}, find the moment it turned. Then pounce next time.", "Find the moment it turned. Then pounce next time."],
+      ["Hard luck, {name}. Rematch? I'll bring snacks.", "Hard luck. Rematch? I'll bring snacks."],
+      ["{name} lost. In another timeline, {name} won. Probably.", "Lost. In another timeline, you won. Probably."]]),
+    drew: tbl("taunt", "g-ref-drew", [
       "A draw. Nobody wins. Correct result, I think.",
-      "Half each. {name} gets half a thing.",
+      ["Half each. {name} gets half a thing.", "Half each. Half a thing for you."],
       "Drawn. Two of you and still no winner. Marvellous.",
-      "{name}, you have drawn with your own sibling. Historic."] },
-    mate: { mood: "smug", lines: [
+      ["{name}, you have drawn with your own sibling. Historic.", "You have drawn with your own sibling. Historic."],
+      ["Draw, {name}. Half a point. Half a snack.", "Draw. Half a point. Half a snack."],
+      ["Nobody wins, {name}. Nobody loses. I'm confused.", "Nobody wins. Nobody loses. I'm confused."],
+      "A draw! The timeline couldn't decide.",
+      ["{name} gets a draw. A tie. A stalemate of feelings.", "A draw. A tie. A stalemate of feelings."],
+      "Drawn. Shake hands. Or don't. I'm not your referee. Wait, I am.",
+      ["Half a point for {name}. I'll keep the other half.", "Half a point for you. I'll keep the other half."]]),
+    mate: tbl("smug", "g-ref-mate", [
       "CHECKMATE. That is the whole game, that is.",
       "Mate! The king ran out of floor.",
       "And that is mate. On a phone. In a kitchen.",
-      "Checkmate. I saw it coming. I say that every time."] },
-    stalemate: { mood: "nervous", lines: [
+      "Checkmate. I saw it coming. I say that every time.",
+      "Checkmate! The king has left the building.",
+      ["Mate! Sorry, {name}. The king is stuck.", "Mate! Sorry. The king is stuck."],
+      "That's mate. Game over. Snack time.",
+      "Checkmate! What a finish.",
+      "Mate! I'd clap, but I'm the villain.",
+      "CHECKMATE. That one goes in the highlights."]),
+    stalemate: tbl("nervous", "g-ref-stalemate", [
       "Stalemate! No moves and no check. Half each.",
       "Squeezed so hard the king stopped existing. Draw.",
-      "Stalemate. Leave a square next time. Actually, don't."] },
-    repetition: { mood: "smug", lines: [
+      "Stalemate. Leave a square next time. Actually, don't.",
+      "Stalemate! Can't move, not in check. Half each.",
+      "Stuck king, no check. That's a draw!",
+      "Stalemate! So close to mate. So far.",
+      "Frozen! Nobody wins.",
+      "Stalemate. Always leave the king a square. Or don't.",
+      "No moves! That's stalemate. Draw!",
+      "Stalemate! I did not see that coming. Nobody did."]),
+    repetition: tbl("smug", "g-ref-repetition", [
       "Same position three times. Even I am bored.",
       "Round and round. Draw. I'll allow it.",
-      "We have done this. Twice. Draw."] },
-    fifty: { mood: "smug", lines: [
+      "We have done this. Twice. Draw.",
+      "Same moves again. Draw!",
+      "That's three times. Draw by repetition.",
+      "Wait, I've seen this board before. Three times. Draw.",
+      "We're going in circles. Draw!",
+      "Same board, same moves. The timeline is stuck. Draw.",
+      "Same board three times. I'm dizzy. Draw.",
+      "Again? And again? That's a draw."]),
+    fifty: tbl("smug", "g-ref-fifty", [
       "Fifty moves, no pawn, no capture. Draw, by law.",
       "Nothing has happened for fifty moves. That is a draw and it is both your faults.",
-      "Fifty. Moves. I counted. Draw."] },
-    material: { mood: "nervous", lines: [
+      "Fifty. Moves. I counted. Draw.",
+      "Fifty moves and nobody took anything. Draw.",
+      "Fifty moves! Somebody was supposed to do something.",
+      "Fifty quiet moves. The rule says draw.",
+      "Fifty moves. I've aged. Draw.",
+      "That's the fifty move rule. Draw!",
+      "Fifty moves of dancing. Draw.",
+      "Fifty! No pawn moved, nothing was taken. Draw."]),
+    material: tbl("nervous", "g-ref-material", [
       "Neither of you can mate with that. Draw.",
       "Two kings staring. Thrilling. Draw.",
-      "Not enough wood left to finish anyone. Draw."] },
+      "Not enough wood left to finish anyone. Draw.",
+      "Not enough pieces left to mate. Draw.",
+      "Nobody can checkmate with that. Draw!",
+      "Too few pieces. It's a draw.",
+      "Two lonely kings. Draw.",
+      "That army can't finish a king. Draw.",
+      "Not enough left for mate. Shake hands.",
+      "Nobody can win from here. Draw."]),
     // Two phones. {name} is always the kid the line is about, never a pairing of the two.
-    invite: { mood: "taunt", lines: [
-      "{name} wants to play! On a whole other phone. Sneaky.",
-      "Psst. {name} is challenging you. From over there.",
-      "{name} wants a game. I'll referee from both phones.",
-      "Incoming! {name} wants to play you."] },
-    waiting: { mood: "taunt", lines: [
-      "Waiting for {name}… I'm counting ceiling tiles.",
-      "{name} is thinking. Or eating. Hard to tell from here.",
-      "Still {name}'s go. I'll just float here.",
-      "Waiting for {name}. Resign is there if you get bored."] },
-    unfinished: { mood: "nervous", lines: [
+    invite: tbl("taunt", "g-ref-invite", [
+      ["{name} wants to play! On a whole other phone. Sneaky.", "Somebody wants to play! On a whole other phone. Sneaky."],
+      ["Psst. {name} is challenging you. From over there.", "Psst. You've been challenged. From over there."],
+      ["{name} wants a game. I'll referee from both phones.", "Somebody wants a game. I'll referee from both phones."],
+      ["Incoming! {name} wants to play you.", "Incoming! Somebody wants to play you."],
+      ["{name} sent a challenge! Accept, if you dare.", "A challenge! Accept, if you dare."],
+      ["Ding! {name} wants a game.", "Ding! Somebody wants a game."],
+      ["{name} is ready to play. Are you?", "Somebody is ready to play. Are you?"],
+      ["A challenge from {name}! I'll bring the whistle.", "A challenge! I'll bring the whistle."],
+      ["{name} wants a match. Or a rematch. A match.", "Somebody wants a match. Or a rematch."],
+      ["Knock knock. It's {name}. With a chessboard.", "Knock knock. Somebody's here. With a chessboard."]]),
+    waiting: tbl("taunt", "g-ref-waiting", [
+      ["Waiting for {name}… I'm counting ceiling tiles.", "Waiting… I'm counting ceiling tiles."],
+      ["{name} is thinking. Or eating. Hard to tell from here.", "Still thinking. Or eating. Hard to tell from here."],
+      ["Still {name}'s go. I'll just float here.", "Still their go. I'll just float here."],
+      ["Waiting for {name}. Resign is there if you get bored.", "Still waiting. Resign is there if you get bored."],
+      ["{name} is taking ages. Good. Thinking is good.", "Taking ages. Good. Thinking is good."],
+      ["Hmm hmm hmm. Waiting for {name}.", "Hmm hmm hmm. Waiting."],
+      ["{name}'s move. I'm doing laps round the board.", "Their move. I'm doing laps round the board."],
+      ["Still waiting for {name}. Snack break?", "Still waiting. Snack break?"],
+      ["{name} is plotting something. I can hear it.", "Somebody is plotting something. I can hear it."],
+      ["Tick tock. {name} is thinking hard.", "Tick tock. Somebody is thinking hard."]]),
+    unfinished: tbl("nervous", "g-ref-unfinished", [
       "Nobody finished this one. It doesn't count for anyone.",
       "The game wandered off. No result, no harm.",
-      "Unfinished. I'll pretend I didn't see it."] },
-    same: { mood: "nervous", lines: [
-      "Both phones think they're {name}! One of you pick the other name in Settings.",
-      "Two {name}s? No. One phone has to be the other kid.",
-      "I can't referee {name} against {name}. Switch one phone."] },
-    resign: { mood: "smug", lines: [
-      "{name} is giving up. Noted. Filed. Laminated.",
+      "Unfinished. I'll pretend I didn't see it.",
+      "Nobody finished. The game went for a walk.",
+      "Unfinished! This timeline fizzled out.",
+      "No result. Just like my homework.",
+      "The game stopped. It counts for nobody.",
+      "Half a game. I'll file it under maybe.",
+      "Nobody won. Nobody lost. Somebody left.",
+      "It fizzled. Start a fresh one any time."]),
+    same: tbl("nervous", "g-ref-same", [
+      ["Both phones think they're {name}! One of you pick the other name in Settings.", "Both phones think they're the same kid! One of you pick the other name in Settings."],
+      ["Two {name}s? No. One phone has to be the other kid.", "Two of the same kid? No. One phone has to be the other kid."],
+      ["I can't referee {name} against {name}. Switch one phone.", "I can't referee somebody against themselves. Switch one phone."],
+      ["Two {name}s? One is plenty. Switch a phone.", "Two of the same? One is plenty. Switch a phone."],
+      ["{name} on both phones? That's a mirror, not a game.", "The same kid on both phones? That's a mirror, not a game."],
+      ["Hold on. {name} can't play {name}. Change one phone.", "Hold on. Nobody can play themselves. Change one phone."],
+      ["Both phones say {name}. One of them is fibbing.", "Both phones say the same name. One of them is fibbing."],
+      ["{name} versus {name}? Even I'm confused.", "The same kid versus the same kid? Even I'm confused."],
+      ["One phone each, please. Not two {name}s.", "One phone each, please. Not two of the same kid."],
+      ["Two {name}s is a timeline error. Fix one phone.", "Two of the same kid is a timeline error. Fix one phone."]]),
+    resign: tbl("smug", "g-ref-resign", [
+      ["{name} is giving up. Noted. Filed. Laminated.", "Giving up. Noted. Filed. Laminated."],
       "Resigning?! Against your own sibling? Say it louder.",
-      "{name} has stopped this one. I am writing it down though.",
-      "{name} folds. I do that too. Constantly."] },
+      ["{name} has stopped this one. I am writing it down though.", "Stopped this one. I am writing it down though."],
+      ["{name} folds. I do that too. Constantly.", "Folding. I do that too. Constantly."],
+      ["{name} resigns. The next game starts fresh.", "Resigned. The next game starts fresh."],
+      ["{name} tips the king over. Dramatic. I like it.", "The king tips over. Dramatic. I like it."],
+      ["White flag from {name}! Rematch?", "White flag! Rematch?"],
+      ["{name} calls it. Brave. Honestly.", "Called it. Brave. Honestly."],
+      ["{name} resigns. The board forgives you. I don't.", "Resigned. The board forgives you. I don't."],
+      ["{name} is done. I'll stop the clock. There is no clock.", "All done. I'll stop the clock. There is no clock."]]),
   };
   function fill(text, name) { return String(text || "").replace(/\{name\}/g, String(name || "You")); }
+  function lineKey(kind, i) { const g = SAY[kind]; return g && !g.silent && i >= 0 ? g.vk + "-" + (i + 1) : null; }
   function say(kind, prev, name) {
     const g = SAY[kind];
-    if (!g) return { text: "", mood: "taunt", index: -1 };
+    if (!g) return { text: "", mood: "taunt", index: -1, key: null };
     const i = typeof prev === "number" && prev >= 0 ? (prev + 1) % g.lines.length : 0;
-    return { text: fill(g.lines[i], name), mood: g.mood, index: i };
+    return { text: fill(g.lines[i], name), mood: g.mood, index: i, key: lineKey(kind, i) };
   }
   // Which line fits what just happened. A blunder and a best move outrank the move itself: what the
   // move did to the position is more interesting than whether it took something.
@@ -328,7 +485,7 @@
       return { profile: profile, name: name, colour: side, result: result,
         moves: sum.moves, blunders: sum.blunders, matched: sum.matched, given: sum.given,
         best: momentCard(sum.best, t), worst: momentCard(sum.worst, t),
-        fights: fights, say: line.text, mood: line.mood };
+        fights: fights, say: line.text, sayKey: line.key, mood: line.mood };
     });
     return { t: t, kind: g.kind || "mate", cards: cards };
   }
@@ -345,7 +502,7 @@
     const card = all.cards.filter(function (c) { return c.profile === me; })[0];
     if (card && g.unfinished) {
       const l = say("unfinished", (opts || {}).sayIndex, names[me]);
-      card.result = "unfinished"; card.say = l.text; card.mood = l.mood;
+      card.result = "unfinished"; card.say = l.text; card.sayKey = l.key; card.mood = l.mood;
     }
     return { t: all.t, kind: kind, live: true, cards: card ? [card] : [] };
   }
@@ -354,7 +511,7 @@
     mirrorSquare, mirrorUci, mirrorFen, mirrorPack, mirrorRow,
     rowsFor, dropOf, gainOf, isBlunderRow, matchedBest, deliversMate, worstMoment, bestMoment, momentCard,
     punishTakes, summarise, kidFights, nextWhite, seatsFor, colourOf, swapSeats,
-    say, fill, reactionTo, resultFor, resultCards };
+    say, fill, lineKey, reactionTo, resultFor, resultCards };
   root.ShockmateVersus = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis,

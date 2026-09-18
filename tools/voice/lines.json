@@ -1410,6 +1410,3486 @@
   "text": "Uncover the laser. He cannot stop two attacks."
  },
  {
+  "key": "g-camp-nope-1",
+  "voice": "glitch",
+  "text": "Not that one."
+ },
+ {
+  "key": "g-camp-nope-10",
+  "voice": "glitch",
+  "text": "Nope. That piece is perfectly safe."
+ },
+ {
+  "key": "g-camp-nope-2",
+  "voice": "glitch",
+  "text": "Nope. Look again."
+ },
+ {
+  "key": "g-camp-nope-3",
+  "voice": "glitch",
+  "text": "Not that. Where can my piece reach?"
+ },
+ {
+  "key": "g-camp-nope-4",
+  "voice": "glitch",
+  "text": "Wrong one. Ha!"
+ },
+ {
+  "key": "g-camp-nope-5",
+  "voice": "glitch",
+  "text": "Nope! Try the one I'm aiming at."
+ },
+ {
+  "key": "g-camp-nope-6",
+  "voice": "glitch",
+  "text": "That's not it. I'm aiming somewhere scarier."
+ },
+ {
+  "key": "g-camp-nope-7",
+  "voice": "glitch",
+  "text": "Nah. Follow my piece."
+ },
+ {
+  "key": "g-camp-nope-8",
+  "voice": "glitch",
+  "text": "Not that one. So close. Not really."
+ },
+ {
+  "key": "g-camp-nope-9",
+  "voice": "glitch",
+  "text": "Wrong! Keep looking."
+ },
+ {
+  "key": "g-camp-spotted-1",
+  "voice": "glitch",
+  "text": "…lucky."
+ },
+ {
+  "key": "g-camp-spotted-10",
+  "voice": "glitch",
+  "text": "Ugh. My tricks need a nap. So do I."
+ },
+ {
+  "key": "g-camp-spotted-2",
+  "voice": "glitch",
+  "text": "Lucky. Again. Suspiciously lucky."
+ },
+ {
+  "key": "g-camp-spotted-3",
+  "voice": "glitch",
+  "text": "Fine. You saw it. The next one's harder. Probably."
+ },
+ {
+  "key": "g-camp-spotted-4",
+  "voice": "glitch",
+  "text": "Stop spotting things!"
+ },
+ {
+  "key": "g-camp-spotted-5",
+  "voice": "glitch",
+  "text": "How are you seeing all of these?"
+ },
+ {
+  "key": "g-camp-spotted-6",
+  "voice": "glitch",
+  "text": "Hmph. Beginner's luck. For the ninth time."
+ },
+ {
+  "key": "g-camp-spotted-7",
+  "voice": "glitch",
+  "text": "Okay, that one was obvious. The next one isn't."
+ },
+ {
+  "key": "g-camp-spotted-8",
+  "voice": "glitch",
+  "text": "You found them all. I'm hiding the next one better."
+ },
+ {
+  "key": "g-camp-spotted-9",
+  "voice": "glitch",
+  "text": "Spotted. I'm writing a complaint."
+ },
+ {
+  "key": "g-camp-start-1",
+  "voice": "glitch",
+  "text": "Camp? You? This should be quick."
+ },
+ {
+  "key": "g-camp-start-10",
+  "voice": "glitch",
+  "text": "Camp! My snacks are in the fridge. Don't touch them. Look at the board."
+ },
+ {
+  "key": "g-camp-start-2",
+  "voice": "glitch",
+  "text": "Camp! I brought a whistle and a clipboard. Both stolen."
+ },
+ {
+  "key": "g-camp-start-3",
+  "voice": "glitch",
+  "text": "Training day. I'll be training too. At napping."
+ },
+ {
+  "key": "g-camp-start-4",
+  "voice": "glitch",
+  "text": "Camp. Spot my attacks, win my fights. Easy for me to say."
+ },
+ {
+  "key": "g-camp-start-5",
+  "voice": "glitch",
+  "text": "Welcome to Camp. I'm the counsellor. The evil one."
+ },
+ {
+  "key": "g-camp-start-6",
+  "voice": "glitch",
+  "text": "Camp again? Fine. I've invented new traps. Four of them. Maybe two."
+ },
+ {
+  "key": "g-camp-start-7",
+  "voice": "glitch",
+  "text": "Tournament prep? My rating is nine thousand. I never prep."
+ },
+ {
+  "key": "g-camp-start-8",
+  "voice": "glitch",
+  "text": "Camp! Rule one: Glitch wins. Rule two: see rule one."
+ },
+ {
+  "key": "g-camp-start-9",
+  "voice": "glitch",
+  "text": "Oh good, Camp. I love watching you practise. I mean, I hate it."
+ },
+ {
+  "key": "g-camp-watch-1",
+  "voice": "glitch",
+  "text": "Watch closely. Or don't."
+ },
+ {
+  "key": "g-camp-watch-10",
+  "voice": "glitch",
+  "text": "Tiptoe, tiptoe. Did you see that?"
+ },
+ {
+  "key": "g-camp-watch-2",
+  "voice": "glitch",
+  "text": "Here comes my move. Blink and you miss it."
+ },
+ {
+  "key": "g-camp-watch-3",
+  "voice": "glitch",
+  "text": "Watch my piece. It's up to something."
+ },
+ {
+  "key": "g-camp-watch-4",
+  "voice": "glitch",
+  "text": "Moving now. Try to keep up."
+ },
+ {
+  "key": "g-camp-watch-5",
+  "voice": "glitch",
+  "text": "My move. Very sneaky. Extremely sneaky."
+ },
+ {
+  "key": "g-camp-watch-6",
+  "voice": "glitch",
+  "text": "Eyes on the board. Not on my handsome face."
+ },
+ {
+  "key": "g-camp-watch-7",
+  "voice": "glitch",
+  "text": "Here I go. What am I aiming at? Guess."
+ },
+ {
+  "key": "g-camp-watch-8",
+  "voice": "glitch",
+  "text": "Watch this. I've practised it in nine timelines."
+ },
+ {
+  "key": "g-camp-watch-9",
+  "voice": "glitch",
+  "text": "One move from me. One question for you."
+ },
+ {
+  "key": "g-crack-1",
+  "voice": "glitch",
+  "text": "Ha! Cracked. That one's still half mine."
+ },
+ {
+  "key": "g-crack-10",
+  "voice": "glitch",
+  "text": "Ha! Cracked like a biscuit. My favourite biscuit."
+ },
+ {
+  "key": "g-crack-2",
+  "voice": "glitch",
+  "text": "Cracked! I had to SHOW you. Still counts as mine."
+ },
+ {
+  "key": "g-crack-3",
+  "voice": "glitch",
+  "text": "A cracked card. I'm keeping the other half."
+ },
+ {
+  "key": "g-crack-4",
+  "voice": "glitch",
+  "text": "Cracked! That card has my fingerprints all over it."
+ },
+ {
+  "key": "g-crack-5",
+  "voice": "glitch",
+  "text": "A crack! I'm framing it. Next to my fake trophy."
+ },
+ {
+  "key": "g-crack-6",
+  "voice": "glitch",
+  "text": "You won, but with my help. So I sort of won. Sort of."
+ },
+ {
+  "key": "g-crack-7",
+  "voice": "glitch",
+  "text": "Cracked card! Win it clean and I'll cry. Probably."
+ },
+ {
+  "key": "g-crack-8",
+  "voice": "glitch",
+  "text": "That crack is my autograph. You're welcome."
+ },
+ {
+  "key": "g-crack-9",
+  "voice": "glitch",
+  "text": "Half a card for you, half a victory for me."
+ },
+ {
+  "key": "g-crony-agent-gloat-1",
+  "voice": "glitch",
+  "text": "Agent counted. Mission complete."
+ },
+ {
+  "key": "g-crony-agent-gloat-2",
+  "voice": "glitch",
+  "text": "Agent takes. Agent does not miss."
+ },
+ {
+  "key": "g-crony-agent-gloat-3",
+  "voice": "glitch",
+  "text": "Loose piece detected. Agent collects."
+ },
+ {
+  "key": "g-crony-agent-gloat-4",
+  "voice": "glitch",
+  "text": "Agent smiles. Agents don't smile. He smiled."
+ },
+ {
+  "key": "g-crony-agent-gloat-5",
+  "voice": "glitch",
+  "text": "Agent to base. Piece captured."
+ },
+ {
+  "key": "g-crony-agent-rage-1",
+  "voice": "glitch",
+  "text": "Agent's cover is blown!"
+ },
+ {
+  "key": "g-crony-agent-rage-2",
+  "voice": "glitch",
+  "text": "Agent did NOT see that coming. Agents see everything!"
+ },
+ {
+  "key": "g-crony-agent-rage-3",
+  "voice": "glitch",
+  "text": "Mission failed! Agent is so embarrassed."
+ },
+ {
+  "key": "g-crony-agent-rage-4",
+  "voice": "glitch",
+  "text": "Agent lost his piece AND his sunglasses."
+ },
+ {
+  "key": "g-crony-agent-rage-5",
+  "voice": "glitch",
+  "text": "Abort! Abort! Agent's piece is gone!"
+ },
+ {
+  "key": "g-crony-agent-taunt-1",
+  "voice": "glitch",
+  "text": "Agent moves in the shadows. Also on the board."
+ },
+ {
+  "key": "g-crony-agent-taunt-2",
+  "voice": "glitch",
+  "text": "Agent has counted everything. Twice."
+ },
+ {
+  "key": "g-crony-agent-taunt-3",
+  "voice": "glitch",
+  "text": "Agent's move is classified."
+ },
+ {
+  "key": "g-crony-agent-taunt-4",
+  "voice": "glitch",
+  "text": "Agent sees your plan. Agent always sees."
+ },
+ {
+  "key": "g-crony-agent-taunt-5",
+  "voice": "glitch",
+  "text": "Agent adjusts his sunglasses. Moves."
+ },
+ {
+  "key": "g-crony-cadet-gloat-1",
+  "voice": "glitch",
+  "text": "Cadet spotted it. Cadet always reads the board."
+ },
+ {
+  "key": "g-crony-cadet-gloat-2",
+  "voice": "glitch",
+  "text": "By the book! Cadet collects."
+ },
+ {
+  "key": "g-crony-cadet-gloat-3",
+  "voice": "glitch",
+  "text": "Cadet took it. Neatly. With a salute."
+ },
+ {
+  "key": "g-crony-cadet-gloat-4",
+  "voice": "glitch",
+  "text": "Cadet says: loose pieces get taken. Rule twelve."
+ },
+ {
+  "key": "g-crony-cadet-gloat-5",
+  "voice": "glitch",
+  "text": "Cadet files that piece under mine."
+ },
+ {
+  "key": "g-crony-cadet-rage-1",
+  "voice": "glitch",
+  "text": "That's not in Cadet's book!"
+ },
+ {
+  "key": "g-crony-cadet-rage-2",
+  "voice": "glitch",
+  "text": "Cadet's checklist didn't cover that!"
+ },
+ {
+  "key": "g-crony-cadet-rage-3",
+  "voice": "glitch",
+  "text": "Cadet is writing a very angry report."
+ },
+ {
+  "key": "g-crony-cadet-rage-4",
+  "voice": "glitch",
+  "text": "Cadet lost a piece. Cadet NEVER loses pieces!"
+ },
+ {
+  "key": "g-crony-cadet-rage-5",
+  "voice": "glitch",
+  "text": "Hey! Cadet was only on page two!"
+ },
+ {
+  "key": "g-crony-cadet-taunt-1",
+  "voice": "glitch",
+  "text": "Cadet has checked the board twice. Now three times."
+ },
+ {
+  "key": "g-crony-cadet-taunt-2",
+  "voice": "glitch",
+  "text": "Cadet's move is textbook. Page one."
+ },
+ {
+  "key": "g-crony-cadet-taunt-3",
+  "voice": "glitch",
+  "text": "Cadet salutes. Then attacks."
+ },
+ {
+  "key": "g-crony-cadet-taunt-4",
+  "voice": "glitch",
+  "text": "Cadet says: get your pieces out. So he did."
+ },
+ {
+  "key": "g-crony-cadet-taunt-5",
+  "voice": "glitch",
+  "text": "Cadet made a neat move. He loves neat."
+ },
+ {
+  "key": "g-crony-marshal-gloat-1",
+  "voice": "glitch",
+  "text": "Marshal expected nothing less."
+ },
+ {
+  "key": "g-crony-marshal-gloat-2",
+  "voice": "glitch",
+  "text": "Marshal takes. Marshal always takes."
+ },
+ {
+  "key": "g-crony-marshal-gloat-3",
+  "voice": "glitch",
+  "text": "Victory for Marshal! Medal, please."
+ },
+ {
+  "key": "g-crony-marshal-gloat-4",
+  "voice": "glitch",
+  "text": "Marshal collects pieces like medals."
+ },
+ {
+  "key": "g-crony-marshal-gloat-5",
+  "voice": "glitch",
+  "text": "Marshal says: that is how it's done."
+ },
+ {
+  "key": "g-crony-marshal-rage-1",
+  "voice": "glitch",
+  "text": "Marshal is OUTRAGED! Marshal is never outraged!"
+ },
+ {
+  "key": "g-crony-marshal-rage-2",
+  "voice": "glitch",
+  "text": "Marshal lost a piece?! Unthinkable!"
+ },
+ {
+  "key": "g-crony-marshal-rage-3",
+  "voice": "glitch",
+  "text": "Marshal demands a rematch. Right now. Mid-game."
+ },
+ {
+  "key": "g-crony-marshal-rage-4",
+  "voice": "glitch",
+  "text": "Marshal's medals are rattling with fury!"
+ },
+ {
+  "key": "g-crony-marshal-rage-5",
+  "voice": "glitch",
+  "text": "Impossible! Marshal studied for this!"
+ },
+ {
+  "key": "g-crony-marshal-taunt-1",
+  "voice": "glitch",
+  "text": "Marshal marches in. Everybody salute!"
+ },
+ {
+  "key": "g-crony-marshal-taunt-2",
+  "voice": "glitch",
+  "text": "Marshal plays properly. He tells everyone."
+ },
+ {
+  "key": "g-crony-marshal-taunt-3",
+  "voice": "glitch",
+  "text": "Marshal has a medal for every move."
+ },
+ {
+  "key": "g-crony-marshal-taunt-4",
+  "voice": "glitch",
+  "text": "Marshal does not blunder. Marshal says so."
+ },
+ {
+  "key": "g-crony-marshal-taunt-5",
+  "voice": "glitch",
+  "text": "Attention! Marshal is on the board!"
+ },
+ {
+  "key": "g-crony-rookie-gloat-1",
+  "voice": "glitch",
+  "text": "Rookie got one! First time this week!"
+ },
+ {
+  "key": "g-crony-rookie-gloat-2",
+  "voice": "glitch",
+  "text": "Rookie took it! He's doing a lap of the kitchen."
+ },
+ {
+  "key": "g-crony-rookie-gloat-3",
+  "voice": "glitch",
+  "text": "Look at Rookie go! He actually saw that!"
+ },
+ {
+  "key": "g-crony-rookie-gloat-4",
+  "voice": "glitch",
+  "text": "Rookie grabbed it. He's never been happier."
+ },
+ {
+  "key": "g-crony-rookie-gloat-5",
+  "voice": "glitch",
+  "text": "Rookie says thank you. Politely. Then laughs."
+ },
+ {
+  "key": "g-crony-rookie-rage-1",
+  "voice": "glitch",
+  "text": "Rookie dropped it! Again! Rookie!"
+ },
+ {
+  "key": "g-crony-rookie-rage-2",
+  "voice": "glitch",
+  "text": "Rookie wasn't looking! He never looks!"
+ },
+ {
+  "key": "g-crony-rookie-rage-3",
+  "voice": "glitch",
+  "text": "Rookie's piece! He only had a few!"
+ },
+ {
+  "key": "g-crony-rookie-rage-4",
+  "voice": "glitch",
+  "text": "Rookie, you have to GUARD things!"
+ },
+ {
+  "key": "g-crony-rookie-rage-5",
+  "voice": "glitch",
+  "text": "Rookie's sulking. He'll be fine. He won't."
+ },
+ {
+  "key": "g-crony-rookie-taunt-1",
+  "voice": "glitch",
+  "text": "Rookie's here! He's read the rules. Some of them."
+ },
+ {
+  "key": "g-crony-rookie-taunt-2",
+  "voice": "glitch",
+  "text": "Rookie moved! On purpose, he says."
+ },
+ {
+  "key": "g-crony-rookie-taunt-3",
+  "voice": "glitch",
+  "text": "Rookie's got a plan. He won't say what. He doesn't know."
+ },
+ {
+  "key": "g-crony-rookie-taunt-4",
+  "voice": "glitch",
+  "text": "Rookie's so excited. He might drop something."
+ },
+ {
+  "key": "g-crony-rookie-taunt-5",
+  "voice": "glitch",
+  "text": "Rookie says good luck. Then he giggles."
+ },
+ {
+  "key": "g-crony-sleepy-gloat-1",
+  "voice": "glitch",
+  "text": "Sleepy got one! He's so proud. He's asleep again."
+ },
+ {
+  "key": "g-crony-sleepy-gloat-2",
+  "voice": "glitch",
+  "text": "Even Sleepy caught that one. In his sleep."
+ },
+ {
+  "key": "g-crony-sleepy-gloat-3",
+  "voice": "glitch",
+  "text": "Sleepy took it. Yawned. Took it anyway."
+ },
+ {
+  "key": "g-crony-sleepy-gloat-4",
+  "voice": "glitch",
+  "text": "Yawn. Thanks. Sleepy will eat that later."
+ },
+ {
+  "key": "g-crony-sleepy-gloat-5",
+  "voice": "glitch",
+  "text": "Sleepy grabbed it without waking up."
+ },
+ {
+  "key": "g-crony-sleepy-rage-1",
+  "voice": "glitch",
+  "text": "Sleepy woke up! He's grumpy now!"
+ },
+ {
+  "key": "g-crony-sleepy-rage-2",
+  "voice": "glitch",
+  "text": "Hey! Sleepy was dreaming about that piece!"
+ },
+ {
+  "key": "g-crony-sleepy-rage-3",
+  "voice": "glitch",
+  "text": "You took it while Sleepy was napping! Rude!"
+ },
+ {
+  "key": "g-crony-sleepy-rage-4",
+  "voice": "glitch",
+  "text": "Sleepy's crying into his pillow."
+ },
+ {
+  "key": "g-crony-sleepy-rage-5",
+  "voice": "glitch",
+  "text": "Waaah. Sleepy wants his piece back. And his blanket."
+ },
+ {
+  "key": "g-crony-sleepy-taunt-1",
+  "voice": "glitch",
+  "text": "Sleepy's playing. He's mostly yawning."
+ },
+ {
+  "key": "g-crony-sleepy-taunt-2",
+  "voice": "glitch",
+  "text": "Zzz. Oh. Is it my move? Sleepy says yes."
+ },
+ {
+  "key": "g-crony-sleepy-taunt-3",
+  "voice": "glitch",
+  "text": "Sleepy moved. With his eyes shut. Honest."
+ },
+ {
+  "key": "g-crony-sleepy-taunt-4",
+  "voice": "glitch",
+  "text": "Sleepy wants a nap. And your queen. Mostly the nap."
+ },
+ {
+  "key": "g-crony-sleepy-taunt-5",
+  "voice": "glitch",
+  "text": "Shh. Sleepy's thinking. Or snoring."
+ },
+ {
+  "key": "g-family-code-1",
+  "voice": "glitch",
+  "text": "A family code! Let's see who's in it."
+ },
+ {
+  "key": "g-family-found-1",
+  "voice": "glitch",
+  "text": "Found them. Which one of you is holding this phone?"
+ },
+ {
+  "key": "g-family-join-1",
+  "voice": "glitch",
+  "text": "Got a code? Type it in."
+ },
+ {
+  "key": "g-family-made-1",
+  "voice": "glitch",
+  "text": "A family. Two phones, twice the trouble. Share that code."
+ },
+ {
+  "key": "g-family-names-1",
+  "voice": "glitch",
+  "text": "Names first. I'll be rude to both equally."
+ },
+ {
+  "key": "g-family-new-1",
+  "voice": "glitch",
+  "text": "New phone? I need to know who I'm tormenting."
+ },
+ {
+  "key": "g-fight-bigger-1",
+  "voice": "glitch",
+  "text": "There was a BIGGER one…"
+ },
+ {
+  "key": "g-fight-bigger-2",
+  "voice": "glitch",
+  "text": "That works. But there was a BIGGER one. Heh."
+ },
+ {
+  "key": "g-fight-bigger-3",
+  "voice": "glitch",
+  "text": "Good. Not best. I'll take good."
+ },
+ {
+  "key": "g-fight-bigger-4",
+  "voice": "glitch",
+  "text": "You won. Just. The best move was scarier."
+ },
+ {
+  "key": "g-fight-bigger-5",
+  "voice": "glitch",
+  "text": "Fine, you hit me. A bigger move was sitting right there."
+ },
+ {
+  "key": "g-fight-bigger-6",
+  "voice": "glitch",
+  "text": "Ow. But it could have been OW. There was a bigger one."
+ },
+ {
+  "key": "g-fight-confess-1",
+  "voice": "glitch",
+  "text": "Fine. FINE. Here is what I was scared of."
+ },
+ {
+  "key": "g-fight-confess-2",
+  "voice": "glitch",
+  "text": "Okay, I'll show you. But I'm not happy about it."
+ },
+ {
+  "key": "g-fight-confess-3",
+  "voice": "glitch",
+  "text": "Here's the move that scares me. Don't tell anyone."
+ },
+ {
+  "key": "g-fight-confess-4",
+  "voice": "glitch",
+  "text": "This is the one I was hiding. Look. Ugh."
+ },
+ {
+  "key": "g-fight-confess-5",
+  "voice": "glitch",
+  "text": "Fine! Here's the good future. My least favourite future."
+ },
+ {
+  "key": "g-fight-confess-6",
+  "voice": "glitch",
+  "text": "I'll show you. Just this once. With my eyes shut."
+ },
+ {
+  "key": "g-fight-hotseat-1",
+  "voice": "glitch",
+  "text": "Your turn. Same board. No peeking at the answer."
+ },
+ {
+  "key": "g-fight-hotseat-2",
+  "voice": "glitch",
+  "text": "Next player! Same trap. Still delicious."
+ },
+ {
+  "key": "g-fight-hotseat-3",
+  "voice": "glitch",
+  "text": "Swap! Same board. I've forgotten everything. Honest."
+ },
+ {
+  "key": "g-fight-hotseat-4",
+  "voice": "glitch",
+  "text": "Your go. Same board. Pretend you didn't see anything."
+ },
+ {
+  "key": "g-fight-hotseat-5",
+  "voice": "glitch",
+  "text": "Seat two! Same trap, fresh snack. I mean player."
+ },
+ {
+  "key": "g-fight-hotseat-6",
+  "voice": "glitch",
+  "text": "New player, same board. Let's see if you fall for it."
+ },
+ {
+  "key": "g-fight-ko-1",
+  "voice": "glitch",
+  "text": "Never heard of him."
+ },
+ {
+  "key": "g-fight-ko-2",
+  "voice": "glitch",
+  "text": "He was never my favourite anyway."
+ },
+ {
+  "key": "g-fight-ko-3",
+  "voice": "glitch",
+  "text": "Knocked out? I'll get a new crony. A better one."
+ },
+ {
+  "key": "g-fight-ko-4",
+  "voice": "glitch",
+  "text": "Down he goes. I was going to fire him anyway."
+ },
+ {
+  "key": "g-fight-ko-5",
+  "voice": "glitch",
+  "text": "Get up! No? Fine. Lie there."
+ },
+ {
+  "key": "g-fight-ko-6",
+  "voice": "glitch",
+  "text": "He's out. I'm pretending I don't know him."
+ },
+ {
+  "key": "g-fight-nope-1",
+  "voice": "glitch",
+  "text": "Nope."
+ },
+ {
+  "key": "g-fight-nope-2",
+  "voice": "glitch",
+  "text": "Nope! Not that one."
+ },
+ {
+  "key": "g-fight-nope-3",
+  "voice": "glitch",
+  "text": "Ha! Wrong piece."
+ },
+ {
+  "key": "g-fight-nope-4",
+  "voice": "glitch",
+  "text": "Not that one. Keep guessing."
+ },
+ {
+  "key": "g-fight-nope-5",
+  "voice": "glitch",
+  "text": "Nah. Try again."
+ },
+ {
+  "key": "g-fight-nope-6",
+  "voice": "glitch",
+  "text": "Wrong! I love wrong."
+ },
+ {
+  "key": "g-fight-peek-1",
+  "voice": "glitch",
+  "text": "Ugh. THAT one."
+ },
+ {
+  "key": "g-fight-peek-2",
+  "voice": "glitch",
+  "text": "That one. The one I was hoping you'd miss."
+ },
+ {
+  "key": "g-fight-peek-3",
+  "voice": "glitch",
+  "text": "Fine. Here's the BIG one. Happy?"
+ },
+ {
+  "key": "g-fight-peek-4",
+  "voice": "glitch",
+  "text": "This is the move I have nightmares about."
+ },
+ {
+  "key": "g-fight-peek-5",
+  "voice": "glitch",
+  "text": "Don't look at it! Too late. You looked."
+ },
+ {
+  "key": "g-fight-peek-6",
+  "voice": "glitch",
+  "text": "The biggest one. My least favourite move in history."
+ },
+ {
+  "key": "g-fight-second-1",
+  "voice": "glitch",
+  "text": "Sweating? Me? Never."
+ },
+ {
+  "key": "g-fight-second-2",
+  "voice": "glitch",
+  "text": "Second try. I'm not nervous. That's just goblin sweat."
+ },
+ {
+  "key": "g-fight-second-3",
+  "voice": "glitch",
+  "text": "Go again. I'm totally calm. Totally."
+ },
+ {
+  "key": "g-fight-second-4",
+  "voice": "glitch",
+  "text": "Another try? Fine. It's still my board."
+ },
+ {
+  "key": "g-fight-second-5",
+  "voice": "glitch",
+  "text": "Try again. I've hidden my snacks, just in case."
+ },
+ {
+  "key": "g-fight-second-6",
+  "voice": "glitch",
+  "text": "One more go. Don't find it. Please don't find it."
+ },
+ {
+  "key": "g-fight-shield-1",
+  "voice": "glitch",
+  "text": "Hey! Where did my gloat go?"
+ },
+ {
+  "key": "g-fight-shield-2",
+  "voice": "glitch",
+  "text": "A shield?! I had a speech ready!"
+ },
+ {
+  "key": "g-fight-shield-3",
+  "voice": "glitch",
+  "text": "No fair! My gloat bounced off!"
+ },
+ {
+  "key": "g-fight-shield-4",
+  "voice": "glitch",
+  "text": "Shield?! Who sells shields? I want a refund."
+ },
+ {
+  "key": "g-fight-shield-5",
+  "voice": "glitch",
+  "text": "My gloat hit a wall. A time wall. Rude."
+ },
+ {
+  "key": "g-fight-shield-6",
+  "voice": "glitch",
+  "text": "I'm not even ALLOWED to gloat. Unbelievable."
+ },
+ {
+  "key": "g-fight-tease-1",
+  "voice": "glitch",
+  "text": "Wait. Wait. Which future is this…"
+ },
+ {
+  "key": "g-fight-tease-2",
+  "voice": "glitch",
+  "text": "Hold on. Which timeline did you pick?"
+ },
+ {
+  "key": "g-fight-tease-3",
+  "voice": "glitch",
+  "text": "Uh oh. Or... yay? Let me check."
+ },
+ {
+  "key": "g-fight-tease-4",
+  "voice": "glitch",
+  "text": "Splitting time… please be my future. Please."
+ },
+ {
+  "key": "g-fight-tease-5",
+  "voice": "glitch",
+  "text": "Don't look at me. I'm calculating. Loudly."
+ },
+ {
+  "key": "g-fight-tease-6",
+  "voice": "glitch",
+  "text": "Wait. Is this the good one? For me, I mean."
+ },
+ {
+  "key": "g-fight-why-1",
+  "voice": "glitch",
+  "text": "Don't say it. Don't you DARE say why…"
+ },
+ {
+  "key": "g-fight-why-2",
+  "voice": "glitch",
+  "text": "No, no. You don't need to know WHY."
+ },
+ {
+  "key": "g-fight-why-3",
+  "voice": "glitch",
+  "text": "Don't tap it. Don't prove it. Please."
+ },
+ {
+  "key": "g-fight-why-4",
+  "voice": "glitch",
+  "text": "Why? Nobody needs a why. Why do you need a why?"
+ },
+ {
+  "key": "g-fight-why-5",
+  "voice": "glitch",
+  "text": "Shh. Keep the reason a secret. For me."
+ },
+ {
+  "key": "g-fight-why-6",
+  "voice": "glitch",
+  "text": "If you tap the right pieces, I scream."
+ },
+ {
+  "key": "g-level-agent",
+  "voice": "glitch",
+  "text": "Agent. He counts. You do not. This will be short."
+ },
+ {
+  "key": "g-level-cadet",
+  "voice": "glitch",
+  "text": "Cadet actually looks at the board. Sometimes twice."
+ },
+ {
+  "key": "g-level-marshal",
+  "voice": "glitch",
+  "text": "Marshal?! Nobody picks Marshal. Nobody sane."
+ },
+ {
+  "key": "g-level-rookie",
+  "voice": "glitch",
+  "text": "Rookie. He hangs things. Do NOT tell him I said that."
+ },
+ {
+  "key": "g-level-sleepy",
+  "voice": "glitch",
+  "text": "Sleepy? He plays with his eyes shut. Fine. Take the free one."
+ },
+ {
+  "key": "g-look-give-1",
+  "voice": "glitch",
+  "text": "There. THAT is what I hit. Too slow."
+ },
+ {
+  "key": "g-look-give-10",
+  "voice": "glitch",
+  "text": "There it is. In another timeline, you spotted it first."
+ },
+ {
+  "key": "g-look-give-2",
+  "voice": "glitch",
+  "text": "I'll show you, since you can't see it."
+ },
+ {
+  "key": "g-look-give-3",
+  "voice": "glitch",
+  "text": "My move, my target. Write that down."
+ },
+ {
+  "key": "g-look-give-4",
+  "voice": "glitch",
+  "text": "Right there. I was pointing at it the whole time."
+ },
+ {
+  "key": "g-look-give-5",
+  "voice": "glitch",
+  "text": "See it now? That's the one my piece was after."
+ },
+ {
+  "key": "g-look-give-6",
+  "voice": "glitch",
+  "text": "That one. Glowing. You can have the answer. Just this once."
+ },
+ {
+  "key": "g-look-give-7",
+  "voice": "glitch",
+  "text": "Look. THAT is my snack. Next time, spot it first."
+ },
+ {
+  "key": "g-look-give-8",
+  "voice": "glitch",
+  "text": "Here's the secret. It's that one. Don't tell anyone."
+ },
+ {
+  "key": "g-look-give-9",
+  "voice": "glitch",
+  "text": "That's what I attacked. Now you know. Ugh, now you know."
+ },
+ {
+  "key": "g-look-right-1",
+  "voice": "glitch",
+  "text": "You SAW that? Nobody sees that."
+ },
+ {
+  "key": "g-look-right-10",
+  "voice": "glitch",
+  "text": "Spotted. Great. Now I have to think of something new."
+ },
+ {
+  "key": "g-look-right-11",
+  "voice": "glitch",
+  "text": "That was supposed to be a surprise. Surprise ruined."
+ },
+ {
+  "key": "g-look-right-12",
+  "voice": "glitch",
+  "text": "Stop reading my mind. It's full of snacks and secrets."
+ },
+ {
+  "key": "g-look-right-13",
+  "voice": "glitch",
+  "text": "Marshal said you'd never see that. Marshal is fired."
+ },
+ {
+  "key": "g-look-right-14",
+  "voice": "glitch",
+  "text": "Hmph. Your eyes are faster than my tricks today."
+ },
+ {
+  "key": "g-look-right-15",
+  "voice": "glitch",
+  "text": "Right piece. I hate it when it's the right piece."
+ },
+ {
+  "key": "g-look-right-16",
+  "voice": "glitch",
+  "text": "Seen? Already? I had a whole speech ready."
+ },
+ {
+  "key": "g-look-right-2",
+  "voice": "glitch",
+  "text": "Who told you to look? Stop looking."
+ },
+ {
+  "key": "g-look-right-3",
+  "voice": "glitch",
+  "text": "Ugh. Eyes open. That is cheating."
+ },
+ {
+  "key": "g-look-right-4",
+  "voice": "glitch",
+  "text": "Fine, you spotted it. Doesn't mean you'll stop it."
+ },
+ {
+  "key": "g-look-right-5",
+  "voice": "glitch",
+  "text": "How? I hid that one behind a whole other timeline."
+ },
+ {
+  "key": "g-look-right-6",
+  "voice": "glitch",
+  "text": "Lucky tap. I am rated nine thousand, and I say lucky."
+ },
+ {
+  "key": "g-look-right-7",
+  "voice": "glitch",
+  "text": "Don't look at my moves! They're private!"
+ },
+ {
+  "key": "g-look-right-8",
+  "voice": "glitch",
+  "text": "You looked FIRST? Before moving? Who does that?"
+ },
+ {
+  "key": "g-look-right-9",
+  "voice": "glitch",
+  "text": "Okay. Okay. You found it. I have other plans. Somewhere."
+ },
+ {
+  "key": "g-look-wrong-1",
+  "voice": "glitch",
+  "text": "Wrong one. Keep guessing."
+ },
+ {
+  "key": "g-look-wrong-10",
+  "voice": "glitch",
+  "text": "Wrong! This timeline is going great for me."
+ },
+ {
+  "key": "g-look-wrong-11",
+  "voice": "glitch",
+  "text": "Nah. Look where my piece is aiming."
+ },
+ {
+  "key": "g-look-wrong-12",
+  "voice": "glitch",
+  "text": "Missed! I'm doing a little dance now."
+ },
+ {
+  "key": "g-look-wrong-13",
+  "voice": "glitch",
+  "text": "Not it. Think like a goblin. A hungry goblin."
+ },
+ {
+  "key": "g-look-wrong-14",
+  "voice": "glitch",
+  "text": "Nope! Try again. I'll wait. I love waiting."
+ },
+ {
+  "key": "g-look-wrong-15",
+  "voice": "glitch",
+  "text": "Cold. Colder. Ice cream cold."
+ },
+ {
+  "key": "g-look-wrong-16",
+  "voice": "glitch",
+  "text": "That piece is safe. For now. Look somewhere else."
+ },
+ {
+  "key": "g-look-wrong-2",
+  "voice": "glitch",
+  "text": "Nope. Not even close."
+ },
+ {
+  "key": "g-look-wrong-3",
+  "voice": "glitch",
+  "text": "Ha! Look again. Or don't."
+ },
+ {
+  "key": "g-look-wrong-4",
+  "voice": "glitch",
+  "text": "Warm. No, cold. Freezing."
+ },
+ {
+  "key": "g-look-wrong-5",
+  "voice": "glitch",
+  "text": "That one? I didn't even touch that one."
+ },
+ {
+  "key": "g-look-wrong-6",
+  "voice": "glitch",
+  "text": "Nope. My move was pointing somewhere else."
+ },
+ {
+  "key": "g-look-wrong-7",
+  "voice": "glitch",
+  "text": "Wrong square! I'm writing that in my rating book."
+ },
+ {
+  "key": "g-look-wrong-8",
+  "voice": "glitch",
+  "text": "Not that. Follow my piece. Where can it bite?"
+ },
+ {
+  "key": "g-look-wrong-9",
+  "voice": "glitch",
+  "text": "Ooh, nope. Try the piece I just moved."
+ },
+ {
+  "key": "g-pacing-1",
+  "voice": "glitch",
+  "text": "Two days already? Your hand is faster than your eyes. Camp instead?"
+ },
+ {
+  "key": "g-pacing-10",
+  "voice": "glitch",
+  "text": "Even I take snack breaks. Camp is basically a snack break. With chess."
+ },
+ {
+  "key": "g-pacing-2",
+  "voice": "glitch",
+  "text": "Keep rushing. I LOVE it when you rush. Or... Camp?"
+ },
+ {
+  "key": "g-pacing-3",
+  "voice": "glitch",
+  "text": "Speed is my favourite thing about you. Camp first, if you dare."
+ },
+ {
+  "key": "g-pacing-4",
+  "voice": "glitch",
+  "text": "Faster! Faster! Oh wait, faster is how I win. Camp?"
+ },
+ {
+  "key": "g-pacing-5",
+  "voice": "glitch",
+  "text": "Two days in one go. My cronies need a lie-down. Camp?"
+ },
+ {
+  "key": "g-pacing-6",
+  "voice": "glitch",
+  "text": "You're rushing. I LOVE rushing. That's why you should try Camp."
+ },
+ {
+  "key": "g-pacing-7",
+  "voice": "glitch",
+  "text": "Another day? Sure. Or Camp, where you practise looking first."
+ },
+ {
+  "key": "g-pacing-8",
+  "voice": "glitch",
+  "text": "Slow down? Never. Please never. Unless... Camp."
+ },
+ {
+  "key": "g-pacing-9",
+  "voice": "glitch",
+  "text": "My cronies are exhausted. Come and bother me at Camp instead."
+ },
+ {
+  "key": "g-play-capture-1",
+  "voice": "glitch",
+  "text": "Mine now. Thanks."
+ },
+ {
+  "key": "g-play-capture-10",
+  "voice": "glitch",
+  "text": "Yoink!"
+ },
+ {
+  "key": "g-play-capture-11",
+  "voice": "glitch",
+  "text": "That piece is mine now. It lives in my pocket."
+ },
+ {
+  "key": "g-play-capture-12",
+  "voice": "glitch",
+  "text": "Taken! I'll put it with the others."
+ },
+ {
+  "key": "g-play-capture-13",
+  "voice": "glitch",
+  "text": "Mmm. Tastes like victory. My victory."
+ },
+ {
+  "key": "g-play-capture-14",
+  "voice": "glitch",
+  "text": "Oops. Did I take that? I did. On purpose."
+ },
+ {
+  "key": "g-play-capture-15",
+  "voice": "glitch",
+  "text": "Lunch is served. Thank you."
+ },
+ {
+  "key": "g-play-capture-16",
+  "voice": "glitch",
+  "text": "My timeline just got one piece better."
+ },
+ {
+  "key": "g-play-capture-2",
+  "voice": "glitch",
+  "text": "Om nom. Delicious."
+ },
+ {
+  "key": "g-play-capture-3",
+  "voice": "glitch",
+  "text": "You left it out. I do not leave things out."
+ },
+ {
+  "key": "g-play-capture-4",
+  "voice": "glitch",
+  "text": "I'll take that. And the next one."
+ },
+ {
+  "key": "g-play-capture-5",
+  "voice": "glitch",
+  "text": "Snack acquired. Timeline improving."
+ },
+ {
+  "key": "g-play-capture-6",
+  "voice": "glitch",
+  "text": "Was that one important? It looked important."
+ },
+ {
+  "key": "g-play-capture-7",
+  "voice": "glitch",
+  "text": "Into the bag it goes."
+ },
+ {
+  "key": "g-play-capture-8",
+  "voice": "glitch",
+  "text": "Crunch. That one was crunchy."
+ },
+ {
+  "key": "g-play-capture-9",
+  "voice": "glitch",
+  "text": "Got it. My collection grows."
+ },
+ {
+  "key": "g-play-check-1",
+  "voice": "glitch",
+  "text": "CHECK. Move him. Go on."
+ },
+ {
+  "key": "g-play-check-10",
+  "voice": "glitch",
+  "text": "Ding ding! Check!"
+ },
+ {
+  "key": "g-play-check-11",
+  "voice": "glitch",
+  "text": "Check. That's the scary word. Say it with me."
+ },
+ {
+  "key": "g-play-check-12",
+  "voice": "glitch",
+  "text": "CHECK! I've always wanted to shout that."
+ },
+ {
+  "key": "g-play-check-13",
+  "voice": "glitch",
+  "text": "Check. Find a safe square. If there is one."
+ },
+ {
+  "key": "g-play-check-14",
+  "voice": "glitch",
+  "text": "Your king is in my spotlight. Check!"
+ },
+ {
+  "key": "g-play-check-15",
+  "voice": "glitch",
+  "text": "Check! Rated nine thousand, remember?"
+ },
+ {
+  "key": "g-play-check-16",
+  "voice": "glitch",
+  "text": "Poke. Check. I'll poke again later."
+ },
+ {
+  "key": "g-play-check-2",
+  "voice": "glitch",
+  "text": "Your king. My finger. Pointing."
+ },
+ {
+  "key": "g-play-check-3",
+  "voice": "glitch",
+  "text": "Check! I love this bit."
+ },
+ {
+  "key": "g-play-check-4",
+  "voice": "glitch",
+  "text": "Run, little king. Run in a small circle."
+ },
+ {
+  "key": "g-play-check-5",
+  "voice": "glitch",
+  "text": "Check, and I am not even trying yet."
+ },
+ {
+  "key": "g-play-check-6",
+  "voice": "glitch",
+  "text": "That is a check. You do have to answer it."
+ },
+ {
+  "key": "g-play-check-7",
+  "voice": "glitch",
+  "text": "Knock knock. It's check."
+ },
+ {
+  "key": "g-play-check-8",
+  "voice": "glitch",
+  "text": "Check! Your king should really get a hobby."
+ },
+ {
+  "key": "g-play-check-9",
+  "voice": "glitch",
+  "text": "Check. Your king looks worried. Mine looks fabulous."
+ },
+ {
+  "key": "g-play-fifty-1",
+  "voice": "glitch",
+  "text": "Fifty moves, no pawn, no capture. Draw, by law."
+ },
+ {
+  "key": "g-play-fifty-10",
+  "voice": "glitch",
+  "text": "Nothing happened for ages. Draw."
+ },
+ {
+  "key": "g-play-fifty-2",
+  "voice": "glitch",
+  "text": "Nothing has happened for fifty moves. That is a draw and that is your fault."
+ },
+ {
+  "key": "g-play-fifty-3",
+  "voice": "glitch",
+  "text": "Fifty moves of nothing. Draw!"
+ },
+ {
+  "key": "g-play-fifty-4",
+  "voice": "glitch",
+  "text": "No captures, no pawn moves, fifty times. That's a draw."
+ },
+ {
+  "key": "g-play-fifty-5",
+  "voice": "glitch",
+  "text": "Fifty moves! I fell asleep twice. Draw."
+ },
+ {
+  "key": "g-play-fifty-6",
+  "voice": "glitch",
+  "text": "The fifty move rule. Look it up. Draw."
+ },
+ {
+  "key": "g-play-fifty-7",
+  "voice": "glitch",
+  "text": "Fifty moves, zero action. Draw."
+ },
+ {
+  "key": "g-play-fifty-8",
+  "voice": "glitch",
+  "text": "Draw by fifty moves. I counted on my toes."
+ },
+ {
+  "key": "g-play-fifty-9",
+  "voice": "glitch",
+  "text": "Fifty moves! My snacks ran out. Draw."
+ },
+ {
+  "key": "g-play-gloat-1",
+  "voice": "glitch",
+  "text": "OOH. That was bad. That was SO bad."
+ },
+ {
+  "key": "g-play-gloat-10",
+  "voice": "glitch",
+  "text": "Thanks! I'll put it next to my trophy."
+ },
+ {
+  "key": "g-play-gloat-2",
+  "voice": "glitch",
+  "text": "Ha! Did you look before you did that?"
+ },
+ {
+  "key": "g-play-gloat-3",
+  "voice": "glitch",
+  "text": "You just gave me something. Again."
+ },
+ {
+  "key": "g-play-gloat-4",
+  "voice": "glitch",
+  "text": "I did not even have to set that one up."
+ },
+ {
+  "key": "g-play-gloat-5",
+  "voice": "glitch",
+  "text": "That is going in my scrapbook."
+ },
+ {
+  "key": "g-play-gloat-6",
+  "voice": "glitch",
+  "text": "Write that one down. In the bad book."
+ },
+ {
+  "key": "g-play-gloat-7",
+  "voice": "glitch",
+  "text": "Thank you! Genuinely. Thank you."
+ },
+ {
+  "key": "g-play-gloat-8",
+  "voice": "glitch",
+  "text": "Oops for you. Yay for me."
+ },
+ {
+  "key": "g-play-gloat-9",
+  "voice": "glitch",
+  "text": "In MY timeline, that was a gift."
+ },
+ {
+  "key": "g-play-mated-1",
+  "voice": "glitch",
+  "text": "Mate. On me. In front of everyone."
+ },
+ {
+  "key": "g-play-mated-10",
+  "voice": "glitch",
+  "text": "That's mate. Let's never speak of this."
+ },
+ {
+  "key": "g-play-mated-2",
+  "voice": "glitch",
+  "text": "That is mate and I hate it here."
+ },
+ {
+  "key": "g-play-mated-3",
+  "voice": "glitch",
+  "text": "Checkmate. I am going to lie down."
+ },
+ {
+  "key": "g-play-mated-4",
+  "voice": "glitch",
+  "text": "Checkmate?! In THIS timeline?!"
+ },
+ {
+  "key": "g-play-mated-5",
+  "voice": "glitch",
+  "text": "Mate. I'm going to go sit in a cupboard."
+ },
+ {
+  "key": "g-play-mated-6",
+  "voice": "glitch",
+  "text": "That's mate. I'm telling everyone it was a draw."
+ },
+ {
+  "key": "g-play-mated-7",
+  "voice": "glitch",
+  "text": "My king! He had nowhere to go! Nowhere!"
+ },
+ {
+  "key": "g-play-mated-8",
+  "voice": "glitch",
+  "text": "Checkmate. My rating just fainted."
+ },
+ {
+  "key": "g-play-mated-9",
+  "voice": "glitch",
+  "text": "Mated. By you. I need a snack. A big one."
+ },
+ {
+  "key": "g-play-material-1",
+  "voice": "glitch",
+  "text": "Neither of us can mate with that. Draw."
+ },
+ {
+  "key": "g-play-material-10",
+  "voice": "glitch",
+  "text": "Not enough wood left. Draw."
+ },
+ {
+  "key": "g-play-material-2",
+  "voice": "glitch",
+  "text": "Two kings staring. Thrilling. Draw."
+ },
+ {
+  "key": "g-play-material-3",
+  "voice": "glitch",
+  "text": "Not enough pieces to mate. Draw!"
+ },
+ {
+  "key": "g-play-material-4",
+  "voice": "glitch",
+  "text": "Nobody can checkmate with that. Draw."
+ },
+ {
+  "key": "g-play-material-5",
+  "voice": "glitch",
+  "text": "Too few pieces. Nobody wins. Draw."
+ },
+ {
+  "key": "g-play-material-6",
+  "voice": "glitch",
+  "text": "That's not enough to mate. We call it a draw."
+ },
+ {
+  "key": "g-play-material-7",
+  "voice": "glitch",
+  "text": "My army's gone. Yours is too small. Draw."
+ },
+ {
+  "key": "g-play-material-8",
+  "voice": "glitch",
+  "text": "Just kings, basically. Draw."
+ },
+ {
+  "key": "g-play-material-9",
+  "voice": "glitch",
+  "text": "Nobody can finish anybody. Draw."
+ },
+ {
+  "key": "g-play-mates-1",
+  "voice": "glitch",
+  "text": "Checkmate. That is the whole game, that is."
+ },
+ {
+  "key": "g-play-mates-10",
+  "voice": "glitch",
+  "text": "That's the game. I'm rated nine thousand, you know."
+ },
+ {
+  "key": "g-play-mates-2",
+  "voice": "glitch",
+  "text": "Mate! Your king ran out of floor."
+ },
+ {
+  "key": "g-play-mates-3",
+  "voice": "glitch",
+  "text": "And that is mate. Camp tomorrow, maybe?"
+ },
+ {
+  "key": "g-play-mates-4",
+  "voice": "glitch",
+  "text": "Mate! That was fun. For me."
+ },
+ {
+  "key": "g-play-mates-5",
+  "voice": "glitch",
+  "text": "Checkmate! Rematch? I'd love another win."
+ },
+ {
+  "key": "g-play-mates-6",
+  "voice": "glitch",
+  "text": "That's mate. Good game. Mostly MY good game."
+ },
+ {
+  "key": "g-play-mates-7",
+  "voice": "glitch",
+  "text": "Checkmate. Put that one in my highlights."
+ },
+ {
+  "key": "g-play-mates-8",
+  "voice": "glitch",
+  "text": "Mate! My king is doing a victory lap."
+ },
+ {
+  "key": "g-play-mates-9",
+  "voice": "glitch",
+  "text": "Checkmate. Look back and find where it turned."
+ },
+ {
+  "key": "g-play-nervous-1",
+  "voice": "glitch",
+  "text": "This is fine. Everything is fine."
+ },
+ {
+  "key": "g-play-nervous-10",
+  "voice": "glitch",
+  "text": "Nobody panic. Especially me."
+ },
+ {
+  "key": "g-play-nervous-2",
+  "voice": "glitch",
+  "text": "I am not losing. I am repositioning."
+ },
+ {
+  "key": "g-play-nervous-3",
+  "voice": "glitch",
+  "text": "Sweating? Goblins do not sweat."
+ },
+ {
+  "key": "g-play-nervous-4",
+  "voice": "glitch",
+  "text": "I meant to do that. All of it."
+ },
+ {
+  "key": "g-play-nervous-5",
+  "voice": "glitch",
+  "text": "It only LOOKS bad from your side."
+ },
+ {
+  "key": "g-play-nervous-6",
+  "voice": "glitch",
+  "text": "I have a plan. I will have a plan. Soon."
+ },
+ {
+  "key": "g-play-nervous-7",
+  "voice": "glitch",
+  "text": "My rating is still nine thousand. It's just resting."
+ },
+ {
+  "key": "g-play-nervous-8",
+  "voice": "glitch",
+  "text": "I'm fine. I'm just checking the other timelines."
+ },
+ {
+  "key": "g-play-nervous-9",
+  "voice": "glitch",
+  "text": "This is all part of my plan. The plan is to panic."
+ },
+ {
+  "key": "g-play-quiet-1",
+  "voice": "glitch",
+  "text": "There. Deal with that."
+ },
+ {
+  "key": "g-play-quiet-10",
+  "voice": "glitch",
+  "text": "Hmm. Hmm. Yes. That one."
+ },
+ {
+  "key": "g-play-quiet-11",
+  "voice": "glitch",
+  "text": "Shuffle shuffle. Very clever shuffle."
+ },
+ {
+  "key": "g-play-quiet-12",
+  "voice": "glitch",
+  "text": "My piece moved. Now it's staring at your pieces."
+ },
+ {
+  "key": "g-play-quiet-13",
+  "voice": "glitch",
+  "text": "That's a timeline move. Very advanced. Even I don't get it."
+ },
+ {
+  "key": "g-play-quiet-14",
+  "voice": "glitch",
+  "text": "Sneaky move. Probably. I'll decide later."
+ },
+ {
+  "key": "g-play-quiet-15",
+  "voice": "glitch",
+  "text": "I moved there because it looked comfy."
+ },
+ {
+  "key": "g-play-quiet-16",
+  "voice": "glitch",
+  "text": "Your turn. I've left you a surprise. Maybe."
+ },
+ {
+  "key": "g-play-quiet-2",
+  "voice": "glitch",
+  "text": "Quiet move. The scary ones are quiet."
+ },
+ {
+  "key": "g-play-quiet-3",
+  "voice": "glitch",
+  "text": "I am improving my position. You are improving nothing."
+ },
+ {
+  "key": "g-play-quiet-4",
+  "voice": "glitch",
+  "text": "Nothing happened. Probably."
+ },
+ {
+  "key": "g-play-quiet-5",
+  "voice": "glitch",
+  "text": "Look at it. Look at it properly."
+ },
+ {
+  "key": "g-play-quiet-6",
+  "voice": "glitch",
+  "text": "That move is a trap. Or it isn't. Good luck."
+ },
+ {
+  "key": "g-play-quiet-7",
+  "voice": "glitch",
+  "text": "I moved. Your turn to be wrong."
+ },
+ {
+  "key": "g-play-quiet-8",
+  "voice": "glitch",
+  "text": "Tiny move. Huge plan. Possibly."
+ },
+ {
+  "key": "g-play-quiet-9",
+  "voice": "glitch",
+  "text": "I'm setting something up. Don't ask what."
+ },
+ {
+  "key": "g-play-quit-1",
+  "voice": "glitch",
+  "text": "Resigning?! Against ME? Say it louder."
+ },
+ {
+  "key": "g-play-quit-10",
+  "voice": "glitch",
+  "text": "Leaving already? I was just getting good."
+ },
+ {
+  "key": "g-play-quit-2",
+  "voice": "glitch",
+  "text": "Giving up. Noted. Filed. Laminated."
+ },
+ {
+  "key": "g-play-quit-3",
+  "voice": "glitch",
+  "text": "You can resign. I am writing it down though."
+ },
+ {
+  "key": "g-play-quit-4",
+  "voice": "glitch",
+  "text": "Stopping? I'll count it as a win. In my head."
+ },
+ {
+  "key": "g-play-quit-5",
+  "voice": "glitch",
+  "text": "You stopped. I'm doing a small victory dance."
+ },
+ {
+  "key": "g-play-quit-6",
+  "voice": "glitch",
+  "text": "Bye! Come back when you want another go."
+ },
+ {
+  "key": "g-play-quit-7",
+  "voice": "glitch",
+  "text": "Giving up? I'll tell my cronies I won."
+ },
+ {
+  "key": "g-play-quit-8",
+  "voice": "glitch",
+  "text": "Stopping here. Fine. The board will wait for you."
+ },
+ {
+  "key": "g-play-quit-9",
+  "voice": "glitch",
+  "text": "Quitting! My rating goes up. In my imagination."
+ },
+ {
+  "key": "g-play-rage-1",
+  "voice": "glitch",
+  "text": "WHAT. That was MINE."
+ },
+ {
+  "key": "g-play-rage-10",
+  "voice": "glitch",
+  "text": "Not fair! I was about to use that!"
+ },
+ {
+  "key": "g-play-rage-2",
+  "voice": "glitch",
+  "text": "No no no no NO."
+ },
+ {
+  "key": "g-play-rage-3",
+  "voice": "glitch",
+  "text": "Give it BACK."
+ },
+ {
+  "key": "g-play-rage-4",
+  "voice": "glitch",
+  "text": "That is theft! That is time-theft!"
+ },
+ {
+  "key": "g-play-rage-5",
+  "voice": "glitch",
+  "text": "I was using that piece!"
+ },
+ {
+  "key": "g-play-rage-6",
+  "voice": "glitch",
+  "text": "Rrrgh. Fine. FINE."
+ },
+ {
+  "key": "g-play-rage-7",
+  "voice": "glitch",
+  "text": "You cannot just TAKE things."
+ },
+ {
+  "key": "g-play-rage-8",
+  "voice": "glitch",
+  "text": "My piece! My beautiful piece!"
+ },
+ {
+  "key": "g-play-rage-9",
+  "voice": "glitch",
+  "text": "That one had a name! It was Gary!"
+ },
+ {
+  "key": "g-play-repetition-1",
+  "voice": "glitch",
+  "text": "Same position three times. Even I am bored."
+ },
+ {
+  "key": "g-play-repetition-10",
+  "voice": "glitch",
+  "text": "This position again? Draw. I'm dizzy."
+ },
+ {
+  "key": "g-play-repetition-2",
+  "voice": "glitch",
+  "text": "Round and round. Draw. I'll allow it."
+ },
+ {
+  "key": "g-play-repetition-3",
+  "voice": "glitch",
+  "text": "We have done this. Twice. Draw."
+ },
+ {
+  "key": "g-play-repetition-4",
+  "voice": "glitch",
+  "text": "Haven't we been here before? Draw."
+ },
+ {
+  "key": "g-play-repetition-5",
+  "voice": "glitch",
+  "text": "Same moves, same board, same draw."
+ },
+ {
+  "key": "g-play-repetition-6",
+  "voice": "glitch",
+  "text": "We keep doing this. Draw!"
+ },
+ {
+  "key": "g-play-repetition-7",
+  "voice": "glitch",
+  "text": "Three times the same. Even my goblin brain noticed."
+ },
+ {
+  "key": "g-play-repetition-8",
+  "voice": "glitch",
+  "text": "Round and round we go. It's a draw."
+ },
+ {
+  "key": "g-play-repetition-9",
+  "voice": "glitch",
+  "text": "Repeat, repeat, repeat. Draw."
+ },
+ {
+  "key": "g-play-resign-1",
+  "voice": "glitch",
+  "text": "Time glitch! This timeline never happened!"
+ },
+ {
+  "key": "g-play-resign-10",
+  "voice": "glitch",
+  "text": "Oh look, a distraction! Bye!"
+ },
+ {
+  "key": "g-play-resign-2",
+  "voice": "glitch",
+  "text": "You know what? This whole game was a rehearsal. Doesn't count. BYE."
+ },
+ {
+  "key": "g-play-resign-3",
+  "voice": "glitch",
+  "text": "I am needed elsewhere. Urgently. In a different century."
+ },
+ {
+  "key": "g-play-resign-4",
+  "voice": "glitch",
+  "text": "TIMELINE CORRUPTED. Nobody saw anything."
+ },
+ {
+  "key": "g-play-resign-5",
+  "voice": "glitch",
+  "text": "I'm calling it. Technical fault. Mine."
+ },
+ {
+  "key": "g-play-resign-6",
+  "voice": "glitch",
+  "text": "I have to go. My snacks are burning."
+ },
+ {
+  "key": "g-play-resign-7",
+  "voice": "glitch",
+  "text": "Wrong timeline! I'm off to find a better one."
+ },
+ {
+  "key": "g-play-resign-8",
+  "voice": "glitch",
+  "text": "I'm not losing, I'm LEAVING. Big difference."
+ },
+ {
+  "key": "g-play-resign-9",
+  "voice": "glitch",
+  "text": "Glitch has left the board. Glitch was never here."
+ },
+ {
+  "key": "g-play-stalemate-1",
+  "voice": "glitch",
+  "text": "Stalemate! No moves and no check. I'll take the half."
+ },
+ {
+  "key": "g-play-stalemate-10",
+  "voice": "glitch",
+  "text": "Stalemate. Next time, leave my king a little window."
+ },
+ {
+  "key": "g-play-stalemate-2",
+  "voice": "glitch",
+  "text": "Ha! You squeezed me so hard I stopped existing. Draw."
+ },
+ {
+  "key": "g-play-stalemate-3",
+  "voice": "glitch",
+  "text": "Stalemate. Leave me a square next time. Actually, don't."
+ },
+ {
+  "key": "g-play-stalemate-4",
+  "voice": "glitch",
+  "text": "Stalemate! I can't move, but I'm not in check. Half!"
+ },
+ {
+  "key": "g-play-stalemate-5",
+  "voice": "glitch",
+  "text": "No moves! Not checkmate though. Stalemate. Phew."
+ },
+ {
+  "key": "g-play-stalemate-6",
+  "voice": "glitch",
+  "text": "Stalemate. My king is stuck, but safe. I'll take that."
+ },
+ {
+  "key": "g-play-stalemate-7",
+  "voice": "glitch",
+  "text": "Stuck! Not mated. Stuck. That's a draw!"
+ },
+ {
+  "key": "g-play-stalemate-8",
+  "voice": "glitch",
+  "text": "Stalemate! You were SO close. I was SO lucky."
+ },
+ {
+  "key": "g-play-stalemate-9",
+  "voice": "glitch",
+  "text": "Frozen! Nobody wins. Everybody sulks."
+ },
+ {
+  "key": "g-play-start-1",
+  "voice": "glitch",
+  "text": "A whole game? Against ME? Adorable."
+ },
+ {
+  "key": "g-play-start-10",
+  "voice": "glitch",
+  "text": "Ready? I've been warming up. By sleeping."
+ },
+ {
+  "key": "g-play-start-2",
+  "voice": "glitch",
+  "text": "Full game. No hints, no second try, no crying."
+ },
+ {
+  "key": "g-play-start-3",
+  "voice": "glitch",
+  "text": "You move first. Enjoy it. It is the last thing you enjoy."
+ },
+ {
+  "key": "g-play-start-4",
+  "voice": "glitch",
+  "text": "I have played this game nine thousand times. In a row. Backwards."
+ },
+ {
+  "key": "g-play-start-5",
+  "voice": "glitch",
+  "text": "White goes first. Black goes last. I like going last."
+ },
+ {
+  "key": "g-play-start-6",
+  "voice": "glitch",
+  "text": "Set the clock. Actually don't. I want this to drag."
+ },
+ {
+  "key": "g-play-start-7",
+  "voice": "glitch",
+  "text": "Rated nine thousand. Unofficially. Officially too, in my head."
+ },
+ {
+  "key": "g-play-start-8",
+  "voice": "glitch",
+  "text": "A whole game! I've packed snacks for the long bits."
+ },
+ {
+  "key": "g-play-start-9",
+  "voice": "glitch",
+  "text": "Let's play. Every timeline where I lose is fake."
+ },
+ {
+  "key": "g-ref-blunder-1",
+  "voice": "glitch",
+  "text": "OOH. That was bad. That was SO bad."
+ },
+ {
+  "key": "g-ref-blunder-10",
+  "voice": "glitch",
+  "text": "Uh oh. Something just came loose."
+ },
+ {
+  "key": "g-ref-blunder-11",
+  "voice": "glitch",
+  "text": "Somebody left the door open. I love an open door."
+ },
+ {
+  "key": "g-ref-blunder-12",
+  "voice": "glitch",
+  "text": "Whoops. The other side is smiling."
+ },
+ {
+  "key": "g-ref-blunder-13",
+  "voice": "glitch",
+  "text": "Did you count? I don't think you counted."
+ },
+ {
+  "key": "g-ref-blunder-14",
+  "voice": "glitch",
+  "text": "Somebody just made my whole day."
+ },
+ {
+  "key": "g-ref-blunder-15",
+  "voice": "glitch",
+  "text": "Yikes. Look what that move left behind."
+ },
+ {
+  "key": "g-ref-blunder-16",
+  "voice": "glitch",
+  "text": "That one's going on my fridge."
+ },
+ {
+  "key": "g-ref-blunder-2",
+  "voice": "glitch",
+  "text": "Somebody just gave one away. In front of everyone."
+ },
+ {
+  "key": "g-ref-blunder-3",
+  "voice": "glitch",
+  "text": "Did you look before doing that? Did you?"
+ },
+ {
+  "key": "g-ref-blunder-4",
+  "voice": "glitch",
+  "text": "That one is going in my scrapbook."
+ },
+ {
+  "key": "g-ref-blunder-5",
+  "voice": "glitch",
+  "text": "I did not even have to set that up."
+ },
+ {
+  "key": "g-ref-blunder-6",
+  "voice": "glitch",
+  "text": "Thank you. Genuinely. Thank you."
+ },
+ {
+  "key": "g-ref-blunder-7",
+  "voice": "glitch",
+  "text": "Somebody has decided to be generous today."
+ },
+ {
+  "key": "g-ref-blunder-8",
+  "voice": "glitch",
+  "text": "Ooh. That piece is feeling very lonely now."
+ },
+ {
+  "key": "g-ref-blunder-9",
+  "voice": "glitch",
+  "text": "In my timeline, that's a gift."
+ },
+ {
+  "key": "g-ref-capture-1",
+  "voice": "glitch",
+  "text": "Gone. Eaten."
+ },
+ {
+  "key": "g-ref-capture-10",
+  "voice": "glitch",
+  "text": "Taken! Straight off the board."
+ },
+ {
+  "key": "g-ref-capture-11",
+  "voice": "glitch",
+  "text": "Another one collected."
+ },
+ {
+  "key": "g-ref-capture-12",
+  "voice": "glitch",
+  "text": "Chomp. Delicious."
+ },
+ {
+  "key": "g-ref-capture-13",
+  "voice": "glitch",
+  "text": "Bye bye, little piece."
+ },
+ {
+  "key": "g-ref-capture-14",
+  "voice": "glitch",
+  "text": "Lunch is served."
+ },
+ {
+  "key": "g-ref-capture-15",
+  "voice": "glitch",
+  "text": "A piece falls! I'll hold a tiny funeral."
+ },
+ {
+  "key": "g-ref-capture-16",
+  "voice": "glitch",
+  "text": "Taken. Was it free? Check it was free."
+ },
+ {
+  "key": "g-ref-capture-2",
+  "voice": "glitch",
+  "text": "Om nom. Off the board."
+ },
+ {
+  "key": "g-ref-capture-3",
+  "voice": "glitch",
+  "text": "Taken. Somebody left something out."
+ },
+ {
+  "key": "g-ref-capture-4",
+  "voice": "glitch",
+  "text": "Into the bag it goes."
+ },
+ {
+  "key": "g-ref-capture-5",
+  "voice": "glitch",
+  "text": "Snack acquired. Sadly, not by me."
+ },
+ {
+  "key": "g-ref-capture-6",
+  "voice": "glitch",
+  "text": "Was that one important? It looked important."
+ },
+ {
+  "key": "g-ref-capture-7",
+  "voice": "glitch",
+  "text": "One fewer piece. I approve of fewer pieces."
+ },
+ {
+  "key": "g-ref-capture-8",
+  "voice": "glitch",
+  "text": "Crunch! That one was crunchy."
+ },
+ {
+  "key": "g-ref-capture-9",
+  "voice": "glitch",
+  "text": "Yoink!"
+ },
+ {
+  "key": "g-ref-check-1",
+  "voice": "glitch",
+  "text": "CHECK. Move that king. Go on."
+ },
+ {
+  "key": "g-ref-check-10",
+  "voice": "glitch",
+  "text": "Ding ding! Check!"
+ },
+ {
+  "key": "g-ref-check-11",
+  "voice": "glitch",
+  "text": "Check. Out of the way, your majesty."
+ },
+ {
+  "key": "g-ref-check-12",
+  "voice": "glitch",
+  "text": "Check. Find a safe square."
+ },
+ {
+  "key": "g-ref-check-13",
+  "voice": "glitch",
+  "text": "CHECK! The best word in chess."
+ },
+ {
+  "key": "g-ref-check-14",
+  "voice": "glitch",
+  "text": "King under attack! This is SO exciting."
+ },
+ {
+  "key": "g-ref-check-15",
+  "voice": "glitch",
+  "text": "Check. Block it, run, or take it."
+ },
+ {
+  "key": "g-ref-check-16",
+  "voice": "glitch",
+  "text": "Somebody is hunting kings now. Check!"
+ },
+ {
+  "key": "g-ref-check-2",
+  "voice": "glitch",
+  "text": "Check. The king has to answer."
+ },
+ {
+  "key": "g-ref-check-3",
+  "voice": "glitch",
+  "text": "Check! I love this bit."
+ },
+ {
+  "key": "g-ref-check-4",
+  "voice": "glitch",
+  "text": "Run, little king. Run in a small circle."
+ },
+ {
+  "key": "g-ref-check-5",
+  "voice": "glitch",
+  "text": "Knock knock. It's check."
+ },
+ {
+  "key": "g-ref-check-6",
+  "voice": "glitch",
+  "text": "That is a check. You do have to deal with it."
+ },
+ {
+  "key": "g-ref-check-7",
+  "voice": "glitch",
+  "text": "King's in trouble. Not my king though."
+ },
+ {
+  "key": "g-ref-check-8",
+  "voice": "glitch",
+  "text": "Check! Somebody's king is sweating."
+ },
+ {
+  "key": "g-ref-check-9",
+  "voice": "glitch",
+  "text": "Poke! Check!"
+ },
+ {
+  "key": "g-ref-drew-1",
+  "voice": "glitch",
+  "text": "A draw. Nobody wins. Correct result, I think."
+ },
+ {
+  "key": "g-ref-drew-10",
+  "voice": "glitch",
+  "text": "Half a point for you. I'll keep the other half."
+ },
+ {
+  "key": "g-ref-drew-2",
+  "voice": "glitch",
+  "text": "Half each. Half a thing for you."
+ },
+ {
+  "key": "g-ref-drew-3",
+  "voice": "glitch",
+  "text": "Drawn. Two of you and still no winner. Marvellous."
+ },
+ {
+  "key": "g-ref-drew-4",
+  "voice": "glitch",
+  "text": "You have drawn with your own sibling. Historic."
+ },
+ {
+  "key": "g-ref-drew-5",
+  "voice": "glitch",
+  "text": "Draw. Half a point. Half a snack."
+ },
+ {
+  "key": "g-ref-drew-6",
+  "voice": "glitch",
+  "text": "Nobody wins. Nobody loses. I'm confused."
+ },
+ {
+  "key": "g-ref-drew-7",
+  "voice": "glitch",
+  "text": "A draw! The timeline couldn't decide."
+ },
+ {
+  "key": "g-ref-drew-8",
+  "voice": "glitch",
+  "text": "A draw. A tie. A stalemate of feelings."
+ },
+ {
+  "key": "g-ref-drew-9",
+  "voice": "glitch",
+  "text": "Drawn. Shake hands. Or don't. I'm not your referee. Wait, I am."
+ },
+ {
+  "key": "g-ref-fifty-1",
+  "voice": "glitch",
+  "text": "Fifty moves, no pawn, no capture. Draw, by law."
+ },
+ {
+  "key": "g-ref-fifty-10",
+  "voice": "glitch",
+  "text": "Fifty! No pawn moved, nothing was taken. Draw."
+ },
+ {
+  "key": "g-ref-fifty-2",
+  "voice": "glitch",
+  "text": "Nothing has happened for fifty moves. That is a draw and it is both your faults."
+ },
+ {
+  "key": "g-ref-fifty-3",
+  "voice": "glitch",
+  "text": "Fifty. Moves. I counted. Draw."
+ },
+ {
+  "key": "g-ref-fifty-4",
+  "voice": "glitch",
+  "text": "Fifty moves and nobody took anything. Draw."
+ },
+ {
+  "key": "g-ref-fifty-5",
+  "voice": "glitch",
+  "text": "Fifty moves! Somebody was supposed to do something."
+ },
+ {
+  "key": "g-ref-fifty-6",
+  "voice": "glitch",
+  "text": "Fifty quiet moves. The rule says draw."
+ },
+ {
+  "key": "g-ref-fifty-7",
+  "voice": "glitch",
+  "text": "Fifty moves. I've aged. Draw."
+ },
+ {
+  "key": "g-ref-fifty-8",
+  "voice": "glitch",
+  "text": "That's the fifty move rule. Draw!"
+ },
+ {
+  "key": "g-ref-fifty-9",
+  "voice": "glitch",
+  "text": "Fifty moves of dancing. Draw."
+ },
+ {
+  "key": "g-ref-great-1",
+  "voice": "glitch",
+  "text": "…Where did THAT come from."
+ },
+ {
+  "key": "g-ref-great-10",
+  "voice": "glitch",
+  "text": "Ugh. The best one. Again."
+ },
+ {
+  "key": "g-ref-great-11",
+  "voice": "glitch",
+  "text": "Somebody is playing in the good timeline. Unfair."
+ },
+ {
+  "key": "g-ref-great-12",
+  "voice": "glitch",
+  "text": "That move. I'm putting it in a museum."
+ },
+ {
+  "key": "g-ref-great-13",
+  "voice": "glitch",
+  "text": "Wow. I mean... boo. Wow."
+ },
+ {
+  "key": "g-ref-great-14",
+  "voice": "glitch",
+  "text": "Big move. My rating just shivered."
+ },
+ {
+  "key": "g-ref-great-15",
+  "voice": "glitch",
+  "text": "You saw it coming. I didn't. I'm the villain!"
+ },
+ {
+  "key": "g-ref-great-16",
+  "voice": "glitch",
+  "text": "Who gave you X-ray eyes? Give them back."
+ },
+ {
+  "key": "g-ref-great-2",
+  "voice": "glitch",
+  "text": "No. No no. Nobody is supposed to find those."
+ },
+ {
+  "key": "g-ref-great-3",
+  "voice": "glitch",
+  "text": "Fine. You saw it. Anyone could have. Probably."
+ },
+ {
+  "key": "g-ref-great-4",
+  "voice": "glitch",
+  "text": "Who taught you that? Was it me? It was me."
+ },
+ {
+  "key": "g-ref-great-5",
+  "voice": "glitch",
+  "text": "I am not nervous. You are just being annoying."
+ },
+ {
+  "key": "g-ref-great-6",
+  "voice": "glitch",
+  "text": "That is the move. You found the move. Boo."
+ },
+ {
+  "key": "g-ref-great-7",
+  "voice": "glitch",
+  "text": "That was the engine's move! Stop it!"
+ },
+ {
+  "key": "g-ref-great-8",
+  "voice": "glitch",
+  "text": "Whoa. That was a grown-up move."
+ },
+ {
+  "key": "g-ref-great-9",
+  "voice": "glitch",
+  "text": "That was sneaky. I respect sneaky."
+ },
+ {
+  "key": "g-ref-invite-1",
+  "voice": "glitch",
+  "text": "Somebody wants to play! On a whole other phone. Sneaky."
+ },
+ {
+  "key": "g-ref-invite-10",
+  "voice": "glitch",
+  "text": "Knock knock. Somebody's here. With a chessboard."
+ },
+ {
+  "key": "g-ref-invite-2",
+  "voice": "glitch",
+  "text": "Psst. You've been challenged. From over there."
+ },
+ {
+  "key": "g-ref-invite-3",
+  "voice": "glitch",
+  "text": "Somebody wants a game. I'll referee from both phones."
+ },
+ {
+  "key": "g-ref-invite-4",
+  "voice": "glitch",
+  "text": "Incoming! Somebody wants to play you."
+ },
+ {
+  "key": "g-ref-invite-5",
+  "voice": "glitch",
+  "text": "A challenge! Accept, if you dare."
+ },
+ {
+  "key": "g-ref-invite-6",
+  "voice": "glitch",
+  "text": "Ding! Somebody wants a game."
+ },
+ {
+  "key": "g-ref-invite-7",
+  "voice": "glitch",
+  "text": "Somebody is ready to play. Are you?"
+ },
+ {
+  "key": "g-ref-invite-8",
+  "voice": "glitch",
+  "text": "A challenge! I'll bring the whistle."
+ },
+ {
+  "key": "g-ref-invite-9",
+  "voice": "glitch",
+  "text": "Somebody wants a match. Or a rematch."
+ },
+ {
+  "key": "g-ref-lost-1",
+  "voice": "glitch",
+  "text": "Bad luck. The rematch is one tap away."
+ },
+ {
+  "key": "g-ref-lost-10",
+  "voice": "glitch",
+  "text": "Lost. In another timeline, you won. Probably."
+ },
+ {
+  "key": "g-ref-lost-2",
+  "voice": "glitch",
+  "text": "Lost this one. It happens to me constantly."
+ },
+ {
+  "key": "g-ref-lost-3",
+  "voice": "glitch",
+  "text": "Chin up. I enjoyed that enormously."
+ },
+ {
+  "key": "g-ref-lost-4",
+  "voice": "glitch",
+  "text": "Again! I want to watch that again."
+ },
+ {
+  "key": "g-ref-lost-5",
+  "voice": "glitch",
+  "text": "Not this time. Your fight is waiting in the binder."
+ },
+ {
+  "key": "g-ref-lost-6",
+  "voice": "glitch",
+  "text": "That one got away. The next one won't."
+ },
+ {
+  "key": "g-ref-lost-7",
+  "voice": "glitch",
+  "text": "Tough one. Even I lose. Mostly on purpose."
+ },
+ {
+  "key": "g-ref-lost-8",
+  "voice": "glitch",
+  "text": "Find the moment it turned. Then pounce next time."
+ },
+ {
+  "key": "g-ref-lost-9",
+  "voice": "glitch",
+  "text": "Hard luck. Rematch? I'll bring snacks."
+ },
+ {
+  "key": "g-ref-mate-1",
+  "voice": "glitch",
+  "text": "CHECKMATE. That is the whole game, that is."
+ },
+ {
+  "key": "g-ref-mate-10",
+  "voice": "glitch",
+  "text": "CHECKMATE. That one goes in the highlights."
+ },
+ {
+  "key": "g-ref-mate-2",
+  "voice": "glitch",
+  "text": "Mate! The king ran out of floor."
+ },
+ {
+  "key": "g-ref-mate-3",
+  "voice": "glitch",
+  "text": "And that is mate. On a phone. In a kitchen."
+ },
+ {
+  "key": "g-ref-mate-4",
+  "voice": "glitch",
+  "text": "Checkmate. I saw it coming. I say that every time."
+ },
+ {
+  "key": "g-ref-mate-5",
+  "voice": "glitch",
+  "text": "Checkmate! The king has left the building."
+ },
+ {
+  "key": "g-ref-mate-6",
+  "voice": "glitch",
+  "text": "Mate! Sorry. The king is stuck."
+ },
+ {
+  "key": "g-ref-mate-7",
+  "voice": "glitch",
+  "text": "That's mate. Game over. Snack time."
+ },
+ {
+  "key": "g-ref-mate-8",
+  "voice": "glitch",
+  "text": "Checkmate! What a finish."
+ },
+ {
+  "key": "g-ref-mate-9",
+  "voice": "glitch",
+  "text": "Mate! I'd clap, but I'm the villain."
+ },
+ {
+  "key": "g-ref-material-1",
+  "voice": "glitch",
+  "text": "Neither of you can mate with that. Draw."
+ },
+ {
+  "key": "g-ref-material-10",
+  "voice": "glitch",
+  "text": "Nobody can win from here. Draw."
+ },
+ {
+  "key": "g-ref-material-2",
+  "voice": "glitch",
+  "text": "Two kings staring. Thrilling. Draw."
+ },
+ {
+  "key": "g-ref-material-3",
+  "voice": "glitch",
+  "text": "Not enough wood left to finish anyone. Draw."
+ },
+ {
+  "key": "g-ref-material-4",
+  "voice": "glitch",
+  "text": "Not enough pieces left to mate. Draw."
+ },
+ {
+  "key": "g-ref-material-5",
+  "voice": "glitch",
+  "text": "Nobody can checkmate with that. Draw!"
+ },
+ {
+  "key": "g-ref-material-6",
+  "voice": "glitch",
+  "text": "Too few pieces. It's a draw."
+ },
+ {
+  "key": "g-ref-material-7",
+  "voice": "glitch",
+  "text": "Two lonely kings. Draw."
+ },
+ {
+  "key": "g-ref-material-8",
+  "voice": "glitch",
+  "text": "That army can't finish a king. Draw."
+ },
+ {
+  "key": "g-ref-material-9",
+  "voice": "glitch",
+  "text": "Not enough left for mate. Shake hands."
+ },
+ {
+  "key": "g-ref-quiet-1",
+  "voice": "glitch",
+  "text": "Nothing happened. Probably."
+ },
+ {
+  "key": "g-ref-quiet-10",
+  "voice": "glitch",
+  "text": "Shuffle shuffle."
+ },
+ {
+  "key": "g-ref-quiet-11",
+  "voice": "glitch",
+  "text": "A quiet one. What does it attack now?"
+ },
+ {
+  "key": "g-ref-quiet-12",
+  "voice": "glitch",
+  "text": "Sneaky move. Or just a move."
+ },
+ {
+  "key": "g-ref-quiet-13",
+  "voice": "glitch",
+  "text": "Hmm. Hmm. Interesting. I have no idea."
+ },
+ {
+  "key": "g-ref-quiet-14",
+  "voice": "glitch",
+  "text": "That piece looks comfy there."
+ },
+ {
+  "key": "g-ref-quiet-15",
+  "voice": "glitch",
+  "text": "Thinking ahead. I never do that."
+ },
+ {
+  "key": "g-ref-quiet-16",
+  "voice": "glitch",
+  "text": "Ask the question. What did that move just do?"
+ },
+ {
+  "key": "g-ref-quiet-2",
+  "voice": "glitch",
+  "text": "Quiet move. The scary ones are quiet."
+ },
+ {
+  "key": "g-ref-quiet-3",
+  "voice": "glitch",
+  "text": "Improving the position. Allegedly."
+ },
+ {
+  "key": "g-ref-quiet-4",
+  "voice": "glitch",
+  "text": "Look at that move properly before you answer it."
+ },
+ {
+  "key": "g-ref-quiet-5",
+  "voice": "glitch",
+  "text": "That is a trap. Or it isn't. Good luck."
+ },
+ {
+  "key": "g-ref-quiet-6",
+  "voice": "glitch",
+  "text": "Moved. Somebody else's turn to be wrong."
+ },
+ {
+  "key": "g-ref-quiet-7",
+  "voice": "glitch",
+  "text": "Hm. I'd have taken something."
+ },
+ {
+  "key": "g-ref-quiet-8",
+  "voice": "glitch",
+  "text": "Tiny move. Big plan? We'll see."
+ },
+ {
+  "key": "g-ref-quiet-9",
+  "voice": "glitch",
+  "text": "Somebody is setting something up. I can smell it."
+ },
+ {
+  "key": "g-ref-repetition-1",
+  "voice": "glitch",
+  "text": "Same position three times. Even I am bored."
+ },
+ {
+  "key": "g-ref-repetition-10",
+  "voice": "glitch",
+  "text": "Again? And again? That's a draw."
+ },
+ {
+  "key": "g-ref-repetition-2",
+  "voice": "glitch",
+  "text": "Round and round. Draw. I'll allow it."
+ },
+ {
+  "key": "g-ref-repetition-3",
+  "voice": "glitch",
+  "text": "We have done this. Twice. Draw."
+ },
+ {
+  "key": "g-ref-repetition-4",
+  "voice": "glitch",
+  "text": "Same moves again. Draw!"
+ },
+ {
+  "key": "g-ref-repetition-5",
+  "voice": "glitch",
+  "text": "That's three times. Draw by repetition."
+ },
+ {
+  "key": "g-ref-repetition-6",
+  "voice": "glitch",
+  "text": "Wait, I've seen this board before. Three times. Draw."
+ },
+ {
+  "key": "g-ref-repetition-7",
+  "voice": "glitch",
+  "text": "We're going in circles. Draw!"
+ },
+ {
+  "key": "g-ref-repetition-8",
+  "voice": "glitch",
+  "text": "Same board, same moves. The timeline is stuck. Draw."
+ },
+ {
+  "key": "g-ref-repetition-9",
+  "voice": "glitch",
+  "text": "Same board three times. I'm dizzy. Draw."
+ },
+ {
+  "key": "g-ref-resign-1",
+  "voice": "glitch",
+  "text": "Giving up. Noted. Filed. Laminated."
+ },
+ {
+  "key": "g-ref-resign-10",
+  "voice": "glitch",
+  "text": "All done. I'll stop the clock. There is no clock."
+ },
+ {
+  "key": "g-ref-resign-2",
+  "voice": "glitch",
+  "text": "Resigning?! Against your own sibling? Say it louder."
+ },
+ {
+  "key": "g-ref-resign-3",
+  "voice": "glitch",
+  "text": "Stopped this one. I am writing it down though."
+ },
+ {
+  "key": "g-ref-resign-4",
+  "voice": "glitch",
+  "text": "Folding. I do that too. Constantly."
+ },
+ {
+  "key": "g-ref-resign-5",
+  "voice": "glitch",
+  "text": "Resigned. The next game starts fresh."
+ },
+ {
+  "key": "g-ref-resign-6",
+  "voice": "glitch",
+  "text": "The king tips over. Dramatic. I like it."
+ },
+ {
+  "key": "g-ref-resign-7",
+  "voice": "glitch",
+  "text": "White flag! Rematch?"
+ },
+ {
+  "key": "g-ref-resign-8",
+  "voice": "glitch",
+  "text": "Called it. Brave. Honestly."
+ },
+ {
+  "key": "g-ref-resign-9",
+  "voice": "glitch",
+  "text": "Resigned. The board forgives you. I don't."
+ },
+ {
+  "key": "g-ref-same-1",
+  "voice": "glitch",
+  "text": "Both phones think they're the same kid! One of you pick the other name in Settings."
+ },
+ {
+  "key": "g-ref-same-10",
+  "voice": "glitch",
+  "text": "Two of the same kid is a timeline error. Fix one phone."
+ },
+ {
+  "key": "g-ref-same-2",
+  "voice": "glitch",
+  "text": "Two of the same kid? No. One phone has to be the other kid."
+ },
+ {
+  "key": "g-ref-same-3",
+  "voice": "glitch",
+  "text": "I can't referee somebody against themselves. Switch one phone."
+ },
+ {
+  "key": "g-ref-same-4",
+  "voice": "glitch",
+  "text": "Two of the same? One is plenty. Switch a phone."
+ },
+ {
+  "key": "g-ref-same-5",
+  "voice": "glitch",
+  "text": "The same kid on both phones? That's a mirror, not a game."
+ },
+ {
+  "key": "g-ref-same-6",
+  "voice": "glitch",
+  "text": "Hold on. Nobody can play themselves. Change one phone."
+ },
+ {
+  "key": "g-ref-same-7",
+  "voice": "glitch",
+  "text": "Both phones say the same name. One of them is fibbing."
+ },
+ {
+  "key": "g-ref-same-8",
+  "voice": "glitch",
+  "text": "The same kid versus the same kid? Even I'm confused."
+ },
+ {
+  "key": "g-ref-same-9",
+  "voice": "glitch",
+  "text": "One phone each, please. Not two of the same kid."
+ },
+ {
+  "key": "g-ref-stalemate-1",
+  "voice": "glitch",
+  "text": "Stalemate! No moves and no check. Half each."
+ },
+ {
+  "key": "g-ref-stalemate-10",
+  "voice": "glitch",
+  "text": "Stalemate! I did not see that coming. Nobody did."
+ },
+ {
+  "key": "g-ref-stalemate-2",
+  "voice": "glitch",
+  "text": "Squeezed so hard the king stopped existing. Draw."
+ },
+ {
+  "key": "g-ref-stalemate-3",
+  "voice": "glitch",
+  "text": "Stalemate. Leave a square next time. Actually, don't."
+ },
+ {
+  "key": "g-ref-stalemate-4",
+  "voice": "glitch",
+  "text": "Stalemate! Can't move, not in check. Half each."
+ },
+ {
+  "key": "g-ref-stalemate-5",
+  "voice": "glitch",
+  "text": "Stuck king, no check. That's a draw!"
+ },
+ {
+  "key": "g-ref-stalemate-6",
+  "voice": "glitch",
+  "text": "Stalemate! So close to mate. So far."
+ },
+ {
+  "key": "g-ref-stalemate-7",
+  "voice": "glitch",
+  "text": "Frozen! Nobody wins."
+ },
+ {
+  "key": "g-ref-stalemate-8",
+  "voice": "glitch",
+  "text": "Stalemate. Always leave the king a square. Or don't."
+ },
+ {
+  "key": "g-ref-stalemate-9",
+  "voice": "glitch",
+  "text": "No moves! That's stalemate. Draw!"
+ },
+ {
+  "key": "g-ref-start-1",
+  "voice": "glitch",
+  "text": "I'll referee. I'm rooting against both of you."
+ },
+ {
+  "key": "g-ref-start-10",
+  "voice": "glitch",
+  "text": "Let the game begin! Snacks are for the referee only."
+ },
+ {
+  "key": "g-ref-start-2",
+  "voice": "glitch",
+  "text": "Two of you. One board. No adults. This is my favourite."
+ },
+ {
+  "key": "g-ref-start-3",
+  "voice": "glitch",
+  "text": "I will be fair. Fairly rude. To both."
+ },
+ {
+  "key": "g-ref-start-4",
+  "voice": "glitch",
+  "text": "Referee Glitch. No takebacks, no crying, no touching my whistle."
+ },
+ {
+  "key": "g-ref-start-5",
+  "voice": "glitch",
+  "text": "Whoever loses, I win. That is how refereeing works."
+ },
+ {
+  "key": "g-ref-start-6",
+  "voice": "glitch",
+  "text": "Referee time! I've got a whistle and no idea how to use it."
+ },
+ {
+  "key": "g-ref-start-7",
+  "voice": "glitch",
+  "text": "Two players! Double the mistakes. Double the fun."
+ },
+ {
+  "key": "g-ref-start-8",
+  "voice": "glitch",
+  "text": "I'm neutral. Neutrally hoping you both blunder."
+ },
+ {
+  "key": "g-ref-start-9",
+  "voice": "glitch",
+  "text": "Shake hands! Then ignore each other and look at the board."
+ },
+ {
+  "key": "g-ref-unfinished-1",
+  "voice": "glitch",
+  "text": "Nobody finished this one. It doesn't count for anyone."
+ },
+ {
+  "key": "g-ref-unfinished-10",
+  "voice": "glitch",
+  "text": "It fizzled. Start a fresh one any time."
+ },
+ {
+  "key": "g-ref-unfinished-2",
+  "voice": "glitch",
+  "text": "The game wandered off. No result, no harm."
+ },
+ {
+  "key": "g-ref-unfinished-3",
+  "voice": "glitch",
+  "text": "Unfinished. I'll pretend I didn't see it."
+ },
+ {
+  "key": "g-ref-unfinished-4",
+  "voice": "glitch",
+  "text": "Nobody finished. The game went for a walk."
+ },
+ {
+  "key": "g-ref-unfinished-5",
+  "voice": "glitch",
+  "text": "Unfinished! This timeline fizzled out."
+ },
+ {
+  "key": "g-ref-unfinished-6",
+  "voice": "glitch",
+  "text": "No result. Just like my homework."
+ },
+ {
+  "key": "g-ref-unfinished-7",
+  "voice": "glitch",
+  "text": "The game stopped. It counts for nobody."
+ },
+ {
+  "key": "g-ref-unfinished-8",
+  "voice": "glitch",
+  "text": "Half a game. I'll file it under maybe."
+ },
+ {
+  "key": "g-ref-unfinished-9",
+  "voice": "glitch",
+  "text": "Nobody won. Nobody lost. Somebody left."
+ },
+ {
+  "key": "g-ref-waiting-1",
+  "voice": "glitch",
+  "text": "Waiting… I'm counting ceiling tiles."
+ },
+ {
+  "key": "g-ref-waiting-10",
+  "voice": "glitch",
+  "text": "Tick tock. Somebody is thinking hard."
+ },
+ {
+  "key": "g-ref-waiting-2",
+  "voice": "glitch",
+  "text": "Still thinking. Or eating. Hard to tell from here."
+ },
+ {
+  "key": "g-ref-waiting-3",
+  "voice": "glitch",
+  "text": "Still their go. I'll just float here."
+ },
+ {
+  "key": "g-ref-waiting-4",
+  "voice": "glitch",
+  "text": "Still waiting. Resign is there if you get bored."
+ },
+ {
+  "key": "g-ref-waiting-5",
+  "voice": "glitch",
+  "text": "Taking ages. Good. Thinking is good."
+ },
+ {
+  "key": "g-ref-waiting-6",
+  "voice": "glitch",
+  "text": "Hmm hmm hmm. Waiting."
+ },
+ {
+  "key": "g-ref-waiting-7",
+  "voice": "glitch",
+  "text": "Their move. I'm doing laps round the board."
+ },
+ {
+  "key": "g-ref-waiting-8",
+  "voice": "glitch",
+  "text": "Still waiting. Snack break?"
+ },
+ {
+  "key": "g-ref-waiting-9",
+  "voice": "glitch",
+  "text": "Somebody is plotting something. I can hear it."
+ },
+ {
+  "key": "g-ref-won-1",
+  "voice": "glitch",
+  "text": "Fine. FINE. You win. Enjoy it, it never happens again."
+ },
+ {
+  "key": "g-ref-won-10",
+  "voice": "glitch",
+  "text": "You win. I'm writing it in my book. In tiny letters."
+ },
+ {
+  "key": "g-ref-won-2",
+  "voice": "glitch",
+  "text": "A win. I am appealing. To nobody."
+ },
+ {
+  "key": "g-ref-won-3",
+  "voice": "glitch",
+  "text": "Congratulations, you beat a person. I remain undefeated by you."
+ },
+ {
+  "key": "g-ref-won-4",
+  "voice": "glitch",
+  "text": "You take it. I was distracted. By the ceiling."
+ },
+ {
+  "key": "g-ref-won-5",
+  "voice": "glitch",
+  "text": "A win! I'll pretend I wasn't watching."
+ },
+ {
+  "key": "g-ref-won-6",
+  "voice": "glitch",
+  "text": "Winner! Referee's mood: grumpy."
+ },
+ {
+  "key": "g-ref-won-7",
+  "voice": "glitch",
+  "text": "You did it. Take a bow. A small one."
+ },
+ {
+  "key": "g-ref-won-8",
+  "voice": "glitch",
+  "text": "You win! I blame this timeline."
+ },
+ {
+  "key": "g-ref-won-9",
+  "voice": "glitch",
+  "text": "Nice game. Don't let it go to your head."
+ },
+ {
+  "key": "g-repair-1",
+  "voice": "glitch",
+  "text": "You fixed it?! That crack was MINE!"
+ },
+ {
+  "key": "g-repair-10",
+  "voice": "glitch",
+  "text": "It's all shiny now. Disgusting. Beautiful. Disgusting!"
+ },
+ {
+  "key": "g-repair-2",
+  "voice": "glitch",
+  "text": "No no no. Clean? Without my help?!"
+ },
+ {
+  "key": "g-repair-3",
+  "voice": "glitch",
+  "text": "My crack! You patched my beautiful crack!"
+ },
+ {
+  "key": "g-repair-4",
+  "voice": "glitch",
+  "text": "Clean?! I was USING that crack!"
+ },
+ {
+  "key": "g-repair-5",
+  "voice": "glitch",
+  "text": "You glued it! Who gave you glue?!"
+ },
+ {
+  "key": "g-repair-6",
+  "voice": "glitch",
+  "text": "No crack? NO CRACK?! This timeline is broken."
+ },
+ {
+  "key": "g-repair-7",
+  "voice": "glitch",
+  "text": "Perfect again. I hate perfect. Perfect is rude."
+ },
+ {
+  "key": "g-repair-8",
+  "voice": "glitch",
+  "text": "I had half that card! Give me my half!"
+ },
+ {
+  "key": "g-repair-9",
+  "voice": "glitch",
+  "text": "Fixed?! I'm telling Marshal. He'll be furious. He won't care."
+ },
+ {
+  "key": "g-suggest-again-1",
+  "voice": "glitch",
+  "text": "Same one again. You did not finish him off last time."
+ },
+ {
+  "key": "g-suggest-again-10",
+  "voice": "glitch",
+  "text": "Back to him. He's polished his king."
+ },
+ {
+  "key": "g-suggest-again-2",
+  "voice": "glitch",
+  "text": "Same again. He's been bragging all week."
+ },
+ {
+  "key": "g-suggest-again-3",
+  "voice": "glitch",
+  "text": "Rematch! I brought popcorn."
+ },
+ {
+  "key": "g-suggest-again-4",
+  "voice": "glitch",
+  "text": "Same again. Unfinished business. My favourite kind."
+ },
+ {
+  "key": "g-suggest-again-5",
+  "voice": "glitch",
+  "text": "Round two. Or three. I lost count."
+ },
+ {
+  "key": "g-suggest-again-6",
+  "voice": "glitch",
+  "text": "Same one. He says he's ready. He always says that."
+ },
+ {
+  "key": "g-suggest-again-7",
+  "voice": "glitch",
+  "text": "Same crony, new timeline."
+ },
+ {
+  "key": "g-suggest-again-8",
+  "voice": "glitch",
+  "text": "Same again? Brave. Or stubborn. I like stubborn."
+ },
+ {
+  "key": "g-suggest-again-9",
+  "voice": "glitch",
+  "text": "He's still here. Still grumpy."
+ },
+ {
+  "key": "g-suggest-down-1",
+  "voice": "glitch",
+  "text": "One down. Take the head start. I insist. I INSIST."
+ },
+ {
+  "key": "g-suggest-down-10",
+  "voice": "glitch",
+  "text": "One down. Practise the looking. Then the winning."
+ },
+ {
+  "key": "g-suggest-down-2",
+  "voice": "glitch",
+  "text": "One step down. Even I practise on easy mode."
+ },
+ {
+  "key": "g-suggest-down-3",
+  "voice": "glitch",
+  "text": "Try the easier one. That last one is being a bully today."
+ },
+ {
+  "key": "g-suggest-down-4",
+  "voice": "glitch",
+  "text": "Warm up on the easier one. Then come back and get him."
+ },
+ {
+  "key": "g-suggest-down-5",
+  "voice": "glitch",
+  "text": "Not a step back. A run-up."
+ },
+ {
+  "key": "g-suggest-down-6",
+  "voice": "glitch",
+  "text": "He's on a lucky streak. Try the easier one for a bit."
+ },
+ {
+  "key": "g-suggest-down-7",
+  "voice": "glitch",
+  "text": "The easier one. Win a few. Then we'll talk."
+ },
+ {
+  "key": "g-suggest-down-8",
+  "voice": "glitch",
+  "text": "Even heroes train on the small ones."
+ },
+ {
+  "key": "g-suggest-down-9",
+  "voice": "glitch",
+  "text": "Go one down. He's had too many snacks. He's hyper."
+ },
+ {
+  "key": "g-suggest-first-1",
+  "voice": "glitch",
+  "text": "Pick Rookie. You'll need the head start."
+ },
+ {
+  "key": "g-suggest-first-10",
+  "voice": "glitch",
+  "text": "Pick Rookie. He trips over his own horse."
+ },
+ {
+  "key": "g-suggest-first-2",
+  "voice": "glitch",
+  "text": "Rookie first. Everyone starts with Rookie. Except me. I was born brilliant."
+ },
+ {
+  "key": "g-suggest-first-3",
+  "voice": "glitch",
+  "text": "Start with Rookie. He's clumsy. You'll like him."
+ },
+ {
+  "key": "g-suggest-first-4",
+  "voice": "glitch",
+  "text": "Rookie. He drops things. Mostly his own pieces."
+ },
+ {
+  "key": "g-suggest-first-5",
+  "voice": "glitch",
+  "text": "Rookie for your first game. I'm being generous. Don't get used to it."
+ },
+ {
+  "key": "g-suggest-first-6",
+  "voice": "glitch",
+  "text": "First game? Rookie. I told him to go easy. He won't listen."
+ },
+ {
+  "key": "g-suggest-first-7",
+  "voice": "glitch",
+  "text": "Try Rookie. He's new. You're new to full games. Perfect match."
+ },
+ {
+  "key": "g-suggest-first-8",
+  "voice": "glitch",
+  "text": "Rookie. Perfect for a warm-up. Mine, not yours."
+ },
+ {
+  "key": "g-suggest-first-9",
+  "voice": "glitch",
+  "text": "Rookie first. Then we'll talk about the scary ones."
+ },
+ {
+  "key": "g-suggest-fresh-1",
+  "voice": "glitch",
+  "text": "Cadet. You solve my traps first go, so let us see you actually play one."
+ },
+ {
+  "key": "g-suggest-fresh-10",
+  "voice": "glitch",
+  "text": "Cadet. I'd pick Rookie. Which is why you should pick Cadet."
+ },
+ {
+  "key": "g-suggest-fresh-2",
+  "voice": "glitch",
+  "text": "Cadet. You're good at my puzzles. Games are different. Heh."
+ },
+ {
+  "key": "g-suggest-fresh-3",
+  "voice": "glitch",
+  "text": "Try Cadet. Your fights say you're ready. I say you're not."
+ },
+ {
+  "key": "g-suggest-fresh-4",
+  "voice": "glitch",
+  "text": "Cadet. He looks at the board. Sometimes twice."
+ },
+ {
+  "key": "g-suggest-fresh-5",
+  "voice": "glitch",
+  "text": "Your cards are too good. Cadet will fix that."
+ },
+ {
+  "key": "g-suggest-fresh-6",
+  "voice": "glitch",
+  "text": "Cadet. He's read a whole chess book. Well, the cover."
+ },
+ {
+  "key": "g-suggest-fresh-7",
+  "voice": "glitch",
+  "text": "You're quick at my traps. Cadet has traps too. Worse ones."
+ },
+ {
+  "key": "g-suggest-fresh-8",
+  "voice": "glitch",
+  "text": "Skip Rookie. Cadet's waiting. He's polished his buttons."
+ },
+ {
+  "key": "g-suggest-fresh-9",
+  "voice": "glitch",
+  "text": "Cadet. First go on my fights? Show-off. Go on then."
+ },
+ {
+  "key": "g-suggest-up-1",
+  "voice": "glitch",
+  "text": "Move up. You beat him, and I am not proud of him."
+ },
+ {
+  "key": "g-suggest-up-10",
+  "voice": "glitch",
+  "text": "Next one up. His rating just fell off a cliff."
+ },
+ {
+  "key": "g-suggest-up-2",
+  "voice": "glitch",
+  "text": "Move up. The last one is crying in a cupboard."
+ },
+ {
+  "key": "g-suggest-up-3",
+  "voice": "glitch",
+  "text": "You beat him? Fine. Try the next one. He's meaner."
+ },
+ {
+  "key": "g-suggest-up-4",
+  "voice": "glitch",
+  "text": "Next one up. The last one has been demoted to snack duty."
+ },
+ {
+  "key": "g-suggest-up-5",
+  "voice": "glitch",
+  "text": "Move up. That was a warm-up. I planned that."
+ },
+ {
+  "key": "g-suggest-up-6",
+  "voice": "glitch",
+  "text": "Up you go. Don't get comfy."
+ },
+ {
+  "key": "g-suggest-up-7",
+  "voice": "glitch",
+  "text": "Move up. In another timeline, he won. Not this one."
+ },
+ {
+  "key": "g-suggest-up-8",
+  "voice": "glitch",
+  "text": "He lost. The next one is better. Probably. I hope."
+ },
+ {
+  "key": "g-suggest-up-9",
+  "voice": "glitch",
+  "text": "Move up. I told him to try harder. He didn't."
+ },
+ {
   "key": "g1-gloat",
   "voice": "glitch",
   "text": "No legal moves! Stalemate! It's a DRAW! Hahaha!"
@@ -1528,6 +5008,126 @@
   "key": "g4-why",
   "voice": "narrator",
   "text": "Take the square in front of the pawn first. Pushing early lets his king sit in front and hold the draw."
+ },
+ {
+  "key": "game-counting-gloat",
+  "voice": "glitch",
+  "text": "You did not count! You NEVER count!"
+ },
+ {
+  "key": "game-counting-hook",
+  "voice": "narrator",
+  "text": "You walked into something here. Count before you touch a piece."
+ },
+ {
+  "key": "game-counting-rage",
+  "voice": "glitch",
+  "text": "Fine. You counted. Once."
+ },
+ {
+  "key": "game-counting-short",
+  "voice": "narrator",
+  "text": "Count before you move there."
+ },
+ {
+  "key": "game-counting-taunt",
+  "voice": "glitch",
+  "text": "This is the board where you did not count."
+ },
+ {
+  "key": "game-counting-why",
+  "voice": "narrator",
+  "text": "Count attackers and defenders before you move there."
+ },
+ {
+  "key": "game-fork-gloat",
+  "voice": "glitch",
+  "text": "Two at once! Pick which one you love more."
+ },
+ {
+  "key": "game-fork-hook",
+  "voice": "narrator",
+  "text": "One of his pieces was about to hit two of yours. Stop it first."
+ },
+ {
+  "key": "game-fork-rage",
+  "voice": "glitch",
+  "text": "My fork! You saw my fork!"
+ },
+ {
+  "key": "game-fork-short",
+  "voice": "narrator",
+  "text": "He hits two at once."
+ },
+ {
+  "key": "game-fork-taunt",
+  "voice": "glitch",
+  "text": "Remember this? I got two for one."
+ },
+ {
+  "key": "game-fork-why",
+  "voice": "narrator",
+  "text": "One piece, two targets. He only lets you save one."
+ },
+ {
+  "key": "game-hanging-gloat",
+  "voice": "glitch",
+  "text": "Free again! You keep wrapping them up for me."
+ },
+ {
+  "key": "game-hanging-hook",
+  "voice": "narrator",
+  "text": "You left one out in the open here. Find it before he does."
+ },
+ {
+  "key": "game-hanging-rage",
+  "voice": "glitch",
+  "text": "No! Not that one! I was SAVING that one!"
+ },
+ {
+  "key": "game-hanging-short",
+  "voice": "narrator",
+  "text": "Look for the loose piece."
+ },
+ {
+  "key": "game-hanging-taunt",
+  "voice": "glitch",
+  "text": "Oh, THIS board. You gave me a present on this board."
+ },
+ {
+  "key": "game-hanging-why",
+  "voice": "narrator",
+  "text": "A piece nobody is guarding is the move. Find the loose one first."
+ },
+ {
+  "key": "game-mateThreat-gloat",
+  "voice": "glitch",
+  "text": "You missed it! You actually missed the whole game!"
+ },
+ {
+  "key": "game-mateThreat-hook",
+  "voice": "narrator",
+  "text": "The game could have ended right here. Find the finish."
+ },
+ {
+  "key": "game-mateThreat-rage",
+  "voice": "glitch",
+  "text": "NOOO. My king had nowhere to go!"
+ },
+ {
+  "key": "game-mateThreat-short",
+  "voice": "narrator",
+  "text": "Check first. Mate hides there."
+ },
+ {
+  "key": "game-mateThreat-taunt",
+  "voice": "glitch",
+  "text": "You had me here. HAD me. And you looked away."
+ },
+ {
+  "key": "game-mateThreat-why",
+  "voice": "narrator",
+  "text": "Look at the checks first. The win hides in a check."
  },
  {
   "key": "hanging-gloat1",
@@ -2208,6 +5808,16 @@
   "key": "pin-v4-why",
   "voice": "narrator",
   "text": "He cannot move the front piece without losing the back one."
+ },
+ {
+  "key": "play-asleep-1",
+  "voice": "narrator",
+  "text": "Glitch is asleep. This phone cannot wake him."
+ },
+ {
+  "key": "play-asleep-2",
+  "voice": "narrator",
+  "text": "He will not come out. Fight him the normal way instead."
  },
  {
   "key": "prep-q1",

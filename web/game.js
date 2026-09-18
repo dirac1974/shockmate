@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.22";
+  const BUILD = "v0.23";
   const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
   let CHESS = null;                                 // vendor/chess.js, loaded with it
@@ -28,7 +28,7 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    camp: null, seen: {}, glitchIdx: {}, thinkAt: 0, lastThinkMs: null, cardNews: null, sittingDays: [0, 0], look: null,
+    camp: null, seen: {}, lineHistory: {}, lastPlay: {}, thinkAt: 0, lastThinkMs: null, cardNews: null, sittingDays: [0, 0], look: null,
     game: null, playIdx: {}, review: null, fromGame: false, pre: null, engineScripts: null,
     // versus: the board turns round to whoever is to move, so the arena needs to know which way up it is
     flip: false, vs: null, versusResult: null,
@@ -279,13 +279,30 @@
   function banner(text, tone) {
     const b = $("banner"); b.className = "banner" + (tone ? " " + tone : ""); b.textContent = text || ""; b.hidden = !text;
   }
-  // Glitch's reaction to a new moment (look-first, cracked, repaired, pacing): a line and a mood off the
-  // table in score.js, walked in turn so the same line never plays twice in a row.
-  function glitchMoment(kind) {
-    const l = S.glitchLine(kind, state.glitchIdx[kind]); state.glitchIdx[kind] = l.index;
-    glitchSay(l.text, l.mood); return l;
+  /* Every line Glitch says comes off a table (score.js, play.js, versus.js) through S.pickLine, which
+     never repeats any of the last five said at that moment. The history lives on `state.lineHistory`
+     for the whole sitting, across fights, games and screens. The bubble shows the line with the name
+     filled in; the voice plays its key, whose audio is the same line without it.
+     `how`: "now" (default) cuts off whatever is playing; "next" waits for it; "quiet" shows only. */
+  function pickFrom(table, hist, vars) {
+    const l = S.pickLine(table, state.lineHistory[hist]); state.lineHistory[hist] = l.history;
+    return { text: S.fillLine(l.text, vars), mood: l.mood, key: l.key, index: l.index };
   }
-  function glitchSay(text, mood) {
+  function sayFrom(table, hist, vars, how) {
+    const l = pickFrom(table, hist, vars); glitchSay(l.text, l.mood, l.key, how); return l;
+  }
+  function glitchMoment(kind, vars, how) { return sayFrom(S.GLITCH_LINES[kind], "moment." + kind, vars, how); }
+  // The ones he says in a toast rather than the bubble.
+  function glitchToast(kind, ms, how) {
+    const l = pickFrom(S.GLITCH_LINES[kind], "moment." + kind);
+    toast("Glitch: " + l.text, ms); speak(l.key, how); return l;
+  }
+  function speak(key, how) {
+    if (!key || how === "quiet") return false;
+    return how === "next" ? voiceNext([key]) : voice(key);
+  }
+  function glitchSay(text, mood, key, how) {
+    speak(key, how);
     if (window.ShockmateGlitch) {
       const wilt = window.ShockmateGlitch.wiltTier(S.glitchRating(state.stats).fraction);
       return window.ShockmateGlitch.set(mood || "taunt", text || "", wilt);
@@ -312,7 +329,7 @@
     state.blitzTimer = setTimeout(() => {
       if (state.phase !== "think") return;
       current().candidates.forEach((sqr) => sq(sqr) && sq(sqr).classList.add("cand"));
-      glitchSay("Too slow! Here, I'll narrow it down. Ugh.", "nervous");
+      glitchMoment("blitz");                 // silent table: the think window stays quiet
     }, T(10000));
   }
   function renderPath() {
@@ -543,15 +560,30 @@
     const file = VOICE.manifest.files[key]; if (!file) return false;
     if (VOICE.current) { try { VOICE.current.pause(); } catch (e) {} }
     const a = new Audio("voice/" + file); VOICE.current = a;
-    a.onended = function () { VOICE.current = null; const next = VOICE.queue.shift(); if (next) voicePlay(next); };
-    a.play().catch(function () {});
+    const done = function () { if (VOICE.current !== a) return; VOICE.current = null; const next = VOICE.queue.shift(); if (next) voicePlay(next); };
+    a.onended = done; a.onerror = done;
+    const p = a.play(); if (p && p.catch) p.catch(done);
     return true;
   }
   // Every per-fight line goes through here. Generated ladder fights carry `voice`, a template key
   // ("fork-v2"), so a hundred fights share one set of audio; hand-made fights fall back to their id.
-  function voiceKeyFor(enc, kind) { return ((enc && (enc.voice || enc.id)) || "") + "-" + kind; }
+  // A fight made from a kid's own game before v0.23 has no `voice`; it speaks as its motif's lines.
+  function voiceKeyFor(enc, kind) {
+    if (enc && !enc.voice && enc.pack === "game") return "game-" + (P.TEXT[enc.motif] ? enc.motif : "counting") + "-" + kind;
+    return ((enc && (enc.voice || enc.id)) || "") + "-" + kind;
+  }
   function voice(key) { VOICE.queue = []; return voicePlay(key); }
   function voiceSeq(keys) { if (!keys || !keys.length) return; VOICE.queue = keys.slice(1); voicePlay(keys[0]); }
+  // After whatever is playing, so a Glitch reaction is never cut off by the line that follows it.
+  function voiceNext(keys) {
+    if (!keys || !keys.length || !voiceOn()) return false;
+    if (VOICE.current) { VOICE.queue = VOICE.queue.concat(keys); return true; }
+    voiceSeq(keys); return true;
+  }
+  function voiceStop() {
+    VOICE.queue = [];
+    if (VOICE.current) { const a = VOICE.current; VOICE.current = null; try { a.pause(); } catch (e) {} }
+  }
   function sfx(kind) {
     if (kind === "select") beep(220, 0.06);
     if (kind === "move") beep(180, 0.08, "triangle");
@@ -682,7 +714,8 @@
     // Camp runs the tournament ritual whatever the settings toggle says: the ritual IS the session.
     const ritualOn = state.settings.tournament || campOn();
     if ($("ritual")) { $("ritual").hidden = !ritualOn; $("ritual").textContent = qs.join("   "); }
-    if (ritualOn) voiceSeq([voiceKeyFor(enc, "hook")].concat(qs.map((q, i) => "prep-q" + (i + 1)))); else voice(voiceKeyFor(enc, "hook"));
+    // After Glitch's look-first reaction, never over it.
+    voiceNext([voiceKeyFor(enc, "hook")].concat(ritualOn ? qs.map((q, i) => "prep-q" + (i + 1)) : []));
     $("btn-hint").hidden = false; $("btn-skip").hidden = false;
     state.helpThisFight = needsHelp(state.stats) || (state.mode === "duel" && state.duel && state.duel.helpSeat === state.active);
     paintSelection(); startBlitz();
@@ -699,14 +732,14 @@
     state.lastTier = tier; state.lastUci = move.uci; $("btn-hint").hidden = true; $("btn-skip").hidden = true; if ($("ritual")) $("ritual").hidden = true;
     // tease: both futures charge
     banner("SPLITTING TIME…", "tease"); $("board").classList.add("dim"); $("timelines").hidden = false;
-    glitchSay("Wait. Wait. Which future is this…", "nervous"); sfx("tease");
+    glitchMoment("tease"); sfx("tease");
     await sleep(700); $("board").classList.remove("dim"); $("timelines").hidden = true;
     if (tier === "best" || tier === "good") await hitFlow(enc, move, tier, step.pieces);
     else await missFlow(enc, move, tier, start, step.pieces);
   }
   async function hitFlow(enc, move, tier, afterMap) {
     const nav = state.nav;
-    banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage"); voice(voiceKeyFor(enc, "rage"));
+    banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage", voiceKeyFor(enc, "rage"), "next");
     state.stats = S.recordAttempt(state.stats, enc, { correct: true, san: move.san, t: now(), hurry: state.settings.hurry, thinkMs: state.lastThinkMs }).stats;
     // `tries` counts the misses so far on this board, so zero means he found it first go.
     if (campOn() && state.camp.stage !== "warm") { state.camp.fights += 1; if (!state.tries) state.camp.firstTry += 1; }
@@ -726,7 +759,7 @@
       setTimeout(() => document.querySelector(".board-wrap").classList.remove("zoom"), T(900));
       state.stats.criticals = (state.stats.criticals || 0) + 1; state.session.crits += 1; await sleep(900);
     }
-    if (tier === "good") { toast("Glitch: there was a BIGGER one…", 2200); }
+    if (tier === "good") glitchToast("bigger", 2200, "next");
     save(); hud();
     if (stale(nav)) return;                                  // he left mid-animation; do not open a gate behind him
     await whyGate(enc);
@@ -750,7 +783,7 @@
       state.koShown = hpNow.dateKey;
       state.stats.battle = S.recordKo(state.stats.battle);
       banner("KNOCKOUT!  " + hpNow.name + " is done", "crit"); sfx("crit"); voice("sys-ko");
-      glitchSay(hpNow.name + "? Never heard of him.", "hide"); await sleep(1100);
+      glitchMoment("ko", { name: hpNow.name }, "next"); await sleep(1100);
     }
     syncSoon();
     state.stats.won = (state.stats.won || 0) + 1; state.session.won += 1;
@@ -763,8 +796,8 @@
   async function missFlow(enc, move, tier, start, afterMap) {
     const nav = state.nav;
     const missRes = S.resolveMiss(state.stats.battle); state.stats.battle = missRes.battle;
-    if (missRes.shielded) { banner("TIME SHIELD", "tease"); glitchSay("Hey! Where did my gloat go?", "nervous"); renderPowers(); }
-    else { banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug"); voice(voiceKeyFor(enc, "gloat")); }
+    if (missRes.shielded) { banner("TIME SHIELD", "tease"); glitchMoment("shield", null, "next"); renderPowers(); }
+    else { banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug", voiceKeyFor(enc, "gloat"), "next"); }
     state.stats = S.recordAttempt(state.stats, enc, { correct: false, san: move.san, t: now(), thinkMs: state.lastThinkMs }).stats;
     (state.stats.tiers = state.stats.tiers || []).push(tier); if (state.stats.tiers.length > 8) state.stats.tiers.shift(); save();
     if (move.uci === enc.tempting && enc.temptingLineUci.length > 1) await playLine(enc.temptingLineUci.slice(1), afterMap);
@@ -774,11 +807,11 @@
     if (state.mode === "duel") return duelSeatDone(enc, false);
     state.tries += 1;
     if (state.tries === 1) {
-      banner("SECOND TRY", "tease"); setPieces(start, F.arriveOf(enc)); clearMarks(); glitchSay("Sweating? Me? Never.", "nervous"); prompt("Try again. Glitch is sweating."); voice("sys-second");
+      banner("SECOND TRY", "tease"); setPieces(start, F.arriveOf(enc)); clearMarks(); glitchMoment("second"); prompt("Try again. Glitch is sweating."); voiceNext(["sys-second"]);
       enterThink(); paintSelection(); renderPowers(); return;
     }
     // confession: show the better future, then the kid plays it
-    banner("THE BETTER FUTURE", "win"); glitchSay("Fine. FINE. Here is what I was scared of.", "nervous"); setPieces(start, F.arriveOf(enc)); await sleep(500);
+    banner("THE BETTER FUTURE", "win"); glitchMoment("confess"); setPieces(start, F.arriveOf(enc)); await sleep(500);
     await playLine(enc.bestLineUci, start); finisher(enc); await sleep(800);
     banner("YOUR TURN", "tease"); setPieces(start, F.arriveOf(enc)); clearMarks(); state.guided = true; enterThink();
     prompt("Now you play it: " + enc.bestSan); paintSelection(); renderPowers();
@@ -798,7 +831,7 @@
         if (stale(nav) || state.gate === null) return;
         state.phase = "gate";
         banner(rewind ? "REWIND" : "LOCK IT IN", "tease");
-        glitchSay("Don't say it. Don't you DARE say why…", "hide");
+        glitchMoment("whyGate");
         prompt(enc.whyTargets.prompt);
         clearMarks(); renderDots(); $("prompt").classList.add("gate-prompt");
       };
@@ -824,7 +857,7 @@
     }
     if (!g.found.includes(name)) {
       g.wrong += 1; const el = sq(name); el.classList.remove("nope"); void el.offsetWidth; el.classList.add("nope"); sfx("nope");
-      if (g.wrong === 1) toast("Glitch: nope.");
+      if (g.wrong === 1) glitchToast("whyNope");
       if (g.wrong >= 2) { const hint = g.targets.find((t) => !g.found.includes(t)); if (hint) sq(hint).classList.add("gate-hint"); }
     }
   }
@@ -857,7 +890,7 @@
       crackLine.textContent = news ? coach({ kind: news }) : "";
       crackLine.classList.toggle("fixed", news === "repaired");
     }
-    if (news) { const g = glitchMoment(news); $("glitch-line-2").textContent = g.text; }
+    if (news) { const g = glitchMoment(news, null, "next"); $("glitch-line-2").textContent = g.text; }   // after the why, not over it
     $("btn-peek").hidden = !(tier === "good" && state.lastUci !== enc.best);
     const before = state.ratingBefore, after = S.glitchRating(state.stats), fell = (before || after.real) - after.real;
     const rankNow = S.agentRank(state.stats);
@@ -892,7 +925,7 @@
     state.duel = S.recordDuelSeat(state.duel, { found: kept, kept: kept, san: enc.bestSan });
     if (state.duel.turn === 0) {
       state.duel.turn = 1; useProfile(1); hud();
-      banner("HOT SEAT", "tease"); glitchSay("Your turn. Same board. No peeking at the answer.", "smug");
+      banner("HOT SEAT", "tease"); glitchMoment("hotSeat");
       toast(state.settings.names[1] + ": same board, your go.", 2200);
       state.tries = 0; state.guided = false; setTimeout(startEncounter, T(900));
       return;
@@ -932,10 +965,10 @@
     state.session = { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 };
     state.encounters = plan.warmups.length ? plan.warmups : plan.boards;
     state.index = 0; state.phase = "busy";
-    show("screen-play"); banner("CAMP", "tease"); glitchSay("Camp? You? This should be quick.", "smug");
+    show("screen-play"); banner("CAMP", "tease"); glitchMoment("campStart");
     prompt(S.coachLine(style, { kind: "campStart" }));
     toast(S.coachLine(style, { kind: "phase", phase: "warm" }), 2600);
-    voiceSeq(["prep-q1", "prep-q2"]);      // the two questions, at the start of every camp
+    voiceNext(["prep-q1", "prep-q2"]);     // the two questions, at the start of every camp, after Glitch
     hud(); renderPowers();
     setTimeout(nextWarmup, T(1200));
   }
@@ -950,7 +983,7 @@
     clearMarks(); $("fx").innerHTML = ""; $("board").classList.remove("dim"); $("gate-dots").innerHTML = "";
     $("btn-hint").hidden = true; $("btn-skip").hidden = true; $("prompt").classList.remove("gate-prompt");
     banner("SPOT THE ATTACK  " + (c.w + 1) + "/" + c.plan.warmups.length, "tease");
-    glitchSay("Watch closely. Or don't.", "smug"); prompt("Glitch is moving…");
+    glitchMoment("campWatch"); prompt("Glitch is moving…");
     if ($("ritual")) { $("ritual").hidden = false; $("ritual").textContent = S.PREP_QUESTIONS[0]; }
     show("screen-play"); renderPath(); hud(); renderPowers();
     const after = F.piecesFromList(enc.pieces), arrive = F.arriveOf(enc);
@@ -963,7 +996,7 @@
     state.phase = "threat";
     state.gate = { targets: targets.slice(), found: [], wrong: 0, resolve: null, camp: true };
     prompt(S.coachLine(c.style, { kind: "threat", count: targets.length }));
-    $("prompt").classList.add("gate-prompt"); renderDots(); voice("prep-q1");
+    $("prompt").classList.add("gate-prompt"); renderDots(); voiceNext(["prep-q1"]);
     $("btn-skip").hidden = false;
   }
   /* ---------- look first: one tap on what Glitch's move attacked, then the think window ----------
@@ -976,7 +1009,7 @@
       banner("LOOK FIRST", "tease");
       prompt(coach({ kind: "lookFirst" })); $("prompt").classList.add("gate-prompt");
       $("gate-dots").innerHTML = "<span></span>";
-      voice("prep-q1");
+      voiceNext(["prep-q1"]);                // after his move line in Play, never over it
       $("btn-skip").hidden = false;
     });
   }
@@ -1023,7 +1056,7 @@
     }
     if (g.found.indexOf(name) >= 0) return;
     g.wrong += 1; const el = sq(name); el.classList.remove("nope"); void el.offsetWidth; el.classList.add("nope"); sfx("nope");
-    if (g.wrong === 1) toast("Glitch: not that one.");
+    if (g.wrong === 1) glitchToast("campNope");
     if (g.wrong >= 2) {
       const hint = g.targets.find((t) => g.found.indexOf(t) < 0);
       if (hint) sq(hint).classList.add("gate-hint");
@@ -1037,7 +1070,7 @@
     if (!g.wrong) c.clean += 1;
     state.stats = S.recordThreat(state.stats, { targets: g.targets.length, found: g.found.length, wrongTaps: g.wrong }).stats;
     save();
-    banner("SPOTTED", "win"); glitchSay("…lucky.", "nervous");
+    banner("SPOTTED", "win"); glitchMoment("campSpotted");
     prompt(S.coachLine(c.style, { kind: "threatDone", count: g.targets.length, wrong: g.wrong }));
     c.w += 1;
     setTimeout(function () { if (state.camp) nextWarmup(); }, T(1100));
@@ -1126,9 +1159,11 @@
     });
   }
 
-  function playSay(kind) {
-    const l = P.say(kind, state.playIdx[kind]); state.playIdx[kind] = l.index;
-    if (l.text) glitchSay(l.text, l.mood);
+  // Against a crony, his own personality lines join Glitch's for that moment (P.poolFor).
+  function playSay(kind, how) {
+    const table = P.poolFor(kind, state.game && state.game.level) || P.SAY[kind];
+    const l = sayFrom(table, "play." + kind, null, how);
+    state.lastPlay[kind] = l;
     return l;
   }
   function sanOf(fen, uci) {
@@ -1214,8 +1249,16 @@
     const asleep = !!pre.problem;
     const glitch = window.ShockmateGlitch;
     if (glitch && $("pre-glitch")) $("pre-glitch").innerHTML = glitch.svg(asleep ? "hide" : "smug");
-    const line = asleep ? P.say("asleep", 0).text
-      : pre.level === pre.suggest.level ? pre.suggest.say : (S.levelById(pre.level) || {}).say || "";
+    // Said once per pick, not once per redraw: the card redraws when the engine wakes up.
+    if (!pre.said || pre.said.level !== pre.level || pre.said.asleep !== asleep) {
+      const sug = pre.suggest;
+      const l = asleep ? pickFrom(P.SAY.asleep, "play.asleep")
+        : pre.level === sug.level ? pickFrom(S.SUGGEST_SAY[sug.sayKind], "suggest." + sug.sayKind, sug.vars)
+        : { text: (S.levelById(pre.level) || {}).say || "", key: S.levelSayKey(pre.level) };
+      pre.said = { level: pre.level, asleep: asleep, text: l.text };
+      speak(l.key);
+    }
+    const line = pre.said.text;
     if ($("pre-line")) { $("pre-line").textContent = line; $("pre-line").hidden = !line; }
     if ($("pre-why")) $("pre-why").textContent = asleep
       ? "This phone cannot run the engine. Everything else still works."
@@ -1347,9 +1390,11 @@
     if (dropped) g.blunders += 1;
     // One reaction, then his move. He gloats at a dropped piece, rages at a taken one, and gets
     // nervous when the position is going. No number is ever said out loud.
+    let reacted = true;
     if (dropped) playSay("gloat");
     else if (rec.took) playSay("rage");
     else if (ev && P.cpOf({ cp: ev.cp, mate: ev.mate }) <= -300 && Math.random() < 0.4) playSay("nervous");
+    else reacted = false;
     const fold = P.shouldResign(g.evals);
     if (fold.resign && g.moves >= 5) return glitchResigns(nav);
     await sleep(dropped || rec.took ? 700 : 250);
@@ -1369,7 +1414,9 @@
     const cell = sq(mv.to) && sq(mv.to).querySelector(".piece"); if (cell) cell.classList.add("pop");
     sfx("move"); if (mv.captured) explode(mv.to, false);
     g.lastGlitch = { uci: mv.lan, pack: packBefore };
-    playSay(P.moveKind(mv.san));
+    // His move gets a line in the bubble; it is spoken only when he has not just reacted out loud, so the
+    // reaction to the kid's move is never cut off, and nothing new starts in the kid's think window.
+    playSay(P.moveKind(mv.san), reacted ? "quiet" : "now");
     renderPlayFoot(); saveGame();
     warmEval(g.chess.fen());
     openPlayTurn(nav);
@@ -1398,7 +1445,7 @@
     const result = resultOf(kind);
     banner(result === "win" ? "YOU WIN" : result === "loss" ? "GLITCH WINS" : "DRAW", result === "win" ? "win" : result === "loss" ? "miss" : "tease");
     if (kind !== "resign") playSay(kind);
-    if (result === "win") { sfx("win"); voice("sys-ko"); }
+    if (result === "win") { sfx("win"); voiceNext(["sys-ko"]); }
     // Let the outstanding silent scoring land, but never hang the screen on it.
     await Promise.race([Promise.all(g.jobs.map(function (j) { return j.catch(function () {}); })), sleep(4000)]);
     let fights = [];
@@ -1437,7 +1484,7 @@
       : result === "draw" ? "Half a point off " + lv.name + ". Nothing here goes backwards."
       : fights.length ? "He took this one. The board he took it on is waiting for you."
       : "He took this one on the clock, not on a blunder. Same crony is still there when you want him.";
-    $("over-said").textContent = (P.say(kind === "resign" ? "resign" : kind, state.playIdx[kind]) || {}).text || "";
+    $("over-said").textContent = (state.lastPlay[kind] || {}).text || "";
     const card = $("over-card");
     if (card) { card.classList.remove("deal"); void card.offsetWidth; card.classList.add("deal"); }
     $("btn-review").hidden = !fights.length;
@@ -1457,12 +1504,12 @@
     renderPlayFoot(); show("screen-play"); hud();
     const start = F.piecesFromList(f.pieces);
     setPieces(start, F.arriveOf(f));
-    banner("YOUR GAME", "tease"); glitchSay(f.glitch.taunt, "smug");
+    banner("YOUR GAME", "tease"); glitchSay(f.glitch.taunt, "smug", voiceKeyFor(f, "taunt"));
     prompt("Move " + String(f.title).replace(/^\D+/, "") + ". You played " + f.temptingSan + ".");
     await sleep(1200); if (stale(nav)) return;
-    banner("WHAT HE DID", "miss"); glitchSay(f.glitch.gloat, "smug");
+    banner("WHAT HE DID", "miss"); glitchSay(f.glitch.gloat, "smug", voiceKeyFor(f, "gloat"));
     await playLine(f.temptingLineUci, start); await sleep(800); if (stale(nav)) return;
-    banner("WHAT WAS THERE", "win"); glitchSay(f.glitch.rage, "rage");
+    banner("WHAT WAS THERE", "win"); glitchSay(f.glitch.rage, "rage", voiceKeyFor(f, "rage"));
     setPieces(start, F.arriveOf(f)); prompt(f.bestSan + " — the move he was scared of.");
     await sleep(600); if (stale(nav)) return;
     await playLine(f.bestLineUci, start); finisher(f); await sleep(1100);
@@ -1539,17 +1586,14 @@
   function clearVersusSaved() {
     state.settings.versus = Object.assign({ lastWhite: null, saved: null }, state.settings.versus, { saved: null });
   }
-  function versusSay(kind, name) {
-    const g = state.game, idx = (g && g.sayIdx) || (state.vs && state.vs.sayIdx) || {};
-    const l = V.say(kind, idx[kind], name); idx[kind] = l.index;
-    if (l.text) glitchSay(l.text, l.mood);
-    return l;
-  }
+  function versusSay(kind, name, how) { return sayFrom(V.SAY[kind], "ref." + kind, { name: name }, how); }
+  // Whose go it is, in the prompt. It opens the think window, so it is shown and never spoken.
+  function versusTurn(name) { return pickFrom(V.SAY.turn, "ref.turn", { name: name }); }
   // On the pre-game card Glitch has his own bubble, because the in-game one belongs to the board.
   function versusLine(kind) {
     const vs = state.vs; if (!vs) return;
-    const l = V.say(kind, vs.sayIdx[kind], state.settings.names[vs.seats.white]);
-    vs.sayIdx[kind] = l.index; vs.line = l.text; vs.mood = l.mood;
+    const l = pickFrom(V.SAY[kind], "ref." + kind, { name: state.settings.names[vs.seats.white] });
+    vs.line = l.text; vs.mood = l.mood; speak(l.key);
   }
   function stopThinkMeter() { const m = $("think-meter"); if (m) m.classList.remove("fill"); }
   // It fills and it stops. No time control, no forfeit, and nothing on it ever goes down.
@@ -1654,7 +1698,7 @@
     banner("", ""); clearMarks(); $("btn-skip").hidden = true;
     syncBoard(g.lastMove ? { from: g.lastMove.uci.slice(0, 2), to: g.lastMove.uci.slice(2, 4) } : null);
     renderVersusChip();
-    const turn = V.say("turn", g.sayIdx.turn, g.names[who]); g.sayIdx.turn = turn.index;
+    const turn = versusTurn(g.names[who]);
     prompt(g.chess.isCheck() ? g.names[who] + ", you are in check. Get out of it." : turn.text);
     state.phase = "think";
     state.thinkAt = now();
@@ -1777,6 +1821,8 @@
     $("vs-over-title").textContent = VERSUS_TITLE[kind] || "GAME OVER";
     $("vs-over-sub").textContent = "One card each. What is on yours is yours — there is no score between you.";
     renderVersusCards(res);
+    // One line per card, each about its own kid, after the result line has finished.
+    voiceNext((res.cards || []).map(function (c) { return c.sayKey; }).filter(Boolean));
     show("screen-versus-over");
   }
   function renderVersusCards(res) {
@@ -1854,10 +1900,13 @@
   const FAM = { step: "choose", mode: "new", from: "first", names: ["", ""], pins: ["", ""], kid: 0,
     typed: "", first: "", code: "", roster: [], pick: null, busy: false, me: 0 };
   const FAM_STEPS = ["choose", "names", "pin", "code-card", "join", "pick"];
-  function famLine(text, mood) {
+  // The family card has its own Glitch; his lines there come off the same tables as everywhere else.
+  function famLine(kind) {
+    const l = pickFrom(S.GLITCH_LINES[kind], "moment." + kind);
     const g = window.ShockmateGlitch;
-    if (g && $("fam-glitch")) $("fam-glitch").innerHTML = g.svg(mood || "taunt");
-    if ($("fam-line")) { $("fam-line").textContent = text || ""; $("fam-line").hidden = !text; }
+    if (g && $("fam-glitch")) $("fam-glitch").innerHTML = g.svg(l.mood || "taunt");
+    if ($("fam-line")) { $("fam-line").textContent = l.text || ""; $("fam-line").hidden = !l.text; }
+    speak(l.key);
   }
   function famState(text) { if ($("fam-state")) $("fam-state").textContent = text || ""; }
   function famShow(step) {
@@ -1873,10 +1922,10 @@
       typed: "", first: "", code: "", roster: [], pick: null, busy: false, me: 0 });
     if (!Y.configured(syncCfg())) { toast("Family sync is not set up on this build.", 2600); return goHome(); }
     if (code) {
-      famLine("A family code! Let's see who's in it.", "taunt");
+      famLine("famCode");
       famShow("join"); $("fam-code-input").value = code; return famFind();
     }
-    famLine("New phone? I need to know who I'm tormenting.", "smug");
+    famLine("famNew");
     famShow("choose");
   }
   function famLeave() {
@@ -1943,7 +1992,7 @@
       kids.forEach(function (k, i) { state.settings.names[i] = k.name; });
       state.settings.profile = 0; useProfile(0); save(); hud();
       syncNow(true);
-      famLine("A family. Two phones, twice the trouble. Share that code.", "smug");
+      famLine("famMade");
       renderFamCode(); famShow("code-card");
     }).catch(function (err) {
       FAM.busy = false; FAM.kid = 0; FAM.first = "";
@@ -1991,7 +2040,7 @@
       FAM.busy = false;
       if (!rows.length) return famState("No family has that code. Check it with whoever set it up.");
       FAM.code = code; FAM.roster = rows; FAM.mode = "join";
-      famLine("Found them. Which one of you is holding this phone?", "taunt");
+      famLine("famFound");
       const host = $("fam-roster");
       host.innerHTML = rows.map(function (r) { return '<button type="button" class="cta play" data-pick="' + r.slot + '">' + esc(r.name) + "</button>"; }).join("");
       Array.prototype.forEach.call(host.querySelectorAll("button[data-pick]"), function (b) {
@@ -2034,10 +2083,10 @@
         const n = state.settings.names[i];
         $("fam-name-" + i).value = /^Player [12]$/.test(n) ? "" : n;
       });
-      famLine("Names first. I'll be rude to both equally.", "taunt");
+      famLine("famNames");
       famShow("names");
     };
-    $("btn-fam-join").onclick = function () { famLine("Got a code? Type it in.", "taunt"); famShow("join"); };
+    $("btn-fam-join").onclick = function () { famLine("famJoin"); famShow("join"); };
     $("btn-fam-skip").onclick = function () { fam().skipped = true; save(); famLeave(); };
     $("btn-fam-names-go").onclick = function () {
       FAM.names = [Y.cleanName($("fam-name-0").value), Y.cleanName($("fam-name-1").value)];
@@ -2104,6 +2153,9 @@
     card.classList.toggle("same", !!LIVE.same);
     if (window.ShockmateGlitch && $("live-invite-glitch")) $("live-invite-glitch").innerHTML = window.ShockmateGlitch.svg(l.mood);
     $("live-invite-line").textContent = l.text;
+    // The card redraws on every poll; he says it once per invite.
+    const said = LIVE.same ? "same" : "invite:" + inv.id;
+    if (LIVE.said !== said) { LIVE.said = said; speak(l.key); }
     $("btn-live-accept").hidden = !!LIVE.same;
     $("btn-live-decline").hidden = !!LIVE.same;
   }
@@ -2235,7 +2287,7 @@
     renderVersusChip(); renderPlayFoot();
     banner("", ""); clearMarks(); $("btn-skip").hidden = true;
     if (liveMine(g)) {
-      const turn = V.say("turn", g.sayIdx.turn, g.names[g.me]); g.sayIdx.turn = turn.index;
+      const turn = versusTurn(g.names[g.me]);
       prompt(g.chess.isCheck() ? g.names[g.me] + ", you are in check. Get out of it." : turn.text);
       state.phase = "think"; state.thinkAt = now();
       paintPlay(); startThinkMeter();
@@ -2485,7 +2537,7 @@
   }
   function goHome() {
     // Leave at any moment. Cards already earned are saved; only the unfinished fight is dropped.
-    state.nav += 1; skipAhead();
+    state.nav += 1; skipAhead(); voiceStop();
     // Release a why-gate waiting on taps. A camp warm-up uses the same gate with no promise behind
     // it, so Home during "spot the attack" used to throw and strand the kid on the board.
     if (state.gate) { const r = state.gate.resolve; state.gate = null; if (r) r(); }
@@ -2667,14 +2719,14 @@
     $("btn-next").onclick = nextEncounter;
     $("btn-peek").onclick = async function () {
       const enc = current(); $("btn-peek").hidden = true; show("screen-play"); state.phase = "busy";
-      const start = F.piecesFromList(enc.pieces); banner("THE BIGGEST ONE", "win"); glitchSay("Ugh. THAT one.", "rage"); prompt("Best was " + enc.bestSan + ".");
+      const start = F.piecesFromList(enc.pieces); banner("THE BIGGEST ONE", "win"); glitchMoment("peek"); prompt("Best was " + enc.bestSan + ".");
       await playLine(enc.bestLineUci, start); finisher(enc); await sleep(900); showCard(enc, "best", false);
     };
     $("btn-replay").onclick = async function () {
       const enc = current(); show("screen-play"); state.phase = "busy"; const start = F.piecesFromList(enc.pieces);
-      banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug"); prompt(enc.temptingSan + " — the bait."); clearMarks();
+      banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug", voiceKeyFor(enc, "gloat")); prompt(enc.temptingSan + " — the bait."); clearMarks();
       await playLine(enc.temptingLineUci, start); await sleep(500);
-      banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage"); prompt(enc.bestSan + " — the move Glitch fears."); clearMarks();
+      banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage", voiceKeyFor(enc, "rage")); prompt(enc.bestSan + " — the move Glitch fears."); clearMarks();
       await playLine(enc.bestLineUci, start); finisher(enc); await sleep(900); showCard(enc, state.lastTier || "best", false);
     };
     // Play: the second arcade button in the dock, the resume chip, and the quiet way out of a game.
@@ -2692,8 +2744,7 @@
       if (!playing() || state.game.done) return;
       if (state.game.live) return liveResign();
       if (state.game.versus) return endVersus(state.nav, "resign", state.game.chess.turn());
-      playSay("quit");
-      endGame(state.nav, "quit");
+      endGame(state.nav, "quit");           // endGame says the line
     };
     // Versus: the arcade button under "Both", the resume chip, the colour swap and the way out.
     if ($("btn-versus")) $("btn-versus").onclick = function () { openVersusPre(false); };

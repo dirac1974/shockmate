@@ -109,7 +109,15 @@ def main() -> int:
         print(f"No voice id for: {', '.join(missing)}. Pass --voice-glitch / --voice-narrator or set ELEVENLABS_VOICE_GLITCH / ELEVENLABS_VOICE_NARRATOR.", file=sys.stderr)
         return 2
 
-    generated = skipped = failed = sent_chars = 0
+    # Two keys with the same voice, model and words (Play and the referee share a few lines) are one
+    # recording: the second is copied from the first rather than paid for twice.
+    have = {}
+    if not args.force:
+        for sidecar in out.glob("*.sha1"):
+            if sidecar.with_suffix(".mp3").exists():
+                have.setdefault(sidecar.read_text().strip(), sidecar.with_suffix(".mp3"))
+
+    generated = skipped = copied = failed = sent_chars = 0
     for l in lines:
         voice_id = voices[l["voice"]]
         mp3 = out / f"{l['key']}.mp3"
@@ -118,10 +126,17 @@ def main() -> int:
         if not args.force and mp3.exists() and side.exists() and side.read_text().strip() == want:
             skipped += 1
             continue
+        if want in have:
+            mp3.write_bytes(have[want].read_bytes())
+            side.write_text(want)
+            copied += 1
+            print(f"  copy {l['key']}  (same words as {have[want].stem})")
+            continue
         try:
             audio = synth(key, voice_id, args.model, l["text"])
             mp3.write_bytes(audio)
             side.write_text(want)
+            have[want] = mp3
             generated += 1
             sent_chars += len(l["text"])
             print(f"  ok   {l['key']}  ({len(audio)} bytes)")
@@ -140,7 +155,7 @@ def main() -> int:
     }
     (out / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
-    print(f"\ngenerated {generated}, skipped {skipped} unchanged, failed {failed}; {sent_chars} characters sent; manifest lists {len(files)} files.")
+    print(f"\ngenerated {generated}, copied {copied} identical, skipped {skipped} unchanged, failed {failed}; {sent_chars} characters sent; manifest lists {len(files)} files.")
     return 1 if failed else 0
 
 

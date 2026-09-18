@@ -180,5 +180,42 @@ function glitchLines() {
   assert.strictEqual(score.glitchLine("nope").text, "", "an unknown moment says nothing rather than throwing");
 }
 
-rush(); cracked(); glitchLines();
-console.log("OK score v0.19: think time and rushed moves, cracked cards only ever repair, Glitch's lines never repeat back to back");
+// v0.23: S.pickLine never repeats any of the last five lines said at a moment, whatever the dice say.
+function pickLine() {
+  let seed = 7;
+  const rng = function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+  ["lookRight", "lookWrong", "cracked", "repaired", "campStart"].forEach(function (k) {
+    const t = score.GLITCH_LINES[k];
+    let hist = [];
+    const said = [];
+    for (let i = 0; i < 300; i++) {
+      const l = score.pickLine(t, hist, rng);
+      assert.ok(l.text && l.key && l.mood === t.mood, k + " picks a real line with a key");
+      assert.ok(said.slice(-score.LINE_WINDOW).indexOf(l.key) < 0, k + " repeated one of its last five: " + l.key);
+      said.push(l.key); hist = l.history;
+      assert.ok(hist.length <= score.LINE_WINDOW, "the history stays short");
+    }
+    assert.strictEqual(new Set(said).size, t.lines.length, k + " gets round every line");
+  });
+  // Always the lowest roll: it cycles instead of repeating.
+  let hist = [], keys = [];
+  for (let i = 0; i < 20; i++) { const l = score.pickLine(score.GLITCH_LINES.lookGive, hist, function () { return 0; }); keys.push(l.key); hist = l.history; }
+  for (let i = 1; i < keys.length; i++) assert.ok(keys.slice(Math.max(0, i - 5), i).indexOf(keys[i]) < 0, "a fixed roll never lands inside the window");
+  // A two-line table cannot hold a five-line window: it alternates.
+  const two = score.lineTable("smug", "g-test", ["a", "b"]);
+  let h2 = [], prev = null;
+  for (let i = 0; i < 10; i++) { const l = score.pickLine(two, h2, rng); assert.notStrictEqual(l.key, prev); prev = l.key; h2 = l.history; }
+  // Names are shown, never spoken; silent tables have no key.
+  const ko = score.pickLine(score.GLITCH_LINES.ko, [], function () { return 0; });
+  assert.ok(ko.text.indexOf("{name}") >= 0 && ko.speak.indexOf("{") < 0, "the bubble carries the name, the audio does not");
+  assert.strictEqual(score.fillLine(ko.text, { name: "PASTE" }).indexOf("PASTE"), 0);
+  assert.strictEqual(score.pickLine(score.GLITCH_LINES.blitz, []).key, null, "the think-window hint is never spoken");
+  assert.strictEqual(score.pickLine(null, ["x"]).text, "", "no table, no line, no throw");
+  // The suggestion always says line one; the screen may pick any line of its kind.
+  const sug = score.suggestLevel({});
+  assert.strictEqual(sug.sayKind, "first"); assert.strictEqual(sug.sayKey, "g-suggest-first-1");
+  assert.strictEqual(sug.say, score.SUGGEST_SAY.first.lines[0]);
+}
+
+rush(); cracked(); glitchLines(); pickLine();
+console.log("OK score v0.23: think time and rushed moves, cracked cards only ever repair, Glitch's lines never repeat inside a window of " + score.LINE_WINDOW);

@@ -478,21 +478,84 @@
      parent never pins a level. A win with at most one blunder moves him up; two losses in the last
      five at that level, or better than a third of his moves dropping material, moves him down. */
   const SUGGEST_UP_BLUNDERS = 1, SUGGEST_DOWN_LOSSES = 2, SUGGEST_DOWN_RATE = 0.35, SUGGEST_FRESH_FIRST = 0.7, SUGGEST_FRESH_CARDS = 10;
+  /* What Glitch says about the suggestion. `first` and `fresh` always name the same crony, so they are
+     said whole; `up`, `down` and `again` name two, so the bubble carries {level} (the one offered) and
+     {prev} (the one just played) and the audio is the same line without either name. */
+  const SUGGEST_SAY = {
+    first: lineTable("smug", "g-suggest-first", [
+      "Pick Rookie. You'll need the head start.",
+      "Rookie first. Everyone starts with Rookie. Except me. I was born brilliant.",
+      "Start with Rookie. He's clumsy. You'll like him.",
+      "Rookie. He drops things. Mostly his own pieces.",
+      "Rookie for your first game. I'm being generous. Don't get used to it.",
+      "First game? Rookie. I told him to go easy. He won't listen.",
+      "Try Rookie. He's new. You're new to full games. Perfect match.",
+      "Rookie. Perfect for a warm-up. Mine, not yours.",
+      "Rookie first. Then we'll talk about the scary ones.",
+      "Pick Rookie. He trips over his own horse."]),
+    fresh: lineTable("smug", "g-suggest-fresh", [
+      "Cadet. You solve my traps first go, so let us see you actually play one.",
+      "Cadet. You're good at my puzzles. Games are different. Heh.",
+      "Try Cadet. Your fights say you're ready. I say you're not.",
+      "Cadet. He looks at the board. Sometimes twice.",
+      "Your cards are too good. Cadet will fix that.",
+      "Cadet. He's read a whole chess book. Well, the cover.",
+      "You're quick at my traps. Cadet has traps too. Worse ones.",
+      "Skip Rookie. Cadet's waiting. He's polished his buttons.",
+      "Cadet. First go on my fights? Show-off. Go on then.",
+      "Cadet. I'd pick Rookie. Which is why you should pick Cadet."]),
+    up: lineTable("smug", "g-suggest-up", [
+      ["{level}. You beat {prev}, and I am not proud of him.", "Move up. You beat him, and I am not proud of him."],
+      ["{level}. {prev} is crying in a cupboard. Move up.", "Move up. The last one is crying in a cupboard."],
+      ["You beat {prev}? Fine. Try {level}. He's meaner.", "You beat him? Fine. Try the next one. He's meaner."],
+      ["{level} next. {prev} has been demoted to snack duty.", "Next one up. The last one has been demoted to snack duty."],
+      ["{level}. {prev} was a warm-up. I planned that.", "Move up. That was a warm-up. I planned that."],
+      ["Up you go. {level}. Don't get comfy.", "Up you go. Don't get comfy."],
+      ["{level}. In another timeline, {prev} won. Not this one.", "Move up. In another timeline, he won. Not this one."],
+      ["{prev} lost. {level} is better. Probably. I hope.", "He lost. The next one is better. Probably. I hope."],
+      ["{level}. I told {prev} to try harder. He didn't.", "Move up. I told him to try harder. He didn't."],
+      ["{level} now. {prev}'s rating just fell off a cliff.", "Next one up. His rating just fell off a cliff."]]),
+    down: lineTable("smug", "g-suggest-down", [
+      ["{level}. Take the head start. I insist. I INSIST.", "One down. Take the head start. I insist. I INSIST."],
+      ["{level}. One step down. Even I practise on easy mode.", "One step down. Even I practise on easy mode."],
+      ["Try {level}. {prev} is being a bully today.", "Try the easier one. That last one is being a bully today."],
+      ["{level}. Warm up there. Then come back and get {prev}.", "Warm up on the easier one. Then come back and get him."],
+      ["{level}. Not a step back. A run-up.", "Not a step back. A run-up."],
+      ["{prev} is on a lucky streak. Try {level} for a bit.", "He's on a lucky streak. Try the easier one for a bit."],
+      ["{level}. Win a few. Then we'll talk.", "The easier one. Win a few. Then we'll talk."],
+      ["{level}. Even heroes train on the small ones.", "Even heroes train on the small ones."],
+      ["Go {level}. {prev} has had too many snacks. He's hyper.", "Go one down. He's had too many snacks. He's hyper."],
+      ["{level}. Practise the looking. Then the winning.", "One down. Practise the looking. Then the winning."]]),
+    again: lineTable("taunt", "g-suggest-again", [
+      ["{level} again. You did not finish him off last time.", "Same one again. You did not finish him off last time."],
+      ["{level} again. He's been bragging all week.", "Same again. He's been bragging all week."],
+      ["{level}. Rematch! I brought popcorn.", "Rematch! I brought popcorn."],
+      ["{level} again. Unfinished business. My favourite kind.", "Same again. Unfinished business. My favourite kind."],
+      ["Round two with {level}. Or three. I lost count.", "Round two. Or three. I lost count."],
+      ["{level} again. He says he's ready. He always says that.", "Same one. He says he's ready. He always says that."],
+      ["{level}. Same crony, new timeline.", "Same crony, new timeline."],
+      ["{level} again? Brave. Or stubborn. I like stubborn.", "Same again? Brave. Or stubborn. I like stubborn."],
+      ["{level}. He's still here. Still grumpy.", "He's still here. Still grumpy."],
+      ["Back to {level}. He's polished his king.", "Back to him. He's polished his king."]]),
+  };
+  // Each crony's own line (LEVELS[].say) speaks under this key.
+  function levelSayKey(id) { return levelById(id) ? "g-level-" + id : null; }
   function suggestLevel(stats) {
     const g = gamesOf(stats), recent = g.recent || [];
-    const out = function (i, reason, say) {
-      const l = levelAt(i);
-      return { level: l.id, index: levelIndex(l.id), name: l.name, reason: reason, say: say };
+    // `sayKind` and `vars` let the screen pick any line of that kind; `say` is always line one, so the
+    // suggestion itself stays a pure, repeatable answer.
+    const out = function (i, reason, kind, prev) {
+      const l = levelAt(i), vars = { level: l.name, prev: prev || "" };
+      return { level: l.id, index: levelIndex(l.id), name: l.name, reason: reason,
+        say: fillLine(SUGGEST_SAY[kind].lines[0], vars), sayKind: kind, vars: vars, sayKey: lineKey(SUGGEST_SAY[kind], 0) };
     };
     if (!recent.length) {
       const ft = firstTryRate(stats);
       if (ft.cards >= SUGGEST_FRESH_CARDS && ft.rate >= SUGGEST_FRESH_FIRST) {
         return out(levelIndex("cadet"),
-          "No games yet, but " + Math.round(ft.rate * 100) + "% of his cards were first try over " + ft.cards + " fights.",
-          "Cadet. You solve my traps first go, so let us see you actually play one.");
+          "No games yet, but " + Math.round(ft.rate * 100) + "% of his cards were first try over " + ft.cards + " fights.", "fresh");
       }
-      return out(levelIndex("rookie"), "No games yet. Rookie is where a first game starts.",
-        "Pick Rookie. You'll need the head start.");
+      return out(levelIndex("rookie"), "No games yet. Rookie is where a first game starts.", "first");
     }
     const id = recent[0].level, i = levelIndex(id), here = levelAt(i);
     const at = recent.filter(function (r) { return r.level === id; }).slice(0, 5);
@@ -502,19 +565,15 @@
     const promote = last.result === "win" && (last.blunders || 0) <= SUGGEST_UP_BLUNDERS;
     const demote = losses >= SUGGEST_DOWN_LOSSES || rate > SUGGEST_DOWN_RATE;
     if (promote && !demote && i < LEVELS.length - 1) {
-      const up = levelAt(i + 1);
-      return out(i + 1, "Beat " + here.name + " with " + (last.blunders ? "one blunder" : "no blunders") + ".",
-        up.name + ". You beat " + here.name + ", and I am not proud of him.");
+      return out(i + 1, "Beat " + here.name + " with " + (last.blunders ? "one blunder" : "no blunders") + ".", "up", here.name);
     }
     if (demote && i > 0) {
-      const down = levelAt(i - 1);
       const why = losses >= SUGGEST_DOWN_LOSSES
         ? losses + " losses in his last " + at.length + " against " + here.name + "."
         : Math.round(rate * 100) + "% of his moves against " + here.name + " dropped material.";
-      return out(i - 1, why, down.name + ". Take the head start. I insist. I INSIST.");
+      return out(i - 1, why, "down", here.name);
     }
-    return out(i, at.length + " game" + (at.length === 1 ? "" : "s") + " against " + here.name + ", nothing settled yet.",
-      here.name + " again. You did not finish him off last time.");
+    return out(i, at.length + " game" + (at.length === 1 ? "" : "s") + " against " + here.name + ", nothing settled yet.", "again", here.name);
   }
 
   /* ---------- versus: the two kids, on one phone ----------
@@ -593,20 +652,267 @@
   // third wrong tap it shows him the answer and opens the think window anyway.
   const LOOK = { hintAfter: 2, giveAfter: 3 };
 
-  /* Glitch reacts to every new moment the way he reacts in a fight: a line and a mood. Three or more
-     variants each, and glitchLine walks them in turn so the same line never plays twice in a row. */
+  /* ---------- what Glitch says: every table, one picker ----------
+     Every line he says lives in a table with a mood and a voice prefix (`vk`); line i speaks as
+     `vk-(i+1)` from web/voice/, so the bubble and the audio are the same words. An entry is either a
+     string (shown and spoken) or [shown, spoken]: the shown half may carry {name}/{level}/{prev},
+     the spoken half never does, because all audio is pre-generated. `silent` tables are shown only
+     (the think window stays quiet). tools/voice/glitch_lines.js walks every table in the app. */
+  function lineTable(mood, vk, entries, opts) {
+    const t = { mood: mood, vk: vk, lines: [], speak: [] };
+    (entries || []).forEach(function (e) {
+      if (Array.isArray(e)) { t.lines.push(e[0]); t.speak.push(e[1]); } else { t.lines.push(e); t.speak.push(null); }
+    });
+    if (opts && opts.silent) t.silent = true;
+    if (opts && opts.voice) t.voice = opts.voice;
+    return t;
+  }
+  function lineKey(table, i) {
+    if (!table || i == null || i < 0) return null;
+    if (table.keys) return table.keys[i] || null;
+    return table.vk ? table.vk + "-" + (i + 1) : null;
+  }
+  function spokenLine(table, i) { return (table.speak && table.speak[i]) || table.lines[i]; }
+  function fillLine(text, vars) {
+    const v = vars || {};
+    return String(text || "").replace(/\{(name|level|prev)\}/g, function (m, k) { return v[k] != null ? String(v[k]) : "You"; });
+  }
+  /* Anti-repeat. `history` is the keys of the last lines said at this moment, newest last. The pick is
+     random among every line NOT in the last LINE_WINDOW (or all but the last one, for a table too small
+     to hold the window). Pure: the caller stores the history it gets back, rng is injectable. */
+  const LINE_WINDOW = 5;
+  function pickLine(table, history, rng) {
+    const hist = Array.isArray(history) ? history.slice() : [];
+    if (!table || !table.lines || !table.lines.length) return { text: "", speak: "", mood: "taunt", index: -1, key: null, history: hist };
+    const n = table.lines.length, win = Math.min(LINE_WINDOW, n - 1);
+    const recent = win > 0 ? hist.slice(-win) : [];
+    const open = [];
+    for (let i = 0; i < n; i++) if (recent.indexOf(lineKey(table, i) || String(i)) < 0) open.push(i);
+    const r = typeof rng === "function" ? rng : Math.random;
+    const i = open[Math.min(open.length - 1, Math.floor(r() * open.length))];
+    const key = lineKey(table, i) || String(i);
+    return { text: table.lines[i], speak: spokenLine(table, i), mood: table.mood, index: i,
+      key: table.silent ? null : lineKey(table, i), history: hist.concat(key).slice(-LINE_WINDOW) };
+  }
+
+  /* Glitch reacts to every new moment the way he reacts in a fight: a line and a mood. Purple
+     time-goblin, vain, a sore loser, fake-confident; never mean about the kid. Running gags: his
+     nine-thousand rating, other timelines, his cronies, his snacks. */
   const GLITCH_LINES = {
-    lookRight: { mood: "nervous", lines: ["You SAW that? Nobody sees that.", "Who told you to look? Stop looking.", "Ugh. Eyes open. That is cheating.", "Fine, you spotted it. Doesn't mean you'll stop it."] },
-    lookWrong: { mood: "smug", lines: ["Wrong one. Keep guessing.", "Nope. Not even close.", "Ha! Look again. Or don't.", "Warm. No, cold. Freezing."] },
-    lookGive: { mood: "smug", lines: ["There. THAT is what I hit. Too slow.", "I'll show you, since you can't see it.", "My move, my target. Write that down."] },
-    cracked: { mood: "smug", lines: ["Ha! Cracked. That one's still half mine.", "Cracked! I had to SHOW you. Still counts as mine.", "A cracked card. I'm keeping the other half."] },
-    repaired: { mood: "rage", lines: ["You fixed it?! That crack was MINE!", "No no no. Clean? Without my help?!", "My crack! You patched my beautiful crack!"] },
-    pacing: { mood: "taunt", lines: ["Two days already? Your hand is faster than your eyes. Camp instead?", "Keep rushing. I LOVE it when you rush. Or... Camp?", "Speed is my favourite thing about you. Camp first, if you dare."] },
+    lookRight: lineTable("nervous", "g-look-right", [
+      "You SAW that? Nobody sees that.",
+      "Who told you to look? Stop looking.",
+      "Ugh. Eyes open. That is cheating.",
+      "Fine, you spotted it. Doesn't mean you'll stop it.",
+      "How? I hid that one behind a whole other timeline.",
+      "Lucky tap. I am rated nine thousand, and I say lucky.",
+      "Don't look at my moves! They're private!",
+      "You looked FIRST? Before moving? Who does that?",
+      "Okay. Okay. You found it. I have other plans. Somewhere.",
+      "Spotted. Great. Now I have to think of something new.",
+      "That was supposed to be a surprise. Surprise ruined.",
+      "Stop reading my mind. It's full of snacks and secrets.",
+      "Marshal said you'd never see that. Marshal is fired.",
+      "Hmph. Your eyes are faster than my tricks today.",
+      "Right piece. I hate it when it's the right piece.",
+      "Seen? Already? I had a whole speech ready."]),
+    lookWrong: lineTable("smug", "g-look-wrong", [
+      "Wrong one. Keep guessing.",
+      "Nope. Not even close.",
+      "Ha! Look again. Or don't.",
+      "Warm. No, cold. Freezing.",
+      "That one? I didn't even touch that one.",
+      "Nope. My move was pointing somewhere else.",
+      "Wrong square! I'm writing that in my rating book.",
+      "Not that. Follow my piece. Where can it bite?",
+      "Ooh, nope. Try the piece I just moved.",
+      "Wrong! This timeline is going great for me.",
+      "Nah. Look where my piece is aiming.",
+      "Missed! I'm doing a little dance now.",
+      "Not it. Think like a goblin. A hungry goblin.",
+      "Nope! Try again. I'll wait. I love waiting.",
+      "Cold. Colder. Ice cream cold.",
+      "That piece is safe. For now. Look somewhere else."]),
+    lookGive: lineTable("smug", "g-look-give", [
+      "There. THAT is what I hit. Too slow.",
+      "I'll show you, since you can't see it.",
+      "My move, my target. Write that down.",
+      "Right there. I was pointing at it the whole time.",
+      "See it now? That's the one my piece was after.",
+      "That one. Glowing. You can have the answer. Just this once.",
+      "Look. THAT is my snack. Next time, spot it first.",
+      "Here's the secret. It's that one. Don't tell anyone.",
+      "That's what I attacked. Now you know. Ugh, now you know.",
+      "There it is. In another timeline, you spotted it first."]),
+    cracked: lineTable("smug", "g-crack", [
+      "Ha! Cracked. That one's still half mine.",
+      "Cracked! I had to SHOW you. Still counts as mine.",
+      "A cracked card. I'm keeping the other half.",
+      "Cracked! That card has my fingerprints all over it.",
+      "A crack! I'm framing it. Next to my fake trophy.",
+      "You won, but with my help. So I sort of won. Sort of.",
+      "Cracked card! Win it clean and I'll cry. Probably.",
+      "That crack is my autograph. You're welcome.",
+      "Half a card for you, half a victory for me.",
+      "Ha! Cracked like a biscuit. My favourite biscuit."]),
+    repaired: lineTable("rage", "g-repair", [
+      "You fixed it?! That crack was MINE!",
+      "No no no. Clean? Without my help?!",
+      "My crack! You patched my beautiful crack!",
+      "Clean?! I was USING that crack!",
+      "You glued it! Who gave you glue?!",
+      "No crack? NO CRACK?! This timeline is broken.",
+      "Perfect again. I hate perfect. Perfect is rude.",
+      "I had half that card! Give me my half!",
+      "Fixed?! I'm telling Marshal. He'll be furious. He won't care.",
+      "It's all shiny now. Disgusting. Beautiful. Disgusting!"]),
+    pacing: lineTable("taunt", "g-pacing", [
+      "Two days already? Your hand is faster than your eyes. Camp instead?",
+      "Keep rushing. I LOVE it when you rush. Or... Camp?",
+      "Speed is my favourite thing about you. Camp first, if you dare.",
+      "Faster! Faster! Oh wait, faster is how I win. Camp?",
+      "Two days in one go. My cronies need a lie-down. Camp?",
+      "You're rushing. I LOVE rushing. That's why you should try Camp.",
+      "Another day? Sure. Or Camp, where you practise looking first.",
+      "Slow down? Never. Please never. Unless... Camp.",
+      "My cronies are exhausted. Come and bother me at Camp instead.",
+      "Even I take snack breaks. Camp is basically a snack break. With chess."]),
+    // Camp
+    campStart: lineTable("smug", "g-camp-start", [
+      "Camp? You? This should be quick.",
+      "Camp! I brought a whistle and a clipboard. Both stolen.",
+      "Training day. I'll be training too. At napping.",
+      "Camp. Spot my attacks, win my fights. Easy for me to say.",
+      "Welcome to Camp. I'm the counsellor. The evil one.",
+      "Camp again? Fine. I've invented new traps. Four of them. Maybe two.",
+      "Tournament prep? My rating is nine thousand. I never prep.",
+      "Camp! Rule one: Glitch wins. Rule two: see rule one.",
+      "Oh good, Camp. I love watching you practise. I mean, I hate it.",
+      "Camp! My snacks are in the fridge. Don't touch them. Look at the board."]),
+    campWatch: lineTable("smug", "g-camp-watch", [
+      "Watch closely. Or don't.",
+      "Here comes my move. Blink and you miss it.",
+      "Watch my piece. It's up to something.",
+      "Moving now. Try to keep up.",
+      "My move. Very sneaky. Extremely sneaky.",
+      "Eyes on the board. Not on my handsome face.",
+      "Here I go. What am I aiming at? Guess.",
+      "Watch this. I've practised it in nine timelines.",
+      "One move from me. One question for you.",
+      "Tiptoe, tiptoe. Did you see that?"]),
+    campSpotted: lineTable("nervous", "g-camp-spotted", [
+      "…lucky.",
+      "Lucky. Again. Suspiciously lucky.",
+      "Fine. You saw it. The next one's harder. Probably.",
+      "Stop spotting things!",
+      "How are you seeing all of these?",
+      "Hmph. Beginner's luck. For the ninth time.",
+      "Okay, that one was obvious. The next one isn't.",
+      "You found them all. I'm hiding the next one better.",
+      "Spotted. I'm writing a complaint.",
+      "Ugh. My tricks need a nap. So do I."]),
+    campNope: lineTable("smug", "g-camp-nope", [
+      "Not that one.",
+      "Nope. Look again.",
+      "Not that. Where can my piece reach?",
+      "Wrong one. Ha!",
+      "Nope! Try the one I'm aiming at.",
+      "That's not it. I'm aiming somewhere scarier.",
+      "Nah. Follow my piece.",
+      "Not that one. So close. Not really.",
+      "Wrong! Keep looking.",
+      "Nope. That piece is perfectly safe."]),
+    // The fight itself, around the per-fight taunt / gloat / rage
+    tease: lineTable("nervous", "g-fight-tease", [
+      "Wait. Wait. Which future is this…",
+      "Hold on. Which timeline did you pick?",
+      "Uh oh. Or... yay? Let me check.",
+      "Splitting time… please be my future. Please.",
+      "Don't look at me. I'm calculating. Loudly.",
+      "Wait. Is this the good one? For me, I mean."]),
+    shield: lineTable("nervous", "g-fight-shield", [
+      "Hey! Where did my gloat go?",
+      "A shield?! I had a speech ready!",
+      "No fair! My gloat bounced off!",
+      "Shield?! Who sells shields? I want a refund.",
+      "My gloat hit a wall. A time wall. Rude.",
+      "I'm not even ALLOWED to gloat. Unbelievable."]),
+    second: lineTable("nervous", "g-fight-second", [
+      "Sweating? Me? Never.",
+      "Second try. I'm not nervous. That's just goblin sweat.",
+      "Go again. I'm totally calm. Totally.",
+      "Another try? Fine. It's still my board.",
+      "Try again. I've hidden my snacks, just in case.",
+      "One more go. Don't find it. Please don't find it."]),
+    confess: lineTable("nervous", "g-fight-confess", [
+      "Fine. FINE. Here is what I was scared of.",
+      "Okay, I'll show you. But I'm not happy about it.",
+      "Here's the move that scares me. Don't tell anyone.",
+      "This is the one I was hiding. Look. Ugh.",
+      "Fine! Here's the good future. My least favourite future.",
+      "I'll show you. Just this once. With my eyes shut."]),
+    whyGate: lineTable("hide", "g-fight-why", [
+      "Don't say it. Don't you DARE say why…",
+      "No, no. You don't need to know WHY.",
+      "Don't tap it. Don't prove it. Please.",
+      "Why? Nobody needs a why. Why do you need a why?",
+      "Shh. Keep the reason a secret. For me.",
+      "If you tap the right pieces, I scream."]),
+    whyNope: lineTable("smug", "g-fight-nope", [
+      "Nope.",
+      "Nope! Not that one.",
+      "Ha! Wrong piece.",
+      "Not that one. Keep guessing.",
+      "Nah. Try again.",
+      "Wrong! I love wrong."]),
+    bigger: lineTable("nervous", "g-fight-bigger", [
+      "There was a BIGGER one…",
+      "That works. But there was a BIGGER one. Heh.",
+      "Good. Not best. I'll take good.",
+      "You won. Just. The best move was scarier.",
+      "Fine, you hit me. A bigger move was sitting right there.",
+      "Ow. But it could have been OW. There was a bigger one."]),
+    ko: lineTable("hide", "g-fight-ko", [
+      ["{name}? Never heard of him.", "Never heard of him."],
+      ["{name} is done. He was never my favourite.", "He was never my favourite anyway."],
+      ["{name}? Knocked out? I'll get a new crony. A better one.", "Knocked out? I'll get a new crony. A better one."],
+      ["Down goes {name}. I was going to fire him anyway.", "Down he goes. I was going to fire him anyway."],
+      ["{name}! Get up! No? Fine. Lie there.", "Get up! No? Fine. Lie there."],
+      ["{name} is out. I'm pretending I don't know him.", "He's out. I'm pretending I don't know him."]]),
+    hotSeat: lineTable("smug", "g-fight-hotseat", [
+      "Your turn. Same board. No peeking at the answer.",
+      "Next player! Same trap. Still delicious.",
+      "Swap! Same board. I've forgotten everything. Honest.",
+      "Your go. Same board. Pretend you didn't see anything.",
+      "Seat two! Same trap, fresh snack. I mean player.",
+      "New player, same board. Let's see if you fall for it."]),
+    peek: lineTable("rage", "g-fight-peek", [
+      "Ugh. THAT one.",
+      "That one. The one I was hoping you'd miss.",
+      "Fine. Here's the BIG one. Happy?",
+      "This is the move I have nightmares about.",
+      "Don't look at it! Too late. You looked.",
+      "The biggest one. My least favourite move in history."]),
+    // Setting up a phone for the family: one line per step, said once.
+    famCode: lineTable("taunt", "g-family-code", ["A family code! Let's see who's in it."]),
+    famNew: lineTable("smug", "g-family-new", ["New phone? I need to know who I'm tormenting."]),
+    famMade: lineTable("smug", "g-family-made", ["A family. Two phones, twice the trouble. Share that code."]),
+    famFound: lineTable("taunt", "g-family-found", ["Found them. Which one of you is holding this phone?"]),
+    famNames: lineTable("taunt", "g-family-names", ["Names first. I'll be rude to both equally."]),
+    famJoin: lineTable("taunt", "g-family-join", ["Got a code? Type it in."]),
+    // The blitz hint lands inside the think window, so it is shown and never spoken.
+    blitz: lineTable("nervous", "g-fight-blitz", [
+      "Too slow! Here, I'll narrow it down. Ugh.",
+      "Tick tock! Here are some squares. Don't thank me.",
+      "Hurry! I'm lighting it up. Against my will.",
+      "Clock's running! Look at the glowing ones.",
+      "Faster! Here's a hint. I'll regret this.",
+      "So slow! Fine. Look where it glows."], { silent: true }),
   };
   function glitchLine(kind, prev) {
-    const g = GLITCH_LINES[kind]; if (!g) return { text: "", mood: "taunt", index: -1 };
+    const g = GLITCH_LINES[kind]; if (!g) return { text: "", mood: "taunt", index: -1, key: null };
     const i = typeof prev === "number" && prev >= 0 ? (prev + 1) % g.lines.length : 0;
-    return { text: g.lines[i], mood: g.mood, index: i };
+    return { text: g.lines[i], mood: g.mood, index: i, key: g.silent ? null : lineKey(g, i) };
   }
 
   /* ---------- camp: one tournament-prep session a day, per kid ----------
@@ -945,6 +1251,7 @@
     LEVELS, levelIndex, levelById, levelAt, levelName, emptyGames, gamesOf, recordGame, gameBlunderRate, suggestLevel, GAMES_RECENT,
     VERSUS_RECENT, BEST_MOVES_MAX, emptyVersus, versusOf, bestMovesOf, storeBestMoves, recordVersus,
     RUSH_MS, RUSH_NOTE, rushOf, earnCard, cardCracked, crackedIds, lookFirst, LOOK, GLITCH_LINES, glitchLine, pacingNudge,
+    lineTable, lineKey, spokenLine, fillLine, pickLine, LINE_WINDOW, SUGGEST_SAY, levelSayKey,
     normalisePin, validPin, parentOf, parentSet, parentGate,
     PRINCIPLES, principleFor, MOTIF_LABEL, defaultCoachStyle, coachStyleOf, coachLine,
     emptyThreats, threatsOf, recordThreat, threatRate, campOf, campDoneToday, campDaysDone, recordCampDay, campPlan, campDebrief,
