@@ -401,6 +401,9 @@
     const picked = [], seen = {};
     const take = function (e) { if (!seen[e.id] && picked.length < want) { seen[e.id] = true; picked.push(e); } };
     const missed = function (e) { const c = cards[e.id]; return !!(c && c.lastCorrect !== true && c.attempts > 0); };
+    // A board he lost in his own game leads everything. It is the one position he has already been
+    // punished on, so it is the one he will remember. They arrive in `encounters`, newest first.
+    all.forEach(function (e) { if (e.pack === "game") take(e); });
     all.forEach(function (e) { if (earned[e.id] && earned[e.id].clean === false) take(e); });
     weak.forEach(function (mo) { all.forEach(function (e) { if (e.motif === mo && missed(e)) take(e); }); });
     all.forEach(function (e) { if (missed(e)) take(e); });
@@ -414,6 +417,106 @@
     all.forEach(function (e) { take(e); });
     return picked;
   }
+  /* ---------- play: five of Glitch's cronies, as five levels ----------
+     A pure table. `skill` and `depth` are handed straight to Stockfish; `random` is how often the
+     crony shrugs and plays a legal move at random; `blunder` is how often he picks a worse move out
+     of MultiPV on purpose, so the mistake still looks like a move a person would make. Nothing here
+     locks: the kid picks any row before every game, always. */
+  const LEVELS = [
+    { id: "sleepy", name: "Sleepy", rating: 300, skill: 0, depth: 1, multipv: 4, random: 0.5, blunder: 0,
+      blurb: "Barely awake", say: "Sleepy? He plays with his eyes shut. Fine. Take the free one." },
+    { id: "rookie", name: "Rookie", rating: 500, skill: 1, depth: 2, multipv: 4, random: 0, blunder: 0.25,
+      blurb: "Sees one move", say: "Rookie. He hangs things. Do NOT tell him I said that." },
+    { id: "cadet", name: "Cadet", rating: 750, skill: 3, depth: 4, multipv: 3, random: 0, blunder: 0.12,
+      blurb: "Sees the capture", say: "Cadet actually looks at the board. Sometimes twice." },
+    { id: "agent", name: "Agent", rating: 1000, skill: 6, depth: 6, multipv: 3, random: 0, blunder: 0.05,
+      blurb: "Punishes a hang", say: "Agent. He counts. You do not. This will be short." },
+    { id: "marshal", name: "Marshal", rating: 1300, skill: 10, depth: 8, multipv: 1, random: 0, blunder: 0,
+      blurb: "Plays properly", say: "Marshal?! Nobody picks Marshal. Nobody sane." },
+  ];
+  function levelIndex(id) {
+    for (let i = 0; i < LEVELS.length; i++) { if (LEVELS[i].id === id) return i; }
+    return -1;
+  }
+  function levelById(id) { const i = levelIndex(id); return i < 0 ? null : LEVELS[i]; }
+  function levelAt(i) { return LEVELS[Math.max(0, Math.min(LEVELS.length - 1, i || 0))]; }
+  function levelName(id) { const l = levelById(id); return l ? l.name : ""; }
+
+  /* Everything a game leaves behind. Every counter only ever climbs, and `bestLevelWon` never slides
+     back down a rung, so a bad evening cannot take last week's win off the screen. */
+  function emptyGames() { return { played: 0, wins: 0, draws: 0, losses: 0, byLevel: {}, recent: [], bestLevelWon: null }; }
+  function gamesOf(stats) {
+    const g = Object.assign(emptyGames(), (stats && stats.games) || {});
+    g.byLevel = Object.assign({}, g.byLevel);
+    Object.keys(g.byLevel).forEach(function (k) { g.byLevel[k] = Object.assign({ played: 0, wins: 0 }, g.byLevel[k]); });
+    g.recent = (g.recent || []).slice();
+    return g;
+  }
+  const GAMES_RECENT = 10;
+  function recordGame(stats, res) {
+    const r = res || {}, next = Object.assign({}, stats || {});
+    const g = gamesOf(stats);
+    const id = levelById(r.level) ? r.level : LEVELS[0].id;
+    const result = r.result === "win" || r.result === "draw" ? r.result : "loss";
+    const row = { level: id, result: result, blunders: Math.max(0, Math.round(r.blunders || 0)),
+      moves: Math.max(0, Math.round(r.moves || 0)), resigned: !!r.resigned, t: r.t || Date.now() };
+    g.played += 1;
+    if (result === "win") g.wins += 1; else if (result === "draw") g.draws += 1; else g.losses += 1;
+    const by = g.byLevel[id] = Object.assign({ played: 0, wins: 0 }, g.byLevel[id]);
+    by.played += 1; if (result === "win") by.wins += 1;
+    if (result === "win" && levelIndex(id) > levelIndex(g.bestLevelWon)) g.bestLevelWon = id;
+    g.recent = [row].concat(g.recent).slice(0, GAMES_RECENT);
+    next.games = g;
+    return { stats: next, games: g, row: row };
+  }
+  function gameBlunderRate(rows) {
+    const moves = rows.reduce(function (a, r) { return a + (r.moves || 0); }, 0);
+    const blunders = rows.reduce(function (a, r) { return a + (r.blunders || 0); }, 0);
+    return moves ? blunders / moves : 0;
+  }
+  /* Which crony to offer next. Pure, and only ever a suggestion: the chip row stays open and the
+     parent never pins a level. A win with at most one blunder moves him up; two losses in the last
+     five at that level, or better than a third of his moves dropping material, moves him down. */
+  const SUGGEST_UP_BLUNDERS = 1, SUGGEST_DOWN_LOSSES = 2, SUGGEST_DOWN_RATE = 0.35, SUGGEST_FRESH_FIRST = 0.7, SUGGEST_FRESH_CARDS = 10;
+  function suggestLevel(stats) {
+    const g = gamesOf(stats), recent = g.recent || [];
+    const out = function (i, reason, say) {
+      const l = levelAt(i);
+      return { level: l.id, index: levelIndex(l.id), name: l.name, reason: reason, say: say };
+    };
+    if (!recent.length) {
+      const ft = firstTryRate(stats);
+      if (ft.cards >= SUGGEST_FRESH_CARDS && ft.rate >= SUGGEST_FRESH_FIRST) {
+        return out(levelIndex("cadet"),
+          "No games yet, but " + Math.round(ft.rate * 100) + "% of his cards were first try over " + ft.cards + " fights.",
+          "Cadet. You solve my traps first go, so let us see you actually play one.");
+      }
+      return out(levelIndex("rookie"), "No games yet. Rookie is where a first game starts.",
+        "Pick Rookie. You'll need the head start.");
+    }
+    const id = recent[0].level, i = levelIndex(id), here = levelAt(i);
+    const at = recent.filter(function (r) { return r.level === id; }).slice(0, 5);
+    const losses = at.filter(function (r) { return r.result === "loss"; }).length;
+    const rate = gameBlunderRate(at);
+    const last = at[0] || recent[0];
+    const promote = last.result === "win" && (last.blunders || 0) <= SUGGEST_UP_BLUNDERS;
+    const demote = losses >= SUGGEST_DOWN_LOSSES || rate > SUGGEST_DOWN_RATE;
+    if (promote && !demote && i < LEVELS.length - 1) {
+      const up = levelAt(i + 1);
+      return out(i + 1, "Beat " + here.name + " with " + (last.blunders ? "one blunder" : "no blunders") + ".",
+        up.name + ". You beat " + here.name + ", and I am not proud of him.");
+    }
+    if (demote && i > 0) {
+      const down = levelAt(i - 1);
+      const why = losses >= SUGGEST_DOWN_LOSSES
+        ? losses + " losses in his last " + at.length + " against " + here.name + "."
+        : Math.round(rate * 100) + "% of his moves against " + here.name + " dropped material.";
+      return out(i - 1, why, down.name + ". Take the head start. I insist. I INSIST.");
+    }
+    return out(i, at.length + " game" + (at.length === 1 ? "" : "s") + " against " + here.name + ", nothing settled yet.",
+      here.name + " again. You did not finish him off last time.");
+  }
+
   // Why Prep holds what it holds, for the chip and the blurb: his misses, or traps while he has none.
   function prepSource(stats) {
     const cards = (stats && stats.cards) || {};
@@ -623,7 +726,9 @@
     const nCounter = o.counters == null ? 2 : o.counters;
     const earned = (stats && stats.cardsEarned) || {};
     const used = {}, warmups = [];
-    const pool = all.filter(function (e) { return hasThreat(e); });
+    // A board out of his own game is never spent as a warm-up. It is the one he most needs to play
+    // properly, so it is reserved for the fights, where prepFights puts it first.
+    const pool = all.filter(function (e) { return e.pack !== "game" && hasThreat(e); });
     const takeWarm = function (e) { if (!used[e.id] && warmups.length < nWarm) { used[e.id] = true; warmups.push(e); } };
     pool.forEach(function (e) { if (earned[e.id]) takeWarm(e); });   // a board he has already won reads faster
     pool.forEach(takeWarm);
@@ -761,8 +866,15 @@
     const cards = Object.keys((stats && stats.cardsEarned) || {}).length;
     const attempts = motifs.reduce(function (a, m) { return a + (m.attempts || 0); }, 0);
     const rush = rushOf(stats);
+    const games = gamesOf(stats);
+    // Blunders per game, newest last, for the trend strip. A game with no moves recorded is skipped
+    // rather than drawn as a zero, so an abandoned game cannot flatter the line.
+    const blunderTrend = games.recent.filter(function (r) { return (r.moves || 0) > 0; })
+      .slice(0, 10).reverse().map(function (r) { return { level: r.level, blunders: r.blunders || 0, moves: r.moves || 0 }; });
     return {
       rank: agentRank(stats), cards: cards, total: list.length,
+      games: games, suggest: suggestLevel(stats), blunderTrend: blunderTrend,
+      gameFights: ((stats && stats.gameFights) || []).length,
       kos: b.kos, power: b.power, knockedOff: knockedOff(stats), motifs: motifs, byDay: cardsByDay(stats, 14, ts),
       goodAt: motifs.filter(function (m) { return m.verdict === "good"; }).map(function (m) { return m.label; }),
       focusOn: focus.map(function (m) { return m.label; }),
@@ -779,6 +891,7 @@
 
   const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, prepSource, PREP_QUESTIONS, offersBait, prepQuestionsFor, motifVerdict, cardsByDay, progressSummary,
     weekStart, firstTryRate, thisWeek, coachNotes,
+    LEVELS, levelIndex, levelById, levelAt, levelName, emptyGames, gamesOf, recordGame, gameBlunderRate, suggestLevel, GAMES_RECENT,
     RUSH_MS, RUSH_NOTE, rushOf, earnCard, cardCracked, crackedIds, lookFirst, LOOK, GLITCH_LINES, glitchLine, pacingNudge,
     normalisePin, validPin, parentOf, parentSet, parentGate,
     PRINCIPLES, principleFor, MOTIF_LABEL, defaultCoachStyle, coachStyleOf, coachLine,

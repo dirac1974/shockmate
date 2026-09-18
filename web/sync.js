@@ -7,6 +7,10 @@
   // summing would double-count the fights both devices already saw.
 
   const LEDGER_MAX = 40, TIERS_MAX = 8, CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const GAMES_RECENT = 10, GAME_FIGHTS_MAX = 20;
+  // The rungs, weakest first. Mirrors S.LEVELS in score.js; kept here so merging never has to load
+  // the game's own rules. If a rung is ever added there, add it here too.
+  const LEVEL_ORDER = ["sleepy", "rookie", "cadet", "agent", "marshal"];
   const COUNTERS = ["hits", "misses", "streak", "bestStreak", "won", "criticals"];
   const CARD_COUNTERS = ["attempts", "founds", "misses", "whys", "hits", "rushed"];
 
@@ -80,6 +84,39 @@
         best: bigger(ca.best, cb.best), last: lastA >= lastB ? lastA : lastB,
         run: lastA === lastB ? bigger(ca.run, cb.run) : (lastA > lastB ? (ca.run || 0) : (cb.run || 0)) });
     }
+    /* Play. Games played and won are the kid's numbers, so two devices take the larger of each and
+       `bestLevelWon` takes the higher rung — a phone that never saw Tuesday's win cannot undo it.
+       `recent` is the one list that unions rather than picking a side, keyed by when the game ended,
+       because the level suggestion reads it and a half-history would suggest the wrong crony. */
+    if (a.games || b.games) {
+      const ga = a.games || {}, gb = b.games || {}, by = {};
+      Object.keys(Object.assign({}, ga.byLevel, gb.byLevel)).forEach((k) => {
+        const x = (ga.byLevel || {})[k] || {}, y = (gb.byLevel || {})[k] || {};
+        by[k] = { played: bigger(x.played, y.played), wins: bigger(x.wins, y.wins) };
+      });
+      const rows = {};
+      [].concat(ga.recent || [], gb.recent || []).forEach((r) => {
+        if (r) rows[(r.t || 0) + "|" + (r.level || "") + "|" + (r.result || "")] = r;
+      });
+      const recent = Object.keys(rows).map((k) => rows[k])
+        .sort((x, y) => (y.t || 0) - (x.t || 0)).slice(0, GAMES_RECENT);
+      const rung = (id) => LEVEL_ORDER.indexOf(String(id || ""));
+      out.games = Object.assign({}, ga, gb, {
+        played: bigger(ga.played, gb.played), wins: bigger(ga.wins, gb.wins),
+        draws: bigger(ga.draws, gb.draws), losses: bigger(ga.losses, gb.losses),
+        byLevel: by, recent: recent,
+        bestLevelWon: rung(ga.bestLevelWon) >= rung(gb.bestLevelWon) ? (ga.bestLevelWon || null) : (gb.bestLevelWon || null),
+      });
+    }
+    // Fights made out of his own games. Union, newest first, one per position, capped like a binder.
+    if (a.gameFights || b.gameFights) {
+      const seen = {};
+      out.gameFights = [].concat(a.gameFights || [], b.gameFights || [])
+        .filter((f) => f && f.fen)
+        .sort((x, y) => (y.t || 0) - (x.t || 0))
+        .filter((f) => { if (seen[f.fen]) return false; seen[f.fen] = 1; return true; })
+        .slice(0, GAME_FIGHTS_MAX);
+    }
     return out;
   }
 
@@ -144,7 +181,8 @@
   }
 
   const api = { mergeStats, mergeCard, normaliseCode, normaliseUser, normalisePin, validCode, validPin, validUser,
-    boundSlot, exportBlob, importBlob, parentOf, configured, roster, pull, push, LEDGER_MAX, TIERS_MAX };
+    boundSlot, exportBlob, importBlob, parentOf, configured, roster, pull, push, LEDGER_MAX, TIERS_MAX,
+    GAMES_RECENT, GAME_FIGHTS_MAX, LEVEL_ORDER };
   root.ShockmateSync = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
