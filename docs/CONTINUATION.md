@@ -45,10 +45,16 @@ Engine is judge. Animation is teacher. No eval numbers on screen. No loot, no pu
 
 ## Next places
 
-1. **Gate 0 — both kids, six fights each, on a phone.** David. Blocking everything. Add the site to the home screen first, so iOS stops clearing cards after a week and the app works with no signal. Note every place anyone got stuck or bored. That note is the input to Phase 3, not a formality.
-2. **Prove the family sync once, with a backup first.** David, because it needs credentials. `web/sync.js` and `supabase/migrations/0001_shockmate_sync.sql` have never run against the live project. Save a backup file, then family code, then Sync now, on two devices, and confirm a card earned on one appears on the other.
-3. **Give the e2e suite a home.** QA. Put the four unit suites plus Playwright in GitHub Actions on push to `main`. Today a red e2e test is invisible, because the only machine that runs it is blocked by policy. This is the one engineering task that does not wait on gate 0. On 2026-09-18 a live run of the deployed page found a gate defect that all six green suites missed, which is the argument for CI in one sentence.
-4. **Phase 3 "Grow", rescoped.** Openings and endgames already shipped, so what remains of PLAN §7 Phase 3 is: parent weekly summary, tablet layout, recorded Glitch voice lines, and a second tactics pack including two "bait is real" fights. Do not open a branch until gate 0 is reported.
+The two players are a strong quantitative reasoner with grade-level reading (8) and a strong verbal, systems-level thinker (10). Both are easily bored and easily distracted. The chess can be pitched above their ages; the text cannot. Put difficulty in the position, never in the sentence.
+
+1. **Tournament week, to about 2026-09-25.** Their first scholastic tournament, and gate 0 in all but name. Prep is on a real board with a clock: touch-move, press the clock every move, one-hand castling, notation if the section requires it, and one habit before every move: is anything of mine hanging, and what does he want. Shockmate is daily tactics on the side, not the main prep.
+2. **Parent progress view.** Behind Settings. Per kid: cards over time, first-try rate per motif, retries per motif. Good at means high first-try motifs; focus on means motifs with misses. The data already exists in `stats.cards` joined to encounter motif, and in `cardsEarned`. Moved from Phase 3 to first, because it is what makes the kid data useful to the parent.
+3. **Tournament prep mode.** A day built from the weakest motifs of that kid, chosen from the same data, plus a think-phase prompt for the defensive habit. Small, data-driven, and the first feature that treats the two profiles differently.
+4. **Per-profile text register.** Short lines and spoken cues for the younger reader; fuller lines for the older. Cross-cutting; it touches every kid-facing string.
+5. **Recorded Glitch voice lines.** Promoted from Phase 3. For a kid whose listening is far ahead of his reading, audio is the channel.
+6. **Prove the family sync once, backup first.** Parent, needs credentials. Unchanged.
+7. **Give the e2e suite a home in CI.** Unchanged. A live run found a defect that six green suites missed.
+8. **Second tactics pack, then tablet layout.** After the above.
 
 ## Release ritual
 
