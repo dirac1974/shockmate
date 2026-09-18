@@ -4,7 +4,7 @@ Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines 
 
 **Date:** 2026-09-17
 **Repo:** https://github.com/dirac1974/shockmate
-**Live:** https://dirac1974.github.io/shockmate/ — still `v0.6 · 23 fights · 3 packs`. PR #5 carries v0.7 (marker `v0.7 · 23 fights · 6 days`), held until the whole battle layer is in.
+**Live:** https://dirac1974.github.io/shockmate/ — `358c1b9`, tagged `v0.7`, marker `v0.7 · 23 fights · 6 days`.
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
@@ -13,12 +13,12 @@ ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeli
 
 Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the future plays out on the board → why-gate (tap the pieces) → card earned → next fight or cliffhanger.
 
-## Actual state — v0.7 built on PR #5, not yet live
+## Actual state — v0.7 is live
 
 Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistence and family sync landed on top of them, ahead of the plan.
 
 - Live at `1189ad0`. Pages serves `main` / root and rebuilds in about 40 seconds. Verify a deploy by the home-screen build marker, never by eye.
-- Six suites green on the PR branch: `test_futures.js`, `test_score.js`, `test_sync.js`, `test_days.js`, `test_battle.js`, `test_encounters.py`.
+- Six suites green on the live commit: `test_futures.js`, `test_score.js`, `test_sync.js`, `test_days.js`, `test_battle.js`, `test_encounters.py`.
 - `tests/e2e/*.py` did NOT run. Application Control on David's PC blocks the greenlet DLL that Playwright loads. The e2e suite currently has no machine to run on.
 - Data is generated: edit `data/encounters.src.json`, `openings.src.json` or `endgames.src.json`, run `python3 tools/build_encounters.py --sf <stockfish>`. Never hand-edit `v2.json` or `web/encounters.js`.
 - Six lesson days cover all 23 fights and deliberately mix packs, so a session cannot dead-end inside one pack. Days are picked on the home screen; `pack` survives only as a data label.
@@ -31,7 +31,7 @@ Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistenc
 - Phase 2: co-op, handicapped duel, per-player Blitz, silent adaptive difficulty, collection art.
 - Glitch brags a rating that deflates as cards are earned. It is the only falling number in the app and it belongs to the villain.
 - Progress: localStorage, backup file, optional Supabase family-code sync. Installable and offline via `web/sw.js`.
-- Tags: `v0.5-return` points at the Phase 2 build `2400b75`. v0.6 is deliberately untagged to avoid a clash.
+- Tags: `v0.5-return` points at the Phase 2 build `2400b75`. `v0.7` tags this release at `358c1b9`.
 
 ## Built is not passed
 
