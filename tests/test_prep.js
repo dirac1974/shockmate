@@ -68,6 +68,35 @@ function run() {
   const perfect = S.prepFights(statsOf(perfectCards, ALL.map(function (e) { return e.id; })), ALL, 4);
   assert.strictEqual(perfect.length, 4, "a perfect profile still gets something to play");
 
+  /* Prep never mirrors the day he is on: a fresh profile on day 1 gets traps, none of day 1 */
+  const D = require("../web/days.js");
+  const day1 = D.dayByNumber(1).ids;
+  const freshPrep = S.prepFights(statsOf([]), ALL, 4, day1);
+  assert.strictEqual(freshPrep.length, 4);
+  assert.ok(!freshPrep.some(function (e) { return day1.indexOf(e.id) >= 0; }), "fresh prep repeats day 1: " + freshPrep.map(function (e) { return e.id; }));
+  assert.ok(freshPrep.every(function (e) { return e.pack === "openings"; }), "with no misses, prep drills the opening traps");
+  assert.strictEqual(S.prepSource(statsOf([])), "traps");
+  assert.strictEqual(S.prepSource(st), "misses");
+
+  /* a miss always leads, even on today's day: drilling misses is the point; only the fill avoids today */
+  const missed01 = statsOf([card("01", 2, 0, false)]);
+  const mp = S.prepFights(missed01, ALL, 4, day1);
+  assert.strictEqual(mp[0].id, "01", "a miss on today's day still leads prep");
+  assert.ok(!mp.slice(1).some(function (e) { return day1.indexOf(e.id) >= 0; }), "the fill after the miss avoids today's day");
+
+  /* a perfect profile avoiding its day still gets four, none from that day */
+  const perfAvoid = S.prepFights(statsOf(perfectCards, ALL.map(function (e) { return e.id; })), ALL, 4, day1);
+  assert.strictEqual(perfAvoid.length, 4);
+  assert.ok(!perfAvoid.some(function (e) { return day1.indexOf(e.id) >= 0; }));
+
+  /* The second question only when something is on offer */
+  assert.deepStrictEqual(S.prepQuestionsFor(byId["01"]), S.PREP_QUESTIONS, "01: the rim pawn is bait, both questions");
+  assert.deepStrictEqual(S.prepQuestionsFor(byId["g4"]), S.PREP_QUESTIONS.slice(0, 1), "g4: a quiet endgame gets only the first question");
+  assert.deepStrictEqual(S.prepQuestionsFor(byId["03"]), S.PREP_QUESTIONS.slice(0, 1), "03: the bait is a king step, nothing to take");
+  const offered = ALL.filter(function (e) { return S.offersBait(e); }).length;
+  assert.ok(offered > 5 && offered < ALL.length, "some fights offer bait and some do not: " + offered);
+  assert.strictEqual(S.prepQuestionsFor(null).length, 1, "null-safe");
+
   /* n is respected */
   assert.strictEqual(S.prepFights(st, ALL, 2).length, 2);
 

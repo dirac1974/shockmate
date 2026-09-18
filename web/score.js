@@ -324,7 +324,9 @@
 
   /* ---------- prep: what to drill, from what he has actually missed ----------
      Cards carry their motif, so no join is needed. Weakest means lowest hit rate among motifs he
-     has met, ties to more misses. Prep fights come from those motifs, misses first, then unseen. */
+     has met, ties to more misses. Order: misses in the weakest motifs, other misses, unseen fights
+     in the weakest motifs, then the opening traps (the tournament failure mode), then anything.
+     Misses always count; otherwise fights on the day he is on (`avoid`) are a last resort, so Prep never mirrors it. */
   function motifStats(stats) {
     const cards = (stats && stats.cards) || {}, out = {};
     Object.keys(cards).forEach(function (id) {
@@ -339,22 +341,39 @@
     return motifStats(stats).sort(function (a, b) { return (a.rate - b.rate) || (b.misses - a.misses) || (b.attempts - a.attempts); });
   }
   function strongestMotifs(stats) { return weakestMotifs(stats).slice().reverse(); }
-  function prepFights(stats, encounters, n) {
-    const want = n || 4, list = encounters || [];
+  function prepFights(stats, encounters, n, avoid) {
+    const want = n || 4, all = encounters || [], skip = {};
+    (avoid || []).forEach(function (id) { skip[id] = true; });
+    const list = all.filter(function (e) { return !skip[e.id]; });
     const earned = (stats && stats.cardsEarned) || {}, cards = (stats && stats.cards) || {};
     const weak = weakestMotifs(stats).filter(function (m) { return m.rate < 1; }).map(function (m) { return m.motif; });
     const picked = [], seen = {};
     const take = function (e) { if (!seen[e.id] && picked.length < want) { seen[e.id] = true; picked.push(e); } };
     const missed = function (e) { const c = cards[e.id]; return !!(c && c.lastCorrect !== true && c.attempts > 0); };
-    weak.forEach(function (mo) { list.forEach(function (e) { if (e.motif === mo && missed(e)) take(e); }); });
+    weak.forEach(function (mo) { all.forEach(function (e) { if (e.motif === mo && missed(e)) take(e); }); });
+    all.forEach(function (e) { if (missed(e)) take(e); });
     weak.forEach(function (mo) { list.forEach(function (e) { if (e.motif === mo && !cards[e.id]) take(e); }); });
-    list.forEach(function (e) { if (missed(e)) take(e); });
+    list.forEach(function (e) { if (e.pack === "openings" && !cards[e.id]) take(e); });
+    list.forEach(function (e) { if (e.pack === "openings") take(e); });
     list.forEach(function (e) { if (!cards[e.id]) take(e); });
-    list.forEach(function (e) { if (earned[e.id]) take(e); });
+    list.forEach(function (e) { take(e); });
+    all.forEach(function (e) { take(e); });
     return picked;
+  }
+  // Why Prep holds what it holds, for the chip and the blurb: his misses, or traps while he has none.
+  function prepSource(stats) {
+    const cards = (stats && stats.cards) || {};
+    return Object.keys(cards).some(function (id) { const c = cards[id]; return c && c.attempts > 0 && c.lastCorrect !== true; }) ? "misses" : "traps";
   }
   // The two questions that stop a rusher. The first stops hung pieces; the second is the trap defence.
   const PREP_QUESTIONS = ["What did that move just attack?", "Why is he letting you take that?"];
+  // The second question only makes sense when something is on offer: Glitch's bait is a capture.
+  // Asking it over a quiet endgame teaches the kid that the questions are noise.
+  function offersBait(enc) {
+    const m = enc && enc.moves && enc.moves[enc.tempting || enc.bait];
+    return !!(m && m.san && m.san.indexOf("x") >= 0);
+  }
+  function prepQuestionsFor(enc) { return offersBait(enc) ? PREP_QUESTIONS.slice() : PREP_QUESTIONS.slice(0, 1); }
 
   /* ---------- progress: what a parent can read off the data ----------
      Per motif: met, hit rate, misses, and a verdict. Good is a high rate over more than one attempt.
@@ -392,7 +411,7 @@
     };
   }
 
-  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, PREP_QUESTIONS, motifVerdict, cardsByDay, progressSummary, tellFree, useTell, bootsFree, useBoots, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
+  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, prepSource, PREP_QUESTIONS, offersBait, prepQuestionsFor, motifVerdict, cardsByDay, progressSummary, tellFree, useTell, bootsFree, useBoots, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -211,7 +211,9 @@
    "h2": "h2h3:h3,h2h4:h4",
    "g2": "g2g3:g3,g2g4:g4",
    "f2": "f2f3:f3,f2f4:f4"
-  }
+  },
+  "arrive": "d8a5",
+  "arrivePosition": "wra1wqd1bqd8wpf2bpf7wkg1wpg2bpg7bkg8wph2bph5bph7"
  },
  {
   "id": "02",
@@ -342,7 +344,9 @@
    "h2": "h2h3:h3,h2h4:h4",
    "g2": "g2g3:g3,g2g4:g4",
    "f2": "f2f3:f3,f2f4:f4"
-  }
+  },
+  "arrive": "a5d5",
+  "arrivePosition": "bra5bpd6wne4wpf2bpf7wkg1wpg2bpg6bkg8wph2bph7"
  },
  {
   "id": "03",
@@ -440,7 +444,9 @@
    "b4": "b4b5:b5",
    "c2": "c2c3:c3",
    "a2": "a2a3:a3,a2a4:a4"
-  }
+  },
+  "arrive": "c7b6",
+  "arrivePosition": "wpa2wpb4wpc2wpc4bkc7brd6wke1"
  },
  {
   "id": "04",
@@ -618,7 +624,9 @@
    "h2": "h2h3:h3,h2h4:h4",
    "g2": "g2g3:g3,g2g4:g4",
    "f2": "f2f3:f3,f2f4:f4"
-  }
+  },
+  "arrive": "e6d5",
+  "arrivePosition": "bna5bpa7bpb7bpc6wqd2wke1bbe6bke8wpf2bpf7wpg2bpg7wph2bph7"
  },
  {
   "id": "05",
@@ -847,7 +855,9 @@
    "c2": "c2c3:c3,c2c4:c4",
    "b2": "b2b3:b3,b2b4:b4",
    "a2": "a2a3:a3,a2a4:a4"
-  }
+  },
+  "arrive": "b8c6",
+  "arrivePosition": "wpa2bpa7wpb2bpb7bnb8wpc2bpc7brd8wke1bke8wbf1wpf2wqf3bpf7wpg2bpg7wph2bph7"
  },
  {
   "id": "06",
@@ -1016,7 +1026,9 @@
    "c2": "c2c3:c3,c2c4:c4",
    "b2": "b2b3:b3,b2b4:b4",
    "a2": "a2a3:a3,a2a4:a4"
-  }
+  },
+  "arrive": "d8e8",
+  "arrivePosition": "wpa2bpa7wpb2wbb5bpb7wpc2bnc6bpc7wpd4bkd8wke1wpf2bpf7wpg2bpg7bph7"
  },
  {
   "id": "07",
@@ -1195,7 +1207,9 @@
    "c2": "c2c3:c3,c2c4:c4",
    "b2": "b2b3:b3,b2b4:b4",
    "a2": "a2a3:a3,a2a4:a4"
-  }
+  },
+  "arrive": "e7e8",
+  "arrivePosition": "wpa2bpa7bra8wpb2bpb7wpc2bpc7wke1bke7wpf2bpf7wpg2bpg7wrh1"
  },
  {
   "id": "08",
@@ -1330,7 +1344,9 @@
   "legal": {
    "g1": "g1h2:Kh2,g1g2:Kg2,g1f2:Kf2,g1h1:Kh1,g1f1:Kf1",
    "a1": "a1a8:Ra8#,a1a7:Ra7,a1a6:Ra6,a1a5:Ra5,a1a4:Ra4,a1a3:Ra3,a1a2:Ra2,a1f1:Rf1,a1e1:Re1,a1d1:Rd1,a1c1:Rc1,a1b1:Rb1"
-  }
+  },
+  "arrive": "h6h5",
+  "arrivePosition": "wra1bpf7wkg1bpg7bkg8bph6bph7"
  },
  {
   "id": "09",
@@ -1497,7 +1513,9 @@
    "h2": "h2h3:h3,h2h4:h4",
    "g2": "g2g3:g3,g2g4:g4",
    "f2": "f2f3:f3,f2f4:f4"
-  }
+  },
+  "arrive": "c6d4",
+  "arrivePosition": "wqa1bra8bnc6wpf2bpf7wkg1wpg2bpg7bkg8wph2bph7"
  },
  {
   "id": "10",
@@ -1643,7 +1661,9 @@
    "e1": "e1e8:Re8#,e1e7:Re7,e1e6:Re6,e1e5:Re5,e1e4:Re4,e1e3:Re3,e1e2:Re2,e1f1:Rf1,e1d1:Rd1,e1c1:Rc1,e1b1:Rb1,e1a1:Ra1",
    "g2": "g2h3x:gxh3,g2g3:g3,g2g4:g4",
    "f2": "f2f3:f3,f2f4:f4"
-  }
+  },
+  "arrive": "d7h3",
+  "arrivePosition": "bqd7wre1wpf2bpf7wkg1wpg2bpg7bkg8wph2bph7"
  },
  {
   "id": "11",
@@ -1820,7 +1840,9 @@
    "h2": "h2h3:h3,h2h4:h4",
    "g2": "g2g3:g3,g2g4:g4",
    "f2": "f2f3:f3,f2f4:f4"
-  }
+  },
+  "arrive": "b6c6",
+  "arrivePosition": "bpa7bqb6bpb7wre1wne5bke8wpf2bpf7wkg1wpg2bpg7wph2bph7"
  },
  {
   "id": "12",
@@ -1945,7 +1967,9 @@
    "e1": "e1e2:Ke2,e1d2:Kd2,e1f1:Kf1,e1d1:Kd1",
    "f2": "f2f3:f3,f2f4:f4",
    "a2": "a2a3:a3,a2a4:a4"
-  }
+  },
+  "arrive": "d7e8",
+  "arrivePosition": "wpa2bpa7bra8wnb5bkd7wke1wpf2bpf7"
  },
  {
   "id": "o1",
@@ -2145,7 +2169,9 @@
    "d2": "d2d3:d3,d2d4:d4",
    "b2": "b2b3:b3,b2b4:b4",
    "a2": "a2a3:a3,a2a4:a4"
-  }
+  },
+  "arrive": "d8h4",
+  "arrivePosition": "wra1wpa2bpa7bra8wpb2bpb7bnb8wbc1wpc2wnc3bbc5bpc7bbc8wqd1wpd2bpd7bqd8wke1wpe4bpe5bke8wbf1wpf2bpf7wng1wpg2bpg7bng8wrh1wph2bph7brh8"
  },
  {
   "id": "o2",
@@ -2397,7 +2423,9 @@
    "c2": "c2c3:c3,c2c4:c4",
    "b2": "b2b3:b3,b2b4:b4",
    "a2": "a2a3:a3,a2a4:a4"
-  }
+  },
+  "arrive": "g7g6",
+  "arrivePosition": "wra1wpa2bpa7bra8wnb1wpb2bpb7bnb8wbc1wpc2bpc7bbc8wpd2bpd7bqd8wke1wpe4bpe5bke8wbf1wpf2bpf7bbf8wng1wpg2bpg7bng8wrh1wph2wqh5bph7brh8"
  },
  {
   "id": "o3",
@@ -2593,7 +2621,9 @@
    "c2": "c2c3:c3,c2c4:c4",
    "b2": "b2b3:b3,b2b4:b4",
    "a2": "a2a3:a3,a2a4:a4"
-  }
+  },
+  "arrive": "f6e5",
+  "arrivePosition": "wra1wpa2bpa7bra8wnb1wpb2bpb7bnb8wbc1wpc2bpc7bbc8wqd1wpd2bpd7bqd8wke1wpe4wne5bke8wbf1wpf2bpf6bbf8wpg2bpg7bng8wrh1wph2bph7brh8"
  },
  {
   "id": "o4",
@@ -2840,7 +2870,9 @@
    "c2": "c2c3:c3",
    "b2": "b2b3:b3,b2b4:b4",
    "a2": "a2a3:a3,a2a4:a4"
-  }
+  },
+  "arrive": "f6d5",
+  "arrivePosition": "wra1wpa2bpa7bra8wnb1wpb2bpb7wbc1wpc2wbc4bnc6bpc7bbc8wqd1wpd2wpd5bqd8wke1bpe5bke8wpf2bnf6bpf7bbf8wpg2wng5bpg7wrh1wph2bph7brh8"
  },
  {
   "id": "o6",
@@ -3091,7 +3123,9 @@
    "g2": "g2g3:g3,g2g4:g4",
    "f2": "f2f3:f3,f2f4:f4",
    "b2": "b2b3:b3,b2b4:b4"
-  }
+  },
+  "arrive": "c6b5",
+  "arrivePosition": "wra1bpa7bra8wnb1wpb2wpb5bnb8wbc1bpc4bpc6bbc8wqd1wpd4bqd8wke1wpe3bpe7bke8wbf1wpf2bpf7bbf8wng1wpg2bpg7bng8wrh1wph2bph7brh8"
  },
  {
   "id": "o7",
@@ -3337,7 +3371,9 @@
    "d2": "d2d3:d3,d2d4:d4",
    "b2": "b2b3:b3,b2b4:b4",
    "a2": "a2a3:a3,a2a4:a4"
-  }
+  },
+  "arrive": "f6e4",
+  "arrivePosition": "wra1wpa2bpa7bra8wpb2bpb7bnb8wbc1wpc2wnc3wbc4bbc5bpc7bbc8wqd1wpd2bpd6bqd8wke1wpe4bpe5bke8wpf2wnf3bnf6bpf7wpg2bpg7wrh1wph2bph7brh8"
  },
  {
   "id": "g1",
@@ -3530,7 +3566,9 @@
   "legal": {
    "g6": "g6f7:Kf7,g6h6:Kh6,g6f6:Kf6,g6h5:Kh5,g6g5:Kg5,g6f5:Kf5",
    "b3": "b3g8:Qg8+,b3b8:Qb8#,b3f7:Qf7,b3b7:Qb7,b3e6:Qe6,b3b6:Qb6,b3d5:Qd5,b3b5:Qb5,b3c4:Qc4,b3b4:Qb4,b3a4:Qa4,b3h3:Qh3+,b3g3:Qg3,b3f3:Qf3,b3e3:Qe3,b3d3:Qd3,b3c3:Qc3+,b3a3:Qa3,b3c2:Qc2,b3b2:Qb2+,b3a2:Qa2,b3d1:Qd1,b3b1:Qb1"
-  }
+  },
+  "arrive": "g8h8",
+  "arrivePosition": "wqb3wkg6bkg8"
  },
  {
   "id": "g2",
@@ -3731,7 +3769,9 @@
    "a7": "a7a8:Ra8+,a7h7:Rh7+,a7g7:Rg7,a7f7:Rf7,a7e7:Re7,a7d7:Rd7,a7c7:Rc7,a7b7:Rab7,a7a6:Ra6,a7a5:Ra5,a7a4:Ra4,a7a3:Ra3,a7a2:Ra2,a7a1:Raa1",
    "h1": "h1h2:Kh2,h1g2:Kg2,h1g1:Kg1",
    "b1": "b1b8:Rb8#,b1b7:Rbb7,b1b6:Rb6,b1b5:Rb5,b1b4:Rb4,b1b3:Rb3,b1b2:Rb2,b1g1:Rg1,b1f1:Rf1,b1e1:Re1,b1d1:Rd1,b1c1:Rc1,b1a1:Rba1"
-  }
+  },
+  "arrive": "g8h8",
+  "arrivePosition": "wra7wrb1bkg8wkh1"
  },
  {
   "id": "g3",
@@ -3855,7 +3895,9 @@
   "legal": {
    "c1": "c1c8:Rc8,c1c7:Rc7,c1c6:Rc6,c1c5:Rc5,c1c4:Rc4+,c1c3:Rc3,c1c2:Rc2,c1h1:Rh1,c1g1:Rg1,c1f1:Rf1,c1e1:Re1,c1d1:Rd1,c1b1:Rb1+",
    "a1": "a1b2:Kb2,a1a2x:Kxa2"
-  }
+  },
+  "arrive": "a3a2",
+  "arrivePosition": "wka1bpa3bkb4wrc1"
  },
  {
   "id": "g4",
@@ -3933,7 +3975,9 @@
   "legal": {
    "e6": "e6f7:Kf7,e6f6:Kf6,e6d6:Kd6,e6f5:Kf5,e6e5:Ke5",
    "d5": "d5d6:d6"
-  }
+  },
+  "arrive": "c7d8",
+  "arrivePosition": "bkc7wpd5wke6"
  },
  {
   "id": "g5",
@@ -4116,6 +4160,8 @@
   "legal": {
    "b6": "b6c7:Kc7,b6c6:Kc6,b6a6:Ka6,b6c5:Kc5,b6b5:Kb5,b6a5:Ka5",
    "d1": "d1d8:Qd8#,d1d7:Qd7,d1d6:Qd6,d1h5:Qh5,d1d5:Qd5+,d1g4:Qg4,d1d4:Qd4,d1a4:Qa4+,d1f3:Qf3+,d1d3:Qd3,d1b3:Qb3,d1e2:Qe2,d1d2:Qd2,d1c2:Qc2,d1h1:Qh1+,d1g1:Qg1,d1f1:Qf1,d1e1:Qe1,d1c1:Qc1,d1b1:Qb1,d1a1:Qa1+"
-  }
+  },
+  "arrive": "b8a8",
+  "arrivePosition": "wkb6bkb8wqd1"
  }
 ]
