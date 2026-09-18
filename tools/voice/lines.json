@@ -2035,6 +2035,26 @@
   "text": "Shh. Sleepy's thinking. Or snoring."
  },
  {
+  "key": "g-family-claim-1",
+  "voice": "glitch",
+  "text": "New in Shockmate? Pick a PIN. I promise not to peek."
+ },
+ {
+  "key": "g-family-claim-2",
+  "voice": "glitch",
+  "text": "A fresh agent! Four secret digits, please."
+ },
+ {
+  "key": "g-family-claim-3",
+  "voice": "glitch",
+  "text": "First time here? Make a PIN. Make it a good one."
+ },
+ {
+  "key": "g-family-claim-4",
+  "voice": "glitch",
+  "text": "Pick a PIN. Not 1234. I always guess 1234."
+ },
+ {
   "key": "g-family-code-1",
   "voice": "glitch",
   "text": "A family code! Let's see who's in it."
@@ -2055,6 +2075,26 @@
   "text": "A family. Two phones, twice the trouble. Share that code."
  },
  {
+  "key": "g-family-missing-1",
+  "voice": "glitch",
+  "text": "That code? Never heard of it. Check the letters."
+ },
+ {
+  "key": "g-family-missing-2",
+  "voice": "glitch",
+  "text": "Nope. Nobody lives there. Try again."
+ },
+ {
+  "key": "g-family-missing-3",
+  "voice": "glitch",
+  "text": "Wrong code. Even I can't find that family."
+ },
+ {
+  "key": "g-family-missing-4",
+  "voice": "glitch",
+  "text": "Hmm. That one's not real. Ask a grown-up."
+ },
+ {
   "key": "g-family-names-1",
   "voice": "glitch",
   "text": "Names first. I'll be rude to both equally."
@@ -2063,6 +2103,26 @@
   "key": "g-family-new-1",
   "voice": "glitch",
   "text": "New phone? I need to know who I'm tormenting."
+ },
+ {
+  "key": "g-family-other-1",
+  "voice": "glitch",
+  "text": "Someone new? Tell me your name."
+ },
+ {
+  "key": "g-family-other-2",
+  "voice": "glitch",
+  "text": "Not on the list? Type your name. I'll learn it."
+ },
+ {
+  "key": "g-family-other-3",
+  "voice": "glitch",
+  "text": "A mystery agent! What do I call you?"
+ },
+ {
+  "key": "g-family-other-4",
+  "voice": "glitch",
+  "text": "Name, please. I need something to shout."
  },
  {
   "key": "g-fight-bigger-1",

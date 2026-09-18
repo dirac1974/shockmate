@@ -2,7 +2,8 @@
 
 Serves web/ over http on a free port, launches Chromium at a phone viewport, seeds localStorage
 before the app script runs, fails on any console error or page error, and answers every call to
-Shockmate's Supabase project from an in-memory fake of the sm_* RPCs, so no suite ever touches the
+Shockmate's Supabase project from an in-memory fake of the sm_* RPCs, and every call to the Yomple
+household project from a fake of the two yomple_* RPCs Shockmate uses, so no suite ever touches a
 real backend.
 
 Browser: Google Chrome (channel "chrome") on Windows or with E2E_CHANNEL=chrome, the bundled
@@ -41,8 +42,10 @@ def serve():
 
 # ---------------------------------------------------------------- fake Supabase
 
-CODE_ALPHA = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
-CODE_RE = re.compile(r"^[A-HJKMNP-Z2-9]{8}$")
+WORDS = "OAK|MAPLE|PINE|CEDAR|ELM|BIRCH|WILLOW|ASPEN|LAUREL|HOLLY"
+CODE_RE = re.compile(r"^(%s)-[2-9A-HJKMNP-Z]{4}$" % WORDS)
+FLEX_RE = re.compile(r"^(%s)([2-9A-HJKMNP-Z]{4})$" % WORDS)
+YOMPLE_TABLES = ("hop_players", "bloom_players", "garden_players", "star_players", "field_players")
 
 
 def _now_iso():
@@ -50,20 +53,28 @@ def _now_iso():
 
 
 class FakeSupabase:
-    """The sm_* RPCs, as supabase/migrations/0002 and 0003 define them, over plain dicts.
+    """The sm_* RPCs, as supabase/migrations/0002, 0003 and 0005 define them, over plain dicts, plus
+    Yomple's yomple_family_players / yomple_family_upsert over `yomple` (code -> {table: [rows]}).
     Contexts that share one instance share one backend, so two phones can see each other."""
 
     def __init__(self):
         self.families = {}   # code -> {name, players: {slot: {name, pin, progress}}}
         self.games = {}      # id -> row
+        self.yomple = {}     # household code -> {table: [{username, display_name, ...}]}
+        self.registered = [] # codes yomple_family_upsert was asked to register
         self.calls = []
 
     # -- helpers
     def _code(self, raw):
-        v = re.sub(r"[^A-Za-z0-9]", "", str(raw or "")).upper()
-        if not CODE_RE.match(v):
+        m = FLEX_RE.match(re.sub(r"[^A-Za-z0-9]", "", str(raw or "")).upper())
+        if not m:
             raise ValueError("bad family code")
-        return v
+        return m.group(1) + "-" + m.group(2)
+
+    def household(self, code, names, table="hop_players"):
+        """A Yomple household with these kids (display names), as the other apps made it."""
+        self.yomple.setdefault(code, {}).setdefault(table, []).extend(
+            {"username": n.lower(), "display_name": n, "avatar": "*", "family_code": code, "has_pin": False} for n in names)
 
     def _auth(self, body):
         code = self._code(body.get("p_code"))
@@ -94,19 +105,46 @@ class FakeSupabase:
 
     # -- the RPCs
     def sm_family_create(self, b):
+        code = self._code(b.get("p_code"))
         kids = b.get("p_kids") or []
         if not 1 <= len(kids) <= 2:
             raise ValueError("one or two kids")
         for k in kids:
             if not (1 <= len(str(k.get("name") or "").strip()) <= 16) or not re.match(r"^[0-9]{4}$", str(k.get("pin") or "")):
                 raise ValueError("bad kid")
-        while True:
-            code = "".join(random.choice(CODE_ALPHA) for _ in range(8))
-            if code not in self.families:
-                break
+        if code in self.families:
+            return {"error": "taken"}
         self.families[code] = {"name": b.get("p_name") or "Family",
                                "players": {i: {"name": k["name"].strip(), "pin": k["pin"], "progress": {}} for i, k in enumerate(kids)}}
         return {"code": code}
+
+    def sm_family_adopt(self, b):
+        code, slot = self._code(b.get("p_code")), b.get("p_slot")
+        name, pin = str(b.get("p_name") or "").strip(), str(b.get("p_pin") or "")
+        if slot not in (0, 1) or not 1 <= len(name) <= 16 or not re.match(r"^[0-9]{4}$", pin):
+            raise ValueError("bad adopt")
+        fam = self.families.setdefault(code, {"name": "Family", "players": {}})
+        if slot in fam["players"]:
+            return {"error": "taken"}
+        if any(p["name"].lower() == name.lower() for p in fam["players"].values()):
+            return {"error": "name"}
+        fam["players"][slot] = {"name": name, "pin": pin, "progress": {}}
+        return {"code": code, "slot": slot, "name": name}
+
+    # -- Yomple's two, as yomple/supabase/migrations/20260918000100_yomple_rpc_lockdown.sql defines them
+    def yomple_family_players(self, b):
+        if b.get("p_table") not in YOMPLE_TABLES:
+            raise ValueError("unknown player table")
+        code = str(b.get("p_code") or "").strip().upper()
+        return list(self.yomple.get(code, {}).get(b["p_table"], [])) if CODE_RE.match(code) else []
+
+    def yomple_family_upsert(self, b):
+        code = str(b.get("p_code") or "").strip().upper()
+        if not CODE_RE.match(code):
+            return {"ok": False, "error": "code"}
+        self.registered.append(code)
+        self.yomple.setdefault(code, {})
+        return {"ok": True, "family_code": code}
 
     def sm_family_roster(self, b):
         fam = self.families.get(self._code(b.get("p_code")))
@@ -206,9 +244,9 @@ class FakeSupabase:
         except ValueError:
             body = {}
         self.calls.append(name)
-        fn = getattr(self, name, None) if name.startswith("sm_") else None
+        fn = getattr(self, name, None) if name.startswith(("sm_", "yomple_")) else None
         if fn is None:
-            # Anything that is not an sm_* RPC is a table read the real project refuses.
+            # Anything that is not a known RPC is a table read the real projects refuse.
             return await route.fulfill(status=200, headers=_cors(), content_type="application/json", body="[]")
         try:
             out = fn(body)

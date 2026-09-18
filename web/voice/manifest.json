@@ -407,12 +407,24 @@
   "g-crony-sleepy-taunt-3": "g-crony-sleepy-taunt-3.mp3",
   "g-crony-sleepy-taunt-4": "g-crony-sleepy-taunt-4.mp3",
   "g-crony-sleepy-taunt-5": "g-crony-sleepy-taunt-5.mp3",
+  "g-family-claim-1": "g-family-claim-1.mp3",
+  "g-family-claim-2": "g-family-claim-2.mp3",
+  "g-family-claim-3": "g-family-claim-3.mp3",
+  "g-family-claim-4": "g-family-claim-4.mp3",
   "g-family-code-1": "g-family-code-1.mp3",
   "g-family-found-1": "g-family-found-1.mp3",
   "g-family-join-1": "g-family-join-1.mp3",
   "g-family-made-1": "g-family-made-1.mp3",
+  "g-family-missing-1": "g-family-missing-1.mp3",
+  "g-family-missing-2": "g-family-missing-2.mp3",
+  "g-family-missing-3": "g-family-missing-3.mp3",
+  "g-family-missing-4": "g-family-missing-4.mp3",
   "g-family-names-1": "g-family-names-1.mp3",
   "g-family-new-1": "g-family-new-1.mp3",
+  "g-family-other-1": "g-family-other-1.mp3",
+  "g-family-other-2": "g-family-other-2.mp3",
+  "g-family-other-3": "g-family-other-3.mp3",
+  "g-family-other-4": "g-family-other-4.mp3",
   "g-fight-bigger-1": "g-fight-bigger-1.mp3",
   "g-fight-bigger-2": "g-fight-bigger-2.mp3",
   "g-fight-bigger-3": "g-fight-bigger-3.mp3",
@@ -2046,5 +2058,5 @@
   "narrator": "9VWbKGIW0H6lX5FqaWla"
  },
  "model": "eleven_turbo_v2_5",
- "generated": "2026-09-18T20:03:00+00:00"
+ "generated": "2026-09-18T21:22:49+00:00"
 }

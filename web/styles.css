@@ -841,10 +841,15 @@ body[data-play="1"] .gate-dots:empty { display: none; }
 .fam-card .hint { margin: 0; }
 .fam-card.gate-card { text-align: center; }
 .fam-card.gate-card.wrong { animation: shake .35s ease; }
-.fam-code { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: 40px; letter-spacing: 5px;
+.fam-code { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: 36px; letter-spacing: 3px;
   text-align: center; padding: 10px 6px; border: 3px dashed var(--ink); border-radius: 14px; background: var(--paper-2);
-  user-select: all; word-break: break-all; }
-.fam-code.small { font-size: 28px; letter-spacing: 3px; padding: 6px; }
+  user-select: all; white-space: nowrap; overflow-wrap: normal; }
+.fam-code.small { font-size: 26px; letter-spacing: 2px; padding: 6px; }
+#fam-code-input { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
+.fam-card .link.fam-alt { align-self: center; font-weight: 700; }
+.fam-roster .cta.me { outline: 4px solid var(--grape); outline-offset: 2px; }
+.fam-other[hidden] { display: none !important; }
+.fam-other { display: flex; flex-direction: column; gap: 10px; }
 .fam-roster { display: flex; flex-direction: column; gap: 12px; }
 .fam-state { text-align: center; min-height: 1.2em; }
 .live-row { margin-top: 8px; }
