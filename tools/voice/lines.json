@@ -240,36 +240,6 @@
   "text": "Mate beats a pawn hunt."
  },
  {
-  "key": "09-gloat",
-  "voice": "glitch",
-  "text": "You took the horse. Still playing. Still my game."
- },
- {
-  "key": "09-hook",
-  "voice": "narrator",
-  "text": "Two lunches. One is mate."
- },
- {
-  "key": "09-rage",
-  "voice": "glitch",
-  "text": "The ROOK was the lunch?!"
- },
- {
-  "key": "09-short",
-  "voice": "narrator",
-  "text": "Rook to the back row. Mate."
- },
- {
-  "key": "09-taunt",
-  "voice": "glitch",
-  "text": "Knight on d4. Free. Yum. Take it."
- },
- {
-  "key": "09-why",
-  "voice": "narrator",
-  "text": "The rook on the back door is mate."
- },
- {
   "key": "10-gloat",
   "voice": "glitch",
   "text": "You took the queen. I'm still alive. Rude."
@@ -358,6 +328,186 @@
   "key": "12-why",
   "voice": "narrator",
   "text": "Two royal heads beat one snack pawn."
+ },
+ {
+  "key": "b1-gloat",
+  "voice": "glitch",
+  "text": "My bishop sits on the corner forever. Nothing happens."
+ },
+ {
+  "key": "b1-hook",
+  "voice": "narrator",
+  "text": "His bishop guards the corner. Yours guards nothing."
+ },
+ {
+  "key": "b1-rage",
+  "voice": "glitch",
+  "text": "You swapped your WORST piece for my BEST one?!"
+ },
+ {
+  "key": "b1-short",
+  "voice": "narrator",
+  "text": "Swap your dud bishop for his good one."
+ },
+ {
+  "key": "b1-taunt",
+  "voice": "glitch",
+  "text": "Keep your bishop! Bishops are precious! Tuck it away!"
+ },
+ {
+  "key": "b1-why",
+  "voice": "narrator",
+  "text": "Trade your useless bishop for the one doing all his work."
+ },
+ {
+  "key": "b2-gloat",
+  "voice": "glitch",
+  "text": "Pawns traded, bishops equal. Nothing happened. Perfect."
+ },
+ {
+  "key": "b2-hook",
+  "voice": "narrator",
+  "text": "His bishop cannot see that side of the board."
+ },
+ {
+  "key": "b2-rage",
+  "voice": "glitch",
+  "text": "My bishop is the WRONG COLOUR?! Since when?!"
+ },
+ {
+  "key": "b2-short",
+  "voice": "narrator",
+  "text": "Keep yours. Eat what his cannot guard."
+ },
+ {
+  "key": "b2-taunt",
+  "voice": "glitch",
+  "text": "Push a pawn! Pawns win endings! Push! Push!"
+ },
+ {
+  "key": "b2-why",
+  "voice": "narrator",
+  "text": "Keep your bishop. Eat what his cannot guard."
+ },
+ {
+  "key": "d1-gloat",
+  "voice": "glitch",
+  "text": "You hid. I kept my bishop. Same as always."
+ },
+ {
+  "key": "d1-hook",
+  "voice": "narrator",
+  "text": "He hits your rook. Hit his king instead."
+ },
+ {
+  "key": "d1-rage",
+  "voice": "glitch",
+  "text": "CHECK?! You were supposed to be SCARED!"
+ },
+ {
+  "key": "d1-short",
+  "voice": "narrator",
+  "text": "Do not run. Check him first."
+ },
+ {
+  "key": "d1-taunt",
+  "voice": "glitch",
+  "text": "Your rook! Move it! Tuck it away somewhere safe!"
+ },
+ {
+  "key": "d1-why",
+  "voice": "narrator",
+  "text": "Check first. The checking piece grabs the bishop next."
+ },
+ {
+  "key": "d2-gloat",
+  "voice": "glitch",
+  "text": "You ran. My horse is fine. Thanks for playing."
+ },
+ {
+  "key": "d2-hook",
+  "voice": "narrator",
+  "text": "His pawn shoved your rook. See what it dropped."
+ },
+ {
+  "key": "d2-rage",
+  "voice": "glitch",
+  "text": "My pawn was GUARDING that?! Nobody told me!"
+ },
+ {
+  "key": "d2-short",
+  "voice": "narrator",
+  "text": "His pawn stopped guarding. Take the horse."
+ },
+ {
+  "key": "d2-taunt",
+  "voice": "glitch",
+  "text": "Your rook is attacked! Run! Run home! Hurry!"
+ },
+ {
+  "key": "d2-why",
+  "voice": "narrator",
+  "text": "The pawn stopped guarding his horse. Take the horse."
+ },
+ {
+  "key": "d3-gloat",
+  "voice": "glitch",
+  "text": "Air does not stop a queen. Mate. Bye."
+ },
+ {
+  "key": "d3-hook",
+  "voice": "narrator",
+  "text": "Two pieces on one line, aimed at your king."
+ },
+ {
+  "key": "d3-rage",
+  "voice": "glitch",
+  "text": "The HORSE?! I wanted your QUEEN in the way!"
+ },
+ {
+  "key": "d3-short",
+  "voice": "narrator",
+  "text": "Block with the horse, not the queen."
+ },
+ {
+  "key": "d3-taunt",
+  "voice": "glitch",
+  "text": "Give your king some air! A little pawn step!"
+ },
+ {
+  "key": "d3-why",
+  "voice": "narrator",
+  "text": "Block the line with the horse, not the queen."
+ },
+ {
+  "key": "d4-gloat",
+  "voice": "glitch",
+  "text": "Bishop eaten, and mate next. Two presents!"
+ },
+ {
+  "key": "d4-hook",
+  "voice": "narrator",
+  "text": "Queen and bishop both point at the same square."
+ },
+ {
+  "key": "d4-rage",
+  "voice": "glitch",
+  "text": "Your horse defends AND attacks?! That is cheating!"
+ },
+ {
+  "key": "d4-short",
+  "voice": "narrator",
+  "text": "The horse guards and chases at once."
+ },
+ {
+  "key": "d4-taunt",
+  "voice": "glitch",
+  "text": "Block with your bishop! Bishops block! That is their job!"
+ },
+ {
+  "key": "d4-why",
+  "voice": "narrator",
+  "text": "One horse move guards the square and chases the queen."
  },
  {
   "key": "g1-gloat",
@@ -480,34 +630,64 @@
   "text": "Take the square in front of the pawn first. Pushing early lets his king sit in front and hold the draw."
  },
  {
-  "key": "g5-gloat",
+  "key": "k1-gloat",
   "voice": "glitch",
-  "text": "No moves and no check. STALEMATE. Draw! I'll take it!"
+  "text": "Your horse is gone for one pawn. Delicious."
  },
  {
-  "key": "g5-hook",
+  "key": "k1-hook",
   "voice": "narrator",
-  "text": "He is in the corner. Finish it."
+  "text": "The pawns are locked. Horses love locked boards."
  },
  {
-  "key": "g5-rage",
+  "key": "k1-rage",
   "voice": "glitch",
-  "text": "Mate?! I was one square from a free draw!"
+  "text": "You left me the bishop ON PURPOSE?! Rude!"
  },
  {
-  "key": "g5-short",
+  "key": "k1-short",
   "voice": "narrator",
-  "text": "Queen to the back row. Hugging him is stalemate."
+  "text": "Locked board. Keep the horse, give the bishop."
  },
  {
-  "key": "g5-taunt",
+  "key": "k1-taunt",
   "voice": "glitch",
-  "text": "Queen right next to him! Smother him! Do it!"
+  "text": "Free pawn in the middle! Jump on it! Yum!"
  },
  {
-  "key": "g5-why",
+  "key": "k1-why",
   "voice": "narrator",
-  "text": "The queen lands on the last row for mate. Hugging him with the queen is only a stalemate."
+  "text": "Trade your bishop for his horse. He keeps the bad one."
+ },
+ {
+  "key": "k2-gloat",
+  "voice": "glitch",
+  "text": "You retreated. I fixed everything. Boring is good."
+ },
+ {
+  "key": "k2-hook",
+  "voice": "narrator",
+  "text": "Open board. Bishops run. Horses plod."
+ },
+ {
+  "key": "k2-rage",
+  "voice": "glitch",
+  "text": "You traded HORSES?! I wanted your bishop!"
+ },
+ {
+  "key": "k2-short",
+  "voice": "narrator",
+  "text": "Open board. Trade horses and keep the bishop."
+ },
+ {
+  "key": "k2-taunt",
+  "voice": "glitch",
+  "text": "Your horse is kicked! Hop it back home! Safe!"
+ },
+ {
+  "key": "k2-why",
+  "voice": "narrator",
+  "text": "Swap horses and keep the bishop. It wins a pawn."
  },
  {
   "key": "o1-gloat",
@@ -728,5 +908,95 @@
   "key": "sys-second",
   "voice": "narrator",
   "text": "Second try. Glitch is sweating."
+ },
+ {
+  "key": "t1-gloat",
+  "voice": "glitch",
+  "text": "Rook gone, pawn eaten. Best trade I ever sold."
+ },
+ {
+  "key": "t1-hook",
+  "voice": "narrator",
+  "text": "One attacker is not enough. Bring a friend."
+ },
+ {
+  "key": "t1-rage",
+  "voice": "glitch",
+  "text": "You brought ANOTHER one?! That is not fair!"
+ },
+ {
+  "key": "t1-short",
+  "voice": "narrator",
+  "text": "Do not take yet. Bring another attacker."
+ },
+ {
+  "key": "t1-taunt",
+  "voice": "glitch",
+  "text": "Grab that pawn with the rook. Right now. Free food."
+ },
+ {
+  "key": "t1-why",
+  "voice": "narrator",
+  "text": "Do not cash it in. Add a second attacker."
+ },
+ {
+  "key": "t2-gloat",
+  "voice": "glitch",
+  "text": "You ran away. I keep everything. Lovely."
+ },
+ {
+  "key": "t2-hook",
+  "voice": "narrator",
+  "text": "He guards it twice. You hit it three times."
+ },
+ {
+  "key": "t2-rage",
+  "voice": "glitch",
+  "text": "You COUNTED to three?! Nobody counts to three!"
+ },
+ {
+  "key": "t2-short",
+  "voice": "narrator",
+  "text": "Three hit it. Two guard it. Take."
+ },
+ {
+  "key": "t2-taunt",
+  "voice": "glitch",
+  "text": "Your horse is attacked! Save it! Step back! Quick!"
+ },
+ {
+  "key": "t2-why",
+  "voice": "narrator",
+  "text": "Three attackers beat two guards. Take it now."
+ },
+ {
+  "key": "t3-gloat",
+  "voice": "glitch",
+  "text": "One rook for one pawn. I love your maths."
+ },
+ {
+  "key": "t3-hook",
+  "voice": "narrator",
+  "text": "One rook is a poke. Two is a punch."
+ },
+ {
+  "key": "t3-rage",
+  "voice": "glitch",
+  "text": "TWO rooks?! On MY road?! Who allowed this?!"
+ },
+ {
+  "key": "t3-short",
+  "voice": "narrator",
+  "text": "Two rooks first. Then the pawn falls."
+ },
+ {
+  "key": "t3-taunt",
+  "voice": "glitch",
+  "text": "Just take the pawn now! Rooks are for taking!"
+ },
+ {
+  "key": "t3-why",
+  "voice": "narrator",
+  "text": "Bring the second rook down. Then the pawn falls."
  }
 ]

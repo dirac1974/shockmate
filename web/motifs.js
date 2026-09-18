@@ -15,6 +15,16 @@
     trapped: '<rect x="5" y="9" width="24" height="26" rx="2"/><path d="M11 35 V9 M17 35 V9 M23 35 V9"/><circle cx="17" cy="22" r="4.6"/>',
     mateThreat: '<path d="M17 5 V15 M12 9 h10"/><path d="M8 35 c0-8 4-14 9-17 5 3 9 9 9 17z"/><path d="M8 35 h18" stroke-width="3"/>',
     hanging: '<path d="M16 4 V16"/><circle cx="16" cy="24" r="8"/><path d="M11 29 l10 -10"/>',
+    // three arrows converging: one more attacker than he has defenders
+    attackers: '<circle cx="17" cy="23" r="6"/><path d="M3 6 L11 15 M11 15 l-4.6 .3 M11 15 l.3 -4.6"/><path d="M31 6 L23 15 M23 15 l4.6 .3 M23 15 l-.3 -4.6"/><path d="M17 40 V31 M17 31 l-3.4 3.4 M17 31 l3.4 3.4"/>',
+    // a bishop with its diagonal clear on both sides: the one worth keeping
+    goodBishop: '<path d="M17 5 c4 6 6 8.5 6 11.5 a6 6 0 0 1 -12 0 C11 13.5 13 11 17 5z"/><path d="M13.5 13 h7"/><path d="M10 29 h14 l2.5 7 h-19z"/><path d="M3 27 l6 -6 M25 21 l6 -6"/>',
+    // two arrows passing each other: which piece goes and which stays
+    tradeChoice: '<path d="M4 14 h22 M26 14 l-5.5 -5 M26 14 l-5.5 5"/><path d="M30 30 h-22 M8 30 l5.5 -5 M8 30 l5.5 5"/>',
+    // his small attack in, your bigger one back
+    counter: '<path d="M31 11 H16 M16 11 l4.5 -3.6 M16 11 l4.5 3.6"/><path d="M3 30 H27 M27 30 l-6.5 -5 M27 30 l-6.5 5"/>',
+    // a shield with a pawn behind it: defend, but with a move that also does something
+    defend: '<path d="M17 4 L5 9 v11 c0 8 5 13.6 12 15.6 7 -2 12 -7.6 12 -15.6 V9z"/><circle cx="17" cy="17" r="2.8"/><path d="M13 28 h8 l-1.6 -6 h-4.8z"/>',
   };
   function icon(motif, size) {
     const d = P[motif] || P.hanging, s = size || 30;

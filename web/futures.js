@@ -136,6 +136,35 @@
     return attacksFrom(map, from).filter((h) => h.piece && h.piece.color !== me.color);
   }
 
+  /* What Glitch's arriving move just attacked: the warm-up answer for "what did that move just attack?".
+     Direct hits come straight off the piece that landed. A discovered attack is any OTHER piece of his
+     that now hits something it did not hit before the move — the same two board scans, no search. The
+     arriving piece's own square can never be a target, because enemyAttacked only returns the other
+     colour. An empty list means the move attacked nothing, and the board is skipped. */
+  function threatTargets(enc) {
+    const arrive = arriveOf(enc);
+    if (!arrive || !enc || !(enc.pieces || enc.position)) return [];
+    // `pieces` is the unpacked board the game holds; `position` is the packed one straight off the data.
+    const after = enc.pieces ? piecesFromList(enc.pieces) : piecesFromPack(enc.position);
+    const mover = after[arrive.to];
+    if (!mover) return [];
+    const out = [];
+    const push = (sq) => { if (sq !== arrive.to && out.indexOf(sq) < 0) out.push(sq); };
+    enemyAttacked(after, arrive.to).forEach((h) => push(h.sq));
+    if (!enc.arrivePosition) return out;
+    const before = piecesFromPack(enc.arrivePosition);
+    Object.keys(after).forEach((sq) => {
+      if (sq === arrive.to) return;
+      const p = after[sq], was = before[sq];
+      if (p.color !== mover.color) return;
+      if (!was || was.color !== p.color || was.role !== p.role) return;   // only pieces that stood still
+      const now = enemyAttacked(after, sq).map((h) => h.sq);
+      const then = enemyAttacked(before, sq).map((h) => h.sq);
+      now.forEach((s) => { if (then.indexOf(s) < 0) push(s); });
+    });
+    return out;
+  }
+
   function pieceBehind(map, from, mid) {
     if (!from || !mid) return null;
     const df = fileOf(mid) - fileOf(from);
@@ -305,6 +334,7 @@
     findKing,
     attacksFrom,
     enemyAttacked,
+    threatTargets,
     buildPlan,
     motifTargets,
     finisherFor,

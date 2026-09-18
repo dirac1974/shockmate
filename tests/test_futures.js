@@ -19,7 +19,7 @@ function kinds(events) {
 
 function run() {
   const list = loadEncounters();
-  assert.strictEqual(list.filter((e) => e.pack === "tactics").length, 12, "12 tactics fights");
+  assert.ok(list.filter((e) => e.pack === "tactics").length >= 12, "at least the 12 original tactics fights");
 
   list.forEach((e) => {
     assert.ok(e.pieces && e.pieces.length, e.id + " pieces");
@@ -55,12 +55,12 @@ function run() {
   if (snack.bestLineUci.length > 1) assert.deepStrictEqual(rest.ucis, snack.bestLineUci.slice(1));
   else assert.ok(!rest && hit.acts.find((a) => a.kind === "hold"), "one-ply why holds instead of playing a rest");
 
-  const mate = list[7];
+  const mate = list.find((e) => e.id === "08");
   const hitMate = futures.buildPlan(mate, mate.best);
   assert.strictEqual(hitMate.hit, true);
   assert.ok(!hitMate.acts.find((a) => a.label === "best-rest"), "mate in one has no rest");
 
-  const poison = list[3];
+  const poison = list.find((e) => e.id === "04");
   const steps = futures.applyLine(futures.piecesFromList(poison.pieces), poison.temptingLineUci);
   assert.ok(steps[0].captured && steps[0].captured.role === "b");
   assert.ok(steps[1].captured && steps[1].captured.role === "q", "pawn eats the poisoned queen");
@@ -98,19 +98,20 @@ function run() {
     assert.ok(decoy && decoy !== e.why, e.id + " palace walk decoy is a different why");
   });
 
-  const forkT = futures.motifTargets(list[1]);
+  const byId = {}; list.forEach((e) => { byId[e.id] = e; });
+  const forkT = futures.motifTargets(byId["02"]);
   assert.ok(forkT.includes("g8") && forkT.includes("d5"), "fork bites king and rook: " + forkT);
-  const pawnT = futures.motifTargets(list[2]);
+  const pawnT = futures.motifTargets(byId["03"]);
   assert.ok(pawnT.includes("b6") && pawnT.includes("d6"), "pawn fork bites king and rook: " + pawnT);
-  const royalT = futures.motifTargets(list[11]);
+  const royalT = futures.motifTargets(byId["12"]);
   assert.ok(royalT.includes("e8") && royalT.includes("a8"), "royal fork: " + royalT);
-  const pinT = futures.motifTargets(list[4]);
+  const pinT = futures.motifTargets(byId["05"]);
   assert.ok(pinT.includes("c6") && pinT.includes("e8"), "pin glue knight + king: " + pinT);
-  const skewerT = futures.motifTargets(list[6]);
+  const skewerT = futures.motifTargets(byId["07"]);
   assert.ok(skewerT.includes("e8") && skewerT.includes("a8"), "skewer king then rook: " + skewerT);
-  const doorT = futures.motifTargets(list[7]);
+  const doorT = futures.motifTargets(byId["08"]);
   assert.ok(doorT.includes("a8"), "basement door slams a8: " + doorT);
-  const laserT = futures.motifTargets(list[10]);
+  const laserT = futures.motifTargets(byId["11"]);
   assert.ok(laserT.includes("c6") && laserT.includes("e8"), "discovery eats queen and checks king: " + laserT);
 
   const snackMiss = futures.simulatePlan(snack, snack.tempting);

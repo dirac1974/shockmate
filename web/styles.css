@@ -266,6 +266,7 @@ select, input[type=number], input[type=text], input[type=password] {
 .next-peek { display: flex; align-items: center; gap: 12px; border-radius: 14px 17px 13px 16px; padding: 10px; margin: 12px 0; }
 .next-peek .mini { width: 92px; height: 92px; flex-shrink: 0; display: grid; grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr); border-radius: 4px; overflow: hidden; border: 2.5px solid var(--ink); }
+.next-peek .mini[hidden] { display: none; }   /* camp has no next board to peek at */
 .next-peek .mini div { min-width: 0; min-height: 0; }
 .next-peek .mini .light { background: var(--sq-light); } .next-peek .mini .dark { background: var(--sq-dark); }
 .next-peek .mini svg { width: 100%; height: 100%; display: block; }
@@ -479,6 +480,10 @@ button:disabled:active { transform: none; }
 .day-chip.locked .n { background: var(--paper-2); border-style: dashed; box-shadow: none; }
 .day-chip.prep .n { border-radius: 14px 17px 13px 16px; transform: rotate(-6deg); background: var(--paper-2); }
 .day-chip.prep.current .n { background: var(--sun); }
+/* camp is a session, not a stop: a tent flag pitched beside the path */
+.day-chip.camp .n { border-radius: 50% 14px 50% 14px; transform: rotate(6deg); background: var(--paper-2); font-size: 28px; }
+.day-chip.camp.done .n { background: var(--leaf); color: var(--card); }
+.day-chip.camp .t { margin-top: 5px; }
 .day-chip:disabled { opacity: .45; box-shadow: none; border: 0; }
 .day-chip.prep .t { margin-top: 5px; }
 .blurb { text-align: center; font-size: 15px; color: var(--ink); margin: 2px 8px 0; }
@@ -577,6 +582,14 @@ body[data-screen="screen-play"] .topbar { padding-bottom: 4px; }
 #screen-card > .cta.big { margin-top: 4px; }
 .actions.quiet { margin-top: 12px; }
 .rank-line { font-family: "Baloo 2", sans-serif; font-size: 18px; }
+/* the principle: the rule behind the fight, for the kid the parent set to "reasons first" */
+.principle { margin: 8px 0 0; padding: 7px 10px; border-left: 5px solid var(--grape); background: var(--paper-2);
+  border-radius: 4px 10px 10px 4px; font-size: 15px; line-height: 1.3; color: var(--ink); }
+.principle[hidden] { display: none; }
+/* the one thing to say at the board tomorrow, on the camp debrief */
+.say-line { margin: 8px 0 4px; padding: 8px 11px; border: 3px solid var(--ink); border-radius: 12px 15px 11px 14px;
+  background: var(--sun); font-family: "Baloo 2", sans-serif; font-weight: 700; font-size: 17px; line-height: 1.25; }
+.say-line[hidden] { display: none; }
 
 
 /* ---------- the binder: cards in sleeves, face down until won ---------- */

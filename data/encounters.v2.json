@@ -1347,175 +1347,6 @@
   }
  },
  {
-  "id": "09",
-  "title": "Leftover Loose",
-  "motif": "hanging",
-  "palaceRoom": "Hanging Buffet",
-  "mascot": "LOOSE LUNCH",
-  "fen": "r5k1/5ppp/8/8/3n4/8/5PPP/Q5K1 w - - 0 1",
-  "best": "a1a8",
-  "bait": "a1d4",
-  "hook": "Two lunches. One is mate.",
-  "why": "The rook on the back door is mate.",
-  "whyLong": "Eat the lunch that ends the game.",
-  "whyTargets": {
-   "prompt": "Tap the lunch that ends the game.",
-   "squares": [
-    "a8"
-   ],
-   "at": "before"
-  },
-  "glitch": {
-   "taunt": "Knight on d4. Free. Yum. Take it.",
-   "gloat": "You took the horse. Still playing. Still my game.",
-   "rage": "The ROOK was the lunch?!"
-  },
-  "arrive": "c6d4",
-  "arrivePosition": "wqa1bra8bnc6wpf2bpf7wkg1wpg2bpg7bkg8wph2bph7",
-  "pack": "tactics",
-  "tempting": "a1d4",
-  "bestSan": "Qxa8#",
-  "temptingSan": "Qxd4",
-  "turn": "w",
-  "moves": {
-   "g1h1": {
-    "san": "Kh1",
-    "cp": -9999,
-    "tier": "blunder"
-   },
-   "g1f1": {
-    "san": "Kf1",
-    "cp": -9999,
-    "tier": "blunder"
-   },
-   "a1a8": {
-    "san": "Qxa8#",
-    "cp": 10000,
-    "tier": "best"
-   },
-   "a1a7": {
-    "san": "Qa7",
-    "cp": -866,
-    "tier": "blunder"
-   },
-   "a1a6": {
-    "san": "Qa6",
-    "cp": -873,
-    "tier": "blunder"
-   },
-   "a1a5": {
-    "san": "Qa5",
-    "cp": -871,
-    "tier": "blunder"
-   },
-   "a1d4": {
-    "san": "Qxd4",
-    "cp": 617,
-    "tier": "bait"
-   },
-   "a1a4": {
-    "san": "Qa4",
-    "cp": -858,
-    "tier": "blunder"
-   },
-   "a1c3": {
-    "san": "Qc3",
-    "cp": -863,
-    "tier": "blunder"
-   },
-   "a1a3": {
-    "san": "Qa3",
-    "cp": -867,
-    "tier": "blunder"
-   },
-   "a1b2": {
-    "san": "Qb2",
-    "cp": 9,
-    "tier": "blunder"
-   },
-   "a1a2": {
-    "san": "Qa2",
-    "cp": -864,
-    "tier": "blunder"
-   },
-   "a1f1": {
-    "san": "Qf1",
-    "cp": -522,
-    "tier": "blunder"
-   },
-   "a1e1": {
-    "san": "Qe1",
-    "cp": -516,
-    "tier": "blunder"
-   },
-   "a1d1": {
-    "san": "Qd1",
-    "cp": -519,
-    "tier": "blunder"
-   },
-   "a1c1": {
-    "san": "Qc1",
-    "cp": -869,
-    "tier": "blunder"
-   },
-   "a1b1": {
-    "san": "Qb1",
-    "cp": -546,
-    "tier": "blunder"
-   },
-   "h2h3": {
-    "san": "h3",
-    "cp": -864,
-    "tier": "blunder"
-   },
-   "g2g3": {
-    "san": "g3",
-    "cp": -863,
-    "tier": "blunder"
-   },
-   "f2f3": {
-    "san": "f3",
-    "cp": -867,
-    "tier": "blunder"
-   },
-   "h2h4": {
-    "san": "h4",
-    "cp": -862,
-    "tier": "blunder"
-   },
-   "g2g4": {
-    "san": "g4",
-    "cp": -839,
-    "tier": "blunder"
-   },
-   "f2f4": {
-    "san": "f4",
-    "cp": -850,
-    "tier": "blunder"
-   }
-  },
-  "bestLineUci": [
-   "a1a8"
-  ],
-  "temptingLineUci": [
-   "a1d4"
-  ],
-  "candidates": [
-   "a1",
-   "g2",
-   "f2"
-  ],
-  "boss": false,
-  "position": "wqa1bra8bnd4wpf2bpf7wkg1wpg2bpg7bkg8wph2bph7",
-  "legal": {
-   "g1": "g1h1:Kh1,g1f1:Kf1",
-   "a1": "a1a8x:Qxa8#,a1a7:Qa7,a1a6:Qa6,a1a5:Qa5,a1d4x:Qxd4,a1a4:Qa4,a1c3:Qc3,a1a3:Qa3,a1b2:Qb2,a1a2:Qa2,a1f1:Qf1,a1e1:Qe1,a1d1:Qd1,a1c1:Qc1,a1b1:Qb1",
-   "h2": "h2h3:h3,h2h4:h4",
-   "g2": "g2g3:g3,g2g4:g4",
-   "f2": "f2f3:f3,f2f4:f4"
-  }
- },
- {
   "id": "10",
   "title": "Their Future First",
   "motif": "mateOverMaterial",
@@ -1549,12 +1380,12 @@
   "moves": {
    "g1h1": {
     "san": "Kh1",
-    "cp": -603,
+    "cp": -647,
     "tier": "blunder"
    },
    "g1f1": {
     "san": "Kf1",
-    "cp": -654,
+    "cp": -627,
     "tier": "blunder"
    },
    "e1e8": {
@@ -1564,27 +1395,27 @@
    },
    "e1e7": {
     "san": "Re7",
-    "cp": -612,
+    "cp": -598,
     "tier": "blunder"
    },
    "e1e6": {
     "san": "Re6",
-    "cp": -909,
+    "cp": -898,
     "tier": "blunder"
    },
    "e1e5": {
     "san": "Re5",
-    "cp": -634,
+    "cp": -612,
     "tier": "blunder"
    },
    "e1e4": {
     "san": "Re4",
-    "cp": -635,
+    "cp": -615,
     "tier": "blunder"
    },
    "e1e3": {
     "san": "Re3",
-    "cp": -623,
+    "cp": -616,
     "tier": "blunder"
    },
    "e1e2": {
@@ -1594,52 +1425,52 @@
    },
    "e1f1": {
     "san": "Rf1",
-    "cp": -616,
+    "cp": -623,
     "tier": "blunder"
    },
    "e1d1": {
     "san": "Rd1",
-    "cp": -603,
+    "cp": -609,
     "tier": "blunder"
    },
    "e1c1": {
     "san": "Rc1",
-    "cp": -606,
+    "cp": -629,
     "tier": "blunder"
    },
    "e1b1": {
     "san": "Rb1",
-    "cp": -596,
+    "cp": -626,
     "tier": "blunder"
    },
    "e1a1": {
     "san": "Ra1",
-    "cp": -597,
+    "cp": -623,
     "tier": "blunder"
    },
    "g2h3": {
     "san": "gxh3",
-    "cp": 657,
+    "cp": 662,
     "tier": "bait"
    },
    "g2g3": {
     "san": "g3",
-    "cp": -597,
+    "cp": -614,
     "tier": "blunder"
    },
    "f2f3": {
     "san": "f3",
-    "cp": -658,
+    "cp": -690,
     "tier": "blunder"
    },
    "g2g4": {
     "san": "g4",
-    "cp": -793,
+    "cp": -786,
     "tier": "blunder"
    },
    "f2f4": {
     "san": "f4",
-    "cp": -664,
+    "cp": -650,
     "tier": "blunder"
    }
   },
@@ -1698,52 +1529,52 @@
   "moves": {
    "e5f7": {
     "san": "Nxf7+",
-    "cp": -859,
+    "cp": -852,
     "tier": "bait"
    },
    "e5d7": {
     "san": "Nd7+",
-    "cp": -835,
+    "cp": -846,
     "tier": "blunder"
    },
    "e5g6": {
     "san": "Ng6+",
-    "cp": -614,
+    "cp": -603,
     "tier": "blunder"
    },
    "e5c6": {
     "san": "Nxc6+",
-    "cp": 813,
+    "cp": 818,
     "tier": "best"
    },
    "e5g4": {
     "san": "Ng4+",
-    "cp": -625,
+    "cp": -663,
     "tier": "blunder"
    },
    "e5c4": {
     "san": "Nc4+",
-    "cp": -674,
+    "cp": -675,
     "tier": "blunder"
    },
    "e5f3": {
     "san": "Nf3+",
-    "cp": -666,
+    "cp": -656,
     "tier": "blunder"
    },
    "e5d3": {
     "san": "Nd3+",
-    "cp": -693,
+    "cp": -695,
     "tier": "blunder"
    },
    "g1h1": {
     "san": "Kh1",
-    "cp": -674,
+    "cp": -703,
     "tier": "blunder"
    },
    "g1f1": {
     "san": "Kf1",
-    "cp": -675,
+    "cp": -658,
     "tier": "blunder"
    },
    "e1e4": {
@@ -1763,12 +1594,12 @@
    },
    "e1f1": {
     "san": "Rf1",
-    "cp": -696,
+    "cp": -704,
     "tier": "blunder"
    },
    "e1d1": {
     "san": "Rd1",
-    "cp": -687,
+    "cp": -685,
     "tier": "blunder"
    },
    "e1c1": {
@@ -1778,42 +1609,42 @@
    },
    "e1b1": {
     "san": "Rb1",
-    "cp": -863,
+    "cp": -866,
     "tier": "blunder"
    },
    "e1a1": {
     "san": "Ra1",
-    "cp": -872,
+    "cp": -878,
     "tier": "blunder"
    },
    "h2h3": {
     "san": "h3",
-    "cp": -612,
+    "cp": -633,
     "tier": "blunder"
    },
    "g2g3": {
     "san": "g3",
-    "cp": -618,
+    "cp": -662,
     "tier": "blunder"
    },
    "f2f3": {
     "san": "f3",
-    "cp": -736,
+    "cp": -706,
     "tier": "blunder"
    },
    "h2h4": {
     "san": "h4",
-    "cp": -588,
+    "cp": -642,
     "tier": "blunder"
    },
    "g2g4": {
     "san": "g4",
-    "cp": -662,
+    "cp": -643,
     "tier": "blunder"
    },
    "f2f4": {
     "san": "f4",
-    "cp": -666,
+    "cp": -676,
     "tier": "blunder"
    }
   },
@@ -1875,78 +1706,78 @@
   "moves": {
    "b5c7": {
     "san": "Nc7+",
-    "cp": 525,
+    "cp": 435,
     "tier": "best"
    },
    "b5a7": {
     "san": "Nxa7",
-    "cp": -606,
+    "cp": -583,
     "tier": "bait"
    },
    "b5d6": {
     "san": "Nd6+",
-    "cp": -474,
+    "cp": -499,
     "tier": "blunder"
    },
    "b5d4": {
     "san": "Nd4",
-    "cp": -518,
+    "cp": -525,
     "tier": "blunder"
    },
    "b5c3": {
     "san": "Nc3",
-    "cp": -536,
+    "cp": -534,
     "tier": "blunder"
    },
    "b5a3": {
     "san": "Na3",
-    "cp": -551,
+    "cp": -566,
     "tier": "blunder"
    },
    "e1e2": {
     "san": "Ke2",
-    "cp": -516,
+    "cp": -513,
     "tier": "blunder"
    },
    "e1d2": {
     "san": "Kd2",
-    "cp": -526,
+    "cp": -516,
     "tier": "blunder"
    },
    "e1f1": {
     "san": "Kf1",
-    "cp": -533,
+    "cp": -546,
     "tier": "blunder"
    },
    "e1d1": {
     "san": "Kd1",
-    "cp": -519,
+    "cp": -547,
     "tier": "blunder"
    },
    "f2f3": {
     "san": "f3",
-    "cp": -530,
+    "cp": -527,
     "tier": "blunder"
    },
    "a2a3": {
     "san": "a3",
-    "cp": -528,
+    "cp": -536,
     "tier": "blunder"
    },
    "f2f4": {
     "san": "f4",
-    "cp": -528,
+    "cp": -532,
     "tier": "blunder"
    },
    "a2a4": {
     "san": "a4",
-    "cp": -526,
+    "cp": -541,
     "tier": "blunder"
    }
   },
   "bestLineUci": [
    "b5c7",
-   "e8d7",
+   "e8d8",
    "c7a8"
   ],
   "temptingLineUci": [
@@ -1956,7 +1787,7 @@
   "candidates": [
    "b5",
    "e1",
-   "a2"
+   "f2"
   ],
   "boss": true,
   "position": "wpa2bpa7bra8wnb5wke1bke8wpf2bpf7",
@@ -1964,6 +1795,1493 @@
    "b5": "b5c7:Nc7+,b5a7x:Nxa7,b5d6:Nd6+,b5d4:Nd4,b5c3:Nc3,b5a3:Na3",
    "e1": "e1e2:Ke2,e1d2:Kd2,e1f1:Kf1,e1d1:Kd1",
    "f2": "f2f3:f3,f2f4:f4",
+   "a2": "a2a3:a3,a2a4:a4"
+  }
+ },
+ {
+  "id": "t1",
+  "title": "Two Beats One",
+  "motif": "attackers",
+  "palaceRoom": "Counting House",
+  "mascot": "PILE ON",
+  "fen": "2br2k1/pp3ppp/3p4/8/4P3/8/PP3PPP/2BR2K1 w - - 0 1",
+  "best": "c1f4",
+  "bait": "d1d6",
+  "hook": "One attacker is not enough. Bring a friend.",
+  "why": "Do not cash it in. Add a second attacker.",
+  "whyLong": "One attacker against one guard trades nothing. Two attackers win the pawn for free.",
+  "whyTargets": {
+   "prompt": "Tap the weak pawn and the rook guarding it.",
+   "squares": [
+    "d6",
+    "d8"
+   ],
+   "at": "after"
+  },
+  "glitch": {
+   "taunt": "Grab that pawn with the rook. Right now. Free food.",
+   "gloat": "Rook gone, pawn eaten. Best trade I ever sold.",
+   "rage": "You brought ANOTHER one?! That is not fair!"
+  },
+  "arrive": "d7c8",
+  "arrivePosition": "wpa2bpa7wpb2bpb7wbc1wrd1bpd6bbd7brd8wpe4wpf2bpf7wkg1wpg2bpg7bkg8wph2bph7",
+  "pack": "tactics",
+  "tempting": "d1d6",
+  "bestSan": "Bf4",
+  "temptingSan": "Rxd6",
+  "turn": "w",
+  "moves": {
+   "g1h1": {
+    "san": "Kh1",
+    "cp": 7,
+    "tier": "best"
+   },
+   "g1f1": {
+    "san": "Kf1",
+    "cp": 10,
+    "tier": "best"
+   },
+   "d1d6": {
+    "san": "Rxd6",
+    "cp": -675,
+    "tier": "bait"
+   },
+   "d1d5": {
+    "san": "Rd5",
+    "cp": 6,
+    "tier": "best"
+   },
+   "d1d4": {
+    "san": "Rd4",
+    "cp": 4,
+    "tier": "best"
+   },
+   "d1d3": {
+    "san": "Rd3",
+    "cp": 1,
+    "tier": "best"
+   },
+   "d1d2": {
+    "san": "Rd2",
+    "cp": 7,
+    "tier": "best"
+   },
+   "d1f1": {
+    "san": "Rf1",
+    "cp": 2,
+    "tier": "best"
+   },
+   "d1e1": {
+    "san": "Re1",
+    "cp": 0,
+    "tier": "best"
+   },
+   "c1h6": {
+    "san": "Bh6",
+    "cp": -582,
+    "tier": "blunder"
+   },
+   "c1g5": {
+    "san": "Bg5",
+    "cp": 5,
+    "tier": "best"
+   },
+   "c1f4": {
+    "san": "Bf4",
+    "cp": 3,
+    "tier": "best"
+   },
+   "c1e3": {
+    "san": "Be3",
+    "cp": 4,
+    "tier": "best"
+   },
+   "c1d2": {
+    "san": "Bd2",
+    "cp": -3,
+    "tier": "best"
+   },
+   "e4e5": {
+    "san": "e5",
+    "cp": 0,
+    "tier": "best"
+   },
+   "h2h3": {
+    "san": "h3",
+    "cp": 1,
+    "tier": "best"
+   },
+   "g2g3": {
+    "san": "g3",
+    "cp": 2,
+    "tier": "best"
+   },
+   "f2f3": {
+    "san": "f3",
+    "cp": 1,
+    "tier": "best"
+   },
+   "b2b3": {
+    "san": "b3",
+    "cp": 1,
+    "tier": "best"
+   },
+   "a2a3": {
+    "san": "a3",
+    "cp": 0,
+    "tier": "best"
+   },
+   "h2h4": {
+    "san": "h4",
+    "cp": 4,
+    "tier": "best"
+   },
+   "g2g4": {
+    "san": "g4",
+    "cp": -18,
+    "tier": "best"
+   },
+   "f2f4": {
+    "san": "f4",
+    "cp": 7,
+    "tier": "best"
+   },
+   "b2b4": {
+    "san": "b4",
+    "cp": 6,
+    "tier": "best"
+   },
+   "a2a4": {
+    "san": "a4",
+    "cp": 8,
+    "tier": "best"
+   }
+  },
+  "bestLineUci": [
+   "c1f4",
+   "c8e6",
+   "d1d6"
+  ],
+  "temptingLineUci": [
+   "d1d6",
+   "d8d6"
+  ],
+  "candidates": [
+   "c1",
+   "g1",
+   "a2"
+  ],
+  "boss": false,
+  "position": "wpa2bpa7wpb2bpb7wbc1bbc8wrd1bpd6brd8wpe4wpf2bpf7wkg1wpg2bpg7bkg8wph2bph7",
+  "legal": {
+   "g1": "g1h1:Kh1,g1f1:Kf1",
+   "d1": "d1d6x:Rxd6,d1d5:Rd5,d1d4:Rd4,d1d3:Rd3,d1d2:Rd2,d1f1:Rf1,d1e1:Re1",
+   "c1": "c1h6:Bh6,c1g5:Bg5,c1f4:Bf4,c1e3:Be3,c1d2:Bd2",
+   "e4": "e4e5:e5",
+   "h2": "h2h3:h3,h2h4:h4",
+   "g2": "g2g3:g3,g2g4:g4",
+   "f2": "f2f3:f3,f2f4:f4",
+   "b2": "b2b3:b3,b2b4:b4",
+   "a2": "a2a3:a3,a2a4:a4"
+  }
+ },
+ {
+  "id": "t2",
+  "title": "Three Beats Two",
+  "motif": "attackers",
+  "palaceRoom": "Counting House",
+  "mascot": "PILE ON",
+  "fen": "4r1k1/pp3p1p/2b2n2/3n2p1/5N2/2N1B3/PP3PPP/3R2K1 w - - 0 1",
+  "best": "f4d5",
+  "bait": "f4e2",
+  "hook": "He guards it twice. You hit it three times.",
+  "why": "Three attackers beat two guards. Take it now.",
+  "whyLong": "Count both sides before you trade. The extra attacker wins a whole piece.",
+  "whyTargets": {
+   "prompt": "Tap the horse and both pieces guarding it.",
+   "squares": [
+    "d5",
+    "c6",
+    "f6"
+   ],
+   "at": "before"
+  },
+  "glitch": {
+   "taunt": "Your horse is attacked! Save it! Step back! Quick!",
+   "gloat": "You ran away. I keep everything. Lovely.",
+   "rage": "You COUNTED to three?! Nobody counts to three!"
+  },
+  "arrive": "g7g5",
+  "arrivePosition": "wpa2bpa7wpb2bpb7wnc3bbc6wrd1bnd5wbe3bre8wpf2wnf4bnf6bpf7wkg1wpg2bpg7bkg8wph2bph7",
+  "pack": "tactics",
+  "tempting": "f4e2",
+  "bestSan": "Nfxd5",
+  "temptingSan": "Nfe2",
+  "turn": "w",
+  "moves": {
+   "f4g6": {
+    "san": "Ng6",
+    "cp": -669,
+    "tier": "blunder"
+   },
+   "f4e6": {
+    "san": "Ne6",
+    "cp": -646,
+    "tier": "blunder"
+   },
+   "f4h5": {
+    "san": "Nh5",
+    "cp": 13,
+    "tier": "blunder"
+   },
+   "f4d5": {
+    "san": "Nfxd5",
+    "cp": 633,
+    "tier": "best"
+   },
+   "f4h3": {
+    "san": "Nh3",
+    "cp": -128,
+    "tier": "blunder"
+   },
+   "f4d3": {
+    "san": "Nd3",
+    "cp": -153,
+    "tier": "blunder"
+   },
+   "f4e2": {
+    "san": "Nfe2",
+    "cp": -114,
+    "tier": "bait"
+   },
+   "e3a7": {
+    "san": "Bxa7",
+    "cp": -576,
+    "tier": "blunder"
+   },
+   "e3b6": {
+    "san": "Bb6",
+    "cp": -670,
+    "tier": "blunder"
+   },
+   "e3c5": {
+    "san": "Bc5",
+    "cp": -639,
+    "tier": "blunder"
+   },
+   "e3d4": {
+    "san": "Bd4",
+    "cp": -594,
+    "tier": "blunder"
+   },
+   "e3d2": {
+    "san": "Bd2",
+    "cp": -584,
+    "tier": "blunder"
+   },
+   "e3c1": {
+    "san": "Bc1",
+    "cp": -610,
+    "tier": "blunder"
+   },
+   "c3d5": {
+    "san": "Ncxd5",
+    "cp": 579,
+    "tier": "good"
+   },
+   "c3b5": {
+    "san": "Nb5",
+    "cp": -763,
+    "tier": "blunder"
+   },
+   "c3e4": {
+    "san": "Ne4",
+    "cp": -626,
+    "tier": "blunder"
+   },
+   "c3a4": {
+    "san": "Na4",
+    "cp": -795,
+    "tier": "blunder"
+   },
+   "c3e2": {
+    "san": "Nce2",
+    "cp": -665,
+    "tier": "blunder"
+   },
+   "c3b1": {
+    "san": "Nb1",
+    "cp": -631,
+    "tier": "blunder"
+   },
+   "g1h1": {
+    "san": "Kh1",
+    "cp": -707,
+    "tier": "blunder"
+   },
+   "g1f1": {
+    "san": "Kf1",
+    "cp": -686,
+    "tier": "blunder"
+   },
+   "d1d5": {
+    "san": "Rxd5",
+    "cp": 15,
+    "tier": "blunder"
+   },
+   "d1d4": {
+    "san": "Rd4",
+    "cp": -636,
+    "tier": "blunder"
+   },
+   "d1d3": {
+    "san": "Rd3",
+    "cp": -641,
+    "tier": "blunder"
+   },
+   "d1d2": {
+    "san": "Rd2",
+    "cp": -755,
+    "tier": "blunder"
+   },
+   "d1f1": {
+    "san": "Rf1",
+    "cp": -648,
+    "tier": "blunder"
+   },
+   "d1e1": {
+    "san": "Re1",
+    "cp": -611,
+    "tier": "blunder"
+   },
+   "d1c1": {
+    "san": "Rc1",
+    "cp": -646,
+    "tier": "blunder"
+   },
+   "d1b1": {
+    "san": "Rb1",
+    "cp": -627,
+    "tier": "blunder"
+   },
+   "d1a1": {
+    "san": "Ra1",
+    "cp": -636,
+    "tier": "blunder"
+   },
+   "h2h3": {
+    "san": "h3",
+    "cp": -632,
+    "tier": "blunder"
+   },
+   "g2g3": {
+    "san": "g3",
+    "cp": -658,
+    "tier": "blunder"
+   },
+   "f2f3": {
+    "san": "f3",
+    "cp": -664,
+    "tier": "blunder"
+   },
+   "b2b3": {
+    "san": "b3",
+    "cp": -781,
+    "tier": "blunder"
+   },
+   "a2a3": {
+    "san": "a3",
+    "cp": -623,
+    "tier": "blunder"
+   },
+   "h2h4": {
+    "san": "h4",
+    "cp": -691,
+    "tier": "blunder"
+   },
+   "g2g4": {
+    "san": "g4",
+    "cp": -685,
+    "tier": "blunder"
+   },
+   "b2b4": {
+    "san": "b4",
+    "cp": -825,
+    "tier": "blunder"
+   },
+   "a2a4": {
+    "san": "a4",
+    "cp": -665,
+    "tier": "blunder"
+   }
+  },
+  "bestLineUci": [
+   "f4d5",
+   "f6d5"
+  ],
+  "temptingLineUci": [
+   "f4e2",
+   "d5e3"
+  ],
+  "candidates": [
+   "f4",
+   "c3",
+   "d1"
+  ],
+  "boss": false,
+  "position": "wpa2bpa7wpb2bpb7wnc3bbc6wrd1bnd5wbe3bre8wpf2wnf4bnf6bpf7wkg1wpg2bpg5bkg8wph2bph7",
+  "legal": {
+   "f4": "f4g6:Ng6,f4e6:Ne6,f4h5:Nh5,f4d5x:Nfxd5,f4h3:Nh3,f4d3:Nd3,f4e2:Nfe2",
+   "e3": "e3a7x:Bxa7,e3b6:Bb6,e3c5:Bc5,e3d4:Bd4,e3d2:Bd2,e3c1:Bc1",
+   "c3": "c3d5x:Ncxd5,c3b5:Nb5,c3e4:Ne4,c3a4:Na4,c3e2:Nce2,c3b1:Nb1",
+   "g1": "g1h1:Kh1,g1f1:Kf1",
+   "d1": "d1d5x:Rxd5,d1d4:Rd4,d1d3:Rd3,d1d2:Rd2,d1f1:Rf1,d1e1:Re1,d1c1:Rc1,d1b1:Rb1,d1a1:Ra1",
+   "h2": "h2h3:h3,h2h4:h4",
+   "g2": "g2g3:g3,g2g4:g4",
+   "f2": "f2f3:f3",
+   "b2": "b2b3:b3,b2b4:b4",
+   "a2": "a2a3:a3,a2a4:a4"
+  }
+ },
+ {
+  "id": "t3",
+  "title": "Both Rooks In",
+  "motif": "attackers",
+  "palaceRoom": "Counting House",
+  "mascot": "PILE ON",
+  "fen": "2brr1k1/pp3ppp/3p4/8/4P3/5B2/PP1R1PPP/5RK1 w - - 0 1",
+  "best": "f1d1",
+  "bait": "d2d6",
+  "hook": "One rook is a poke. Two is a punch.",
+  "why": "Bring the second rook down. Then the pawn falls.",
+  "whyLong": "Do not grab first. Line both rooks up on the road, then take.",
+  "whyTargets": {
+   "prompt": "Tap the lonely pawn and its only guard.",
+   "squares": [
+    "d6",
+    "d8"
+   ],
+   "at": "after"
+  },
+  "glitch": {
+   "taunt": "Just take the pawn now! Rooks are for taking!",
+   "gloat": "One rook for one pawn. I love your maths.",
+   "rage": "TWO rooks?! On MY road?! Who allowed this?!"
+  },
+  "arrive": "d7d6",
+  "arrivePosition": "wpa2bpa7wpb2bpb7bbc8wrd2bpd7brd8wpe4bre8wrf1wpf2wbf3bpf7wkg1wpg2bpg7bkg8wph2bph7",
+  "pack": "tactics",
+  "tempting": "d2d6",
+  "bestSan": "Rfd1",
+  "temptingSan": "Rxd6",
+  "turn": "w",
+  "moves": {
+   "f3h5": {
+    "san": "Bh5",
+    "cp": -59,
+    "tier": "blunder"
+   },
+   "f3g4": {
+    "san": "Bg4",
+    "cp": -627,
+    "tier": "blunder"
+   },
+   "f3e2": {
+    "san": "Be2",
+    "cp": -43,
+    "tier": "blunder"
+   },
+   "f3d1": {
+    "san": "Bd1",
+    "cp": -61,
+    "tier": "blunder"
+   },
+   "d2d6": {
+    "san": "Rxd6",
+    "cp": -735,
+    "tier": "bait"
+   },
+   "d2d5": {
+    "san": "Rd5",
+    "cp": 7,
+    "tier": "good"
+   },
+   "d2d4": {
+    "san": "Rd4",
+    "cp": 21,
+    "tier": "best"
+   },
+   "d2d3": {
+    "san": "Rd3",
+    "cp": 19,
+    "tier": "best"
+   },
+   "d2e2": {
+    "san": "Re2",
+    "cp": -4,
+    "tier": "blunder"
+   },
+   "d2c2": {
+    "san": "Rc2",
+    "cp": 11,
+    "tier": "good"
+   },
+   "d2d1": {
+    "san": "Rdd1",
+    "cp": 4,
+    "tier": "good"
+   },
+   "g1h1": {
+    "san": "Kh1",
+    "cp": 18,
+    "tier": "best"
+   },
+   "f1e1": {
+    "san": "Re1",
+    "cp": 15,
+    "tier": "good"
+   },
+   "f1d1": {
+    "san": "Rfd1",
+    "cp": 61,
+    "tier": "best"
+   },
+   "f1c1": {
+    "san": "Rc1",
+    "cp": 27,
+    "tier": "best"
+   },
+   "f1b1": {
+    "san": "Rb1",
+    "cp": 24,
+    "tier": "best"
+   },
+   "f1a1": {
+    "san": "Ra1",
+    "cp": 20,
+    "tier": "best"
+   },
+   "e4e5": {
+    "san": "e5",
+    "cp": -100,
+    "tier": "blunder"
+   },
+   "h2h3": {
+    "san": "h3",
+    "cp": 32,
+    "tier": "best"
+   },
+   "g2g3": {
+    "san": "g3",
+    "cp": 23,
+    "tier": "best"
+   },
+   "b2b3": {
+    "san": "b3",
+    "cp": 20,
+    "tier": "best"
+   },
+   "a2a3": {
+    "san": "a3",
+    "cp": 21,
+    "tier": "best"
+   },
+   "h2h4": {
+    "san": "h4",
+    "cp": 37,
+    "tier": "best"
+   },
+   "g2g4": {
+    "san": "g4",
+    "cp": 32,
+    "tier": "best"
+   },
+   "b2b4": {
+    "san": "b4",
+    "cp": 5,
+    "tier": "good"
+   },
+   "a2a4": {
+    "san": "a4",
+    "cp": 7,
+    "tier": "good"
+   }
+  },
+  "bestLineUci": [
+   "f1d1"
+  ],
+  "temptingLineUci": [
+   "d2d6",
+   "d8d6"
+  ],
+  "candidates": [
+   "f1",
+   "h2",
+   "g2"
+  ],
+  "boss": false,
+  "position": "wpa2bpa7wpb2bpb7bbc8wrd2bpd6brd8wpe4bre8wrf1wpf2wbf3bpf7wkg1wpg2bpg7bkg8wph2bph7",
+  "legal": {
+   "f3": "f3h5:Bh5,f3g4:Bg4,f3e2:Be2,f3d1:Bd1",
+   "d2": "d2d6x:Rxd6,d2d5:Rd5,d2d4:Rd4,d2d3:Rd3,d2e2:Re2,d2c2:Rc2,d2d1:Rdd1",
+   "g1": "g1h1:Kh1",
+   "f1": "f1e1:Re1,f1d1:Rfd1,f1c1:Rc1,f1b1:Rb1,f1a1:Ra1",
+   "e4": "e4e5:e5",
+   "h2": "h2h3:h3,h2h4:h4",
+   "g2": "g2g3:g3,g2g4:g4",
+   "b2": "b2b3:b3,b2b4:b4",
+   "a2": "a2a3:a3,a2a4:a4"
+  }
+ },
+ {
+  "id": "d1",
+  "pack": "defence",
+  "title": "Check Him First",
+  "motif": "counter",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "r2qk2r/ppp2ppp/8/4p3/1b2P3/3P4/PP3PPP/R1BQR1K1 w kq - 0 1",
+  "best": "d1a4",
+  "bait": "e1f1",
+  "hook": "He hits your rook. Hit his king instead.",
+  "why": "Check first. The checking piece grabs the bishop next.",
+  "whyLong": "A check is a free move. Answer an attack with a bigger one.",
+  "whyTargets": {
+   "prompt": "Tap the bishop and the rook it is hunting.",
+   "squares": [
+    "b4",
+    "e1"
+   ],
+   "at": "after"
+  },
+  "glitch": {
+   "taunt": "Your rook! Move it! Tuck it away somewhere safe!",
+   "gloat": "You hid. I kept my bishop. Same as always.",
+   "rage": "CHECK?! You were supposed to be SCARED!"
+  },
+  "arrive": "f8b4",
+  "arrivePosition": "wra1wpa2bpa7bra8wpb2bpb7wbc1bpc7wqd1wpd3bqd8wre1wpe4bpe5bke8wpf2bpf7bbf8wkg1wpg2bpg7wph2bph7brh8",
+  "tempting": "e1f1",
+  "bestSan": "Qa4+",
+  "temptingSan": "Rf1",
+  "turn": "w",
+  "moves": {
+   "g1h1": {
+    "san": "Kh1",
+    "cp": -610,
+    "tier": "blunder"
+   },
+   "g1f1": {
+    "san": "Kf1",
+    "cp": -508,
+    "tier": "blunder"
+   },
+   "e1e3": {
+    "san": "Re3",
+    "cp": -23,
+    "tier": "blunder"
+   },
+   "e1e2": {
+    "san": "Re2",
+    "cp": -16,
+    "tier": "blunder"
+   },
+   "e1f1": {
+    "san": "Rf1",
+    "cp": -12,
+    "tier": "bait"
+   },
+   "d1h5": {
+    "san": "Qh5",
+    "cp": -543,
+    "tier": "blunder"
+   },
+   "d1g4": {
+    "san": "Qg4",
+    "cp": -607,
+    "tier": "blunder"
+   },
+   "d1a4": {
+    "san": "Qa4+",
+    "cp": 689,
+    "tier": "best"
+   },
+   "d1f3": {
+    "san": "Qf3",
+    "cp": -723,
+    "tier": "blunder"
+   },
+   "d1b3": {
+    "san": "Qb3",
+    "cp": -563,
+    "tier": "blunder"
+   },
+   "d1e2": {
+    "san": "Qe2",
+    "cp": -574,
+    "tier": "blunder"
+   },
+   "d1d2": {
+    "san": "Qd2",
+    "cp": -807,
+    "tier": "blunder"
+   },
+   "d1c2": {
+    "san": "Qc2",
+    "cp": -677,
+    "tier": "blunder"
+   },
+   "c1h6": {
+    "san": "Bh6",
+    "cp": -616,
+    "tier": "blunder"
+   },
+   "c1g5": {
+    "san": "Bg5",
+    "cp": -60,
+    "tier": "blunder"
+   },
+   "c1f4": {
+    "san": "Bf4",
+    "cp": -591,
+    "tier": "blunder"
+   },
+   "c1e3": {
+    "san": "Be3",
+    "cp": -462,
+    "tier": "blunder"
+   },
+   "c1d2": {
+    "san": "Bd2",
+    "cp": -28,
+    "tier": "blunder"
+   },
+   "a1b1": {
+    "san": "Rb1",
+    "cp": -613,
+    "tier": "blunder"
+   },
+   "d3d4": {
+    "san": "d4",
+    "cp": -580,
+    "tier": "blunder"
+   },
+   "h2h3": {
+    "san": "h3",
+    "cp": -505,
+    "tier": "blunder"
+   },
+   "g2g3": {
+    "san": "g3",
+    "cp": -609,
+    "tier": "blunder"
+   },
+   "f2f3": {
+    "san": "f3",
+    "cp": -589,
+    "tier": "blunder"
+   },
+   "b2b3": {
+    "san": "b3",
+    "cp": -552,
+    "tier": "blunder"
+   },
+   "a2a3": {
+    "san": "a3",
+    "cp": -608,
+    "tier": "blunder"
+   },
+   "h2h4": {
+    "san": "h4",
+    "cp": -567,
+    "tier": "blunder"
+   },
+   "g2g4": {
+    "san": "g4",
+    "cp": -688,
+    "tier": "blunder"
+   },
+   "f2f4": {
+    "san": "f4",
+    "cp": -607,
+    "tier": "blunder"
+   },
+   "a2a4": {
+    "san": "a4",
+    "cp": -597,
+    "tier": "blunder"
+   }
+  },
+  "bestLineUci": [
+   "d1a4",
+   "c7c6",
+   "a4b4"
+  ],
+  "temptingLineUci": [
+   "e1f1"
+  ],
+  "candidates": [
+   "d1",
+   "e1",
+   "c1"
+  ],
+  "boss": false,
+  "position": "wra1wpa2bpa7bra8wpb2bbb4bpb7wbc1bpc7wqd1wpd3bqd8wre1wpe4bpe5bke8wpf2bpf7wkg1wpg2bpg7wph2bph7brh8",
+  "legal": {
+   "g1": "g1h1:Kh1,g1f1:Kf1",
+   "e1": "e1e3:Re3,e1e2:Re2,e1f1:Rf1",
+   "d1": "d1h5:Qh5,d1g4:Qg4,d1a4:Qa4+,d1f3:Qf3,d1b3:Qb3,d1e2:Qe2,d1d2:Qd2,d1c2:Qc2",
+   "c1": "c1h6:Bh6,c1g5:Bg5,c1f4:Bf4,c1e3:Be3,c1d2:Bd2",
+   "a1": "a1b1:Rb1",
+   "d3": "d3d4:d4",
+   "h2": "h2h3:h3,h2h4:h4",
+   "g2": "g2g3:g3,g2g4:g4",
+   "f2": "f2f3:f3,f2f4:f4",
+   "b2": "b2b3:b3",
+   "a2": "a2a3:a3,a2a4:a4"
+  }
+ },
+ {
+  "id": "d2",
+  "pack": "defence",
+  "title": "He Let Go",
+  "motif": "counter",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "5rk1/p4ppp/2n1p3/1p6/2R1P3/5N2/PP3PPP/6K1 w - - 0 1",
+  "best": "c4c6",
+  "bait": "c4c1",
+  "hook": "His pawn shoved your rook. See what it dropped.",
+  "why": "The pawn stopped guarding his horse. Take the horse.",
+  "whyLong": "Every pawn push stops guarding something. Ask what, before you run.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that moved and the horse it left.",
+   "squares": [
+    "b5",
+    "c6"
+   ],
+   "at": "before"
+  },
+  "glitch": {
+   "taunt": "Your rook is attacked! Run! Run home! Hurry!",
+   "gloat": "You ran. My horse is fine. Thanks for playing.",
+   "rage": "My pawn was GUARDING that?! Nobody told me!"
+  },
+  "arrive": "b7b5",
+  "arrivePosition": "wpa2bpa7wpb2bpb7wrc4bnc6wpe4bpe6wpf2wnf3bpf7brf8wkg1wpg2bpg7bkg8wph2bph7",
+  "tempting": "c4c1",
+  "bestSan": "Rxc6",
+  "temptingSan": "Rc1",
+  "turn": "w",
+  "moves": {
+   "c4c6": {
+    "san": "Rxc6",
+    "cp": 641,
+    "tier": "best"
+   },
+   "c4c5": {
+    "san": "Rc5",
+    "cp": 78,
+    "tier": "blunder"
+   },
+   "c4d4": {
+    "san": "Rd4",
+    "cp": -680,
+    "tier": "blunder"
+   },
+   "c4b4": {
+    "san": "Rb4",
+    "cp": -761,
+    "tier": "blunder"
+   },
+   "c4a4": {
+    "san": "Ra4",
+    "cp": -747,
+    "tier": "blunder"
+   },
+   "c4c3": {
+    "san": "Rc3",
+    "cp": 41,
+    "tier": "blunder"
+   },
+   "c4c2": {
+    "san": "Rc2",
+    "cp": 21,
+    "tier": "blunder"
+   },
+   "c4c1": {
+    "san": "Rc1",
+    "cp": 14,
+    "tier": "bait"
+   },
+   "f3g5": {
+    "san": "Ng5",
+    "cp": -729,
+    "tier": "blunder"
+   },
+   "f3e5": {
+    "san": "Ne5",
+    "cp": -566,
+    "tier": "blunder"
+   },
+   "f3h4": {
+    "san": "Nh4",
+    "cp": -780,
+    "tier": "blunder"
+   },
+   "f3d4": {
+    "san": "Nd4",
+    "cp": -491,
+    "tier": "blunder"
+   },
+   "f3d2": {
+    "san": "Nd2",
+    "cp": -741,
+    "tier": "blunder"
+   },
+   "f3e1": {
+    "san": "Ne1",
+    "cp": -741,
+    "tier": "blunder"
+   },
+   "g1h1": {
+    "san": "Kh1",
+    "cp": -754,
+    "tier": "blunder"
+   },
+   "g1f1": {
+    "san": "Kf1",
+    "cp": -747,
+    "tier": "blunder"
+   },
+   "e4e5": {
+    "san": "e5",
+    "cp": -745,
+    "tier": "blunder"
+   },
+   "h2h3": {
+    "san": "h3",
+    "cp": -749,
+    "tier": "blunder"
+   },
+   "g2g3": {
+    "san": "g3",
+    "cp": -757,
+    "tier": "blunder"
+   },
+   "b2b3": {
+    "san": "b3",
+    "cp": -750,
+    "tier": "blunder"
+   },
+   "a2a3": {
+    "san": "a3",
+    "cp": -770,
+    "tier": "blunder"
+   },
+   "h2h4": {
+    "san": "h4",
+    "cp": -757,
+    "tier": "blunder"
+   },
+   "g2g4": {
+    "san": "g4",
+    "cp": -759,
+    "tier": "blunder"
+   },
+   "b2b4": {
+    "san": "b4",
+    "cp": -805,
+    "tier": "blunder"
+   },
+   "a2a4": {
+    "san": "a4",
+    "cp": -757,
+    "tier": "blunder"
+   }
+  },
+  "bestLineUci": [
+   "c4c6"
+  ],
+  "temptingLineUci": [
+   "c4c1",
+   "c6b4",
+   "f3e1",
+   "b4a2"
+  ],
+  "candidates": [
+   "c4",
+   "f3",
+   "e4"
+  ],
+  "boss": false,
+  "position": "wpa2bpa7wpb2bpb5wrc4bnc6wpe4bpe6wpf2wnf3bpf7brf8wkg1wpg2bpg7bkg8wph2bph7",
+  "legal": {
+   "c4": "c4c6x:Rxc6,c4c5:Rc5,c4d4:Rd4,c4b4:Rb4,c4a4:Ra4,c4c3:Rc3,c4c2:Rc2,c4c1:Rc1",
+   "f3": "f3g5:Ng5,f3e5:Ne5,f3h4:Nh4,f3d4:Nd4,f3d2:Nd2,f3e1:Ne1",
+   "g1": "g1h1:Kh1,g1f1:Kf1",
+   "e4": "e4e5:e5",
+   "h2": "h2h3:h3,h2h4:h4",
+   "g2": "g2g3:g3,g2g4:g4",
+   "b2": "b2b3:b3,b2b4:b4",
+   "a2": "a2a3:a3,a2a4:a4"
+  }
+ },
+ {
+  "id": "d3",
+  "pack": "defence",
+  "title": "Block With the Horse",
+  "motif": "defend",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "5rk1/pb3ppp/2q1pn2/8/8/8/PPBN1PPP/3Q1RK1 w - - 0 1",
+  "best": "d2f3",
+  "bait": "d1f3",
+  "hook": "Two pieces on one line, aimed at your king.",
+  "why": "Block the line with the horse, not the queen.",
+  "whyLong": "Blocking with the wrong piece just feeds him. The cheapest blocker does the job.",
+  "whyTargets": {
+   "prompt": "Tap the queen and the bishop lined up behind her.",
+   "squares": [
+    "c6",
+    "b7"
+   ],
+   "at": "after"
+  },
+  "glitch": {
+   "taunt": "Give your king some air! A little pawn step!",
+   "gloat": "Air does not stop a queen. Mate. Bye.",
+   "rage": "The HORSE?! I wanted your QUEEN in the way!"
+  },
+  "arrive": "d7c6",
+  "arrivePosition": "wpa2bpa7wpb2bbb7wbc2wqd1wnd2bqd7bpe6wrf1wpf2bnf6bpf7brf8wkg1wpg2bpg7bkg8wph2bph7",
+  "tempting": "d1f3",
+  "bestSan": "Nf3",
+  "temptingSan": "Qf3",
+  "turn": "w",
+  "moves": {
+   "d2e4": {
+    "san": "Ne4",
+    "cp": -721,
+    "tier": "blunder"
+   },
+   "d2c4": {
+    "san": "Nc4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d2f3": {
+    "san": "Nf3",
+    "cp": -54,
+    "tier": "best"
+   },
+   "d2b3": {
+    "san": "Nb3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d2b1": {
+    "san": "Nb1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "c2h7": {
+    "san": "Bxh7+",
+    "cp": -655,
+    "tier": "blunder"
+   },
+   "c2g6": {
+    "san": "Bg6",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "c2f5": {
+    "san": "Bf5",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "c2e4": {
+    "san": "Be4",
+    "cp": -727,
+    "tier": "blunder"
+   },
+   "c2a4": {
+    "san": "Ba4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "c2d3": {
+    "san": "Bd3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "c2b3": {
+    "san": "Bb3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "c2b1": {
+    "san": "Bb1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "g1h1": {
+    "san": "Kh1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "f1e1": {
+    "san": "Re1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1h5": {
+    "san": "Qh5",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1g4": {
+    "san": "Qg4",
+    "cp": -917,
+    "tier": "blunder"
+   },
+   "d1f3": {
+    "san": "Qf3",
+    "cp": -682,
+    "tier": "bait"
+   },
+   "d1e2": {
+    "san": "Qe2",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1e1": {
+    "san": "Qe1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1c1": {
+    "san": "Qc1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1b1": {
+    "san": "Qb1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1a1": {
+    "san": "Qa1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "h2h3": {
+    "san": "h3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "g2g3": {
+    "san": "g3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "f2f3": {
+    "san": "f3",
+    "cp": -522,
+    "tier": "blunder"
+   },
+   "b2b3": {
+    "san": "b3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "a2a3": {
+    "san": "a3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "h2h4": {
+    "san": "h4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "g2g4": {
+    "san": "g4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "f2f4": {
+    "san": "f4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "b2b4": {
+    "san": "b4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "a2a4": {
+    "san": "a4",
+    "cp": -9999,
+    "tier": "blunder"
+   }
+  },
+  "bestLineUci": [
+   "d2f3"
+  ],
+  "temptingLineUci": [
+   "d1f3",
+   "c6c2"
+  ],
+  "candidates": [
+   "d2",
+   "f2",
+   "c2"
+  ],
+  "boss": false,
+  "position": "wpa2bpa7wpb2bbb7wbc2bqc6wqd1wnd2bpe6wrf1wpf2bnf6bpf7brf8wkg1wpg2bpg7bkg8wph2bph7",
+  "legal": {
+   "d2": "d2e4:Ne4,d2c4:Nc4,d2f3:Nf3,d2b3:Nb3,d2b1:Nb1",
+   "c2": "c2h7x:Bxh7+,c2g6:Bg6,c2f5:Bf5,c2e4:Be4,c2a4:Ba4,c2d3:Bd3,c2b3:Bb3,c2b1:Bb1",
+   "g1": "g1h1:Kh1",
+   "f1": "f1e1:Re1",
+   "d1": "d1h5:Qh5,d1g4:Qg4,d1f3:Qf3,d1e2:Qe2,d1e1:Qe1,d1c1:Qc1,d1b1:Qb1,d1a1:Qa1",
+   "h2": "h2h3:h3,h2h4:h4",
+   "g2": "g2g3:g3,g2g4:g4",
+   "f2": "f2f3:f3,f2f4:f4",
+   "b2": "b2b3:b3,b2b4:b4",
+   "a2": "a2a3:a3,a2a4:a4"
+  }
+ },
+ {
+  "id": "d4",
+  "pack": "defence",
+  "title": "One Move, Two Jobs",
+  "motif": "defend",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "5rk1/pp3ppp/3b1n2/8/7q/4B3/PP1N1PPP/3Q1RK1 w - - 0 1",
+  "best": "d2f3",
+  "bait": "e3f4",
+  "hook": "Queen and bishop both point at the same square.",
+  "why": "One horse move guards the square and chases the queen.",
+  "whyLong": "The best defence does two jobs. Blocking with a bishop just hands it over.",
+  "whyTargets": {
+   "prompt": "Tap the queen and the bishop aiming at your corner.",
+   "squares": [
+    "h4",
+    "d6"
+   ],
+   "at": "after"
+  },
+  "glitch": {
+   "taunt": "Block with your bishop! Bishops block! That is their job!",
+   "gloat": "Bishop eaten, and mate next. Two presents!",
+   "rage": "Your horse defends AND attacks?! That is cheating!"
+  },
+  "arrive": "h6h4",
+  "arrivePosition": "wpa2bpa7wpb2bpb7wqd1wnd2bbd6wbe3wrf1wpf2bnf6bpf7brf8wkg1wpg2bpg7bkg8wph2bqh6bph7",
+  "tempting": "e3f4",
+  "bestSan": "Nf3",
+  "temptingSan": "Bf4",
+  "turn": "w",
+  "moves": {
+   "e3a7": {
+    "san": "Bxa7",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "e3h6": {
+    "san": "Bh6",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "e3b6": {
+    "san": "Bb6",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "e3g5": {
+    "san": "Bg5",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "e3c5": {
+    "san": "Bc5",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "e3f4": {
+    "san": "Bf4",
+    "cp": -661,
+    "tier": "bait"
+   },
+   "e3d4": {
+    "san": "Bd4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d2e4": {
+    "san": "Ne4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d2c4": {
+    "san": "Nc4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d2f3": {
+    "san": "Nf3",
+    "cp": 573,
+    "tier": "best"
+   },
+   "d2b3": {
+    "san": "Nb3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d2b1": {
+    "san": "Nb1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "g1h1": {
+    "san": "Kh1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "f1e1": {
+    "san": "Re1",
+    "cp": -468,
+    "tier": "blunder"
+   },
+   "d1h5": {
+    "san": "Qh5",
+    "cp": -1042,
+    "tier": "blunder"
+   },
+   "d1g4": {
+    "san": "Qg4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1a4": {
+    "san": "Qa4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1f3": {
+    "san": "Qf3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1b3": {
+    "san": "Qb3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1e2": {
+    "san": "Qe2",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1c2": {
+    "san": "Qc2",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1e1": {
+    "san": "Qe1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1c1": {
+    "san": "Qc1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1b1": {
+    "san": "Qb1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "d1a1": {
+    "san": "Qa1",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "h2h3": {
+    "san": "h3",
+    "cp": 11,
+    "tier": "blunder"
+   },
+   "g2g3": {
+    "san": "g3",
+    "cp": 21,
+    "tier": "blunder"
+   },
+   "f2f3": {
+    "san": "f3",
+    "cp": -9997,
+    "tier": "blunder"
+   },
+   "b2b3": {
+    "san": "b3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "a2a3": {
+    "san": "a3",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "g2g4": {
+    "san": "g4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "f2f4": {
+    "san": "f4",
+    "cp": -233,
+    "tier": "blunder"
+   },
+   "b2b4": {
+    "san": "b4",
+    "cp": -9999,
+    "tier": "blunder"
+   },
+   "a2a4": {
+    "san": "a4",
+    "cp": -9999,
+    "tier": "blunder"
+   }
+  },
+  "bestLineUci": [
+   "d2f3",
+   "d6h2"
+  ],
+  "temptingLineUci": [
+   "e3f4",
+   "h4f4"
+  ],
+  "candidates": [
+   "d2",
+   "g2",
+   "h2"
+  ],
+  "boss": false,
+  "position": "wpa2bpa7wpb2bpb7wqd1wnd2bbd6wbe3wrf1wpf2bnf6bpf7brf8wkg1wpg2bpg7bkg8wph2bqh4bph7",
+  "legal": {
+   "e3": "e3a7x:Bxa7,e3h6:Bh6,e3b6:Bb6,e3g5:Bg5,e3c5:Bc5,e3f4:Bf4,e3d4:Bd4",
+   "d2": "d2e4:Ne4,d2c4:Nc4,d2f3:Nf3,d2b3:Nb3,d2b1:Nb1",
+   "g1": "g1h1:Kh1",
+   "f1": "f1e1:Re1",
+   "d1": "d1h5:Qh5,d1g4:Qg4,d1a4:Qa4,d1f3:Qf3,d1b3:Qb3,d1e2:Qe2,d1c2:Qc2,d1e1:Qe1,d1c1:Qc1,d1b1:Qb1,d1a1:Qa1",
+   "h2": "h2h3:h3",
+   "g2": "g2g3:g3,g2g4:g4",
+   "f2": "f2f3:f3,f2f4:f4",
+   "b2": "b2b3:b3,b2b4:b4",
    "a2": "a2a3:a3,a2a4:a4"
   }
  },
@@ -2027,7 +3345,7 @@
    },
    "g1h3": {
     "san": "Nh3",
-    "cp": -29,
+    "cp": -28,
     "tier": "blunder"
    },
    "g1f3": {
@@ -2067,7 +3385,7 @@
    },
    "e1e2": {
     "san": "Ke2",
-    "cp": -530,
+    "cp": -527,
     "tier": "blunder"
    },
    "d1h5": {
@@ -2082,12 +3400,12 @@
    },
    "d1f3": {
     "san": "Qf3",
-    "cp": -15,
-    "tier": "good"
+    "cp": -28,
+    "tier": "blunder"
    },
    "d1e2": {
     "san": "Qe2",
-    "cp": 15,
+    "cp": 5,
     "tier": "best"
    },
    "a1b1": {
@@ -2102,7 +3420,7 @@
    },
    "g2g3": {
     "san": "g3",
-    "cp": 34,
+    "cp": 32,
     "tier": "best"
    },
    "d2d3": {
@@ -2127,7 +3445,7 @@
    },
    "d2d4": {
     "san": "d4",
-    "cp": -186,
+    "cp": -196,
     "tier": "blunder"
    },
    "b2b4": {
@@ -2204,187 +3522,187 @@
   "moves": {
    "h5h7": {
     "san": "Qxh7",
-    "cp": -991,
+    "cp": -1002,
     "tier": "blunder"
    },
    "h5h6": {
     "san": "Qh6",
-    "cp": -946,
+    "cp": -952,
     "tier": "blunder"
    },
    "h5g6": {
     "san": "Qxg6",
-    "cp": -947,
+    "cp": -979,
     "tier": "blunder"
    },
    "h5g5": {
     "san": "Qg5",
-    "cp": -927,
+    "cp": -932,
     "tier": "blunder"
    },
    "h5f5": {
     "san": "Qf5",
-    "cp": -932,
+    "cp": -945,
     "tier": "blunder"
    },
    "h5e5": {
     "san": "Qxe5+",
-    "cp": 682,
+    "cp": 671,
     "tier": "best"
    },
    "h5h4": {
     "san": "Qh4",
-    "cp": -935,
+    "cp": -956,
     "tier": "blunder"
    },
    "h5g4": {
     "san": "Qg4",
-    "cp": -105,
+    "cp": -100,
     "tier": "blunder"
    },
    "h5h3": {
     "san": "Qh3",
-    "cp": -135,
+    "cp": -149,
     "tier": "blunder"
    },
    "h5f3": {
     "san": "Qf3",
-    "cp": -62,
+    "cp": -61,
     "tier": "bait"
    },
    "h5e2": {
     "san": "Qe2",
-    "cp": -57,
+    "cp": -62,
     "tier": "blunder"
    },
    "h5d1": {
     "san": "Qd1",
-    "cp": -64,
+    "cp": -63,
     "tier": "blunder"
    },
    "g1h3": {
     "san": "Nh3",
-    "cp": -960,
+    "cp": -969,
     "tier": "blunder"
    },
    "g1f3": {
     "san": "Nf3",
-    "cp": -930,
+    "cp": -957,
     "tier": "blunder"
    },
    "g1e2": {
     "san": "Ne2",
-    "cp": -924,
+    "cp": -917,
     "tier": "blunder"
    },
    "f1a6": {
     "san": "Ba6",
-    "cp": -960,
+    "cp": -962,
     "tier": "blunder"
    },
    "f1b5": {
     "san": "Bb5",
-    "cp": -947,
+    "cp": -956,
     "tier": "blunder"
    },
    "f1c4": {
     "san": "Bc4",
-    "cp": -963,
+    "cp": -957,
     "tier": "blunder"
    },
    "f1d3": {
     "san": "Bd3",
-    "cp": -960,
+    "cp": -959,
     "tier": "blunder"
    },
    "f1e2": {
     "san": "Be2",
-    "cp": -942,
+    "cp": -965,
     "tier": "blunder"
    },
    "e1e2": {
     "san": "Ke2",
-    "cp": -964,
+    "cp": -986,
     "tier": "blunder"
    },
    "e1d1": {
     "san": "Kd1",
-    "cp": -970,
+    "cp": -971,
     "tier": "blunder"
    },
    "b1c3": {
     "san": "Nc3",
-    "cp": -943,
+    "cp": -954,
     "tier": "blunder"
    },
    "b1a3": {
     "san": "Na3",
-    "cp": -982,
+    "cp": -979,
     "tier": "blunder"
    },
    "h2h3": {
     "san": "h3",
-    "cp": -932,
+    "cp": -934,
     "tier": "blunder"
    },
    "g2g3": {
     "san": "g3",
-    "cp": -972,
+    "cp": -989,
     "tier": "blunder"
    },
    "f2f3": {
     "san": "f3",
-    "cp": -942,
+    "cp": -979,
     "tier": "blunder"
    },
    "d2d3": {
     "san": "d3",
-    "cp": -965,
+    "cp": -982,
     "tier": "blunder"
    },
    "c2c3": {
     "san": "c3",
-    "cp": -959,
+    "cp": -983,
     "tier": "blunder"
    },
    "b2b3": {
     "san": "b3",
-    "cp": -929,
+    "cp": -948,
     "tier": "blunder"
    },
    "a2a3": {
     "san": "a3",
-    "cp": -958,
+    "cp": -969,
     "tier": "blunder"
    },
    "h2h4": {
     "san": "h4",
-    "cp": -908,
+    "cp": -957,
     "tier": "blunder"
    },
    "g2g4": {
     "san": "g4",
-    "cp": -962,
+    "cp": -969,
     "tier": "blunder"
    },
    "f2f4": {
     "san": "f4",
-    "cp": -970,
+    "cp": -950,
     "tier": "blunder"
    },
    "d2d4": {
     "san": "d4",
-    "cp": -926,
+    "cp": -967,
     "tier": "blunder"
    },
    "c2c4": {
     "san": "c4",
-    "cp": -971,
+    "cp": -992,
     "tier": "blunder"
    },
    "b2b4": {
     "san": "b4",
-    "cp": -961,
+    "cp": -971,
     "tier": "blunder"
    },
    "a2a4": {
@@ -2403,8 +3721,8 @@
   ],
   "candidates": [
    "h5",
-   "h2",
-   "g1"
+   "g1",
+   "h2"
   ],
   "boss": false,
   "position": "wra1wpa2bpa7bra8wnb1wpb2bpb7bnb8wbc1wpc2bpc7bbc8wpd2bpd7bqd8wke1wpe4bpe5bke8wbf1wpf2bpf7bbf8wng1wpg2bpg6bng8wrh1wph2wqh5bph7brh8",
@@ -2457,137 +3775,137 @@
   "moves": {
    "h1g1": {
     "san": "Rg1",
-    "cp": -551,
+    "cp": -595,
     "tier": "blunder"
    },
    "f1a6": {
     "san": "Ba6",
-    "cp": -558,
+    "cp": -528,
     "tier": "blunder"
    },
    "f1b5": {
     "san": "Bb5",
-    "cp": -361,
+    "cp": -387,
     "tier": "blunder"
    },
    "f1c4": {
     "san": "Bc4",
-    "cp": -382,
+    "cp": -367,
     "tier": "bait"
    },
    "f1d3": {
     "san": "Bd3",
-    "cp": -501,
+    "cp": -534,
     "tier": "blunder"
    },
    "f1e2": {
     "san": "Be2",
-    "cp": -426,
+    "cp": -463,
     "tier": "blunder"
    },
    "e1e2": {
     "san": "Ke2",
-    "cp": -696,
+    "cp": -673,
     "tier": "blunder"
    },
    "d1h5": {
     "san": "Qh5+",
-    "cp": 409,
+    "cp": 431,
     "tier": "best"
    },
    "d1g4": {
     "san": "Qg4",
-    "cp": -588,
+    "cp": -647,
     "tier": "blunder"
    },
    "d1f3": {
     "san": "Qf3",
-    "cp": -531,
+    "cp": -576,
     "tier": "blunder"
    },
    "d1e2": {
     "san": "Qe2",
-    "cp": -607,
+    "cp": -627,
     "tier": "blunder"
    },
    "b1c3": {
     "san": "Nc3",
-    "cp": -363,
+    "cp": -395,
     "tier": "blunder"
    },
    "b1a3": {
     "san": "Na3",
-    "cp": -528,
+    "cp": -563,
     "tier": "blunder"
    },
    "h2h3": {
     "san": "h3",
-    "cp": -513,
+    "cp": -468,
     "tier": "blunder"
    },
    "g2g3": {
     "san": "g3",
-    "cp": -490,
+    "cp": -508,
     "tier": "blunder"
    },
    "f2f3": {
     "san": "f3",
-    "cp": -549,
+    "cp": -566,
     "tier": "blunder"
    },
    "d2d3": {
     "san": "d3",
-    "cp": -491,
+    "cp": -507,
     "tier": "blunder"
    },
    "c2c3": {
     "san": "c3",
-    "cp": -377,
+    "cp": -429,
     "tier": "blunder"
    },
    "b2b3": {
     "san": "b3",
-    "cp": -532,
+    "cp": -560,
     "tier": "blunder"
    },
    "a2a3": {
     "san": "a3",
-    "cp": -475,
+    "cp": -486,
     "tier": "blunder"
    },
    "h2h4": {
     "san": "h4",
-    "cp": -541,
+    "cp": -498,
     "tier": "blunder"
    },
    "g2g4": {
     "san": "g4",
-    "cp": -597,
+    "cp": -658,
     "tier": "blunder"
    },
    "f2f4": {
     "san": "f4",
-    "cp": -397,
+    "cp": -404,
     "tier": "blunder"
    },
    "d2d4": {
     "san": "d4",
-    "cp": -335,
+    "cp": -341,
     "tier": "blunder"
    },
    "c2c4": {
     "san": "c4",
-    "cp": -583,
+    "cp": -584,
     "tier": "blunder"
    },
    "b2b4": {
     "san": "b4",
-    "cp": -591,
+    "cp": -582,
     "tier": "blunder"
    },
    "a2a4": {
     "san": "a4",
-    "cp": -443,
+    "cp": -424,
     "tier": "blunder"
    }
   },
@@ -2597,11 +3915,7 @@
    "h5e5"
   ],
   "temptingLineUci": [
-   "f1c4",
-   "g8f6",
-   "d2d4",
-   "d7d5",
-   "c4d5"
+   "f1c4"
   ],
   "candidates": [
    "d1",
@@ -2659,52 +3973,52 @@
   "moves": {
    "g5h7": {
     "san": "Nxh7",
-    "cp": -694,
+    "cp": -733,
     "tier": "blunder"
    },
    "g5f7": {
     "san": "Nxf7",
-    "cp": 117,
+    "cp": 110,
     "tier": "best"
    },
    "g5e6": {
     "san": "Ne6",
-    "cp": -830,
+    "cp": -817,
     "tier": "blunder"
    },
    "g5e4": {
     "san": "Ne4",
-    "cp": -150,
+    "cp": -176,
     "tier": "blunder"
    },
    "g5h3": {
     "san": "Nh3",
-    "cp": -278,
+    "cp": -261,
     "tier": "blunder"
    },
    "g5f3": {
     "san": "Nf3",
-    "cp": -100,
+    "cp": -73,
     "tier": "blunder"
    },
    "c4a6": {
     "san": "Ba6",
-    "cp": -837,
+    "cp": -832,
     "tier": "blunder"
    },
    "c4d5": {
     "san": "Bxd5",
-    "cp": -194,
+    "cp": -190,
     "tier": "bait"
    },
    "c4b5": {
     "san": "Bb5",
-    "cp": -715,
+    "cp": -762,
     "tier": "blunder"
    },
    "c4d3": {
     "san": "Bd3",
-    "cp": -765,
+    "cp": -764,
     "tier": "blunder"
    },
    "c4b3": {
@@ -2714,17 +4028,17 @@
    },
    "c4e2": {
     "san": "Be2",
-    "cp": -747,
+    "cp": -792,
     "tier": "blunder"
    },
    "c4f1": {
     "san": "Bf1",
-    "cp": -825,
+    "cp": -786,
     "tier": "blunder"
    },
    "h1g1": {
     "san": "Rg1",
-    "cp": -237,
+    "cp": -213,
     "tier": "blunder"
    },
    "h1f1": {
@@ -2734,112 +4048,112 @@
    },
    "e1e2": {
     "san": "Ke2",
-    "cp": -800,
+    "cp": -837,
     "tier": "blunder"
    },
    "e1f1": {
     "san": "Kf1",
-    "cp": -243,
+    "cp": -216,
     "tier": "blunder"
    },
    "d1h5": {
     "san": "Qh5",
-    "cp": -95,
+    "cp": -66,
     "tier": "blunder"
    },
    "d1g4": {
     "san": "Qg4",
-    "cp": -939,
+    "cp": -929,
     "tier": "blunder"
    },
    "d1f3": {
     "san": "Qf3",
-    "cp": -85,
+    "cp": -45,
     "tier": "blunder"
    },
    "d1e2": {
     "san": "Qe2",
-    "cp": -412,
+    "cp": -491,
     "tier": "blunder"
    },
    "b1c3": {
     "san": "Nc3",
-    "cp": -66,
+    "cp": -64,
     "tier": "blunder"
    },
    "b1a3": {
     "san": "Na3",
-    "cp": -252,
+    "cp": -374,
     "tier": "blunder"
    },
    "e1g1": {
     "san": "O-O",
-    "cp": -31,
+    "cp": -39,
     "tier": "blunder"
    },
    "h2h3": {
     "san": "h3",
-    "cp": -134,
+    "cp": -149,
     "tier": "blunder"
    },
    "g2g3": {
     "san": "g3",
-    "cp": -246,
+    "cp": -239,
     "tier": "blunder"
    },
    "f2f3": {
     "san": "f3",
-    "cp": -601,
+    "cp": -630,
     "tier": "blunder"
    },
    "d2d3": {
     "san": "d3",
-    "cp": -26,
+    "cp": -22,
     "tier": "blunder"
    },
    "c2c3": {
     "san": "c3",
-    "cp": -86,
+    "cp": -109,
     "tier": "blunder"
    },
    "b2b3": {
     "san": "b3",
-    "cp": -197,
+    "cp": -236,
     "tier": "blunder"
    },
    "a2a3": {
     "san": "a3",
-    "cp": -112,
+    "cp": -95,
     "tier": "blunder"
    },
    "h2h4": {
     "san": "h4",
-    "cp": -130,
+    "cp": -132,
     "tier": "blunder"
    },
    "g2g4": {
     "san": "g4",
-    "cp": -465,
+    "cp": -529,
     "tier": "blunder"
    },
    "f2f4": {
     "san": "f4",
-    "cp": -236,
+    "cp": -261,
     "tier": "blunder"
    },
    "d2d4": {
     "san": "d4",
-    "cp": 76,
+    "cp": 74,
     "tier": "best"
    },
    "b2b4": {
     "san": "b4",
-    "cp": -237,
+    "cp": -241,
     "tier": "blunder"
    },
    "a2a4": {
     "san": "a4",
-    "cp": -91,
+    "cp": -111,
     "tier": "blunder"
    }
   },
@@ -2908,187 +4222,187 @@
   "moves": {
    "g1h3": {
     "san": "Nh3",
-    "cp": -15,
+    "cp": -36,
     "tier": "blunder"
    },
    "g1f3": {
     "san": "Nf3",
-    "cp": 37,
+    "cp": 34,
     "tier": "blunder"
    },
    "g1e2": {
     "san": "Ne2",
-    "cp": -87,
+    "cp": -96,
     "tier": "blunder"
    },
    "f1c4": {
     "san": "Bxc4",
-    "cp": 87,
+    "cp": -77,
     "tier": "blunder"
    },
    "f1d3": {
     "san": "Bd3",
-    "cp": -628,
+    "cp": -701,
     "tier": "blunder"
    },
    "f1e2": {
     "san": "Be2",
-    "cp": -47,
+    "cp": -55,
     "tier": "blunder"
    },
    "e1e2": {
     "san": "Ke2",
-    "cp": -210,
+    "cp": -251,
     "tier": "blunder"
    },
    "e1d2": {
     "san": "Kd2",
-    "cp": -189,
+    "cp": -170,
     "tier": "blunder"
    },
    "d1h5": {
     "san": "Qh5",
-    "cp": -115,
+    "cp": -109,
     "tier": "blunder"
    },
    "d1g4": {
     "san": "Qg4",
-    "cp": -1026,
+    "cp": -1038,
     "tier": "blunder"
    },
    "d1a4": {
     "san": "Qa4",
-    "cp": -993,
+    "cp": -1010,
     "tier": "blunder"
    },
    "d1f3": {
     "san": "Qf3",
-    "cp": 536,
+    "cp": 560,
     "tier": "best"
    },
    "d1d3": {
     "san": "Qd3",
-    "cp": -998,
+    "cp": -963,
     "tier": "blunder"
    },
    "d1b3": {
     "san": "Qb3",
-    "cp": -1018,
+    "cp": -981,
     "tier": "blunder"
    },
    "d1e2": {
     "san": "Qe2",
-    "cp": -122,
+    "cp": -159,
     "tier": "blunder"
    },
    "d1d2": {
     "san": "Qd2",
-    "cp": -143,
+    "cp": -132,
     "tier": "blunder"
    },
    "d1c2": {
     "san": "Qc2",
-    "cp": -116,
+    "cp": -114,
     "tier": "blunder"
    },
    "c1d2": {
     "san": "Bd2",
-    "cp": 16,
+    "cp": -1,
     "tier": "blunder"
    },
    "b1c3": {
     "san": "Nc3",
-    "cp": 47,
+    "cp": 59,
     "tier": "bait"
    },
    "b1a3": {
     "san": "Na3",
-    "cp": 17,
+    "cp": -34,
     "tier": "blunder"
    },
    "b1d2": {
     "san": "Nd2",
-    "cp": -72,
+    "cp": -68,
     "tier": "blunder"
    },
    "a1a7": {
     "san": "Rxa7",
-    "cp": -821,
+    "cp": -790,
     "tier": "blunder"
    },
    "a1a6": {
     "san": "Ra6",
-    "cp": -840,
+    "cp": -819,
     "tier": "blunder"
    },
    "a1a5": {
     "san": "Ra5",
-    "cp": -811,
+    "cp": -802,
     "tier": "blunder"
    },
    "a1a4": {
     "san": "Ra4",
-    "cp": -444,
+    "cp": -365,
     "tier": "blunder"
    },
    "a1a3": {
     "san": "Ra3",
-    "cp": -192,
+    "cp": -191,
     "tier": "blunder"
    },
    "a1a2": {
     "san": "Ra2",
-    "cp": -199,
+    "cp": -185,
     "tier": "blunder"
    },
    "d4d5": {
     "san": "d5",
-    "cp": -70,
+    "cp": -82,
     "tier": "blunder"
    },
    "e3e4": {
     "san": "e4",
-    "cp": -87,
+    "cp": -100,
     "tier": "blunder"
    },
    "h2h3": {
     "san": "h3",
-    "cp": -50,
+    "cp": -47,
     "tier": "blunder"
    },
    "g2g3": {
     "san": "g3",
-    "cp": -155,
+    "cp": -140,
     "tier": "blunder"
    },
    "f2f3": {
     "san": "f3",
-    "cp": -86,
+    "cp": -97,
     "tier": "blunder"
    },
    "b2b3": {
     "san": "b3",
-    "cp": 41,
+    "cp": 36,
     "tier": "blunder"
    },
    "h2h4": {
     "san": "h4",
-    "cp": -14,
+    "cp": -36,
     "tier": "blunder"
    },
    "g2g4": {
     "san": "g4",
-    "cp": -169,
+    "cp": -168,
     "tier": "blunder"
    },
    "f2f4": {
     "san": "f4",
-    "cp": -80,
+    "cp": -134,
     "tier": "blunder"
    },
    "b2b4": {
     "san": "b4",
-    "cp": -406,
+    "cp": -420,
     "tier": "blunder"
    }
   },
@@ -3106,8 +4420,8 @@
   ],
   "candidates": [
    "d1",
-   "f1",
-   "b1"
+   "b1",
+   "b2"
   ],
   "boss": false,
   "position": "wra1bpa7bra8wnb1wpb2bpb5bnb8wbc1bpc4bbc8wqd1wpd4bqd8wke1wpe3bpe7bke8wbf1wpf2bpf7bbf8wng1wpg2bpg7bng8wrh1wph2bph7brh8",
@@ -3162,187 +4476,187 @@
   "moves": {
    "c4f7": {
     "san": "Bxf7+",
-    "cp": 11,
+    "cp": 0,
     "tier": "bait"
    },
    "c4e6": {
     "san": "Be6",
-    "cp": -674,
+    "cp": -746,
     "tier": "blunder"
    },
    "c4a6": {
     "san": "Ba6",
-    "cp": -830,
+    "cp": -787,
     "tier": "blunder"
    },
    "c4d5": {
     "san": "Bd5",
-    "cp": -470,
+    "cp": -545,
     "tier": "blunder"
    },
    "c4b5": {
     "san": "Bb5+",
-    "cp": -28,
+    "cp": -15,
     "tier": "blunder"
    },
    "c4d3": {
     "san": "Bd3",
-    "cp": -822,
+    "cp": -781,
     "tier": "blunder"
    },
    "c4b3": {
     "san": "Bb3",
-    "cp": -566,
+    "cp": -518,
     "tier": "blunder"
    },
    "c4e2": {
     "san": "Be2",
-    "cp": -831,
+    "cp": -779,
     "tier": "blunder"
    },
    "c4f1": {
     "san": "Bf1",
-    "cp": -703,
+    "cp": -733,
     "tier": "blunder"
    },
    "f3g5": {
     "san": "Ng5",
-    "cp": -703,
+    "cp": -764,
     "tier": "blunder"
    },
    "f3e5": {
     "san": "Nxe5",
-    "cp": -358,
+    "cp": -329,
     "tier": "blunder"
    },
    "f3h4": {
     "san": "Nh4",
-    "cp": -879,
+    "cp": -838,
     "tier": "blunder"
    },
    "f3d4": {
     "san": "Nd4",
-    "cp": -675,
+    "cp": -636,
     "tier": "blunder"
    },
    "f3g1": {
     "san": "Ng1",
-    "cp": -743,
+    "cp": -732,
     "tier": "blunder"
    },
    "c3d5": {
     "san": "Nd5",
-    "cp": -466,
+    "cp": -454,
     "tier": "blunder"
    },
    "c3b5": {
     "san": "Nb5",
-    "cp": -590,
+    "cp": -641,
     "tier": "blunder"
    },
    "c3e4": {
     "san": "Nxe4",
-    "cp": 376,
+    "cp": 418,
     "tier": "best"
    },
    "c3a4": {
     "san": "Na4",
-    "cp": -532,
+    "cp": -573,
     "tier": "blunder"
    },
    "c3e2": {
     "san": "Ne2",
-    "cp": -752,
+    "cp": -739,
     "tier": "blunder"
    },
    "c3b1": {
     "san": "Nb1",
-    "cp": -761,
+    "cp": -650,
     "tier": "blunder"
    },
    "h1g1": {
     "san": "Rg1",
-    "cp": -631,
+    "cp": -600,
     "tier": "blunder"
    },
    "h1f1": {
     "san": "Rf1",
-    "cp": -291,
+    "cp": -301,
     "tier": "blunder"
    },
    "e1e2": {
     "san": "Ke2",
-    "cp": -665,
+    "cp": -673,
     "tier": "blunder"
    },
    "e1f1": {
     "san": "Kf1",
-    "cp": -462,
+    "cp": -495,
     "tier": "blunder"
    },
    "d1e2": {
     "san": "Qe2",
-    "cp": -199,
+    "cp": -196,
     "tier": "blunder"
    },
    "a1b1": {
     "san": "Rb1",
-    "cp": -581,
+    "cp": -601,
     "tier": "blunder"
    },
    "e1g1": {
     "san": "O-O",
-    "cp": -53,
+    "cp": -102,
     "tier": "blunder"
    },
    "h2h3": {
     "san": "h3",
-    "cp": -631,
+    "cp": -686,
     "tier": "blunder"
    },
    "g2g3": {
     "san": "g3",
-    "cp": -488,
+    "cp": -523,
     "tier": "blunder"
    },
    "d2d3": {
     "san": "d3",
-    "cp": -494,
+    "cp": -511,
     "tier": "blunder"
    },
    "b2b3": {
     "san": "b3",
-    "cp": -665,
+    "cp": -687,
     "tier": "blunder"
    },
    "a2a3": {
     "san": "a3",
-    "cp": -600,
+    "cp": -566,
     "tier": "blunder"
    },
    "h2h4": {
     "san": "h4",
-    "cp": -600,
+    "cp": -660,
     "tier": "blunder"
    },
    "g2g4": {
     "san": "g4",
-    "cp": -707,
+    "cp": -697,
     "tier": "blunder"
    },
    "d2d4": {
     "san": "d4",
-    "cp": -45,
+    "cp": 2,
     "tier": "blunder"
    },
    "b2b4": {
     "san": "b4",
-    "cp": -549,
+    "cp": -581,
     "tier": "blunder"
    },
    "a2a4": {
     "san": "a4",
-    "cp": -636,
+    "cp": -562,
     "tier": "blunder"
    }
   },
@@ -3355,8 +4669,8 @@
   ],
   "candidates": [
    "c3",
-   "c4",
-   "d2"
+   "d2",
+   "c4"
   ],
   "boss": false,
   "position": "wra1wpa2bpa7bra8wpb2bpb7bnb8wbc1wpc2wnc3wbc4bbc5bpc7bbc8wqd1wpd2bpd6bqd8wke1bne4bpe5bke8wpf2wnf3bpf7wpg2bpg7wrh1wph2bph7brh8",
@@ -3424,7 +4738,7 @@
    },
    "g6h5": {
     "san": "Kh5",
-    "cp": 9995,
+    "cp": 9996,
     "tier": "best"
    },
    "g6g5": {
@@ -3439,7 +4753,7 @@
    },
    "b3g8": {
     "san": "Qg8+",
-    "cp": 11,
+    "cp": 16,
     "tier": "blunder"
    },
    "b3b8": {
@@ -3609,12 +4923,12 @@
    },
    "a7h7": {
     "san": "Rh7+",
-    "cp": 448,
+    "cp": 441,
     "tier": "bait"
    },
    "a7g7": {
     "san": "Rg7",
-    "cp": 433,
+    "cp": 410,
     "tier": "blunder"
    },
    "a7f7": {
@@ -3807,62 +5121,62 @@
   "moves": {
    "c1c8": {
     "san": "Rc8",
-    "cp": 419,
+    "cp": 422,
     "tier": "blunder"
    },
    "c1c7": {
     "san": "Rc7",
-    "cp": 624,
+    "cp": 405,
     "tier": "blunder"
    },
    "c1c6": {
     "san": "Rc6",
-    "cp": 659,
+    "cp": 547,
     "tier": "blunder"
    },
    "c1c5": {
     "san": "Rc5",
-    "cp": 0,
+    "cp": 5,
     "tier": "blunder"
    },
    "c1c4": {
     "san": "Rc4+",
-    "cp": 19,
+    "cp": 4,
     "tier": "blunder"
    },
    "c1c3": {
     "san": "Rc3",
-    "cp": 0,
+    "cp": 2,
     "tier": "blunder"
    },
    "c1c2": {
     "san": "Rc2",
-    "cp": 9165,
-    "tier": "good"
+    "cp": 751,
+    "tier": "blunder"
    },
    "c1h1": {
     "san": "Rh1",
-    "cp": 455,
+    "cp": 417,
     "tier": "blunder"
    },
    "c1g1": {
     "san": "Rg1",
-    "cp": 424,
+    "cp": 405,
     "tier": "blunder"
    },
    "c1f1": {
     "san": "Rf1",
-    "cp": 428,
+    "cp": 397,
     "tier": "blunder"
    },
    "c1e1": {
     "san": "Re1",
-    "cp": 440,
+    "cp": 394,
     "tier": "blunder"
    },
    "c1d1": {
     "san": "Rd1",
-    "cp": 485,
+    "cp": 432,
     "tier": "blunder"
    },
    "c1b1": {
@@ -3872,12 +5186,12 @@
    },
    "a1b2": {
     "san": "Kb2",
-    "cp": 6648,
+    "cp": 752,
     "tier": "blunder"
    },
    "a1a2": {
     "san": "Kxa2",
-    "cp": 9988,
+    "cp": 9992,
     "tier": "best"
    }
   },
@@ -3886,7 +5200,7 @@
   ],
   "temptingLineUci": [
    "c1b1",
-   "a2b1n"
+   "a2b1r"
   ],
   "candidates": [
    "a1",
@@ -3938,27 +5252,27 @@
    },
    "e6f6": {
     "san": "Kf6",
-    "cp": 12,
+    "cp": 10,
     "tier": "blunder"
    },
    "e6d6": {
     "san": "Kd6",
-    "cp": 511,
+    "cp": 491,
     "tier": "best"
    },
    "e6f5": {
     "san": "Kf5",
-    "cp": 11,
+    "cp": 6,
     "tier": "blunder"
    },
    "e6e5": {
     "san": "Ke5",
-    "cp": 6,
+    "cp": 7,
     "tier": "blunder"
    },
    "d5d6": {
     "san": "d6",
-    "cp": 6,
+    "cp": 3,
     "tier": "bait"
    }
   },
@@ -3980,188 +5294,558 @@
   }
  },
  {
-  "id": "g5",
+  "id": "b1",
   "pack": "endgames",
-  "title": "Box Him In",
-  "motif": "stalemateTrap",
+  "title": "Swap the Duds",
+  "motif": "goodBishop",
   "palaceRoom": "Endgame Vault",
-  "mascot": "THE BOX",
-  "fen": "k7/8/1K6/8/8/8/8/3Q4 w - - 0 1",
-  "hook": "He is in the corner. Finish it.",
-  "why": "The queen lands on the last row for mate. Hugging him with the queen is only a stalemate.",
-  "whyLong": "With king and queen, drive the king to the edge, then mate on the edge. Never take his last square without check.",
+  "mascot": "GOOD BISHOP",
+  "fen": "8/6pp/5k2/5p2/P3b3/5BK1/6PP/8 w - - 0 1",
+  "hook": "His bishop guards the corner. Yours guards nothing.",
+  "why": "Trade your useless bishop for the one doing all his work.",
+  "whyLong": "His bishop is the only thing stopping your runner. Take it off and run.",
   "whyTargets": {
-   "prompt": "Tap the cornered king.",
+   "prompt": "Tap both bishops. One guards the corner.",
    "squares": [
-    "a8"
+    "e4",
+    "f3"
    ],
-   "at": "after"
+   "at": "before"
   },
   "glitch": {
-   "taunt": "Queen right next to him! Smother him! Do it!",
-   "gloat": "No moves and no check. STALEMATE. Draw! I'll take it!",
-   "rage": "Mate?! I was one square from a free draw!"
+   "taunt": "Keep your bishop! Bishops are precious! Tuck it away!",
+   "gloat": "My bishop sits on the corner forever. Nothing happens.",
+   "rage": "You swapped your WORST piece for my BEST one?!"
   },
-  "arrive": "b8a8",
-  "best": "d1d8",
-  "bait": "d1d6",
-  "arrivePosition": "wkb6bkb8wqd1",
-  "tempting": "d1d6",
-  "bestSan": "Qd8#",
-  "temptingSan": "Qd6",
+  "arrive": "d5e4",
+  "best": "f3e4",
+  "bait": "f3d1",
+  "arrivePosition": "wpa4bbd5wbf3bpf5bkf6wpg2wkg3bpg7wph2bph7",
+  "tempting": "f3d1",
+  "bestSan": "Bxe4",
+  "temptingSan": "Bd1",
   "turn": "w",
   "moves": {
-   "b6c7": {
-    "san": "Kc7",
-    "cp": 9999,
+   "g3h4": {
+    "san": "Kh4",
+    "cp": 128,
+    "tier": "blunder"
+   },
+   "g3f4": {
+    "san": "Kf4",
+    "cp": 263,
+    "tier": "blunder"
+   },
+   "g3h3": {
+    "san": "Kh3",
+    "cp": 131,
+    "tier": "blunder"
+   },
+   "g3f2": {
+    "san": "Kf2",
+    "cp": 397,
+    "tier": "blunder"
+   },
+   "f3h5": {
+    "san": "Bh5",
+    "cp": 100,
+    "tier": "blunder"
+   },
+   "f3g4": {
+    "san": "Bg4",
+    "cp": -447,
+    "tier": "blunder"
+   },
+   "f3e4": {
+    "san": "Bxe4",
+    "cp": 648,
     "tier": "best"
    },
-   "b6c6": {
-    "san": "Kc6",
-    "cp": 9998,
-    "tier": "best"
+   "f3e2": {
+    "san": "Be2",
+    "cp": 232,
+    "tier": "blunder"
    },
-   "b6a6": {
-    "san": "Ka6",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "b6c5": {
-    "san": "Kc5",
-    "cp": 9997,
-    "tier": "best"
-   },
-   "b6b5": {
-    "san": "Kb5",
-    "cp": 9997,
-    "tier": "best"
-   },
-   "b6a5": {
-    "san": "Ka5",
-    "cp": 9997,
-    "tier": "best"
-   },
-   "d1d8": {
-    "san": "Qd8#",
-    "cp": 10000,
-    "tier": "best"
-   },
-   "d1d7": {
-    "san": "Qd7",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1d6": {
-    "san": "Qd6",
-    "cp": 0,
+   "f3d1": {
+    "san": "Bd1",
+    "cp": 157,
     "tier": "bait"
    },
-   "d1h5": {
-    "san": "Qh5",
-    "cp": 9999,
-    "tier": "best"
+   "a4a5": {
+    "san": "a5",
+    "cp": 489,
+    "tier": "blunder"
    },
-   "d1d5": {
-    "san": "Qd5+",
-    "cp": 9999,
-    "tier": "best"
+   "h2h3": {
+    "san": "h3",
+    "cp": 240,
+    "tier": "blunder"
    },
-   "d1g4": {
-    "san": "Qg4",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1d4": {
-    "san": "Qd4",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1a4": {
-    "san": "Qa4+",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1f3": {
-    "san": "Qf3+",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1d3": {
-    "san": "Qd3",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1b3": {
-    "san": "Qb3",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1e2": {
-    "san": "Qe2",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1d2": {
-    "san": "Qd2",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1c2": {
-    "san": "Qc2",
-    "cp": 9998,
-    "tier": "best"
-   },
-   "d1h1": {
-    "san": "Qh1+",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1g1": {
-    "san": "Qg1",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1f1": {
-    "san": "Qf1",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1e1": {
-    "san": "Qe1",
-    "cp": 9999,
-    "tier": "best"
-   },
-   "d1c1": {
-    "san": "Qc1",
-    "cp": 9998,
-    "tier": "best"
-   },
-   "d1b1": {
-    "san": "Qb1",
-    "cp": 9998,
-    "tier": "best"
-   },
-   "d1a1": {
-    "san": "Qa1+",
-    "cp": 9999,
-    "tier": "best"
+   "h2h4": {
+    "san": "h4",
+    "cp": 301,
+    "tier": "blunder"
    }
   },
   "bestLineUci": [
-   "d1d8"
+   "f3e4"
   ],
   "temptingLineUci": [
-   "d1d6"
+   "f3d1"
+  ],
+  "candidates": [
+   "f3",
+   "a4",
+   "g3"
+  ],
+  "boss": false,
+  "position": "wpa4bbe4wbf3bpf5bkf6wpg2wkg3bpg7wph2bph7",
+  "legal": {
+   "g3": "g3h4:Kh4,g3f4:Kf4,g3h3:Kh3,g3f2:Kf2",
+   "f3": "f3h5:Bh5,f3g4:Bg4,f3e4x:Bxe4,f3e2:Be2,f3d1:Bd1",
+   "a4": "a4a5:a5",
+   "h2": "h2h3:h3,h2h4:h4"
+  }
+ },
+ {
+  "id": "b2",
+  "pack": "endgames",
+  "title": "Keep the Good One",
+  "motif": "goodBishop",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "GOOD BISHOP",
+  "fen": "8/3b4/3k4/1p3p1p/5K1P/P5P1/8/3B4 w - - 0 1",
+  "hook": "His bishop cannot see that side of the board.",
+  "why": "Keep your bishop. Eat what his cannot guard.",
+  "whyLong": "His pawns sit on his own colour, so his bishop is stuck. Yours is free.",
+  "whyTargets": {
+   "prompt": "Tap the loose pawn and the bishop that cannot reach.",
+   "squares": [
+    "h5",
+    "d7"
+   ],
+   "at": "before"
+  },
+  "glitch": {
+   "taunt": "Push a pawn! Pawns win endings! Push! Push!",
+   "gloat": "Pawns traded, bishops equal. Nothing happened. Perfect.",
+   "rage": "My bishop is the WRONG COLOUR?! Since when?!"
+  },
+  "arrive": "c8d7",
+  "best": "d1h5",
+  "bait": "g3g4",
+  "arrivePosition": "wpa3bpb5bbc8wbd1bkd6wkf4bpf5wpg3wph4bph5",
+  "tempting": "g3g4",
+  "bestSan": "Bxh5",
+  "temptingSan": "g4",
+  "turn": "w",
+  "moves": {
+   "f4g5": {
+    "san": "Kg5",
+    "cp": 544,
+    "tier": "best"
+   },
+   "f4f3": {
+    "san": "Kf3",
+    "cp": 429,
+    "tier": "blunder"
+   },
+   "f4e3": {
+    "san": "Ke3",
+    "cp": 445,
+    "tier": "blunder"
+   },
+   "d1h5": {
+    "san": "Bxh5",
+    "cp": 553,
+    "tier": "best"
+   },
+   "d1g4": {
+    "san": "Bg4",
+    "cp": -489,
+    "tier": "blunder"
+   },
+   "d1a4": {
+    "san": "Ba4",
+    "cp": -461,
+    "tier": "blunder"
+   },
+   "d1f3": {
+    "san": "Bf3",
+    "cp": 537,
+    "tier": "best"
+   },
+   "d1b3": {
+    "san": "Bb3",
+    "cp": 549,
+    "tier": "best"
+   },
+   "d1e2": {
+    "san": "Be2",
+    "cp": 552,
+    "tier": "best"
+   },
+   "d1c2": {
+    "san": "Bc2",
+    "cp": 553,
+    "tier": "best"
+   },
+   "g3g4": {
+    "san": "g4",
+    "cp": 0,
+    "tier": "bait"
+   },
+   "a3a4": {
+    "san": "a4",
+    "cp": -363,
+    "tier": "blunder"
+   }
+  },
+  "bestLineUci": [
+   "d1h5"
+  ],
+  "temptingLineUci": [
+   "g3g4",
+   "f5g4"
   ],
   "candidates": [
    "d1",
-   "b6"
+   "f4",
+   "g3"
   ],
   "boss": false,
-  "position": "bka8wkb6wqd1",
+  "position": "wpa3bpb5wbd1bkd6bbd7wkf4bpf5wpg3wph4bph5",
   "legal": {
-   "b6": "b6c7:Kc7,b6c6:Kc6,b6a6:Ka6,b6c5:Kc5,b6b5:Kb5,b6a5:Ka5",
-   "d1": "d1d8:Qd8#,d1d7:Qd7,d1d6:Qd6,d1h5:Qh5,d1d5:Qd5+,d1g4:Qg4,d1d4:Qd4,d1a4:Qa4+,d1f3:Qf3+,d1d3:Qd3,d1b3:Qb3,d1e2:Qe2,d1d2:Qd2,d1c2:Qc2,d1h1:Qh1+,d1g1:Qg1,d1f1:Qf1,d1e1:Qe1,d1c1:Qc1,d1b1:Qb1,d1a1:Qa1+"
+   "f4": "f4g5:Kg5,f4f3:Kf3,f4e3:Ke3",
+   "d1": "d1h5x:Bxh5,d1g4:Bg4,d1a4:Ba4,d1f3:Bf3,d1b3:Bb3,d1e2:Be2,d1c2:Bc2",
+   "g3": "g3g4:g4",
+   "a3": "a3a4:a4"
+  }
+ },
+ {
+  "id": "k1",
+  "pack": "endgames",
+  "title": "Horse Beats Bishop",
+  "motif": "tradeChoice",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "RIGHT SWAP",
+  "fen": "6k1/1pp1bppp/2np4/1B2p3/2P1P3/1P1P1N2/5PPP/6K1 w - - 0 1",
+  "hook": "The pawns are locked. Horses love locked boards.",
+  "why": "Trade your bishop for his horse. He keeps the bad one.",
+  "whyLong": "In a blocked position a horse jumps and a bishop sulks. Leave him the sulker.",
+  "whyTargets": {
+   "prompt": "Tap his horse and the bishop stuck behind pawns.",
+   "squares": [
+    "c6",
+    "e7"
+   ],
+   "at": "before"
+  },
+  "glitch": {
+   "taunt": "Free pawn in the middle! Jump on it! Yum!",
+   "gloat": "Your horse is gone for one pawn. Delicious.",
+   "rage": "You left me the bishop ON PURPOSE?! Rude!"
+  },
+  "arrive": "b8c6",
+  "best": "b5c6",
+  "bait": "f3e5",
+  "arrivePosition": "wpb3wbb5bpb7bnb8wpc4bpc7wpd3bpd6wpe4bpe5bbe7wpf2wnf3bpf7wkg1wpg2bpg7bkg8wph2bph7",
+  "tempting": "f3e5",
+  "bestSan": "Bxc6",
+  "temptingSan": "Nxe5",
+  "turn": "w",
+  "moves": {
+   "b5c6": {
+    "san": "Bxc6",
+    "cp": 17,
+    "tier": "best"
+   },
+   "b5a6": {
+    "san": "Ba6",
+    "cp": -579,
+    "tier": "blunder"
+   },
+   "b5a4": {
+    "san": "Ba4",
+    "cp": -117,
+    "tier": "blunder"
+   },
+   "f3g5": {
+    "san": "Ng5",
+    "cp": -535,
+    "tier": "blunder"
+   },
+   "f3e5": {
+    "san": "Nxe5",
+    "cp": -494,
+    "tier": "bait"
+   },
+   "f3h4": {
+    "san": "Nh4",
+    "cp": -484,
+    "tier": "blunder"
+   },
+   "f3d4": {
+    "san": "Nd4",
+    "cp": -560,
+    "tier": "blunder"
+   },
+   "f3d2": {
+    "san": "Nd2",
+    "cp": -174,
+    "tier": "blunder"
+   },
+   "f3e1": {
+    "san": "Ne1",
+    "cp": -41,
+    "tier": "good"
+   },
+   "g1h1": {
+    "san": "Kh1",
+    "cp": -186,
+    "tier": "blunder"
+   },
+   "g1f1": {
+    "san": "Kf1",
+    "cp": -106,
+    "tier": "blunder"
+   },
+   "c4c5": {
+    "san": "c5",
+    "cp": -21,
+    "tier": "best"
+   },
+   "d3d4": {
+    "san": "d4",
+    "cp": -18,
+    "tier": "best"
+   },
+   "b3b4": {
+    "san": "b4",
+    "cp": -202,
+    "tier": "blunder"
+   },
+   "h2h3": {
+    "san": "h3",
+    "cp": -121,
+    "tier": "blunder"
+   },
+   "g2g3": {
+    "san": "g3",
+    "cp": -112,
+    "tier": "blunder"
+   },
+   "h2h4": {
+    "san": "h4",
+    "cp": -156,
+    "tier": "blunder"
+   },
+   "g2g4": {
+    "san": "g4",
+    "cp": -175,
+    "tier": "blunder"
+   }
+  },
+  "bestLineUci": [
+   "b5c6",
+   "b7c6"
+  ],
+  "temptingLineUci": [
+   "f3e5",
+   "c6e5"
+  ],
+  "candidates": [
+   "b5",
+   "d3",
+   "c4"
+  ],
+  "boss": false,
+  "position": "wpb3wbb5bpb7wpc4bnc6bpc7wpd3bpd6wpe4bpe5bbe7wpf2wnf3bpf7wkg1wpg2bpg7bkg8wph2bph7",
+  "legal": {
+   "b5": "b5c6x:Bxc6,b5a6:Ba6,b5a4:Ba4",
+   "f3": "f3g5:Ng5,f3e5x:Nxe5,f3h4:Nh4,f3d4:Nd4,f3d2:Nd2,f3e1:Ne1",
+   "g1": "g1h1:Kh1,g1f1:Kf1",
+   "c4": "c4c5:c5",
+   "d3": "d3d4:d4",
+   "b3": "b3b4:b4",
+   "h2": "h2h3:h3,h2h4:h4",
+   "g2": "g2g3:g3,g2g4:g4"
+  }
+ },
+ {
+  "id": "k2",
+  "pack": "endgames",
+  "title": "Trade Horses Only",
+  "motif": "tradeChoice",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "RIGHT SWAP",
+  "fen": "5nk1/pp3ppp/2n5/1B2p3/3N4/3P4/PP3PPP/6K1 w - - 0 1",
+  "hook": "Open board. Bishops run. Horses plod.",
+  "why": "Swap horses and keep the bishop. It wins a pawn.",
+  "whyLong": "On an open board the bishop is worth more. Trade the horses, never the bishop.",
+  "whyTargets": {
+   "prompt": "Tap his horse and the bishop you are keeping.",
+   "squares": [
+    "c6",
+    "b5"
+   ],
+   "at": "before"
+  },
+  "glitch": {
+   "taunt": "Your horse is kicked! Hop it back home! Safe!",
+   "gloat": "You retreated. I fixed everything. Boring is good.",
+   "rage": "You traded HORSES?! I wanted your bishop!"
+  },
+  "arrive": "e7e5",
+  "best": "d4c6",
+  "bait": "d4f3",
+  "arrivePosition": "wpa2bpa7wpb2wbb5bpb7bnc6wpd3wnd4bpe7wpf2bpf7bnf8wkg1wpg2bpg7bkg8wph2bph7",
+  "tempting": "d4f3",
+  "bestSan": "Nxc6",
+  "temptingSan": "Nf3",
+  "turn": "w",
+  "moves": {
+   "b5c6": {
+    "san": "Bxc6",
+    "cp": 176,
+    "tier": "blunder"
+   },
+   "b5a6": {
+    "san": "Ba6",
+    "cp": -608,
+    "tier": "blunder"
+   },
+   "b5c4": {
+    "san": "Bc4",
+    "cp": -598,
+    "tier": "blunder"
+   },
+   "b5a4": {
+    "san": "Ba4",
+    "cp": -621,
+    "tier": "blunder"
+   },
+   "d4e6": {
+    "san": "Ne6",
+    "cp": -603,
+    "tier": "blunder"
+   },
+   "d4c6": {
+    "san": "Nxc6",
+    "cp": 245,
+    "tier": "best"
+   },
+   "d4f5": {
+    "san": "Nf5",
+    "cp": 28,
+    "tier": "blunder"
+   },
+   "d4f3": {
+    "san": "Nf3",
+    "cp": -1,
+    "tier": "bait"
+   },
+   "d4b3": {
+    "san": "Nb3",
+    "cp": 1,
+    "tier": "blunder"
+   },
+   "d4e2": {
+    "san": "Ne2",
+    "cp": -2,
+    "tier": "blunder"
+   },
+   "d4c2": {
+    "san": "Nc2",
+    "cp": -2,
+    "tier": "blunder"
+   },
+   "g1h1": {
+    "san": "Kh1",
+    "cp": -628,
+    "tier": "blunder"
+   },
+   "g1f1": {
+    "san": "Kf1",
+    "cp": -621,
+    "tier": "blunder"
+   },
+   "h2h3": {
+    "san": "h3",
+    "cp": -628,
+    "tier": "blunder"
+   },
+   "g2g3": {
+    "san": "g3",
+    "cp": -611,
+    "tier": "blunder"
+   },
+   "f2f3": {
+    "san": "f3",
+    "cp": -611,
+    "tier": "blunder"
+   },
+   "b2b3": {
+    "san": "b3",
+    "cp": -630,
+    "tier": "blunder"
+   },
+   "a2a3": {
+    "san": "a3",
+    "cp": -627,
+    "tier": "blunder"
+   },
+   "h2h4": {
+    "san": "h4",
+    "cp": -623,
+    "tier": "blunder"
+   },
+   "g2g4": {
+    "san": "g4",
+    "cp": -624,
+    "tier": "blunder"
+   },
+   "f2f4": {
+    "san": "f4",
+    "cp": -651,
+    "tier": "blunder"
+   },
+   "b2b4": {
+    "san": "b4",
+    "cp": -616,
+    "tier": "blunder"
+   },
+   "a2a4": {
+    "san": "a4",
+    "cp": -639,
+    "tier": "blunder"
+   }
+  },
+  "bestLineUci": [
+   "d4c6",
+   "b7c6"
+  ],
+  "temptingLineUci": [
+   "d4f3",
+   "c6d4",
+   "f3d4"
+  ],
+  "candidates": [
+   "d4",
+   "b5",
+   "g2"
+  ],
+  "boss": false,
+  "position": "wpa2bpa7wpb2wbb5bpb7bnc6wpd3wnd4bpe5wpf2bpf7bnf8wkg1wpg2bpg7bkg8wph2bph7",
+  "legal": {
+   "b5": "b5c6x:Bxc6,b5a6:Ba6,b5c4:Bc4,b5a4:Ba4",
+   "d4": "d4e6:Ne6,d4c6x:Nxc6,d4f5:Nf5,d4f3:Nf3,d4b3:Nb3,d4e2:Ne2,d4c2:Nc2",
+   "g1": "g1h1:Kh1,g1f1:Kf1",
+   "h2": "h2h3:h3,h2h4:h4",
+   "g2": "g2g3:g3,g2g4:g4",
+   "f2": "f2f3:f3,f2f4:f4",
+   "b2": "b2b3:b3,b2b4:b4",
+   "a2": "a2a3:a3,a2a4:a4"
   }
  }
 ]
