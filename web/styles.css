@@ -677,3 +677,30 @@ body[data-screen="screen-play"] .topbar { padding-bottom: 4px; }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ---------- v0.19: cracked cards, pacing, ladder rungs ---------- */
+/* A card won on the confession path: still earned, still counted, visibly cracked. A diagonal
+   hairline across the art and the word itself, so the crack never relies on colour alone. */
+.fig.cracked { position: relative; }
+.fig.cracked .art { position: relative; overflow: hidden; }
+.fig.cracked .art::after, .why-card.cracked .card-art::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(135deg, transparent calc(50% - 1.5px), var(--ink) calc(50% - 1.5px), var(--ink) calc(50% - .5px),
+    var(--card) calc(50% - .5px), var(--card) calc(50% + .5px), transparent calc(50% + .5px)); }
+.crack-word { display: block; font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-2); line-height: 1.1; }
+.why-card.cracked .card-art { position: relative; overflow: hidden; }
+.crack-line { margin: 8px 0 0; padding: 6px 10px; border: 2.5px dashed var(--ink); border-radius: 10px 13px 9px 12px;
+  background: var(--paper-2); font-weight: 700; font-size: 16px; line-height: 1.25; }
+.crack-line.fixed { border-style: solid; background: var(--leaf); color: var(--card); }
+.crack-line[hidden] { display: none; }
+
+/* Pacing: the arcade button offers Camp, and the day he picked stays one tap away underneath. */
+.cta.big.nudge { font-size: 24px; }
+.dock .anyway { display: block; margin: 6px auto 0; font-size: 15px; min-height: 32px; }
+
+/* Ladder days: rungs on the path, not numbered stops. */
+.day-chip.ladder .n { border-radius: 10px 12px 9px 13px; font-size: 30px; background:
+  repeating-linear-gradient(0deg, transparent 0 13px, #2a211822 13px 16px), var(--card); }
+.day-chip.ladder.current .n { background: repeating-linear-gradient(0deg, transparent 0 13px, #2a211833 13px 16px), var(--sun); }
+.day-chip.ladder.done .n { background: var(--leaf); color: var(--card); }
+.day-chip.ladder.locked .n { background: var(--paper-2); }

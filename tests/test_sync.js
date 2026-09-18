@@ -6,6 +6,24 @@ function card(over) {
 }
 
 function run() {
+  /* Camp, threats, rush and cracks survive a two-device merge: counts take the larger side, camp
+     days union, a crack repaired anywhere stays repaired. Order-free. */
+  const devA = { cardsEarned: { "01": { t: 1, clean: false }, "02": { t: 2, clean: false } },
+    threats: { asked: 6, found: 4, wrongTaps: 3 }, rush: { moves: 10, rushed: 4 },
+    camp: { days: { "2026-09-18": 1 }, total: 1, best: 1, run: 1, last: "2026-09-18" } };
+  const devB = { cardsEarned: { "01": { t: 5, clean: true }, "02": { t: 3, clean: false } },
+    threats: { asked: 3, found: 3, wrongTaps: 0 }, rush: { moves: 12, rushed: 2 },
+    camp: { days: { "2026-09-19": 1 }, total: 1, best: 1, run: 1, last: "2026-09-19" } };
+  [Y.mergeStats(devA, devB), Y.mergeStats(devB, devA)].forEach(function (m) {
+    assert.strictEqual(m.cardsEarned["01"].clean, true, "a clean win on either device repairs the crack");
+    assert.strictEqual(m.cardsEarned["02"].clean, false, "cracked on both stays cracked");
+    assert.deepStrictEqual([m.threats.asked, m.threats.found, m.threats.wrongTaps], [6, 4, 3], "threat counts take the larger side");
+    assert.deepStrictEqual([m.rush.moves, m.rush.rushed], [12, 4], "rush counts take the larger side");
+    assert.strictEqual(m.camp.total, 2, "camp days union across devices");
+    assert.strictEqual(m.camp.last, "2026-09-19");
+  });
+  assert.strictEqual(Y.mergeStats({}, {}).camp, undefined, "no camp data invents none");
+
   // --- the family login shared with the other kid apps ---
   assert.strictEqual(Y.normaliseCode("abcd 1234"), "ABCD1234", "codes are read out in caps");
   assert.strictEqual(Y.normaliseUser("  Mia_B "), "mia_b", "usernames are lowercase");

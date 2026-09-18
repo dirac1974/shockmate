@@ -265,10 +265,62 @@ function doneToday() {
   assert.doesNotThrow(function () { S.campDoneToday(null); S.recordCampDay(null, S.dateKey(t)); });
 }
 
+/* Look first: the gate decision as one pure function. On in Tournament week and inside Camp, only on
+   a fight whose arriving move attacks something, off everywhere else. */
+function lookFirstGate() {
+  const withT = ALL.filter(hasThreat)[0], without = ALL.filter(function (e) { return !hasThreat(e); })[0];
+  assert.ok(withT, "some board attacks something on arrival");
+  const tw = { tournament: true }, off = { tournament: false };
+  const tg = F.threatTargets(withT);
+  assert.strictEqual(S.lookFirst(tw, false, withT, tg), true, "tournament week, a threat: look first");
+  assert.strictEqual(S.lookFirst(off, true, withT, tg), true, "inside camp, whatever the toggle says");
+  assert.strictEqual(S.lookFirst(off, false, withT, tg), false, "a normal day is fast by design");
+  assert.strictEqual(S.lookFirst({}, false, withT, tg), false, "no toggle is off");
+  assert.strictEqual(S.lookFirst(null, false, withT, tg), false, "null settings are off");
+  assert.strictEqual(S.lookFirst(null, true, withT, tg), true, "camp does not need settings");
+  if (without) {
+    assert.strictEqual(S.lookFirst(tw, true, without, F.threatTargets(without)), false, "a move that attacks nothing has no question");
+  }
+  assert.strictEqual(S.lookFirst(tw, true, withT, []), false, "no targets, no gate");
+  assert.strictEqual(S.lookFirst(tw, true, withT, 2), true, "a count works as well as a list");
+  assert.strictEqual(S.lookFirst(tw, true, Object.assign({}, withT, { threatTargets: tg })), true, "targets carried on the fight");
+  assert.strictEqual(S.lookFirst(tw, true, withT), false, "with no targets given or carried, it stays off rather than guess");
+  assert.strictEqual(S.lookFirst(tw, true, null, tg), false, "no fight, no gate");
+  // brief by rule: a hint after two wrong taps, the answer and the think window on the third
+  assert.deepStrictEqual(S.LOOK, { hintAfter: 2, giveAfter: 3 });
+  assert.ok(S.LOOK.giveAfter > S.LOOK.hintAfter, "the hint comes before he is shown");
+  // generated ladder fights go through the same decision: they are ordinary fights with more fields
+  const ladder = Object.assign({}, withT, { id: "L1", pack: "ladder", generated: true, rating: 700, voice: "fork-v1" });
+  assert.strictEqual(S.lookFirst(tw, false, ladder, F.threatTargets(ladder)), true);
+  // the words he sees, both registers
+  ["numbers", "words"].forEach(function (st) {
+    assert.ok(/Look first/.test(S.coachLine(st, { kind: "lookFirst" })));
+    assert.strictEqual(S.coachLine(st, { kind: "lookSeen" }), "Seen. Now your move.");
+    assert.ok(/Now your move/.test(S.coachLine(st, { kind: "lookGive" })));
+  });
+  // the look-first tap is counted the same way as a warm-up: one target asked
+  let st = S.emptyStats();
+  st = S.recordThreat(st, { targets: 1, found: 1, wrongTaps: 0 }).stats;
+  st = S.recordThreat(st, { targets: 1, found: 0, wrongTaps: 3 }).stats;
+  assert.deepStrictEqual(S.threatsOf(st), { asked: 2, found: 1, wrongTaps: 3 });
+}
+
+/* Pacing: two finished days in one sitting and FIGHT offers Camp, unless Camp is already done today. */
+function pacing() {
+  assert.strictEqual(S.pacingNudge(0, false), false);
+  assert.strictEqual(S.pacingNudge(1, false), false, "one day is a normal sitting");
+  assert.strictEqual(S.pacingNudge(2, false), true, "two days: Camp instead?");
+  assert.strictEqual(S.pacingNudge(5, false), true, "and it stays for the rest of the sitting");
+  assert.strictEqual(S.pacingNudge(2, true), false, "not once Camp is done today");
+  assert.strictEqual(S.pacingNudge(undefined, false), false);
+}
+
 planShape();
+lookFirstGate();
+pacing();
 threatTargets();
 threatStats();
 coaching();
 principles();
 doneToday();
-console.log("OK camp: 3 warm-ups + 4 fights + 2 counters with no repeats and no defence pack needed, threat targets on every real board, threat counts only climb, both coach registers, a principle and an icon per motif, camp counts once a day");
+console.log("OK camp: look-first gate decision and pacing nudge, 3 warm-ups + 4 fights + 2 counters with no repeats and no defence pack needed, threat targets on every real board, threat counts only climb, both coach registers, a principle and an icon per motif, camp counts once a day");

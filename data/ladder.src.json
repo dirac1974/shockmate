@@ -1,0 +1,5019 @@
+[
+ {
+  "id": "L101",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 559,
+  "lichess": "HR2E0",
+  "motif": "mateThreat",
+  "title": "Finish Him",
+  "palaceRoom": "Checkmate Chamber",
+  "mascot": "THE END",
+  "fen": "2k2b1r/ppp3p1/7p/5p2/1q1Bp3/8/PPQ2PPP/RN2R1K1 b - - 0 17",
+  "arrive": "e3d4",
+  "arriveCaptured": "r",
+  "best": "b4e1",
+  "bait": "b4d4",
+  "bestTol": 45,
+  "hook": "The game can end right now.",
+  "why": "Checkmate ends the game. No snack is worth more.",
+  "whyLong": "Checks, captures, threats: look in that order. The win is hiding in the checks. The free bishop was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "g1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Grab stuff! Grabbing is the fun part!",
+   "gloat": "One bishop for you. The whole game for me.",
+   "rage": "NOOOO. My king had nowhere to go!"
+  },
+  "short": "Mate beats any snack.",
+  "voice": "mateThreat-v1",
+  "voiceKeys": {
+   "hook": "mateThreat-v1-hook",
+   "why": "mateThreat-v1-why",
+   "short": "mateThreat-v1-short",
+   "taunt": "mateThreat-taunt3",
+   "gloat": "bait-gloat-cap3-bishop",
+   "rage": "mateThreat-rage6"
+  }
+ },
+ {
+  "id": "L102",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 560,
+  "lichess": "yMXCf",
+  "motif": "discovery",
+  "title": "Curtain Pull",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "rb3Q2/8/p1k2Pp1/2p3Pp/2Pp4/P7/3B3P/6K1 b - - 0 35",
+  "arrive": "e5f6",
+  "arriveCaptured": "q",
+  "best": "b8h2",
+  "bait": "c6b6",
+  "bestTol": 45,
+  "hook": "One of your pieces is hiding behind another.",
+  "why": "Move the front piece. The one behind it attacks too.",
+  "whyLong": "Your bishop steps out of the way, and your rook suddenly sees his queen. The slow move was a trap.",
+  "whyTargets": {
+   "prompt": "Tap your hidden rook and the queen it hits.",
+   "squares": [
+    "a8",
+    "f8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Play it safe. Your king wants a little walk.",
+   "gloat": "The laser stayed hidden. Lucky me.",
+   "rage": "Peekaboo?! I HATE peekaboo!"
+  },
+  "short": "Step aside. The piece behind fires.",
+  "voice": "discovery-v1",
+  "voiceKeys": {
+   "hook": "discovery-v1-hook",
+   "why": "discovery-v1-why",
+   "short": "discovery-v1-short",
+   "taunt": "bait-taunt-quiet5-king",
+   "gloat": "discovery-gloat1",
+   "rage": "discovery-rage4"
+  }
+ },
+ {
+  "id": "L103",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 581,
+  "lichess": "JtVnq",
+  "motif": "hanging",
+  "title": "Snack Attack",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "LOOSE LUNCH",
+  "fen": "1k5r/1r1qb1pp/1p1p1p2/8/P5R1/1P2B3/2PQ2PP/5R1K b - - 2 30",
+  "arrive": "c4g4",
+  "best": "d7g4",
+  "bait": "d7a4",
+  "bestTol": 45,
+  "hook": "Somebody forgot to protect something.",
+  "why": "He left it alone. Take it before he wakes up.",
+  "whyLong": "Before any move, look for pieces with zero guards. Here it was his rook. The free pawn was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the piece nobody was guarding.",
+   "squares": [
+    "g4"
+   ]
+  },
+  "glitch": {
+   "taunt": "That pawn is begging to be eaten.",
+   "gloat": "Enjoy the pawn. It was poisoned. Hee hee.",
+   "rage": "I left it out for ONE second!"
+  },
+  "short": "It is alone. Take it.",
+  "voice": "hanging-v4",
+  "voiceKeys": {
+   "hook": "hanging-v4-hook",
+   "why": "hanging-v4-why",
+   "short": "hanging-v4-short",
+   "taunt": "bait-taunt-cap2-pawn",
+   "gloat": "bait-gloat-cap2-pawn",
+   "rage": "hanging-rage3"
+  }
+ },
+ {
+  "id": "L104",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 588,
+  "lichess": "D0Ir1",
+  "motif": "defend",
+  "title": "Brace",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "q7/Q3k3/K5p1/8/8/P7/8/8 b - - 4 48",
+  "arrive": "b6a7",
+  "best": "a8a7",
+  "bait": "a8b7",
+  "bestTol": 45,
+  "hook": "He attacks first. Answer without giving anything away.",
+  "why": "His move attacked you. Fix the threat first, then play.",
+  "whyLong": "His queen was hitting your queen. The best move deals with that first. That check looked scary and did nothing.",
+  "whyTargets": {
+   "prompt": "Tap his queen and the queen it attacks.",
+   "squares": [
+    "a8",
+    "a7"
+   ]
+  },
+  "glitch": {
+   "taunt": "Check! Check! Everybody loves a check!",
+   "gloat": "One question, wrong answer. Lovely.",
+   "rage": "You asked what I attacked?! Stop ASKING!"
+  },
+  "short": "Fix his threat first.",
+  "voice": "defend-v1",
+  "voiceKeys": {
+   "hook": "defend-v1-hook",
+   "why": "defend-v1-why",
+   "short": "defend-v1-short",
+   "taunt": "bait-taunt-chk3",
+   "gloat": "defend-gloat4",
+   "rage": "defend-rage6"
+  }
+ },
+ {
+  "id": "L105",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 594,
+  "lichess": "fQiMf",
+  "motif": "counter",
+  "title": "Answer Back",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "3r2k1/R7/5Rp1/8/2P5/5p2/5P1P/3r1NK1 b - - 1 30",
+  "arrive": "c6f6",
+  "best": "d1f1",
+  "bait": "d1c1",
+  "bestTol": 45,
+  "hook": "A check or a capture beats running away.",
+  "why": "Running loses time. Your threat is bigger than his.",
+  "whyLong": "Your pawn was attacked, but your counterattack is worth more. The safe-looking move was the bait.",
+  "whyTargets": {
+   "prompt": "Tap his rook and the pawn it attacks.",
+   "squares": [
+    "f3",
+    "f6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Tuck your rook away. Nothing bad ever happens.",
+   "gloat": "Hide and seek! You hid. I win.",
+   "rage": "You hit BACK?! You were supposed to be SCARED!"
+  },
+  "short": "Your threat is bigger. Play it.",
+  "voice": "counter-v4",
+  "voiceKeys": {
+   "hook": "counter-v4-hook",
+   "why": "counter-v4-why",
+   "short": "counter-v4-short",
+   "taunt": "bait-taunt-quiet2-rook",
+   "gloat": "counter-gloat6",
+   "rage": "counter-rage1"
+  }
+ },
+ {
+  "id": "L106",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 601,
+  "lichess": "CND57",
+  "motif": "counter",
+  "title": "Bigger Threat",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "4Rrk1/6pp/p2N4/8/P7/5n2/2r2P2/4R2K w - - 2 35",
+  "arrive": "d2f3",
+  "best": "e8f8",
+  "bait": "e1e7",
+  "bestTol": 45,
+  "hook": "Don't run. Look for something bigger.",
+  "why": "A check or capture first. He has to deal with yours.",
+  "whyLong": "A check is a free move. Answer an attack with a bigger one. Glitch wanted you to play it safe.",
+  "whyTargets": {
+   "prompt": "Tap his horse and the rook it attacks.",
+   "squares": [
+    "e1",
+    "f3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Careful, careful. Just move your rook somewhere safe.",
+   "gloat": "Running is my favorite thing you do.",
+   "rage": "Bigger threat?! Mine was big! Mine was HUGE!"
+  },
+  "short": "Check or capture first.",
+  "voice": "counter-v2",
+  "voiceKeys": {
+   "hook": "counter-v2-hook",
+   "why": "counter-v2-why",
+   "short": "counter-v2-short",
+   "taunt": "bait-taunt-quiet1-rook",
+   "gloat": "counter-gloat3",
+   "rage": "counter-rage6"
+  }
+ },
+ {
+  "id": "L107",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 611,
+  "lichess": "xq2W3",
+  "motif": "pin",
+  "title": "Can't Move",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "8/8/4p1pk/6qp/2P5/4KQ2/1P4P1/8 w - - 4 46",
+  "arrive": "f5g5",
+  "best": "f3f4",
+  "bait": "e3d3",
+  "bestTol": 45,
+  "hook": "One of his pieces is not allowed to move.",
+  "why": "A pinned piece cannot run. Hit it while it is stuck.",
+  "whyLong": "Line your queen up with the queen and the king. The front one is stuck. Glitch wanted you to play it safe.",
+  "whyTargets": {
+   "prompt": "Tap the stuck queen and the king behind it.",
+   "squares": [
+    "g5",
+    "h6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Careful, careful. Just move your king somewhere safe.",
+   "gloat": "Unstuck and unbothered. That's me.",
+   "rage": "A thumbtack?! In MY pieces?! Ouch!"
+  },
+  "short": "Stuck pieces cannot run. Attack.",
+  "voice": "pin-v3",
+  "voiceKeys": {
+   "hook": "pin-v3-hook",
+   "why": "pin-v3-why",
+   "short": "pin-v3-short",
+   "taunt": "bait-taunt-quiet1-king",
+   "gloat": "pin-gloat6",
+   "rage": "pin-rage4"
+  }
+ },
+ {
+  "id": "L108",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 616,
+  "lichess": "lCOCw",
+  "motif": "royalFork",
+  "title": "King and Company",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "6k1/p1p1qppp/2p1r3/8/N1R5/bP4P1/P2P1P1P/3Q2K1 b - - 5 21",
+  "arrive": "c2c4",
+  "best": "e6e1",
+  "bait": "e7d7",
+  "bestTol": 45,
+  "hook": "Check the king. Bite something else at the same time.",
+  "why": "The king must move first, so the other piece is yours.",
+  "whyLong": "When the king is one of the two targets, he never gets a choice. The slow move was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the king and the queen your rook hits.",
+   "squares": [
+    "g1",
+    "d1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Tuck your queen away. Nothing bad ever happens.",
+   "gloat": "The royal family thanks you for your kindness.",
+   "rage": "My king ran and left his friend behind!"
+  },
+  "short": "King moves first. The other piece falls.",
+  "voice": "royalFork-v2",
+  "voiceKeys": {
+   "hook": "royalFork-v2-hook",
+   "why": "royalFork-v2-why",
+   "short": "royalFork-v2-short",
+   "taunt": "bait-taunt-quiet2-queen",
+   "gloat": "royalFork-gloat5",
+   "rage": "royalFork-rage4"
+  }
+ },
+ {
+  "id": "L109",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 628,
+  "lichess": "iGBE7",
+  "motif": "pin",
+  "title": "Thumbtack",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "7k/2r3p1/7p/8/p7/P6P/1b4P1/3Q3K b - - 1 40",
+  "arrive": "g4d1",
+  "best": "c7c1",
+  "bait": "b2a3",
+  "bestTol": 45,
+  "hook": "Line up. Something is stuck in the middle.",
+  "why": "He cannot move the front piece without losing the back one.",
+  "whyLong": "If the queen steps aside, the king falls. So it stays, and you win it. The pawn was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the stuck queen and the king behind it.",
+   "squares": [
+    "d1",
+    "h1"
+   ]
+  },
+  "glitch": {
+   "taunt": "That pawn is begging to be eaten.",
+   "gloat": "No glue, no problem. My pieces are free.",
+   "rage": "Who put glue on my board?! WHO?!"
+  },
+  "short": "Front piece moves, back piece dies.",
+  "voice": "pin-v4",
+  "voiceKeys": {
+   "hook": "pin-v4-hook",
+   "why": "pin-v4-why",
+   "short": "pin-v4-short",
+   "taunt": "bait-taunt-cap2-pawn",
+   "gloat": "pin-gloat1",
+   "rage": "pin-rage5"
+  }
+ },
+ {
+  "id": "L110",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 632,
+  "lichess": "QPDjq",
+  "motif": "defend",
+  "title": "Guard It",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "8/1k3Rp1/2r4p/4P3/5PPP/p3K3/8/8 b - - 3 52",
+  "arrive": "f8f7",
+  "best": "c6c7",
+  "bait": "b7b6",
+  "bestTol": 45,
+  "hook": "Something of yours is under fire.",
+  "why": "Defend first. The fancy move loses what he attacked.",
+  "whyLong": "Before your own plan, ask what his last move attacked. Here: your pawn. Moving the king just gave him time.",
+  "whyTargets": {
+   "prompt": "Tap his rook and the pawn it attacks.",
+   "squares": [
+    "g7",
+    "f7"
+   ]
+  },
+  "glitch": {
+   "taunt": "Be sensible. Move your king. Sensible is good.",
+   "gloat": "You played it safe. Safe for ME.",
+   "rage": "Blocked?! By THAT?! Rude!"
+  },
+  "short": "Defend first. Fancy later.",
+  "voice": "defend-v3",
+  "voiceKeys": {
+   "hook": "defend-v3-hook",
+   "why": "defend-v3-why",
+   "short": "defend-v3-short",
+   "taunt": "bait-taunt-quiet7-king",
+   "gloat": "bait-gloat-quiet2",
+   "rage": "defend-rage3"
+  }
+ },
+ {
+  "id": "L111",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 639,
+  "lichess": "z366D",
+  "motif": "kingMarch",
+  "title": "Pawn Power",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "CROWN RUN",
+  "fen": "8/8/8/4p1P1/4kp2/7K/8/8 w - - 0 61",
+  "arrive": "f5f4",
+  "best": "g5g6",
+  "bait": "h3h4",
+  "bestTol": 45,
+  "hook": "A little pawn wants a big promotion.",
+  "why": "A new queen beats any snack on the board.",
+  "whyLong": "Every step your pawn takes, his pieces get more nervous. The slow move was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that wants a crown.",
+   "squares": [
+    "g5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Your king looks nervous. Move it. Quick!",
+   "gloat": "No crown for you today. Hee hee.",
+   "rage": "The pawn got a CROWN?! I want a crown!"
+  },
+  "short": "A new queen beats snacks.",
+  "voice": "kingMarch-v3",
+  "voiceKeys": {
+   "hook": "kingMarch-v3-hook",
+   "why": "kingMarch-v3-why",
+   "short": "kingMarch-v3-short",
+   "taunt": "bait-taunt-quiet4-king",
+   "gloat": "kingMarch-gloat2",
+   "rage": "kingMarch-rage4"
+  }
+ },
+ {
+  "id": "L112",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 643,
+  "lichess": "Va64g",
+  "motif": "royalFork",
+  "title": "Check and Chomp",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "8/5pN1/p4k2/7p/PP3b2/3K1P2/8/8 w - - 5 47",
+  "arrive": "e6f6",
+  "best": "g7h5",
+  "bait": "g7e8",
+  "bestTol": 45,
+  "hook": "His king and a big piece are standing too close.",
+  "why": "Check the king and hit another piece. He must save the king.",
+  "whyLong": "Your horse checks the king and hits his bishop. The king must move, so the bishop is lunch. The loud check was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king and the bishop your horse hits.",
+   "squares": [
+    "f6",
+    "f4"
+   ]
+  },
+  "glitch": {
+   "taunt": "Just check him. Checks never lose. Trust me.",
+   "gloat": "Big loud check. Nothing happened. Lovely.",
+   "rage": "The KING and the bishop?! Rude! So rude!"
+  },
+  "short": "Check him. Take what he leaves.",
+  "voice": "royalFork-v1",
+  "voiceKeys": {
+   "hook": "royalFork-v1-hook",
+   "why": "royalFork-v1-why",
+   "short": "royalFork-v1-short",
+   "taunt": "bait-taunt-chk5",
+   "gloat": "bait-gloat-chk2",
+   "rage": "royalFork-rage7-bishop"
+  }
+ },
+ {
+  "id": "L113",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 654,
+  "lichess": "apXHq",
+  "motif": "skewer",
+  "title": "Line of Fire",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "7k/p5r1/7p/2p1Q1p1/2P1K1P1/2P2PP1/6r1/8 b - - 3 44",
+  "arrive": "e3e4",
+  "best": "g2e2",
+  "bait": "g2g3",
+  "bestTol": 45,
+  "hook": "Stab through the big piece. Find what hides behind.",
+  "why": "Attack the big piece. It runs, and the one behind dies.",
+  "whyLong": "Your rook hits his king. It has to move, and the queen behind it is lunch. The pawn was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the queen behind.",
+   "squares": [
+    "e4",
+    "e5"
+   ]
+  },
+  "glitch": {
+   "taunt": "That pawn is begging to be eaten.",
+   "gloat": "Both my pieces say thank you.",
+   "rage": "Poked in the front, robbed in the back!"
+  },
+  "short": "Hit the front. Eat the back.",
+  "voice": "skewer-v1",
+  "voiceKeys": {
+   "hook": "skewer-v1-hook",
+   "why": "skewer-v1-why",
+   "short": "skewer-v1-short",
+   "taunt": "bait-taunt-cap2-pawn",
+   "gloat": "skewer-gloat6",
+   "rage": "skewer-rage6"
+  }
+ },
+ {
+  "id": "L114",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 655,
+  "lichess": "CEgg4",
+  "motif": "skewer",
+  "title": "Kebab Time",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "7R/8/1pkpp3/6B1/r6P/2r5/5K2/8 w - - 0 35",
+  "arrive": "g3c3",
+  "arriveCaptured": "p",
+  "best": "h8c8",
+  "bait": "h8f8",
+  "bestTol": 45,
+  "hook": "His big piece is shielding a friend.",
+  "why": "Hit the front piece. When it steps away, take the back one.",
+  "whyLong": "When the king steps off the line, your rook eats the rook. Glitch wanted you to play it safe.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the rook behind.",
+   "squares": [
+    "c6",
+    "c3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Tuck your rook away. Nothing bad ever happens.",
+   "gloat": "Slow and safe. And now I win. Ha!",
+   "rage": "My rook was HIDING back there! Unfair!"
+  },
+  "short": "Poke the front. Take the back.",
+  "voice": "skewer-v4",
+  "voiceKeys": {
+   "hook": "skewer-v4-hook",
+   "why": "skewer-v4-why",
+   "short": "skewer-v4-short",
+   "taunt": "bait-taunt-quiet2-rook",
+   "gloat": "bait-gloat-quiet1",
+   "rage": "skewer-rage7-rook"
+  }
+ },
+ {
+  "id": "L115",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 677,
+  "lichess": "FVhhI",
+  "motif": "hanging",
+  "title": "Unguarded",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "LOOSE LUNCH",
+  "fen": "8/8/5k2/6pp/5p2/2K4P/p1N3r1/6R1 w - - 0 44",
+  "arrive": "d2g2",
+  "arriveCaptured": "p",
+  "best": "g1g2",
+  "bait": "g1a1",
+  "bestTol": 45,
+  "hook": "Somebody forgot to protect something.",
+  "why": "He left it alone. Take it before he wakes up.",
+  "whyLong": "Before any move, look for pieces with zero guards. Here it was his rook. The safe-looking move was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the piece nobody was guarding.",
+   "squares": [
+    "g2"
+   ]
+  },
+  "glitch": {
+   "taunt": "Be sensible. Move your rook. Sensible is good.",
+   "gloat": "You walked right past a free meal. Ha!",
+   "rage": "Who was on guard duty?! NOBODY?!"
+  },
+  "short": "It is alone. Take it.",
+  "voice": "hanging-v4",
+  "voiceKeys": {
+   "hook": "hanging-v4-hook",
+   "why": "hanging-v4-why",
+   "short": "hanging-v4-short",
+   "taunt": "bait-taunt-quiet7-rook",
+   "gloat": "hanging-gloat1",
+   "rage": "hanging-rage5"
+  }
+ },
+ {
+  "id": "L116",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 677,
+  "lichess": "c5ZZ6",
+  "motif": "backRank",
+  "title": "Locked In",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "r7/p6Q/b1p1kpp1/3p4/8/1BP3R1/P1P2qPP/4R2K b - - 0 25",
+  "arrive": "a1e1",
+  "arriveCaptured": "r",
+  "best": "f2e1",
+  "bait": "a6e2",
+  "bestTol": 45,
+  "hook": "His own pawns locked the door.",
+  "why": "His pawns trap his own king. Land on the back row.",
+  "whyLong": "His pawns stand in front of his king like a wall. The back row is the only way in. The slow move was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "h1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Forget my king. Snacks are more fun.",
+   "gloat": "No mate, no problem. Hee hee.",
+   "rage": "Trapped in my own basement?! NOOOO!"
+  },
+  "short": "His pawns trap him. Back row.",
+  "voice": "backRank-v1",
+  "voiceKeys": {
+   "hook": "backRank-v1-hook",
+   "why": "backRank-v1-why",
+   "short": "backRank-v1-short",
+   "taunt": "backRank-taunt3",
+   "gloat": "backRank-gloat3",
+   "rage": "backRank-rage2"
+  }
+ },
+ {
+  "id": "L117",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 685,
+  "lichess": "xcW6J",
+  "motif": "kingMarch",
+  "title": "Queen Me",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "CROWN RUN",
+  "fen": "8/1kB5/1P4p1/8/2K4P/3p4/8/8 b - - 0 66",
+  "arrive": "c3c4",
+  "arriveCaptured": "p",
+  "best": "d3d2",
+  "bait": "b7c6",
+  "bestTol": 45,
+  "hook": "A little pawn wants a big promotion.",
+  "why": "A new queen beats any snack on the board.",
+  "whyLong": "Every step your pawn takes, his pieces get more nervous. The safe-looking move was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that wants a crown.",
+   "squares": [
+    "d3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Nothing to see here. Just nudge your king.",
+   "gloat": "Tiny pawn, tiny chance. Ha!",
+   "rage": "The pawn got a CROWN?! I want a crown!"
+  },
+  "short": "A new queen beats snacks.",
+  "voice": "kingMarch-v3",
+  "voiceKeys": {
+   "hook": "kingMarch-v3-hook",
+   "why": "kingMarch-v3-why",
+   "short": "kingMarch-v3-short",
+   "taunt": "bait-taunt-quiet6-king",
+   "gloat": "kingMarch-gloat4",
+   "rage": "kingMarch-rage4"
+  }
+ },
+ {
+  "id": "L118",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 686,
+  "lichess": "yd6eW",
+  "motif": "mateThreat",
+  "title": "The End",
+  "palaceRoom": "Checkmate Chamber",
+  "mascot": "THE END",
+  "fen": "3r2k1/pb4p1/4pr1p/3qNp1n/2BP3P/P7/3Q1PP1/2R1R1K1 b - - 8 26",
+  "arrive": "b5c4",
+  "best": "d5g2",
+  "bait": "d5e5",
+  "bestTol": 45,
+  "hook": "Checks first. One of them ends everything.",
+  "why": "Mate beats any piece you could grab.",
+  "whyLong": "When the king has no way out, stop counting pieces and finish. Grabbing the horse was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "g1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Grab stuff! Grabbing is the fun part!",
+   "gloat": "Still breathing! Hee hee. Your turn.",
+   "rage": "Game OVER?! I wasn't READY!"
+  },
+  "short": "Mate first. Snacks never.",
+  "voice": "mateThreat-v4",
+  "voiceKeys": {
+   "hook": "mateThreat-v4-hook",
+   "why": "mateThreat-v4-why",
+   "short": "mateThreat-v4-short",
+   "taunt": "mateThreat-taunt3",
+   "gloat": "mateThreat-gloat2",
+   "rage": "mateThreat-rage2"
+  }
+ },
+ {
+  "id": "L119",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 690,
+  "lichess": "8i7eu",
+  "motif": "backRank",
+  "title": "Basement Door",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "3k1r2/pp2r3/7p/3P2p1/1PPb2Q1/P7/6PP/5R1K b - - 0 30",
+  "arrive": "d1f1",
+  "arriveCaptured": "q",
+  "best": "f8f1",
+  "bait": "f8f2",
+  "bestTol": 45,
+  "hook": "His king has no escape square.",
+  "why": "The king has no square to run to. The back row is mate.",
+  "whyLong": "Always give your own king a little air. He never did. Glitch wanted you to play it safe.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "h1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Tuck your rook away. Nothing bad ever happens.",
+   "gloat": "My king stays cozy. Thanks!",
+   "rage": "I needed ONE little escape square! ONE!"
+  },
+  "short": "No escape square. Back row mates.",
+  "voice": "backRank-v2",
+  "voiceKeys": {
+   "hook": "backRank-v2-hook",
+   "why": "backRank-v2-why",
+   "short": "backRank-v2-short",
+   "taunt": "bait-taunt-quiet2-rook",
+   "gloat": "backRank-gloat2",
+   "rage": "backRank-rage6"
+  }
+ },
+ {
+  "id": "L120",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 1,
+  "rating": 695,
+  "lichess": "deBOr",
+  "motif": "discovery",
+  "title": "Curtain Pull",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "r5k1/pp4p1/2p1r3/3pP1qp/5R2/2P1Q3/P5P1/4R1K1 w - - 7 28",
+  "arrive": "g4g5",
+  "best": "f4f8",
+  "bait": "e3a7",
+  "bestTol": 45,
+  "hook": "Two attackers are waiting in one line.",
+  "why": "Uncover the laser. He cannot stop two attacks.",
+  "whyLong": "When your piece stands in front of your own laser, move it with a threat. The pawn was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap your hidden queen and the queen it hits.",
+   "squares": [
+    "e3",
+    "g5"
+   ]
+  },
+  "glitch": {
+   "taunt": "That pawn is begging to be eaten.",
+   "gloat": "Ha! You ate the pawn. Now watch me eat.",
+   "rage": "A secret weapon?! Nobody told ME!"
+  },
+  "short": "Move it. The laser fires.",
+  "voice": "discovery-v4",
+  "voiceKeys": {
+   "hook": "discovery-v4-hook",
+   "why": "discovery-v4-why",
+   "short": "discovery-v4-short",
+   "taunt": "bait-taunt-cap2-pawn",
+   "gloat": "bait-gloat-cap1-pawn",
+   "rage": "discovery-rage6"
+  }
+ },
+ {
+  "id": "L201",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 701,
+  "lichess": "Zfmdb",
+  "motif": "defend",
+  "title": "Brace",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "8/8/4p1k1/4Pp2/5Pr1/8/5K2/6R1 b - - 3 63",
+  "arrive": "h1g1",
+  "best": "g4g1",
+  "bait": "g4g2",
+  "bestTol": 45,
+  "hook": "His last move made a threat. Deal with it.",
+  "why": "Answer the attack with the one move that keeps everything.",
+  "whyLong": "Every enemy move asks a question. His rook asked about your rook. The loud check was the bait.",
+  "whyTargets": {
+   "prompt": "Tap his rook and the rook it attacks.",
+   "squares": [
+    "g4",
+    "g1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Ignore me. My move did nothing. Promise.",
+   "gloat": "My threat was real. Surprise!",
+   "rage": "My attack bounced off?! Like a rubber ball?!"
+  },
+  "short": "One move keeps everything safe.",
+  "voice": "defend-v2",
+  "voiceKeys": {
+   "hook": "defend-v2-hook",
+   "why": "defend-v2-why",
+   "short": "defend-v2-short",
+   "taunt": "defend-taunt2",
+   "gloat": "defend-gloat5",
+   "rage": "defend-rage2"
+  }
+ },
+ {
+  "id": "L202",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 702,
+  "lichess": "bfHDL",
+  "motif": "kingMarch",
+  "title": "Last Step",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "CROWN RUN",
+  "fen": "8/8/6pp/6Pk/8/2K5/8/2Bb4 w - - 0 50",
+  "arrive": "h7h6",
+  "best": "g5h6",
+  "bait": "c1e3",
+  "bestTol": 45,
+  "hook": "Push the right pawn and he can't keep up.",
+  "why": "Your pawn is closer to the end than his defenders are.",
+  "whyLong": "A pawn one step from a crown is worth more than most pieces. Moving the bishop just gave him time.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that wants a crown.",
+   "squares": [
+    "g5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Pawns are slow. Do something fast!",
+   "gloat": "You played it safe. Safe for ME.",
+   "rage": "A PAWN did that?!"
+  },
+  "short": "Push. His guards are too far.",
+  "voice": "kingMarch-v4",
+  "voiceKeys": {
+   "hook": "kingMarch-v4-hook",
+   "why": "kingMarch-v4-why",
+   "short": "kingMarch-v4-short",
+   "taunt": "kingMarch-taunt3",
+   "gloat": "bait-gloat-quiet2",
+   "rage": "kingMarch-rage1"
+  }
+ },
+ {
+  "id": "L203",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 704,
+  "lichess": "WgDbX",
+  "motif": "trapped",
+  "title": "Trap Door",
+  "palaceRoom": "Trap Room",
+  "mascot": "NO EXIT",
+  "fen": "b7/7p/PP1k2p1/5p2/8/6P1/6PP/6K1 w - - 0 42",
+  "arrive": "c6d6",
+  "arriveCaptured": "b",
+  "best": "b6b7",
+  "bait": "g3g4",
+  "bestTol": 45,
+  "hook": "One of his pieces has nowhere to go.",
+  "why": "His piece has no safe square. Attack it and it dies.",
+  "whyLong": "His bishop has no safe squares left. Your pawn attacks it and it cannot run. The slow move was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the bishop with no way out.",
+   "squares": [
+    "a8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Be sensible. Move your pawn. Sensible is good.",
+   "gloat": "My piece wriggled out. Bye bye!",
+   "rage": "Stuck! Stuck like gum on a shoe!"
+  },
+  "short": "No safe square. Attack it.",
+  "voice": "trapped-v1",
+  "voiceKeys": {
+   "hook": "trapped-v1-hook",
+   "why": "trapped-v1-why",
+   "short": "trapped-v1-short",
+   "taunt": "bait-taunt-quiet7-pawn",
+   "gloat": "trapped-gloat1",
+   "rage": "trapped-rage6"
+  }
+ },
+ {
+  "id": "L204",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 708,
+  "lichess": "Olyil",
+  "motif": "backRank",
+  "title": "Basement Door",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "6k1/rR3ppp/8/2p5/8/1P4P1/1r3P1P/6K1 w - - 0 22",
+  "arrive": "a8a7",
+  "arriveCaptured": "r",
+  "best": "b7b8",
+  "bait": "b7a7",
+  "bestTol": 45,
+  "hook": "His own pawns locked the door.",
+  "why": "His pawns trap his own king. Land on the back row.",
+  "whyLong": "His pawns stand in front of his king like a wall. The back row is the only way in. Glitch wanted you busy eating the rook.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "g8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Mmm, rook. Crunchy. Grab it quick!",
+   "gloat": "No mate, no problem. Hee hee.",
+   "rage": "Mate?! On the BACK ROW?! Again?!"
+  },
+  "short": "His pawns trap him. Back row.",
+  "voice": "backRank-v1",
+  "voiceKeys": {
+   "hook": "backRank-v1-hook",
+   "why": "backRank-v1-why",
+   "short": "backRank-v1-short",
+   "taunt": "bait-taunt-cap8-rook",
+   "gloat": "backRank-gloat3",
+   "rage": "backRank-rage5"
+  }
+ },
+ {
+  "id": "L205",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 715,
+  "lichess": "1bfPO",
+  "motif": "attackers",
+  "title": "No Bodyguard",
+  "palaceRoom": "Counting House",
+  "mascot": "GUARD DOWN",
+  "fen": "r4b1r/1p6/pkbRP2p/3BP3/5p2/1P3N2/P4PPP/2R3K1 b - - 0 27",
+  "arrive": "e4d5",
+  "arriveCaptured": "n",
+  "best": "f8d6",
+  "bait": "a8c8",
+  "bestTol": 45,
+  "hook": "One piece is doing all his guarding.",
+  "why": "Take the guard. Then the piece it protected is loose too.",
+  "whyLong": "His rook was the key guard. Your bishop takes it, and his defence falls apart. The slow move was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the guard your bishop knocks out.",
+   "squares": [
+    "d6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Attack the big stuff! Forget the little guard!",
+   "gloat": "Slow and safe. And now I win. Ha!",
+   "rage": "You took the BODYGUARD?! That's not allowed!"
+  },
+  "short": "Take the guard first.",
+  "voice": "attackers-v1",
+  "voiceKeys": {
+   "hook": "attackers-v1-hook",
+   "why": "attackers-v1-why",
+   "short": "attackers-v1-short",
+   "taunt": "attackers-taunt2",
+   "gloat": "bait-gloat-quiet1",
+   "rage": "attackers-rage1"
+  }
+ },
+ {
+  "id": "L206",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 720,
+  "lichess": "bMnCV",
+  "motif": "pin",
+  "title": "Pinned and Grinning",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "4b3/5k1p/4r1p1/3Qp3/P7/1P4P1/4PPKP/8 b - - 0 35",
+  "arrive": "a2a4",
+  "best": "e8c6",
+  "bait": "e8a4",
+  "bestTol": 45,
+  "hook": "Two of his pieces are standing on one line.",
+  "why": "The front piece is glued. If it moves, the one behind dies.",
+  "whyLong": "His queen cannot move. Behind it sits his king, and your bishop sees them both. The free pawn was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the stuck queen and the king behind it.",
+   "squares": [
+    "d5",
+    "g2"
+   ]
+  },
+  "glitch": {
+   "taunt": "Psst. Free pawn. Grab it. Nobody's looking.",
+   "gloat": "No glue, no problem. My pieces are free.",
+   "rage": "Stuck on a LINE?! Like a bug on a pin?!"
+  },
+  "short": "It is glued. Hit it.",
+  "voice": "pin-v1",
+  "voiceKeys": {
+   "hook": "pin-v1-hook",
+   "why": "pin-v1-why",
+   "short": "pin-v1-short",
+   "taunt": "bait-taunt-cap1-pawn",
+   "gloat": "pin-gloat1",
+   "rage": "pin-rage2"
+  }
+ },
+ {
+  "id": "L207",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 727,
+  "lichess": "078kF",
+  "motif": "skewer",
+  "title": "Line of Fire",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "r7/5ppp/8/1pk5/2b5/5P2/PK1R2PP/2R5 b - - 3 32",
+  "arrive": "a1b2",
+  "best": "a8a2",
+  "bait": "c5b4",
+  "bestTol": 45,
+  "hook": "Stab through the big piece. Find what hides behind.",
+  "why": "Attack the big piece. It runs, and the one behind dies.",
+  "whyLong": "Your rook hits his king. It has to move, and the rook behind it is lunch. Moving the king just gave him time.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the rook behind.",
+   "squares": [
+    "b2",
+    "d2"
+   ]
+  },
+  "glitch": {
+   "taunt": "Straight lines are boring. Try a zigzag.",
+   "gloat": "Slow and safe. And now I win. Ha!",
+   "rage": "It ran, and you ate my rook?! NOOOO!"
+  },
+  "short": "Hit the front. Eat the back.",
+  "voice": "skewer-v1",
+  "voiceKeys": {
+   "hook": "skewer-v1-hook",
+   "why": "skewer-v1-why",
+   "short": "skewer-v1-short",
+   "taunt": "skewer-taunt1",
+   "gloat": "bait-gloat-quiet1",
+   "rage": "skewer-rage8-rook"
+  }
+ },
+ {
+  "id": "L208",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 735,
+  "lichess": "d5HKY",
+  "motif": "mateThreat",
+  "title": "Checkmate Time",
+  "palaceRoom": "Checkmate Chamber",
+  "mascot": "THE END",
+  "fen": "1k1r1r2/1p3pp1/p2p1b1p/1q2nP2/3Q2P1/1BR1B3/PPP4P/5RK1 w - - 11 21",
+  "arrive": "e7f6",
+  "best": "d4a7",
+  "bait": "d4e5",
+  "bestTol": 45,
+  "hook": "The game can end right now.",
+  "why": "Checkmate ends the game. No snack is worth more.",
+  "whyLong": "Checks, captures, threats: look in that order. The win is hiding in the checks. The horse was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "b8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Grab stuff! Grabbing is the fun part!",
+   "gloat": "No mate? Then the fight goes on. Forever.",
+   "rage": "Checkmate?! Take it back! TAKE IT BACK!"
+  },
+  "short": "Mate beats any snack.",
+  "voice": "mateThreat-v1",
+  "voiceKeys": {
+   "hook": "mateThreat-v1-hook",
+   "why": "mateThreat-v1-why",
+   "short": "mateThreat-v1-short",
+   "taunt": "mateThreat-taunt3",
+   "gloat": "mateThreat-gloat5",
+   "rage": "mateThreat-rage4"
+  }
+ },
+ {
+  "id": "L209",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 751,
+  "lichess": "tIffC",
+  "motif": "pin",
+  "title": "Stuck Fast",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "4n1k1/2q2ppp/1pPbp3/pB6/P2QPP2/6P1/1B5P/6K1 b - - 0 27",
+  "arrive": "e3e4",
+  "best": "d6c5",
+  "bait": "d6f4",
+  "bestTol": 45,
+  "hook": "Glue something to his king.",
+  "why": "Pin it to the bigger piece behind. Then attack it again.",
+  "whyLong": "A pin turns his queen into a statue. Statues are easy to eat. The free pawn was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the stuck queen and the king behind it.",
+   "squares": [
+    "d4",
+    "g1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Lines are boring. Look over here instead.",
+   "gloat": "Enjoy the pawn. It was poisoned. Hee hee.",
+   "rage": "Glued?! Unglue it! UNGLUE IT!"
+  },
+  "short": "Pin it, then pile on.",
+  "voice": "pin-v2",
+  "voiceKeys": {
+   "hook": "pin-v2-hook",
+   "why": "pin-v2-why",
+   "short": "pin-v2-short",
+   "taunt": "pin-taunt1",
+   "gloat": "bait-gloat-cap2-pawn",
+   "rage": "pin-rage1"
+  }
+ },
+ {
+  "id": "L210",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 759,
+  "lichess": "CzEOB",
+  "motif": "mateThreat",
+  "title": "Finish Him",
+  "palaceRoom": "Checkmate Chamber",
+  "mascot": "THE END",
+  "fen": "2kr4/3q4/8/7p/Q4B2/6PP/5P1K/8 w - - 3 66",
+  "arrive": "b8c8",
+  "best": "a4a8",
+  "bait": "a4d7",
+  "bestTol": 45,
+  "hook": "Look for the checkmate before the snack.",
+  "why": "Look at every check first. One of them is mate.",
+  "whyLong": "Your queen goes for the king. Grabbing stuff only lets him keep playing. The free queen was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "c8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Look at that juicy queen. Just take it!",
+   "gloat": "Close one. Not close enough. Ha!",
+   "rage": "The end?! But I had a whole plan!"
+  },
+  "short": "Look at checks. One mates.",
+  "voice": "mateThreat-v2",
+  "voiceKeys": {
+   "hook": "mateThreat-v2-hook",
+   "why": "mateThreat-v2-why",
+   "short": "mateThreat-v2-short",
+   "taunt": "bait-taunt-cap3-queen",
+   "gloat": "mateThreat-gloat6",
+   "rage": "mateThreat-rage5"
+  }
+ },
+ {
+  "id": "L211",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 766,
+  "lichess": "3F6dK",
+  "motif": "discovery",
+  "title": "Curtain Pull",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "r1b2rk1/pp3pbp/3q2p1/3B4/1n6/5N2/PP3PPP/R1BQ1RK1 w - - 1 15",
+  "arrive": "c6b4",
+  "best": "d5f7",
+  "bait": "d5b7",
+  "bestTol": 45,
+  "hook": "Move the front piece. Something wakes up.",
+  "why": "One step aside opens a hidden attack. Two threats at once.",
+  "whyLong": "A discovered attack is two threats for the price of one move. Glitch wanted you busy eating the pawn.",
+  "whyTargets": {
+   "prompt": "Tap your hidden queen and the queen it hits.",
+   "squares": [
+    "d1",
+    "d6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Mmm, pawn. Crunchy. Grab it quick!",
+   "gloat": "Enjoy the pawn. It was poisoned. Hee hee.",
+   "rage": "Who opened the curtain?! Close it! CLOSE IT!"
+  },
+  "short": "Step aside. Two attacks at once.",
+  "voice": "discovery-v2",
+  "voiceKeys": {
+   "hook": "discovery-v2-hook",
+   "why": "discovery-v2-why",
+   "short": "discovery-v2-short",
+   "taunt": "bait-taunt-cap8-pawn",
+   "gloat": "bait-gloat-cap2-pawn",
+   "rage": "discovery-rage5"
+  }
+ },
+ {
+  "id": "L212",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 769,
+  "lichess": "NTIrG",
+  "motif": "skewer",
+  "title": "Shish Kebab",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "6k1/5p2/5rp1/7p/4K2P/4Q1P1/8/8 b - - 13 61",
+  "arrive": "d4e4",
+  "best": "f6e6",
+  "bait": "f6f4",
+  "bestTol": 45,
+  "hook": "A big piece stands in front of a smaller one.",
+  "why": "The front piece must move. The piece behind it falls.",
+  "whyLong": "The king cannot stay and cannot hide the queen. That is a skewer. Checking just for fun was the trap.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the queen behind.",
+   "squares": [
+    "e4",
+    "e3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Straight lines are boring. Try a zigzag.",
+   "gloat": "No kebab today. Everybody's safe.",
+   "rage": "Stabbed through the middle?! Ouch! OUCH!"
+  },
+  "short": "Front runs. Back falls.",
+  "voice": "skewer-v2",
+  "voiceKeys": {
+   "hook": "skewer-v2-hook",
+   "why": "skewer-v2-why",
+   "short": "skewer-v2-short",
+   "taunt": "skewer-taunt1",
+   "gloat": "skewer-gloat1",
+   "rage": "skewer-rage3"
+  }
+ },
+ {
+  "id": "L213",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 780,
+  "lichess": "5b2vZ",
+  "motif": "backRank",
+  "title": "Door Slam",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "r3k2r/1p1qpp1p/6p1/p2P4/1b1QP3/8/P4PPP/2R2KNR w kq - 0 16",
+  "arrive": "a7a5",
+  "best": "d4h8",
+  "bait": "d4b4",
+  "bestTol": 45,
+  "hook": "The king is tucked in too tight.",
+  "why": "Mate beats any snack. His own pawns block the exit.",
+  "whyLong": "Before you grab anything, check the back row. It ends the game. The free bishop was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "e8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free bishop! Free bishop! Take it before I change my mind!",
+   "gloat": "One bishop for you. The whole game for me.",
+   "rage": "Trapped in my own basement?! NOOOO!"
+  },
+  "short": "Mate beats a snack.",
+  "voice": "backRank-v4",
+  "voiceKeys": {
+   "hook": "backRank-v4-hook",
+   "why": "backRank-v4-why",
+   "short": "backRank-v4-short",
+   "taunt": "bait-taunt-cap4-bishop",
+   "gloat": "bait-gloat-cap3-bishop",
+   "rage": "backRank-rage2"
+  }
+ },
+ {
+  "id": "L214",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 800,
+  "lichess": "mDxnD",
+  "motif": "hanging",
+  "title": "Loose Lunch",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "LOOSE LUNCH",
+  "fen": "3br3/1p3pkp/pnr3p1/n1B5/P3P1N1/2P2P2/4B1PP/1R1R2K1 b - - 0 26",
+  "arrive": "e3c5",
+  "arriveCaptured": "p",
+  "best": "c6c5",
+  "bait": "b6a4",
+  "bestTol": 45,
+  "hook": "One of his pieces is all alone.",
+  "why": "Count the guards. Zero means it is yours for nothing.",
+  "whyLong": "A loose bishop is a free gift. Take gifts. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the piece nobody was guarding.",
+   "squares": [
+    "c5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Eat the pawn. Snacks first, thinking later.",
+   "gloat": "My piece was loose and you didn't notice. Hee hee.",
+   "rage": "Free?! It was NOT free! It was expensive!"
+  },
+  "short": "Zero guards. It is yours.",
+  "voice": "hanging-v2",
+  "voiceKeys": {
+   "hook": "hanging-v2-hook",
+   "why": "hanging-v2-why",
+   "short": "hanging-v2-short",
+   "taunt": "bait-taunt-cap5-pawn",
+   "gloat": "hanging-gloat2",
+   "rage": "hanging-rage4"
+  }
+ },
+ {
+  "id": "L215",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 805,
+  "lichess": "SgFGm",
+  "motif": "counter",
+  "title": "Bigger Threat",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "3r1rBk/6qP/pp4pQ/2p1np2/3p2p1/3P4/PP3P2/2KR3R w - - 8 27",
+  "arrive": "f6g7",
+  "best": "h6g7",
+  "bait": "h6g6",
+  "bestTol": 45,
+  "hook": "A check or a capture beats running away.",
+  "why": "Running loses time. Your threat is bigger than his.",
+  "whyLong": "Your queen was attacked, but your counterattack is worth more. Glitch wanted you busy eating the pawn.",
+  "whyTargets": {
+   "prompt": "Tap his queen and the queen it attacks.",
+   "squares": [
+    "h6",
+    "g7"
+   ]
+  },
+  "glitch": {
+   "taunt": "Run! Run away! Quick, before it's too late!",
+   "gloat": "Yum, the pawn. That was my trap. Hee hee.",
+   "rage": "CHECK?! I was in the middle of something!"
+  },
+  "short": "Your threat is bigger. Play it.",
+  "voice": "counter-v4",
+  "voiceKeys": {
+   "hook": "counter-v4-hook",
+   "why": "counter-v4-why",
+   "short": "counter-v4-short",
+   "taunt": "counter-taunt1",
+   "gloat": "bait-gloat-cap4-pawn",
+   "rage": "counter-rage3"
+  }
+ },
+ {
+  "id": "L216",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 814,
+  "lichess": "tDWVz",
+  "motif": "discovery",
+  "title": "Secret Weapon",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "7k/4q1p1/4n1Qb/p3R2P/1pP2p2/1P3P2/P1K2P2/8 b - - 0 41",
+  "arrive": "e4e5",
+  "arriveCaptured": "p",
+  "best": "e6d4",
+  "bait": "h6g5",
+  "bestTol": 45,
+  "hook": "Two attackers are waiting in one line.",
+  "why": "Uncover the laser. He cannot stop two attacks.",
+  "whyLong": "When your piece stands in front of your own laser, move it with a threat. Moving the bishop just gave him time.",
+  "whyTargets": {
+   "prompt": "Tap your hidden queen and the rook it hits.",
+   "squares": [
+    "e7",
+    "e5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Nothing to see here. Just nudge your bishop.",
+   "gloat": "Slow and safe. And now I win. Ha!",
+   "rage": "Peekaboo?! I HATE peekaboo!"
+  },
+  "short": "Move it. The laser fires.",
+  "voice": "discovery-v4",
+  "voiceKeys": {
+   "hook": "discovery-v4-hook",
+   "why": "discovery-v4-why",
+   "short": "discovery-v4-short",
+   "taunt": "bait-taunt-quiet6-bishop",
+   "gloat": "bait-gloat-quiet1",
+   "rage": "discovery-rage4"
+  }
+ },
+ {
+  "id": "L217",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 820,
+  "lichess": "oBLk6",
+  "motif": "hanging",
+  "title": "Snack Attack",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "LOOSE LUNCH",
+  "fen": "5k2/5p2/p2r1q2/7P/P7/6Q1/5PP1/R5K1 b - - 0 49",
+  "arrive": "h4h5",
+  "best": "f6a1",
+  "bait": "f6f2",
+  "bestTol": 45,
+  "hook": "Something of his has no guard at all.",
+  "why": "That piece has no guard at all. Take it for free.",
+  "whyLong": "His rook had no guard at all. Always count guards before you grab. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the piece nobody was guarding.",
+   "squares": [
+    "a1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Psst. Free pawn. Grab it. Nobody's looking.",
+   "gloat": "Free food, and you ordered the poison. Yum.",
+   "rage": "NOOOO. That was my WHOLE ROOK!"
+  },
+  "short": "No guard. Take it free.",
+  "voice": "hanging-v1",
+  "voiceKeys": {
+   "hook": "hanging-v1-hook",
+   "why": "hanging-v1-why",
+   "short": "hanging-v1-short",
+   "taunt": "bait-taunt-cap1-pawn",
+   "gloat": "hanging-gloat3",
+   "rage": "hanging-rage7-rook"
+  }
+ },
+ {
+  "id": "L218",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 827,
+  "lichess": "IcWgV",
+  "motif": "attackers",
+  "title": "Remove the Shield",
+  "palaceRoom": "Counting House",
+  "mascot": "GUARD DOWN",
+  "fen": "8/p4pk1/1p4p1/4p3/3qn3/5BP1/PQ3PK1/8 w - - 2 38",
+  "arrive": "c4d4",
+  "best": "b2d4",
+  "bait": "f3e4",
+  "bestTol": 45,
+  "hook": "One piece is doing all his guarding.",
+  "why": "Take the guard. Then the piece it protected is loose too.",
+  "whyLong": "His queen was the key guard. Your queen takes it, and his defence falls apart. Grabbing the horse was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the guard your queen knocks out.",
+   "squares": [
+    "d4"
+   ]
+  },
+  "glitch": {
+   "taunt": "Look at that juicy horse. Just take it!",
+   "gloat": "My defence is perfect. Just like me.",
+   "rage": "You COUNTED to three?! Nobody counts to three!"
+  },
+  "short": "Take the guard first.",
+  "voice": "attackers-v1",
+  "voiceKeys": {
+   "hook": "attackers-v1-hook",
+   "why": "attackers-v1-why",
+   "short": "attackers-v1-short",
+   "taunt": "bait-taunt-cap3-horse",
+   "gloat": "attackers-gloat5",
+   "rage": "attackers-rage3"
+  }
+ },
+ {
+  "id": "L219",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 843,
+  "lichess": "OLNdS",
+  "motif": "trapped",
+  "title": "No Exit",
+  "palaceRoom": "Trap Room",
+  "mascot": "NO EXIT",
+  "fen": "8/pp2kp1p/2p3b1/8/5PP1/1B2K3/PP6/8 w - - 1 40",
+  "arrive": "f6e7",
+  "best": "f4f5",
+  "bait": "b3f7",
+  "bestTol": 45,
+  "hook": "One of his pieces has nowhere to go.",
+  "why": "His piece has no safe square. Attack it and it dies.",
+  "whyLong": "His bishop has no safe squares left. Your pawn attacks it and it cannot run. The free pawn was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the bishop with no way out.",
+   "squares": [
+    "g6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Mmm, pawn. Crunchy. Grab it quick!",
+   "gloat": "One pawn for you. The whole game for me.",
+   "rage": "Run, bishop! RUN! Why can't you run?!"
+  },
+  "short": "No safe square. Attack it.",
+  "voice": "trapped-v1",
+  "voiceKeys": {
+   "hook": "trapped-v1-hook",
+   "why": "trapped-v1-why",
+   "short": "trapped-v1-short",
+   "taunt": "bait-taunt-cap8-pawn",
+   "gloat": "bait-gloat-cap3-pawn",
+   "rage": "trapped-rage8-bishop"
+  }
+ },
+ {
+  "id": "L220",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 2,
+  "rating": 849,
+  "lichess": "Byh1y",
+  "motif": "royalFork",
+  "title": "Two Crowns",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "1q5r/Rp1k1pp1/1Pn5/1B1p4/3P1n2/1Q5P/8/5R1K b - - 2 33",
+  "arrive": "d1f1",
+  "best": "h8h3",
+  "bait": "b8a7",
+  "bestTol": 45,
+  "hook": "His king and a big piece are standing too close.",
+  "why": "Check the king and hit another piece. He must save the king.",
+  "whyLong": "Your rook checks the king and hits his queen. The king must move, so the queen is lunch. Glitch wanted you busy eating the rook.",
+  "whyTargets": {
+   "prompt": "Tap the king and the queen your rook hits.",
+   "squares": [
+    "h1",
+    "b3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Eat the rook. Snacks first, thinking later.",
+   "gloat": "Crown safe. Everything safe. Bye bye.",
+   "rage": "CROWNS?! You forked the CROWN?!"
+  },
+  "short": "Check him. Take what he leaves.",
+  "voice": "royalFork-v1",
+  "voiceKeys": {
+   "hook": "royalFork-v1-hook",
+   "why": "royalFork-v1-why",
+   "short": "royalFork-v1-short",
+   "taunt": "bait-taunt-cap5-rook",
+   "gloat": "royalFork-gloat4",
+   "rage": "royalFork-rage1"
+  }
+ },
+ {
+  "id": "L301",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 866,
+  "lichess": "hMBSh",
+  "motif": "kingMarch",
+  "title": "Crown Run",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "CROWN RUN",
+  "fen": "8/7p/1N2k3/2Kb1pp1/p7/4P1P1/5P1P/8 b - - 3 43",
+  "arrive": "c4b6",
+  "best": "a4a3",
+  "bait": "d5b3",
+  "bestTol": 45,
+  "hook": "The last row is closer than it looks.",
+  "why": "The pawn runs, and his pieces are too far to catch it.",
+  "whyLong": "Passed pawns must be pushed. His pieces are too far away to stop it. Moving the bishop just gave him time.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that wants a crown.",
+   "squares": [
+    "a4"
+   ]
+  },
+  "glitch": {
+   "taunt": "Leave that little pawn alone. It's sleepy.",
+   "gloat": "Your pawn stayed home. Boring! Lovely!",
+   "rage": "The pawn got a CROWN?! I want a crown!"
+  },
+  "short": "The pawn runs. Nobody catches it.",
+  "voice": "kingMarch-v2",
+  "voiceKeys": {
+   "hook": "kingMarch-v2-hook",
+   "why": "kingMarch-v2-why",
+   "short": "kingMarch-v2-short",
+   "taunt": "kingMarch-taunt2",
+   "gloat": "kingMarch-gloat1",
+   "rage": "kingMarch-rage4"
+  }
+ },
+ {
+  "id": "L302",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 877,
+  "lichess": "4msxG",
+  "motif": "pin",
+  "title": "Stuck Fast",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "4q1k1/1Q3pp1/2p4p/3p4/1P6/1r4P1/5P1P/R5K1 w - - 2 31",
+  "arrive": "c3b3",
+  "best": "a1a8",
+  "bait": "b7f7",
+  "bestTol": 45,
+  "hook": "Glue something to his king.",
+  "why": "Pin it to the bigger piece behind. Then attack it again.",
+  "whyLong": "A pin turns his queen into a statue. Statues are easy to eat. The pawn was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the stuck queen and the king behind it.",
+   "squares": [
+    "e8",
+    "g8"
+   ]
+  },
+  "glitch": {
+   "taunt": "That pawn is begging to be eaten.",
+   "gloat": "My pieces wriggled free. Thanks!",
+   "rage": "Pinned! Pinned like a butterfly! NOOOO!"
+  },
+  "short": "Pin it, then pile on.",
+  "voice": "pin-v2",
+  "voiceKeys": {
+   "hook": "pin-v2-hook",
+   "why": "pin-v2-why",
+   "short": "pin-v2-short",
+   "taunt": "bait-taunt-cap2-pawn",
+   "gloat": "pin-gloat4",
+   "rage": "pin-rage3"
+  }
+ },
+ {
+  "id": "L303",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 881,
+  "lichess": "Evstn",
+  "motif": "trapped",
+  "title": "Trap Door",
+  "palaceRoom": "Trap Room",
+  "mascot": "NO EXIT",
+  "fen": "8/8/4k1p1/1p2Pb2/p7/P2p1BP1/1P4K1/8 w - - 5 55",
+  "arrive": "e7e6",
+  "best": "g3g4",
+  "bait": "f3d5",
+  "bestTol": 45,
+  "hook": "Something of his is stuck in a corner.",
+  "why": "No squares to run to. Attack it, don't trade it.",
+  "whyLong": "Before you chase a piece, check if it can even run. His bishop cannot. Checking just for fun was the trap.",
+  "whyTargets": {
+   "prompt": "Tap the bishop with no way out.",
+   "squares": [
+    "f5"
+   ]
+  },
+  "glitch": {
+   "taunt": "My pieces have lots of room. Tons of room.",
+   "gloat": "You checked. I moved. We can do this all day.",
+   "rage": "Every door is locked?! Who has the key?!"
+  },
+  "short": "Trapped. Attack, do not trade.",
+  "voice": "trapped-v4",
+  "voiceKeys": {
+   "hook": "trapped-v4-hook",
+   "why": "trapped-v4-why",
+   "short": "trapped-v4-short",
+   "taunt": "trapped-taunt1",
+   "gloat": "bait-gloat-chk1",
+   "rage": "trapped-rage3"
+  }
+ },
+ {
+  "id": "L304",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 897,
+  "lichess": "KEPe0",
+  "motif": "royalFork",
+  "title": "Crown Fork",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "5r1k/5Rb1/p2P2Pp/1p5n/2p5/P4B1P/1pP5/5R1K b - - 2 32",
+  "arrive": "b7f7",
+  "best": "h5g3",
+  "bait": "f8f7",
+  "bestTol": 45,
+  "hook": "The king has company. Bad company for him.",
+  "why": "A royal fork: the check comes first, the free piece comes next.",
+  "whyLong": "Check plus attack is the strongest fork there is. Here it wins his rook. The free rook was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the king and the rook your horse hits.",
+   "squares": [
+    "h1",
+    "f1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Look at that juicy rook. Just take it!",
+   "gloat": "No check, no fork, no chance. Lovely.",
+   "rage": "Royal fork?! I'm telling the Queen!"
+  },
+  "short": "Check and bite. Collect next move.",
+  "voice": "royalFork-v3",
+  "voiceKeys": {
+   "hook": "royalFork-v3-hook",
+   "why": "royalFork-v3-why",
+   "short": "royalFork-v3-short",
+   "taunt": "bait-taunt-cap3-rook",
+   "gloat": "royalFork-gloat2",
+   "rage": "royalFork-rage3"
+  }
+ },
+ {
+  "id": "L305",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 921,
+  "lichess": "zG7G6",
+  "motif": "mateThreat",
+  "title": "Checkmate Time",
+  "palaceRoom": "Checkmate Chamber",
+  "mascot": "THE END",
+  "fen": "r1bq1rnk/pp3p1n/2pp1P1Q/2b1p3/2B1P3/2NP1N2/PPP3PP/R4R1K w - - 1 15",
+  "arrive": "e7g8",
+  "best": "h6g7",
+  "bait": "h6f8",
+  "bestTol": 45,
+  "hook": "Checks first. One of them ends everything.",
+  "why": "Mate beats any piece you could grab.",
+  "whyLong": "When the king has no way out, stop counting pieces and finish. Grabbing the rook was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "h8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Ignore my king. He's not important. At all.",
+   "gloat": "Enjoy the rook. It was poisoned. Hee hee.",
+   "rage": "Game OVER?! I wasn't READY!"
+  },
+  "short": "Mate first. Snacks never.",
+  "voice": "mateThreat-v4",
+  "voiceKeys": {
+   "hook": "mateThreat-v4-hook",
+   "why": "mateThreat-v4-why",
+   "short": "mateThreat-v4-short",
+   "taunt": "mateThreat-taunt1",
+   "gloat": "bait-gloat-cap2-rook",
+   "rage": "mateThreat-rage2"
+  }
+ },
+ {
+  "id": "L306",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 927,
+  "lichess": "crPYf",
+  "motif": "counter",
+  "title": "Hit Back",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "r1b1kbnr/pppp1ppp/8/4P1q1/2Bp4/5Q2/PPP2PPP/RN3RK1 w kq - 0 10",
+  "arrive": "e7g5",
+  "arriveCaptured": "b",
+  "best": "f3f7",
+  "bait": "c4f7",
+  "bestTol": 45,
+  "hook": "Don't run. Look for something bigger.",
+  "why": "A check or capture first. He has to deal with yours.",
+  "whyLong": "A check is a free move. Answer an attack with a bigger one. The free pawn was a trap.",
+  "whyTargets": {
+   "prompt": "Tap his queen and the pawn it attacks.",
+   "squares": [
+    "g2",
+    "g5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Run! Run away! Quick, before it's too late!",
+   "gloat": "Hide and seek! You hid. I win.",
+   "rage": "Bigger threat?! Mine was big! Mine was HUGE!"
+  },
+  "short": "Check or capture first.",
+  "voice": "counter-v2",
+  "voiceKeys": {
+   "hook": "counter-v2-hook",
+   "why": "counter-v2-why",
+   "short": "counter-v2-short",
+   "taunt": "counter-taunt1",
+   "gloat": "counter-gloat6",
+   "rage": "counter-rage6"
+  }
+ },
+ {
+  "id": "L307",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 929,
+  "lichess": "eIn1x",
+  "motif": "discovery",
+  "title": "Out of the Way",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "2r2rk1/1b3ppp/p2q3n/1p1Pp3/1P5b/P2B3P/1B1QN1PK/R4R1N b - - 0 22",
+  "arrive": "e4d5",
+  "arriveCaptured": "n",
+  "best": "e5e4",
+  "bait": "d6d5",
+  "bestTol": 45,
+  "hook": "Two attackers are waiting in one line.",
+  "why": "Uncover the laser. He cannot stop two attacks.",
+  "whyLong": "When your piece stands in front of your own laser, move it with a threat. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap your hidden queen and the king it hits.",
+   "squares": [
+    "d6",
+    "h2"
+   ]
+  },
+  "glitch": {
+   "taunt": "Nothing hiding here. Nothing at all.",
+   "gloat": "Traffic jam. Your pieces are stuck. Lovely.",
+   "rage": "Peekaboo?! I HATE peekaboo!"
+  },
+  "short": "Move it. The laser fires.",
+  "voice": "discovery-v4",
+  "voiceKeys": {
+   "hook": "discovery-v4-hook",
+   "why": "discovery-v4-why",
+   "short": "discovery-v4-short",
+   "taunt": "discovery-taunt2",
+   "gloat": "discovery-gloat6",
+   "rage": "discovery-rage4"
+  }
+ },
+ {
+  "id": "L308",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 950,
+  "lichess": "KsVsl",
+  "motif": "attackers",
+  "title": "Guard Down",
+  "palaceRoom": "Counting House",
+  "mascot": "GUARD DOWN",
+  "fen": "3r1rk1/1pp1nppp/p2q4/8/8/5N1P/PP3PP1/R2QR1K1 w - - 0 17",
+  "arrive": "d7d6",
+  "arriveCaptured": "p",
+  "best": "d1d6",
+  "bait": "e1e7",
+  "bestTol": 45,
+  "hook": "His defence has one weak link.",
+  "why": "One piece holds his defence together. Take that piece.",
+  "whyLong": "The best capture is often the bodyguard, not the prize. Here it was his queen. The free horse was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the guard your queen knocks out.",
+   "squares": [
+    "d6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free horse! Free horse! Take it before I change my mind!",
+   "gloat": "My bodyguard is still on duty. Ha!",
+   "rage": "My queen was GUARDING everything! Who took it?!"
+  },
+  "short": "Take the piece holding it together.",
+  "voice": "attackers-v4",
+  "voiceKeys": {
+   "hook": "attackers-v4-hook",
+   "why": "attackers-v4-why",
+   "short": "attackers-v4-short",
+   "taunt": "bait-taunt-cap4-horse",
+   "gloat": "attackers-gloat1",
+   "rage": "attackers-rage7-queen"
+  }
+ },
+ {
+  "id": "L309",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 958,
+  "lichess": "4UG3S",
+  "motif": "defend",
+  "title": "Guard It",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "8/6pp/3k4/p2pp3/8/PPn1PN1P/1R2K1P1/2r5 w - - 6 37",
+  "arrive": "e4c3",
+  "best": "e2d2",
+  "bait": "e2d3",
+  "bestTol": 45,
+  "hook": "He attacks first. Answer without giving anything away.",
+  "why": "His move attacked you. Fix the threat first, then play.",
+  "whyLong": "His horse was hitting your king. The best move deals with that first. The slow move was a trap.",
+  "whyTargets": {
+   "prompt": "Tap his horse and the king it attacks.",
+   "squares": [
+    "e2",
+    "c3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Forget my threat. Go do your own thing!",
+   "gloat": "My threat was real. Surprise!",
+   "rage": "You SAW it?! You were supposed to be busy!"
+  },
+  "short": "Fix his threat first.",
+  "voice": "defend-v1",
+  "voiceKeys": {
+   "hook": "defend-v1-hook",
+   "why": "defend-v1-why",
+   "short": "defend-v1-short",
+   "taunt": "defend-taunt3",
+   "gloat": "defend-gloat5",
+   "rage": "defend-rage1"
+  }
+ },
+ {
+  "id": "L310",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 964,
+  "lichess": "gJyRu",
+  "motif": "hanging",
+  "title": "Unguarded",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "LOOSE LUNCH",
+  "fen": "r2kr3/ppp1nQ1p/3p2p1/8/3NP3/B7/q1P2PPP/1N3RK1 b - - 0 16",
+  "arrive": "f6f7",
+  "arriveCaptured": "p",
+  "best": "a2f7",
+  "bait": "a2a3",
+  "bestTol": 45,
+  "hook": "One of his pieces is all alone.",
+  "why": "Count the guards. Zero means it is yours for nothing.",
+  "whyLong": "A loose queen is a free gift. Take gifts. The free bishop was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the piece nobody was guarding.",
+   "squares": [
+    "f7"
+   ]
+  },
+  "glitch": {
+   "taunt": "My pieces are all guarded. Promise. Cross my heart.",
+   "gloat": "Yum, the bishop. That was my trap. Hee hee.",
+   "rage": "You COUNTED?! Nobody counts! Stop counting!"
+  },
+  "short": "Zero guards. It is yours.",
+  "voice": "hanging-v2",
+  "voiceKeys": {
+   "hook": "hanging-v2-hook",
+   "why": "hanging-v2-why",
+   "short": "hanging-v2-short",
+   "taunt": "hanging-taunt1",
+   "gloat": "bait-gloat-cap4-bishop",
+   "rage": "hanging-rage2"
+  }
+ },
+ {
+  "id": "L311",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 965,
+  "lichess": "EyXgj",
+  "motif": "pin",
+  "title": "Stuck Fast",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "2r3k1/p5p1/q4p1p/P7/3Rp1N1/1P5P/4QPP1/5K2 b - - 0 33",
+  "arrive": "c4d4",
+  "arriveCaptured": "b",
+  "best": "c8c1",
+  "bait": "a6e2",
+  "bestTol": 45,
+  "hook": "One of his pieces is not allowed to move.",
+  "why": "A pinned piece cannot run. Hit it while it is stuck.",
+  "whyLong": "Line your rook up with the queen and the king. The front one is stuck. Glitch wanted you busy eating the queen.",
+  "whyTargets": {
+   "prompt": "Tap the stuck queen and the king behind it.",
+   "squares": [
+    "e2",
+    "f1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free queen! Free queen! Take it before I change my mind!",
+   "gloat": "My pieces wriggled free. Thanks!",
+   "rage": "A thumbtack?! In MY pieces?! Ouch!"
+  },
+  "short": "Stuck pieces cannot run. Attack.",
+  "voice": "pin-v3",
+  "voiceKeys": {
+   "hook": "pin-v3-hook",
+   "why": "pin-v3-why",
+   "short": "pin-v3-short",
+   "taunt": "bait-taunt-cap4-queen",
+   "gloat": "pin-gloat4",
+   "rage": "pin-rage4"
+  }
+ },
+ {
+  "id": "L312",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 966,
+  "lichess": "yMxLd",
+  "motif": "skewer",
+  "title": "Through the Middle",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "6r1/5p2/5P2/3B1K1k/6p1/6Rp/8/8 b - - 3 50",
+  "arrive": "e4d5",
+  "best": "g8g5",
+  "bait": "h5h4",
+  "bestTol": 45,
+  "hook": "Poke the front. Take the back.",
+  "why": "A skewer is a pin backwards. Big piece runs, small piece dies.",
+  "whyLong": "Big pieces in front of small ones on a line are a kebab waiting to happen. The safe-looking move was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the bishop behind.",
+   "squares": [
+    "f5",
+    "d5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Tuck your king away. Nothing bad ever happens.",
+   "gloat": "No kebab today. Everybody's safe.",
+   "rage": "Kebab?! I'm not a KEBAB!"
+  },
+  "short": "Big piece runs. Small piece dies.",
+  "voice": "skewer-v3",
+  "voiceKeys": {
+   "hook": "skewer-v3-hook",
+   "why": "skewer-v3-why",
+   "short": "skewer-v3-short",
+   "taunt": "bait-taunt-quiet2-king",
+   "gloat": "skewer-gloat1",
+   "rage": "skewer-rage2"
+  }
+ },
+ {
+  "id": "L313",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 967,
+  "lichess": "LUPt9",
+  "motif": "attackers",
+  "title": "Bodyguard",
+  "palaceRoom": "Counting House",
+  "mascot": "GUARD DOWN",
+  "fen": "6k1/5pr1/p7/1p1qp3/P7/2Pp1NR1/3Q1P2/5K2 b - - 1 41",
+  "arrive": "h3g3",
+  "best": "g7g3",
+  "bait": "d5f3",
+  "bestTol": 45,
+  "hook": "One piece is doing all his guarding.",
+  "why": "Take the guard. Then the piece it protected is loose too.",
+  "whyLong": "His rook was the key guard. Your rook takes it, and his defence falls apart. Grabbing the horse was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the guard your rook knocks out.",
+   "squares": [
+    "g3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Eat the horse. Snacks first, thinking later.",
+   "gloat": "One horse for you. The whole game for me.",
+   "rage": "No guard?! Now everything is loose! NOOOO!"
+  },
+  "short": "Take the guard first.",
+  "voice": "attackers-v1",
+  "voiceKeys": {
+   "hook": "attackers-v1-hook",
+   "why": "attackers-v1-why",
+   "short": "attackers-v1-short",
+   "taunt": "bait-taunt-cap5-horse",
+   "gloat": "bait-gloat-cap3-horse",
+   "rage": "attackers-rage2"
+  }
+ },
+ {
+  "id": "L314",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 968,
+  "lichess": "I8tFC",
+  "motif": "mateThreat",
+  "title": "Curtain Call",
+  "palaceRoom": "Checkmate Chamber",
+  "mascot": "THE END",
+  "fen": "rnq2r2/p1bbnppk/1p2N3/1P1pP3/6Q1/PN6/1BP2PPP/R3K2R w KQ - 1 19",
+  "arrive": "g6h7",
+  "best": "g4g7",
+  "bait": "e6f8",
+  "bestTol": 45,
+  "hook": "Checks first. One of them ends everything.",
+  "why": "Mate beats any piece you could grab.",
+  "whyLong": "When the king has no way out, stop counting pieces and finish. The free rook was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "h7"
+   ]
+  },
+  "glitch": {
+   "taunt": "A whole rook, just lying there. Go on.",
+   "gloat": "No mate? Then the fight goes on. Forever.",
+   "rage": "Mate?! I was offering you FREE stuff!"
+  },
+  "short": "Mate first. Snacks never.",
+  "voice": "mateThreat-v4",
+  "voiceKeys": {
+   "hook": "mateThreat-v4-hook",
+   "why": "mateThreat-v4-why",
+   "short": "mateThreat-v4-short",
+   "taunt": "bait-taunt-cap6-rook",
+   "gloat": "mateThreat-gloat5",
+   "rage": "mateThreat-rage1"
+  }
+ },
+ {
+  "id": "L315",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 974,
+  "lichess": "kCfiI",
+  "motif": "backRank",
+  "title": "Back Row",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "r1b3k1/ppq2ppp/5p1b/2Pr4/2Q5/5NP1/PP3P1P/R3R1K1 w - - 0 19",
+  "arrive": "d8d5",
+  "arriveCaptured": "b",
+  "best": "e1e8",
+  "bait": "c4d5",
+  "bestTol": 45,
+  "hook": "His own pawns locked the door.",
+  "why": "His pawns trap his own king. Land on the back row.",
+  "whyLong": "His pawns stand in front of his king like a wall. The back row is the only way in. The rook was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "g8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Forget my king. Snacks are more fun.",
+   "gloat": "Ha! You ate the rook. Now watch me eat.",
+   "rage": "MY OWN PAWNS locked the door?!"
+  },
+  "short": "His pawns trap him. Back row.",
+  "voice": "backRank-v1",
+  "voiceKeys": {
+   "hook": "backRank-v1-hook",
+   "why": "backRank-v1-why",
+   "short": "backRank-v1-short",
+   "taunt": "backRank-taunt3",
+   "gloat": "bait-gloat-cap1-rook",
+   "rage": "backRank-rage1"
+  }
+ },
+ {
+  "id": "L316",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 985,
+  "lichess": "FOdM8",
+  "motif": "skewer",
+  "title": "Through the Middle",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "8/4N3/5R2/kp1pp3/2b3P1/P1P2K2/2P3P1/7r b - - 2 55",
+  "arrive": "g8e7",
+  "best": "h1f1",
+  "bait": "e5e4",
+  "bestTol": 45,
+  "hook": "Poke the front. Take the back.",
+  "why": "A skewer is a pin backwards. Big piece runs, small piece dies.",
+  "whyLong": "Big pieces in front of small ones on a line are a kebab waiting to happen. Glitch wanted a check that goes nowhere.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the rook behind.",
+   "squares": [
+    "f3",
+    "f6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Check! Check! Everybody loves a check!",
+   "gloat": "My big piece stays. My little piece stays. Ha!",
+   "rage": "Poked in the front, robbed in the back!"
+  },
+  "short": "Big piece runs. Small piece dies.",
+  "voice": "skewer-v3",
+  "voiceKeys": {
+   "hook": "skewer-v3-hook",
+   "why": "skewer-v3-why",
+   "short": "skewer-v3-short",
+   "taunt": "bait-taunt-chk3",
+   "gloat": "skewer-gloat2",
+   "rage": "skewer-rage6"
+  }
+ },
+ {
+  "id": "L317",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 994,
+  "lichess": "0y0Tm",
+  "motif": "trapped",
+  "title": "Trap Door",
+  "palaceRoom": "Trap Room",
+  "mascot": "NO EXIT",
+  "fen": "3r1r1k/6pp/p3Bb2/1p1P4/2p5/4B3/PP3PPP/RN4K1 b - - 0 24",
+  "arrive": "d4d5",
+  "best": "f6b2",
+  "bait": "d8d5",
+  "bestTol": 45,
+  "hook": "Something of his is stuck in a corner.",
+  "why": "No squares to run to. Attack it, don't trade it.",
+  "whyLong": "Before you chase a piece, check if it can even run. His rook cannot. The free pawn was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the rook with no way out.",
+   "squares": [
+    "a1"
+   ]
+  },
+  "glitch": {
+   "taunt": "That pawn is begging to be eaten.",
+   "gloat": "One pawn for you. The whole game for me.",
+   "rage": "No way out?! Not even a tiny one?!"
+  },
+  "short": "Trapped. Attack, do not trade.",
+  "voice": "trapped-v4",
+  "voiceKeys": {
+   "hook": "trapped-v4-hook",
+   "why": "trapped-v4-why",
+   "short": "trapped-v4-short",
+   "taunt": "bait-taunt-cap2-pawn",
+   "gloat": "bait-gloat-cap3-pawn",
+   "rage": "trapped-rage1"
+  }
+ },
+ {
+  "id": "L318",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 997,
+  "lichess": "pcha8",
+  "motif": "counter",
+  "title": "Answer Back",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "3r1r2/pp2b2k/7p/2pq3Q/8/P5R1/1P4PP/6K1 w - - 0 28",
+  "arrive": "d6d5",
+  "arriveCaptured": "r",
+  "best": "h5g6",
+  "bait": "h5d5",
+  "bestTol": 45,
+  "hook": "A check or a capture beats running away.",
+  "why": "Running loses time. Your threat is bigger than his.",
+  "whyLong": "Your queen was attacked, but your counterattack is worth more. Glitch wanted you busy eating the queen.",
+  "whyTargets": {
+   "prompt": "Tap his queen and the queen it attacks.",
+   "squares": [
+    "h5",
+    "d5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Scared yet? You should be. Hide something!",
+   "gloat": "Running is my favorite thing you do.",
+   "rage": "Bigger threat?! Mine was big! Mine was HUGE!"
+  },
+  "short": "Your threat is bigger. Play it.",
+  "voice": "counter-v4",
+  "voiceKeys": {
+   "hook": "counter-v4-hook",
+   "why": "counter-v4-why",
+   "short": "counter-v4-short",
+   "taunt": "counter-taunt2",
+   "gloat": "counter-gloat3",
+   "rage": "counter-rage6"
+  }
+ },
+ {
+  "id": "L319",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 998,
+  "lichess": "668Xn",
+  "motif": "discovery",
+  "title": "Surprise Attack",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "5R2/pp1k4/2pn4/3p4/3P4/KP3N2/PP3r2/8 w - - 5 40",
+  "arrive": "d2f2",
+  "best": "f3e5",
+  "bait": "f8d8",
+  "bestTol": 45,
+  "hook": "Move the front piece. Something wakes up.",
+  "why": "One step aside opens a hidden attack. Two threats at once.",
+  "whyLong": "A discovered attack is two threats for the price of one move. The loud check was the bait.",
+  "whyTargets": {
+   "prompt": "Tap your hidden rook and the rook it hits.",
+   "squares": [
+    "f8",
+    "f2"
+   ]
+  },
+  "glitch": {
+   "taunt": "Poke his king with your rook. He hates that.",
+   "gloat": "The laser stayed hidden. Lucky me.",
+   "rage": "A LASER?! Behind your own piece?!"
+  },
+  "short": "Step aside. Two attacks at once.",
+  "voice": "discovery-v2",
+  "voiceKeys": {
+   "hook": "discovery-v2-hook",
+   "why": "discovery-v2-why",
+   "short": "discovery-v2-short",
+   "taunt": "bait-taunt-chk4-rook",
+   "gloat": "discovery-gloat1",
+   "rage": "discovery-rage1"
+  }
+ },
+ {
+  "id": "L320",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 3,
+  "rating": 998,
+  "lichess": "ez9oq",
+  "motif": "backRank",
+  "title": "Bottom Floor",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "6k1/5ppp/4p3/P2pP1QP/2q5/P7/2p1rPP1/1rR3K1 w - - 2 32",
+  "arrive": "b8b1",
+  "best": "g5d8",
+  "bait": "c1b1",
+  "bestTol": 45,
+  "hook": "Look at his back row. Who guards it?",
+  "why": "Nobody guards the back row. Slide in and it is over.",
+  "whyLong": "Your queen lands on his back row and the king has nowhere to go. The free rook was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "g8"
+   ]
+  },
+  "glitch": {
+   "taunt": "The back row is fine. Totally fine.",
+   "gloat": "No mate, no problem. Hee hee.",
+   "rage": "MY OWN PAWNS locked the door?!"
+  },
+  "short": "Nobody guards the back row. Slide in.",
+  "voice": "backRank-v3",
+  "voiceKeys": {
+   "hook": "backRank-v3-hook",
+   "why": "backRank-v3-why",
+   "short": "backRank-v3-short",
+   "taunt": "backRank-taunt2",
+   "gloat": "backRank-gloat3",
+   "rage": "backRank-rage1"
+  }
+ },
+ {
+  "id": "L401",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1008,
+  "lichess": "K04xI",
+  "motif": "hanging",
+  "title": "Nobody Home",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "LOOSE LUNCH",
+  "fen": "r1r3k1/6p1/p1N2n1p/3p1Q2/1q6/8/PP3PPP/3RR1K1 b - - 1 26",
+  "arrive": "d4c6",
+  "best": "c8c6",
+  "bait": "b4e1",
+  "bestTol": 45,
+  "hook": "Somebody forgot to protect something.",
+  "why": "He left it alone. Take it before he wakes up.",
+  "whyLong": "Before any move, look for pieces with zero guards. Here it was his horse. Grabbing the rook was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the piece nobody was guarding.",
+   "squares": [
+    "c6"
+   ]
+  },
+  "glitch": {
+   "taunt": "That rook is begging to be eaten.",
+   "gloat": "You grabbed the wrong plate. My favorite.",
+   "rage": "Who was on guard duty?! NOBODY?!"
+  },
+  "short": "It is alone. Take it.",
+  "voice": "hanging-v4",
+  "voiceKeys": {
+   "hook": "hanging-v4-hook",
+   "why": "hanging-v4-why",
+   "short": "hanging-v4-short",
+   "taunt": "bait-taunt-cap2-rook",
+   "gloat": "hanging-gloat5",
+   "rage": "hanging-rage5"
+  }
+ },
+ {
+  "id": "L402",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1009,
+  "lichess": "7lFqZ",
+  "motif": "mateThreat",
+  "title": "Finish Him",
+  "palaceRoom": "Checkmate Chamber",
+  "mascot": "THE END",
+  "fen": "8/4Rp1k/7b/2pPp3/2P1P3/5P1b/1PB5/2qNK1Q1 b - - 0 34",
+  "arrive": "f2g1",
+  "arriveCaptured": "r",
+  "best": "c1d2",
+  "bait": "c1c2",
+  "bestTol": 45,
+  "hook": "Look for the checkmate before the snack.",
+  "why": "Look at every check first. One of them is mate.",
+  "whyLong": "Your queen goes for the king. Grabbing stuff only lets him keep playing. Grabbing the bishop was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "e1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Look at that juicy bishop. Just take it!",
+   "gloat": "Close one. Not close enough. Ha!",
+   "rage": "You looked at the CHECKS?! Who does that?!"
+  },
+  "short": "Look at checks. One mates.",
+  "voice": "mateThreat-v2",
+  "voiceKeys": {
+   "hook": "mateThreat-v2-hook",
+   "why": "mateThreat-v2-why",
+   "short": "mateThreat-v2-short",
+   "taunt": "bait-taunt-cap3-bishop",
+   "gloat": "mateThreat-gloat6",
+   "rage": "mateThreat-rage3"
+  }
+ },
+ {
+  "id": "L403",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1014,
+  "lichess": "sP1aT",
+  "motif": "kingMarch",
+  "title": "Crown Run",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "CROWN RUN",
+  "fen": "r5k1/1pqn3b/p1p5/2Pp2p1/1P1P2p1/2N1p1P1/P3QR1P/4R1K1 b - - 1 27",
+  "arrive": "c2e2",
+  "best": "e3f2",
+  "bait": "d7c5",
+  "bestTol": 45,
+  "hook": "Push the right pawn and he can't keep up.",
+  "why": "Your pawn is closer to the end than his defenders are.",
+  "whyLong": "A pawn one step from a crown is worth more than most pieces. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that wants a crown.",
+   "squares": [
+    "e3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Eat the pawn. Snacks first, thinking later.",
+   "gloat": "No crown for you today. Hee hee.",
+   "rage": "A new QUEEN?! Where did she come from?!"
+  },
+  "short": "Push. His guards are too far.",
+  "voice": "kingMarch-v4",
+  "voiceKeys": {
+   "hook": "kingMarch-v4-hook",
+   "why": "kingMarch-v4-why",
+   "short": "kingMarch-v4-short",
+   "taunt": "bait-taunt-cap5-pawn",
+   "gloat": "kingMarch-gloat2",
+   "rage": "kingMarch-rage2"
+  }
+ },
+ {
+  "id": "L404",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1016,
+  "lichess": "2QUwp",
+  "motif": "trapped",
+  "title": "Boxed In",
+  "palaceRoom": "Trap Room",
+  "mascot": "NO EXIT",
+  "fen": "8/4kp2/4pRp1/1p2P3/p1pP4/P1P2Kn1/1P6/8 b - - 9 49",
+  "arrive": "e2f3",
+  "best": "g3h5",
+  "bait": "g3f5",
+  "bestTol": 45,
+  "hook": "Something of his is stuck in a corner.",
+  "why": "No squares to run to. Attack it, don't trade it.",
+  "whyLong": "Before you chase a piece, check if it can even run. His rook cannot. The slow move was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the rook with no way out.",
+   "squares": [
+    "f6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Be sensible. Move your horse. Sensible is good.",
+   "gloat": "Slow and safe. And now I win. Ha!",
+   "rage": "A trap?! On MY board?! Rude!"
+  },
+  "short": "Trapped. Attack, do not trade.",
+  "voice": "trapped-v4",
+  "voiceKeys": {
+   "hook": "trapped-v4-hook",
+   "why": "trapped-v4-why",
+   "short": "trapped-v4-short",
+   "taunt": "bait-taunt-quiet7-horse",
+   "gloat": "bait-gloat-quiet1",
+   "rage": "trapped-rage5"
+  }
+ },
+ {
+  "id": "L405",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1052,
+  "lichess": "B3eh1",
+  "motif": "counter",
+  "title": "Counterpunch",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "2r5/q4kpp/P1Prpp2/2Q5/8/5PP1/7P/R1R4K b - - 2 37",
+  "arrive": "c3c5",
+  "best": "d6d1",
+  "bait": "a7c5",
+  "bestTol": 45,
+  "hook": "A check or a capture beats running away.",
+  "why": "Running loses time. Your threat is bigger than his.",
+  "whyLong": "Your queen was attacked, but your counterattack is worth more. The free queen was a trap.",
+  "whyTargets": {
+   "prompt": "Tap his queen and the queen it attacks.",
+   "squares": [
+    "a7",
+    "c5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Eat the queen. Snacks first, thinking later.",
+   "gloat": "You hid. I kept my stuff. Same as always.",
+   "rage": "My attack! Ignored! How rude!"
+  },
+  "short": "Your threat is bigger. Play it.",
+  "voice": "counter-v4",
+  "voiceKeys": {
+   "hook": "counter-v4-hook",
+   "why": "counter-v4-why",
+   "short": "counter-v4-short",
+   "taunt": "bait-taunt-cap5-queen",
+   "gloat": "counter-gloat2",
+   "rage": "counter-rage4"
+  }
+ },
+ {
+  "id": "L406",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1053,
+  "lichess": "UzZg3",
+  "motif": "backRank",
+  "title": "Basement Door",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "4r2k/p4Ppp/3B4/8/6n1/2N2Kb1/PP3P1q/5R2 w - - 0 27",
+  "arrive": "a8e8",
+  "arriveCaptured": "r",
+  "best": "f7e8q",
+  "bait": "f7e8n",
+  "bestTol": 45,
+  "hook": "The king is tucked in too tight.",
+  "why": "Mate beats any snack. His own pawns block the exit.",
+  "whyLong": "Before you grab anything, check the back row. It ends the game. Grabbing the rook was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "h8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Psst. Free rook. Grab it. Nobody's looking.",
+   "gloat": "My king stays cozy. Thanks!",
+   "rage": "I needed ONE little escape square! ONE!"
+  },
+  "short": "Mate beats a snack.",
+  "voice": "backRank-v4",
+  "voiceKeys": {
+   "hook": "backRank-v4-hook",
+   "why": "backRank-v4-why",
+   "short": "backRank-v4-short",
+   "taunt": "bait-taunt-cap1-rook",
+   "gloat": "backRank-gloat2",
+   "rage": "backRank-rage6"
+  }
+ },
+ {
+  "id": "L407",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1060,
+  "lichess": "QEw28",
+  "motif": "pin",
+  "title": "Thumbtack",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "Q1n3k1/n1q2ppb/4p2p/3pP3/3P4/1NP2N1P/1r3PP1/R5K1 w - - 2 25",
+  "arrive": "a2b2",
+  "best": "a1a7",
+  "bait": "a8c8",
+  "bestTol": 45,
+  "hook": "Glue something to his king.",
+  "why": "Pin it to the bigger piece behind. Then attack it again.",
+  "whyLong": "A pin turns his horse into a statue. Statues are easy to eat. Grabbing the horse was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the stuck horse and the king behind it.",
+   "squares": [
+    "c8",
+    "g8"
+   ]
+  },
+  "glitch": {
+   "taunt": "My pieces are just standing around. Nothing to see.",
+   "gloat": "Enjoy the horse. It was poisoned. Hee hee.",
+   "rage": "Move, horse! MOVE! Why won't you move?!"
+  },
+  "short": "Pin it, then pile on.",
+  "voice": "pin-v2",
+  "voiceKeys": {
+   "hook": "pin-v2-hook",
+   "why": "pin-v2-why",
+   "short": "pin-v2-short",
+   "taunt": "pin-taunt2",
+   "gloat": "bait-gloat-cap2-horse",
+   "rage": "pin-rage8-horse"
+  }
+ },
+ {
+  "id": "L408",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1076,
+  "lichess": "ZPQu2",
+  "motif": "attackers",
+  "title": "Guard Down",
+  "palaceRoom": "Counting House",
+  "mascot": "GUARD DOWN",
+  "fen": "r4r1k/1b3p1p/5p2/p4N2/Pb2B2R/1P3qPP/4RP2/3Q2K1 b - - 6 33",
+  "arrive": "d3e4",
+  "best": "b7e4",
+  "bait": "f3e2",
+  "bestTol": 45,
+  "hook": "Something is guarding everything. Remove it.",
+  "why": "Count what it guards. Take the guard and win the rest.",
+  "whyLong": "Take away the bishop and his other pieces have no one looking after them. Glitch wanted you busy eating the rook.",
+  "whyTargets": {
+   "prompt": "Tap the guard your bishop knocks out.",
+   "squares": [
+    "e4"
+   ]
+  },
+  "glitch": {
+   "taunt": "A whole rook, just lying there. Go on.",
+   "gloat": "One rook for you. The whole game for me.",
+   "rage": "You COUNTED to three?! Nobody counts to three!"
+  },
+  "short": "Take the guard. Win the rest.",
+  "voice": "attackers-v3",
+  "voiceKeys": {
+   "hook": "attackers-v3-hook",
+   "why": "attackers-v3-why",
+   "short": "attackers-v3-short",
+   "taunt": "bait-taunt-cap6-rook",
+   "gloat": "bait-gloat-cap3-rook",
+   "rage": "attackers-rage3"
+  }
+ },
+ {
+  "id": "L409",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1100,
+  "lichess": "y16z9",
+  "motif": "discovery",
+  "title": "Hidden Laser",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "8/p4ppk/1p2p2p/4nq2/P7/1P1r3P/2Q2PP1/3R1R1K b - - 10 30",
+  "arrive": "a1d1",
+  "best": "d3h3",
+  "bait": "d3d1",
+  "bestTol": 45,
+  "hook": "One of your pieces is hiding behind another.",
+  "why": "Move the front piece. The one behind it attacks too.",
+  "whyLong": "Your rook steps out of the way, and your queen suddenly sees his queen. The free rook was a trap.",
+  "whyTargets": {
+   "prompt": "Tap your hidden queen and the queen it hits.",
+   "squares": [
+    "f5",
+    "c2"
+   ]
+  },
+  "glitch": {
+   "taunt": "That rook is begging to be eaten.",
+   "gloat": "One attack. Easy to block. Ha!",
+   "rage": "Who opened the curtain?! Close it! CLOSE IT!"
+  },
+  "short": "Step aside. The piece behind fires.",
+  "voice": "discovery-v1",
+  "voiceKeys": {
+   "hook": "discovery-v1-hook",
+   "why": "discovery-v1-why",
+   "short": "discovery-v1-short",
+   "taunt": "bait-taunt-cap2-rook",
+   "gloat": "discovery-gloat3",
+   "rage": "discovery-rage5"
+  }
+ },
+ {
+  "id": "L410",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1112,
+  "lichess": "hDcP2",
+  "motif": "skewer",
+  "title": "Run or Lose",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "rn2k2r/ppp3p1/8/2bBp2p/6P1/3P1K1b/PPP4P/RNBQ4 b kq - 0 14",
+  "arrive": "b3d5",
+  "arriveCaptured": "p",
+  "best": "h3g4",
+  "bait": "h5g4",
+  "bestTol": 45,
+  "hook": "His big piece is shielding a friend.",
+  "why": "Hit the front piece. When it steps away, take the back one.",
+  "whyLong": "When the king steps off the line, your bishop eats the queen. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the queen behind.",
+   "squares": [
+    "f3",
+    "d1"
+   ]
+  },
+  "glitch": {
+   "taunt": "A whole pawn, just lying there. Go on.",
+   "gloat": "Yum, the pawn. That was my trap. Hee hee.",
+   "rage": "My queen was HIDING back there! Unfair!"
+  },
+  "short": "Poke the front. Take the back.",
+  "voice": "skewer-v4",
+  "voiceKeys": {
+   "hook": "skewer-v4-hook",
+   "why": "skewer-v4-why",
+   "short": "skewer-v4-short",
+   "taunt": "bait-taunt-cap6-pawn",
+   "gloat": "bait-gloat-cap4-pawn",
+   "rage": "skewer-rage7-queen"
+  }
+ },
+ {
+  "id": "L411",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1121,
+  "lichess": "vSHSm",
+  "motif": "skewer",
+  "title": "Run or Lose",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "8/8/3K4/4r3/4k3/8/R7/8 w - - 6 58",
+  "arrive": "f4e4",
+  "best": "a2e2",
+  "bait": "a2a4",
+  "bestTol": 45,
+  "hook": "Poke the front. Take the back.",
+  "why": "A skewer is a pin backwards. Big piece runs, small piece dies.",
+  "whyLong": "Big pieces in front of small ones on a line are a kebab waiting to happen. The loud check was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the rook behind.",
+   "squares": [
+    "e4",
+    "e5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Scare the king! Check first, think never!",
+   "gloat": "Slow and safe. And nothing.",
+   "rage": "Stabbed through the middle?! Ouch! OUCH!"
+  },
+  "short": "Big piece runs. Small piece dies.",
+  "voice": "skewer-v3",
+  "voiceKeys": {
+   "hook": "skewer-v3-hook",
+   "why": "skewer-v3-why",
+   "short": "skewer-v3-short",
+   "taunt": "bait-taunt-chk7",
+   "gloat": "skewer-gloat3",
+   "rage": "skewer-rage3"
+  }
+ },
+ {
+  "id": "L412",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1125,
+  "lichess": "eBUiM",
+  "motif": "counter",
+  "title": "Answer Back",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "3r2k1/5p2/p2q2pb/7p/1P6/P2Q3P/5PP1/4R1K1 w - - 0 41",
+  "arrive": "f6d6",
+  "arriveCaptured": "p",
+  "best": "e1e8",
+  "bait": "d3d6",
+  "bestTol": 45,
+  "hook": "A check or a capture beats running away.",
+  "why": "Running loses time. Your threat is bigger than his.",
+  "whyLong": "Your queen was attacked, but your counterattack is worth more. Grabbing the queen was the bait.",
+  "whyTargets": {
+   "prompt": "Tap his queen and the queen it attacks.",
+   "squares": [
+    "d3",
+    "d6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free queen! Free queen! Take it before I change my mind!",
+   "gloat": "Yum, the queen. That was my trap. Hee hee.",
+   "rage": "You didn't RUN?! Everybody runs!"
+  },
+  "short": "Your threat is bigger. Play it.",
+  "voice": "counter-v4",
+  "voiceKeys": {
+   "hook": "counter-v4-hook",
+   "why": "counter-v4-why",
+   "short": "counter-v4-short",
+   "taunt": "bait-taunt-cap4-queen",
+   "gloat": "bait-gloat-cap4-queen",
+   "rage": "counter-rage5"
+  }
+ },
+ {
+  "id": "L413",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1128,
+  "lichess": "987UC",
+  "motif": "defend",
+  "title": "Hold the Line",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "8/p7/1p6/r2Rp3/5p2/P1P2P2/1k1K4/8 w - - 2 51",
+  "arrive": "a4a5",
+  "best": "d5a5",
+  "bait": "d5e5",
+  "bestTol": 45,
+  "hook": "He attacks first. Answer without giving anything away.",
+  "why": "His move attacked you. Fix the threat first, then play.",
+  "whyLong": "His rook was hitting your rook. The best move deals with that first. The pawn was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap his rook and the rook it attacks.",
+   "squares": [
+    "d5",
+    "a5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Ignore me. My move did nothing. Promise.",
+   "gloat": "One question, wrong answer. Lovely.",
+   "rage": "You asked what I attacked?! Stop ASKING!"
+  },
+  "short": "Fix his threat first.",
+  "voice": "defend-v1",
+  "voiceKeys": {
+   "hook": "defend-v1-hook",
+   "why": "defend-v1-why",
+   "short": "defend-v1-short",
+   "taunt": "defend-taunt2",
+   "gloat": "defend-gloat4",
+   "rage": "defend-rage6"
+  }
+ },
+ {
+  "id": "L414",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1128,
+  "lichess": "fWuNy",
+  "motif": "royalFork",
+  "title": "King and Company",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "2Q5/5ppk/1q2p2p/1P6/5P2/6P1/1R4KP/3r4 w - - 3 32",
+  "arrive": "g8h7",
+  "best": "c8c2",
+  "bait": "c8e6",
+  "bestTol": 45,
+  "hook": "His king and a big piece are standing too close.",
+  "why": "Check the king and hit another piece. He must save the king.",
+  "whyLong": "Your queen checks the king and hits his rook. The king must move, so the rook is lunch. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king and the rook your queen hits.",
+   "squares": [
+    "h7",
+    "d1"
+   ]
+  },
+  "glitch": {
+   "taunt": "That pawn is begging to be eaten.",
+   "gloat": "You forgot the king can be poked. I didn't.",
+   "rage": "Check AND a bite?! That's two moves in one!"
+  },
+  "short": "Check him. Take what he leaves.",
+  "voice": "royalFork-v1",
+  "voiceKeys": {
+   "hook": "royalFork-v1-hook",
+   "why": "royalFork-v1-why",
+   "short": "royalFork-v1-short",
+   "taunt": "bait-taunt-cap2-pawn",
+   "gloat": "royalFork-gloat3",
+   "rage": "royalFork-rage2"
+  }
+ },
+ {
+  "id": "L415",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1131,
+  "lichess": "FaKFb",
+  "motif": "discovery",
+  "title": "Hidden Laser",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "r5k1/pp5p/2p3p1/3P4/1q2P3/6P1/Pb2Q1BP/1R4K1 b - - 0 24",
+  "arrive": "c2e2",
+  "arriveCaptured": "b",
+  "best": "b2d4",
+  "bait": "c6d5",
+  "bestTol": 45,
+  "hook": "Two attackers are waiting in one line.",
+  "why": "Uncover the laser. He cannot stop two attacks.",
+  "whyLong": "When your piece stands in front of your own laser, move it with a threat. Glitch wanted you busy eating the pawn.",
+  "whyTargets": {
+   "prompt": "Tap your hidden queen and the rook it hits.",
+   "squares": [
+    "b4",
+    "b1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free pawn! Free pawn! Take it before I change my mind!",
+   "gloat": "The laser stayed hidden. Lucky me.",
+   "rage": "My rook! It came out of NOWHERE!"
+  },
+  "short": "Move it. The laser fires.",
+  "voice": "discovery-v4",
+  "voiceKeys": {
+   "hook": "discovery-v4-hook",
+   "why": "discovery-v4-why",
+   "short": "discovery-v4-short",
+   "taunt": "bait-taunt-cap4-pawn",
+   "gloat": "discovery-gloat1",
+   "rage": "discovery-rage7-rook"
+  }
+ },
+ {
+  "id": "L416",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1132,
+  "lichess": "E4XK8",
+  "motif": "mateThreat",
+  "title": "Final Move",
+  "palaceRoom": "Checkmate Chamber",
+  "mascot": "THE END",
+  "fen": "k7/p4p2/Q1p3rp/4q3/4P1b1/2P3P1/P1P3P1/1R4K1 w - - 0 30",
+  "arrive": "c7e5",
+  "arriveCaptured": "n",
+  "best": "a6b7",
+  "bait": "a6c6",
+  "bestTol": 45,
+  "hook": "Checks first. One of them ends everything.",
+  "why": "Mate beats any piece you could grab.",
+  "whyLong": "When the king has no way out, stop counting pieces and finish. Glitch wanted you busy eating the pawn.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "a8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Eat the pawn. Snacks first, thinking later.",
+   "gloat": "You took the snack. I'm still alive. Rude.",
+   "rage": "You looked at the CHECKS?! Who does that?!"
+  },
+  "short": "Mate first. Snacks never.",
+  "voice": "mateThreat-v4",
+  "voiceKeys": {
+   "hook": "mateThreat-v4-hook",
+   "why": "mateThreat-v4-why",
+   "short": "mateThreat-v4-short",
+   "taunt": "bait-taunt-cap5-pawn",
+   "gloat": "mateThreat-gloat1",
+   "rage": "mateThreat-rage3"
+  }
+ },
+ {
+  "id": "L417",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1133,
+  "lichess": "BCBLw",
+  "motif": "backRank",
+  "title": "Door Slam",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "6k1/P2P1ppp/8/3r4/7B/2K2b1P/P7/8 w - - 3 36",
+  "arrive": "b5d5",
+  "best": "a7a8r",
+  "bait": "d7d8q",
+  "bestTol": 45,
+  "hook": "The king is tucked in too tight.",
+  "why": "Mate beats any snack. His own pawns block the exit.",
+  "whyLong": "Before you grab anything, check the back row. It ends the game. That check looked scary and did nothing.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "g8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Check! Check! Everybody loves a check!",
+   "gloat": "My king stays cozy. Thanks!",
+   "rage": "MY OWN PAWNS locked the door?!"
+  },
+  "short": "Mate beats a snack.",
+  "voice": "backRank-v4",
+  "voiceKeys": {
+   "hook": "backRank-v4-hook",
+   "why": "backRank-v4-why",
+   "short": "backRank-v4-short",
+   "taunt": "bait-taunt-chk3",
+   "gloat": "backRank-gloat2",
+   "rage": "backRank-rage1"
+  }
+ },
+ {
+  "id": "L418",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1139,
+  "lichess": "rm7XI",
+  "motif": "attackers",
+  "title": "Guard Down",
+  "palaceRoom": "Counting House",
+  "mascot": "GUARD DOWN",
+  "fen": "rq3rk1/2Rbbppp/3p1n2/pN1P4/Pp1BPN2/6PP/4Q1B1/R5K1 b - - 5 25",
+  "arrive": "c1c7",
+  "best": "d7b5",
+  "bait": "b8c7",
+  "bestTol": 45,
+  "hook": "His defence has one weak link.",
+  "why": "One piece holds his defence together. Take that piece.",
+  "whyLong": "The best capture is often the bodyguard, not the prize. Here it was his horse. Grabbing the rook was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the guard your bishop knocks out.",
+   "squares": [
+    "b5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Nothing to count. Nothing at all.",
+   "gloat": "My defence is perfect. Just like me.",
+   "rage": "Not my horse! It had one job!"
+  },
+  "short": "Take the piece holding it together.",
+  "voice": "attackers-v4",
+  "voiceKeys": {
+   "hook": "attackers-v4-hook",
+   "why": "attackers-v4-why",
+   "short": "attackers-v4-short",
+   "taunt": "attackers-taunt3",
+   "gloat": "attackers-gloat5",
+   "rage": "attackers-rage8-horse"
+  }
+ },
+ {
+  "id": "L419",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1142,
+  "lichess": "3bplk",
+  "motif": "trapped",
+  "title": "Dead End",
+  "palaceRoom": "Trap Room",
+  "mascot": "NO EXIT",
+  "fen": "8/2p5/1pPb3P/p2P4/P4k2/3K1pp1/5P2/5B2 b - - 0 53",
+  "arrive": "h5h6",
+  "best": "g3g2",
+  "bait": "g3f2",
+  "bestTol": 45,
+  "hook": "Something of his is stuck in a corner.",
+  "why": "No squares to run to. Attack it, don't trade it.",
+  "whyLong": "Before you chase a piece, check if it can even run. His bishop cannot. The pawn was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the bishop with no way out.",
+   "squares": [
+    "f1"
+   ]
+  },
+  "glitch": {
+   "taunt": "A whole pawn, just lying there. Go on.",
+   "gloat": "No trap today. Just a party.",
+   "rage": "Stuck! Stuck like gum on a shoe!"
+  },
+  "short": "Trapped. Attack, do not trade.",
+  "voice": "trapped-v4",
+  "voiceKeys": {
+   "hook": "trapped-v4-hook",
+   "why": "trapped-v4-why",
+   "short": "trapped-v4-short",
+   "taunt": "bait-taunt-cap6-pawn",
+   "gloat": "trapped-gloat4",
+   "rage": "trapped-rage6"
+  }
+ },
+ {
+  "id": "L420",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 4,
+  "rating": 1146,
+  "lichess": "EurcA",
+  "motif": "defend",
+  "title": "Don't Panic",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "7R/r2nk2p/pR2b1p1/8/3P4/4PP2/1P1K2PP/8 b - - 5 34",
+  "arrive": "d8h8",
+  "best": "d7b6",
+  "bait": "e6f7",
+  "bestTol": 45,
+  "hook": "Stop. What did his move just attack?",
+  "why": "See his threat, then stop it. Everything else can wait.",
+  "whyLong": "A good defence keeps everything. The wrong one hands him the game. The slow move was a trap.",
+  "whyTargets": {
+   "prompt": "Tap his rook and the pawn it attacks.",
+   "squares": [
+    "h7",
+    "h8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Ignore me. My move did nothing. Promise.",
+   "gloat": "Slow and safe. And now I win. Ha!",
+   "rage": "You asked what I attacked?! Stop ASKING!"
+  },
+  "short": "See the threat. Stop it.",
+  "voice": "defend-v4",
+  "voiceKeys": {
+   "hook": "defend-v4-hook",
+   "why": "defend-v4-why",
+   "short": "defend-v4-short",
+   "taunt": "defend-taunt2",
+   "gloat": "bait-gloat-quiet1",
+   "rage": "defend-rage6"
+  }
+ },
+ {
+  "id": "L501",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1151,
+  "lichess": "KMCUb",
+  "motif": "royalFork",
+  "title": "Royal Pain",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "r3r1k1/p4pb1/2pp2pp/1p1Pp3/1PP1P1nq/P1N1BQ2/5P2/RB2RK2 b - - 6 22",
+  "arrive": "g1f1",
+  "best": "g4h2",
+  "bait": "g4e3",
+  "bestTol": 45,
+  "hook": "A check can do two jobs.",
+  "why": "He has to answer the check, and the second piece falls.",
+  "whyLong": "Kings must run from check. Whatever stood near him gets eaten. Glitch wanted you busy eating the bishop.",
+  "whyTargets": {
+   "prompt": "Tap the king and the queen your horse hits.",
+   "squares": [
+    "f1",
+    "f3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Eat the bishop. Snacks first, thinking later.",
+   "gloat": "Crown safe. Everything safe. Bye bye.",
+   "rage": "The king has to move?! Says WHO?!"
+  },
+  "short": "He saves the king. You eat.",
+  "voice": "royalFork-v4",
+  "voiceKeys": {
+   "hook": "royalFork-v4-hook",
+   "why": "royalFork-v4-why",
+   "short": "royalFork-v4-short",
+   "taunt": "bait-taunt-cap5-bishop",
+   "gloat": "royalFork-gloat4",
+   "rage": "royalFork-rage5"
+  }
+ },
+ {
+  "id": "L502",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1151,
+  "lichess": "VRVPM",
+  "motif": "mateThreat",
+  "title": "Finish Him",
+  "palaceRoom": "Checkmate Chamber",
+  "mascot": "THE END",
+  "fen": "3R4/1p3p1k/6p1/4Q3/2P4p/1P5P/4nqPK/8 b - - 1 46",
+  "arrive": "d1d8",
+  "best": "f2g1",
+  "bait": "f2g2",
+  "bestTol": 45,
+  "hook": "The game can end right now.",
+  "why": "Checkmate ends the game. No snack is worth more.",
+  "whyLong": "Checks, captures, threats: look in that order. The win is hiding in the checks. The pawn was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "h2"
+   ]
+  },
+  "glitch": {
+   "taunt": "Psst. Free pawn. Grab it. Nobody's looking.",
+   "gloat": "My king lives to annoy you another day.",
+   "rage": "Mate?! I was offering you FREE stuff!"
+  },
+  "short": "Mate beats any snack.",
+  "voice": "mateThreat-v1",
+  "voiceKeys": {
+   "hook": "mateThreat-v1-hook",
+   "why": "mateThreat-v1-why",
+   "short": "mateThreat-v1-short",
+   "taunt": "bait-taunt-cap1-pawn",
+   "gloat": "mateThreat-gloat4",
+   "rage": "mateThreat-rage1"
+  }
+ },
+ {
+  "id": "L503",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1165,
+  "lichess": "134eC",
+  "motif": "royalFork",
+  "title": "Check and Chomp",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "2r1r1k1/p6p/bp4pP/3q4/P1n3N1/4N3/4QPP1/2R3K1 w - - 0 29",
+  "arrive": "f7d5",
+  "arriveCaptured": "r",
+  "best": "g4f6",
+  "bait": "e3d5",
+  "bestTol": 45,
+  "hook": "The king has company. Bad company for him.",
+  "why": "A royal fork: the check comes first, the free piece comes next.",
+  "whyLong": "Check plus attack is the strongest fork there is. Here it wins his queen. Glitch wanted you busy eating the queen.",
+  "whyTargets": {
+   "prompt": "Tap the king and the queen your horse hits.",
+   "squares": [
+    "g8",
+    "d5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free queen! Free queen! Take it before I change my mind!",
+   "gloat": "No check, no fork, no chance. Lovely.",
+   "rage": "CROWNS?! You forked the CROWN?!"
+  },
+  "short": "Check and bite. Collect next move.",
+  "voice": "royalFork-v3",
+  "voiceKeys": {
+   "hook": "royalFork-v3-hook",
+   "why": "royalFork-v3-why",
+   "short": "royalFork-v3-short",
+   "taunt": "bait-taunt-cap4-queen",
+   "gloat": "royalFork-gloat2",
+   "rage": "royalFork-rage1"
+  }
+ },
+ {
+  "id": "L504",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1165,
+  "lichess": "dybiq",
+  "motif": "defend",
+  "title": "Brace",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "8/5p2/4k2p/p1p2p2/2P2PK1/PP5P/8/8 w - - 0 37",
+  "arrive": "f6f5",
+  "best": "g4h5",
+  "bait": "g4h4",
+  "bestTol": 45,
+  "hook": "His last move made a threat. Deal with it.",
+  "why": "Answer the attack with the one move that keeps everything.",
+  "whyLong": "Every enemy move asks a question. His pawn asked about your king. The slow move was a trap.",
+  "whyTargets": {
+   "prompt": "Tap his pawn and the king it attacks.",
+   "squares": [
+    "g4",
+    "f5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Nothing to see here. Just nudge your king.",
+   "gloat": "Slow and safe. And now I win. Ha!",
+   "rage": "My attack bounced off?! Like a rubber ball?!"
+  },
+  "short": "One move keeps everything safe.",
+  "voice": "defend-v2",
+  "voiceKeys": {
+   "hook": "defend-v2-hook",
+   "why": "defend-v2-why",
+   "short": "defend-v2-short",
+   "taunt": "bait-taunt-quiet6-king",
+   "gloat": "bait-gloat-quiet1",
+   "rage": "defend-rage2"
+  }
+ },
+ {
+  "id": "L505",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1167,
+  "lichess": "1tZVN",
+  "motif": "skewer",
+  "title": "Through the Middle",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "8/3B4/1B6/4k3/4pnp1/5n2/5P2/3K4 w - - 24 62",
+  "arrive": "d6e5",
+  "best": "b6c7",
+  "bait": "d7g4",
+  "bestTol": 45,
+  "hook": "A big piece stands in front of a smaller one.",
+  "why": "The front piece must move. The piece behind it falls.",
+  "whyLong": "The king cannot stay and cannot hide the horse. That is a skewer. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the horse behind.",
+   "squares": [
+    "e5",
+    "f4"
+   ]
+  },
+  "glitch": {
+   "taunt": "Nothing to stab here. Move along.",
+   "gloat": "One pawn for you. The whole game for me.",
+   "rage": "It ran, and you ate my horse?! NOOOO!"
+  },
+  "short": "Front runs. Back falls.",
+  "voice": "skewer-v2",
+  "voiceKeys": {
+   "hook": "skewer-v2-hook",
+   "why": "skewer-v2-why",
+   "short": "skewer-v2-short",
+   "taunt": "skewer-taunt3",
+   "gloat": "bait-gloat-cap3-pawn",
+   "rage": "skewer-rage8-horse"
+  }
+ },
+ {
+  "id": "L506",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1167,
+  "lichess": "2vLaV",
+  "motif": "backRank",
+  "title": "Locked In",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "3r4/5ppk/p3p2p/1p1QP3/5P2/2P4R/PP4PP/3r1R1K b - - 0 28",
+  "arrive": "f3d5",
+  "arriveCaptured": "q",
+  "best": "d1f1",
+  "bait": "d8d5",
+  "bestTol": 45,
+  "hook": "His king has no escape square.",
+  "why": "The king has no square to run to. The back row is mate.",
+  "whyLong": "Always give your own king a little air. He never did. Grabbing the queen was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "h1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free queen! Free queen! Take it before I change my mind!",
+   "gloat": "You went snack hunting. The game goes on. And on.",
+   "rage": "Trapped in my own basement?! NOOOO!"
+  },
+  "short": "No escape square. Back row mates.",
+  "voice": "backRank-v2",
+  "voiceKeys": {
+   "hook": "backRank-v2-hook",
+   "why": "backRank-v2-why",
+   "short": "backRank-v2-short",
+   "taunt": "bait-taunt-cap4-queen",
+   "gloat": "backRank-gloat1",
+   "rage": "backRank-rage2"
+  }
+ },
+ {
+  "id": "L507",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1176,
+  "lichess": "pjG9K",
+  "motif": "kingMarch",
+  "title": "Push It",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "CROWN RUN",
+  "fen": "8/5b1p/8/1P3kB1/2P1p2P/4Kp2/8/8 w - - 1 43",
+  "arrive": "e8f7",
+  "best": "b5b6",
+  "bait": "g5f4",
+  "bestTol": 45,
+  "hook": "A little pawn wants a big promotion.",
+  "why": "A new queen beats any snack on the board.",
+  "whyLong": "Every step your pawn takes, his pieces get more nervous. The safe-looking move was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that wants a crown.",
+   "squares": [
+    "b5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Your bishop looks nervous. Move it. Quick!",
+   "gloat": "You forgot about the pawn. I didn't.",
+   "rage": "Stop it! Pawns are not allowed to grow up!"
+  },
+  "short": "A new queen beats snacks.",
+  "voice": "kingMarch-v3",
+  "voiceKeys": {
+   "hook": "kingMarch-v3-hook",
+   "why": "kingMarch-v3-why",
+   "short": "kingMarch-v3-short",
+   "taunt": "bait-taunt-quiet4-bishop",
+   "gloat": "kingMarch-gloat5",
+   "rage": "kingMarch-rage5"
+  }
+ },
+ {
+  "id": "L508",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1192,
+  "lichess": "c5F1h",
+  "motif": "pin",
+  "title": "Stuck Fast",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "2b1kbnr/2p2ppp/1pn1pq2/2Pp4/rB1P4/4P3/P2Q1PPP/RN2KBNR w KQk - 1 9",
+  "arrive": "a8a4",
+  "best": "f1b5",
+  "bait": "c5b6",
+  "bestTol": 45,
+  "hook": "Glue something to his king.",
+  "why": "Pin it to the bigger piece behind. Then attack it again.",
+  "whyLong": "A pin turns his horse into a statue. Statues are easy to eat. Glitch wanted you busy eating the pawn.",
+  "whyTargets": {
+   "prompt": "Tap the stuck horse and the king behind it.",
+   "squares": [
+    "c6",
+    "e8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Take the pawn. What could possibly go wrong?",
+   "gloat": "Enjoy the pawn. It was poisoned. Hee hee.",
+   "rage": "It can't move?! It's supposed to MOVE!"
+  },
+  "short": "Pin it, then pile on.",
+  "voice": "pin-v2",
+  "voiceKeys": {
+   "hook": "pin-v2-hook",
+   "why": "pin-v2-why",
+   "short": "pin-v2-short",
+   "taunt": "bait-taunt-cap7-pawn",
+   "gloat": "bait-gloat-cap2-pawn",
+   "rage": "pin-rage6"
+  }
+ },
+ {
+  "id": "L509",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1201,
+  "lichess": "QlhHO",
+  "motif": "counter",
+  "title": "Counterpunch",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "2kr3r/1ppb1ppp/p1p5/3nPN2/5P2/2q1B3/P1PQ2PP/1R3RK1 w - - 0 16",
+  "arrive": "c5c3",
+  "arriveCaptured": "p",
+  "best": "f5e7",
+  "bait": "d2c3",
+  "bestTol": 45,
+  "hook": "He attacks you. Hit back harder.",
+  "why": "Don't run. Answer his attack with a bigger one.",
+  "whyLong": "His move hit your queen. Instead of running, your horse hits back harder. Glitch wanted you busy eating the queen.",
+  "whyTargets": {
+   "prompt": "Tap his queen and the queen it attacks.",
+   "squares": [
+    "d2",
+    "c3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Psst. Free queen. Grab it. Nobody's looking.",
+   "gloat": "One queen for you. The whole game for me.",
+   "rage": "Bigger threat?! Mine was big! Mine was HUGE!"
+  },
+  "short": "Don't run. Hit back bigger.",
+  "voice": "counter-v1",
+  "voiceKeys": {
+   "hook": "counter-v1-hook",
+   "why": "counter-v1-why",
+   "short": "counter-v1-short",
+   "taunt": "bait-taunt-cap1-queen",
+   "gloat": "bait-gloat-cap3-queen",
+   "rage": "counter-rage6"
+  }
+ },
+ {
+  "id": "L510",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1202,
+  "lichess": "XTJuF",
+  "motif": "kingMarch",
+  "title": "Last Step",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "CROWN RUN",
+  "fen": "5r2/R4P2/p2k2P1/r2p4/5K2/4P3/8/8 w - - 3 54",
+  "arrive": "b5a5",
+  "best": "g6g7",
+  "bait": "a7a6",
+  "bestTol": 45,
+  "hook": "Push the right pawn and he can't keep up.",
+  "why": "Your pawn is closer to the end than his defenders are.",
+  "whyLong": "A pawn one step from a crown is worth more than most pieces. Glitch wanted you busy eating the pawn.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that wants a crown.",
+   "squares": [
+    "g6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free pawn! Free pawn! Take it before I change my mind!",
+   "gloat": "No crown for you today. Hee hee.",
+   "rage": "A PAWN did that?!"
+  },
+  "short": "Push. His guards are too far.",
+  "voice": "kingMarch-v4",
+  "voiceKeys": {
+   "hook": "kingMarch-v4-hook",
+   "why": "kingMarch-v4-why",
+   "short": "kingMarch-v4-short",
+   "taunt": "bait-taunt-cap4-pawn",
+   "gloat": "kingMarch-gloat2",
+   "rage": "kingMarch-rage1"
+  }
+ },
+ {
+  "id": "L511",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1256,
+  "lichess": "D2goU",
+  "motif": "skewer",
+  "title": "Shish Kebab",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "8/R5p1/5kP1/1K6/8/5r2/8/8 w - - 6 49",
+  "arrive": "e7f6",
+  "best": "a7f7",
+  "bait": "a7g7",
+  "bestTol": 45,
+  "hook": "Poke the front. Take the back.",
+  "why": "A skewer is a pin backwards. Big piece runs, small piece dies.",
+  "whyLong": "Big pieces in front of small ones on a line are a kebab waiting to happen. The pawn was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the rook behind.",
+   "squares": [
+    "f6",
+    "f3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Psst. Free pawn. Grab it. Nobody's looking.",
+   "gloat": "Ha! You ate the pawn. Now watch me eat.",
+   "rage": "Stabbed through the middle?! Ouch! OUCH!"
+  },
+  "short": "Big piece runs. Small piece dies.",
+  "voice": "skewer-v3",
+  "voiceKeys": {
+   "hook": "skewer-v3-hook",
+   "why": "skewer-v3-why",
+   "short": "skewer-v3-short",
+   "taunt": "bait-taunt-cap1-pawn",
+   "gloat": "bait-gloat-cap1-pawn",
+   "rage": "skewer-rage3"
+  }
+ },
+ {
+  "id": "L512",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1257,
+  "lichess": "dZOfl",
+  "motif": "backRank",
+  "title": "Bottom Floor",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "2R2N1k/6pq/p2p1b1p/1p6/4p3/8/1P3PPP/6K1 w - - 0 39",
+  "arrive": "g8h7",
+  "arriveCaptured": "q",
+  "best": "f8g6",
+  "bait": "f8h7",
+  "bestTol": 45,
+  "hook": "His own pawns locked the door.",
+  "why": "His pawns trap his own king. Land on the back row.",
+  "whyLong": "His pawns stand in front of his king like a wall. The back row is the only way in. The queen was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "h8"
+   ]
+  },
+  "glitch": {
+   "taunt": "The back row is fine. Totally fine.",
+   "gloat": "One queen for you. The whole game for me.",
+   "rage": "I needed ONE little escape square! ONE!"
+  },
+  "short": "His pawns trap him. Back row.",
+  "voice": "backRank-v1",
+  "voiceKeys": {
+   "hook": "backRank-v1-hook",
+   "why": "backRank-v1-why",
+   "short": "backRank-v1-short",
+   "taunt": "backRank-taunt2",
+   "gloat": "bait-gloat-cap3-queen",
+   "rage": "backRank-rage6"
+  }
+ },
+ {
+  "id": "L513",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1274,
+  "lichess": "2Ll27",
+  "motif": "trapped",
+  "title": "Dead End",
+  "palaceRoom": "Trap Room",
+  "mascot": "NO EXIT",
+  "fen": "r1bqr3/pp3k2/4pp1Q/6p1/3Pp3/P1P1P1B1/5PPP/R3K2R b KQ - 1 21",
+  "arrive": "e5g3",
+  "best": "e8h8",
+  "bait": "d8d4",
+  "bestTol": 45,
+  "hook": "One of his pieces has nowhere to go.",
+  "why": "His piece has no safe square. Attack it and it dies.",
+  "whyLong": "His queen has no safe squares left. Your rook attacks it and it cannot run. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the queen with no way out.",
+   "squares": [
+    "h6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Take the pawn. What could possibly go wrong?",
+   "gloat": "My piece wriggled out. Bye bye!",
+   "rage": "Every door is locked?! Who has the key?!"
+  },
+  "short": "No safe square. Attack it.",
+  "voice": "trapped-v1",
+  "voiceKeys": {
+   "hook": "trapped-v1-hook",
+   "why": "trapped-v1-why",
+   "short": "trapped-v1-short",
+   "taunt": "bait-taunt-cap7-pawn",
+   "gloat": "trapped-gloat1",
+   "rage": "trapped-rage3"
+  }
+ },
+ {
+  "id": "L514",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1280,
+  "lichess": "Yf88N",
+  "motif": "trapped",
+  "title": "Trap Door",
+  "palaceRoom": "Trap Room",
+  "mascot": "NO EXIT",
+  "fen": "6rk/p4r1p/2ppNppq/1p2n3/4P3/P1Q3R1/1PP5/1K4R1 w - - 0 30",
+  "arrive": "f8h6",
+  "arriveCaptured": "p",
+  "best": "g3h3",
+  "bait": "c3e5",
+  "bestTol": 45,
+  "hook": "Take away his piece's last escape.",
+  "why": "It cannot run anywhere. Hit it and collect.",
+  "whyLong": "A piece with no squares is already lost. Attack it and wait. Glitch wanted you busy eating the horse.",
+  "whyTargets": {
+   "prompt": "Tap the queen with no way out.",
+   "squares": [
+    "h6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Look at that juicy horse. Just take it!",
+   "gloat": "Escaped! Like a sneaky little mouse. Hee hee.",
+   "rage": "No way out?! Not even a tiny one?!"
+  },
+  "short": "It cannot run. Hit it.",
+  "voice": "trapped-v2",
+  "voiceKeys": {
+   "hook": "trapped-v2-hook",
+   "why": "trapped-v2-why",
+   "short": "trapped-v2-short",
+   "taunt": "bait-taunt-cap3-horse",
+   "gloat": "trapped-gloat3",
+   "rage": "trapped-rage1"
+  }
+ },
+ {
+  "id": "L515",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1284,
+  "lichess": "ABxQE",
+  "motif": "counter",
+  "title": "Turn the Tables",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "5rk1/5ppp/1p1r3q/4p3/p7/P3b1P1/1PQ3PN/N3RR1K b - - 5 26",
+  "arrive": "c1e1",
+  "best": "h6h2",
+  "bait": "d6d2",
+  "bestTol": 45,
+  "hook": "He attacks you. Hit back harder.",
+  "why": "Don't run. Answer his attack with a bigger one.",
+  "whyLong": "His move hit your bishop. Instead of running, your queen hits back harder. Moving the rook just gave him time.",
+  "whyTargets": {
+   "prompt": "Tap his rook and the bishop it attacks.",
+   "squares": [
+    "e3",
+    "e1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Slow and safe. Shuffle your rook. Yawn.",
+   "gloat": "Slow and safe. And now I win. Ha!",
+   "rage": "I attacked FIRST! That's not fair!"
+  },
+  "short": "Don't run. Hit back bigger.",
+  "voice": "counter-v1",
+  "voiceKeys": {
+   "hook": "counter-v1-hook",
+   "why": "counter-v1-why",
+   "short": "counter-v1-short",
+   "taunt": "bait-taunt-quiet3-rook",
+   "gloat": "bait-gloat-quiet1",
+   "rage": "counter-rage2"
+  }
+ },
+ {
+  "id": "L516",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1284,
+  "lichess": "Gil0W",
+  "motif": "hanging",
+  "title": "Unguarded",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "LOOSE LUNCH",
+  "fen": "r1bqkbnr/pp1p1p1p/2n1p1p1/8/2BQP3/5N2/PPP2PPP/RNB1K2R w KQkq - 1 6",
+  "arrive": "b8c6",
+  "best": "d4h8",
+  "bait": "c4e6",
+  "bestTol": 45,
+  "hook": "Somebody forgot to protect something.",
+  "why": "He left it alone. Take it before he wakes up.",
+  "whyLong": "Before any move, look for pieces with zero guards. Here it was his rook. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the piece nobody was guarding.",
+   "squares": [
+    "h8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Don't count. Counting is boring.",
+   "gloat": "Enjoy the pawn. It was poisoned. Hee hee.",
+   "rage": "Free?! It was NOT free! It was expensive!"
+  },
+  "short": "It is alone. Take it.",
+  "voice": "hanging-v4",
+  "voiceKeys": {
+   "hook": "hanging-v4-hook",
+   "why": "hanging-v4-why",
+   "short": "hanging-v4-short",
+   "taunt": "hanging-taunt3",
+   "gloat": "bait-gloat-cap2-pawn",
+   "rage": "hanging-rage4"
+  }
+ },
+ {
+  "id": "L517",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1285,
+  "lichess": "34ejW",
+  "motif": "attackers",
+  "title": "No Bodyguard",
+  "palaceRoom": "Counting House",
+  "mascot": "GUARD DOWN",
+  "fen": "3rr1k1/ppp1bppp/8/3n4/1n6/PP2N3/1BPPBPPP/R3K2R b KQ - 0 16",
+  "arrive": "a2a3",
+  "best": "d5e3",
+  "bait": "b4c2",
+  "bestTol": 45,
+  "hook": "Something is guarding everything. Remove it.",
+  "why": "Count what it guards. Take the guard and win the rest.",
+  "whyLong": "Take away the horse and his other pieces have no one looking after them. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the guard your horse knocks out.",
+   "squares": [
+    "e3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Nothing to count. Nothing at all.",
+   "gloat": "One pawn for you. The whole game for me.",
+   "rage": "You COUNTED to three?! Nobody counts to three!"
+  },
+  "short": "Take the guard. Win the rest.",
+  "voice": "attackers-v3",
+  "voiceKeys": {
+   "hook": "attackers-v3-hook",
+   "why": "attackers-v3-why",
+   "short": "attackers-v3-short",
+   "taunt": "attackers-taunt3",
+   "gloat": "bait-gloat-cap3-pawn",
+   "rage": "attackers-rage3"
+  }
+ },
+ {
+  "id": "L518",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1288,
+  "lichess": "twrJz",
+  "motif": "attackers",
+  "title": "Remove the Shield",
+  "palaceRoom": "Counting House",
+  "mascot": "GUARD DOWN",
+  "fen": "r6k/pb1q1B1p/1pn3pb/2p3N1/5Q2/2PP2N1/P4PPP/4R1K1 b - - 2 21",
+  "arrive": "d2f4",
+  "best": "h6g5",
+  "bait": "d7f7",
+  "bestTol": 45,
+  "hook": "His defence has one weak link.",
+  "why": "One piece holds his defence together. Take that piece.",
+  "whyLong": "The best capture is often the bodyguard, not the prize. Here it was his horse. Glitch wanted you busy eating the bishop.",
+  "whyTargets": {
+   "prompt": "Tap the guard your bishop knocks out.",
+   "squares": [
+    "g5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free bishop! Free bishop! Take it before I change my mind!",
+   "gloat": "You poked the wrong piece. Hee hee.",
+   "rage": "My whole defence! Gone! Like a sandcastle!"
+  },
+  "short": "Take the piece holding it together.",
+  "voice": "attackers-v4",
+  "voiceKeys": {
+   "hook": "attackers-v4-hook",
+   "why": "attackers-v4-why",
+   "short": "attackers-v4-short",
+   "taunt": "bait-taunt-cap4-bishop",
+   "gloat": "attackers-gloat4",
+   "rage": "attackers-rage4"
+  }
+ },
+ {
+  "id": "L519",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1290,
+  "lichess": "6aKLW",
+  "motif": "discovery",
+  "title": "Surprise Attack",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "3Q4/3N2p1/4p1kp/1p3p2/3q4/7P/6PK/8 w - - 4 44",
+  "arrive": "g5g6",
+  "best": "d7f8",
+  "bait": "d8e8",
+  "bestTol": 45,
+  "hook": "One of your pieces is hiding behind another.",
+  "why": "Move the front piece. The one behind it attacks too.",
+  "whyLong": "Your horse steps out of the way, and your queen suddenly sees his queen. Glitch wanted a check that goes nowhere.",
+  "whyTargets": {
+   "prompt": "Tap your hidden queen and the queen it hits.",
+   "squares": [
+    "d8",
+    "d4"
+   ]
+  },
+  "glitch": {
+   "taunt": "Just check him. Checks never lose. Trust me.",
+   "gloat": "Peekaboo? Nope. No peekaboo today.",
+   "rage": "Peekaboo?! I HATE peekaboo!"
+  },
+  "short": "Step aside. The piece behind fires.",
+  "voice": "discovery-v1",
+  "voiceKeys": {
+   "hook": "discovery-v1-hook",
+   "why": "discovery-v1-why",
+   "short": "discovery-v1-short",
+   "taunt": "bait-taunt-chk5",
+   "gloat": "discovery-gloat5",
+   "rage": "discovery-rage4"
+  }
+ },
+ {
+  "id": "L520",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 5,
+  "rating": 1290,
+  "lichess": "p9LVs",
+  "motif": "discovery",
+  "title": "Out of the Way",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "2Qnk1nr/pp1r1ppp/8/7q/6b1/2N2N1P/PPP1PPP1/3RKB1R b Kk - 6 13",
+  "arrive": "a1d1",
+  "best": "d7d1",
+  "bait": "g4f3",
+  "bestTol": 45,
+  "hook": "Move the front piece. Something wakes up.",
+  "why": "One step aside opens a hidden attack. Two threats at once.",
+  "whyLong": "A discovered attack is two threats for the price of one move. Glitch wanted you busy eating the horse.",
+  "whyTargets": {
+   "prompt": "Tap your hidden bishop and the queen it hits.",
+   "squares": [
+    "g4",
+    "c8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Nothing hiding here. Nothing at all.",
+   "gloat": "Traffic jam. Your pieces are stuck. Lovely.",
+   "rage": "A LASER?! Behind your own piece?!"
+  },
+  "short": "Step aside. Two attacks at once.",
+  "voice": "discovery-v2",
+  "voiceKeys": {
+   "hook": "discovery-v2-hook",
+   "why": "discovery-v2-why",
+   "short": "discovery-v2-short",
+   "taunt": "discovery-taunt2",
+   "gloat": "discovery-gloat6",
+   "rage": "discovery-rage1"
+  }
+ },
+ {
+  "id": "L601",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1305,
+  "lichess": "9bTqm",
+  "motif": "attackers",
+  "title": "Remove the Shield",
+  "palaceRoom": "Counting House",
+  "mascot": "GUARD DOWN",
+  "fen": "1q2kb1r/2p2pp1/4pn2/8/2N2Pr1/1P2P3/PB1P2bP/R2QK1R1 w Qk - 1 19",
+  "arrive": "g5g4",
+  "best": "b2f6",
+  "bait": "d1g4",
+  "bestTol": 45,
+  "hook": "Knock out the bodyguard first.",
+  "why": "Knock out the bodyguard and everything behind it falls.",
+  "whyLong": "Before you attack a piece, ask who guards it. Then take the guard. The free rook was a trap.",
+  "whyTargets": {
+   "prompt": "Tap the guard your bishop knocks out.",
+   "squares": [
+    "f6"
+   ]
+  },
+  "glitch": {
+   "taunt": "That rook is begging to be eaten.",
+   "gloat": "Guard stays, defence stays. Lovely.",
+   "rage": "You COUNTED to three?! Nobody counts to three!"
+  },
+  "short": "No bodyguard, no defence.",
+  "voice": "attackers-v2",
+  "voiceKeys": {
+   "hook": "attackers-v2-hook",
+   "why": "attackers-v2-why",
+   "short": "attackers-v2-short",
+   "taunt": "bait-taunt-cap2-rook",
+   "gloat": "attackers-gloat3",
+   "rage": "attackers-rage3"
+  }
+ },
+ {
+  "id": "L602",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1306,
+  "lichess": "U205s",
+  "motif": "backRank",
+  "title": "Locked In",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "r4rk1/pp1b2pp/4p1N1/2P1P3/1P2n1B1/P7/3B2PP/R2Qb2K b - - 0 22",
+  "arrive": "f4g6",
+  "arriveCaptured": "q",
+  "best": "f8f1",
+  "bait": "e1d2",
+  "bestTol": 45,
+  "hook": "The king is tucked in too tight.",
+  "why": "Mate beats any snack. His own pawns block the exit.",
+  "whyLong": "Before you grab anything, check the back row. It ends the game. The bishop was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "h1"
+   ]
+  },
+  "glitch": {
+   "taunt": "My king is cozy in bed. Leave him be.",
+   "gloat": "Yum, the bishop. That was my trap. Hee hee.",
+   "rage": "MY OWN PAWNS locked the door?!"
+  },
+  "short": "Mate beats a snack.",
+  "voice": "backRank-v4",
+  "voiceKeys": {
+   "hook": "backRank-v4-hook",
+   "why": "backRank-v4-why",
+   "short": "backRank-v4-short",
+   "taunt": "backRank-taunt1",
+   "gloat": "bait-gloat-cap4-bishop",
+   "rage": "backRank-rage1"
+  }
+ },
+ {
+  "id": "L603",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1308,
+  "lichess": "OoQ7T",
+  "motif": "pin",
+  "title": "Glued",
+  "palaceRoom": "Pin Parlor",
+  "mascot": "THUMBTACK",
+  "fen": "2rqr1k1/pp1b1pb1/2n3P1/8/8/1NPpB1Q1/P1P3P1/4RRK1 w - - 0 26",
+  "arrive": "e4d3",
+  "arriveCaptured": "b",
+  "best": "g6f7",
+  "bait": "f1f7",
+  "bestTol": 45,
+  "hook": "Line up. Something is stuck in the middle.",
+  "why": "He cannot move the front piece without losing the back one.",
+  "whyLong": "If the bishop steps aside, the king falls. So it stays, and you win it. Grabbing the pawn was the bait.",
+  "whyTargets": {
+   "prompt": "Tap the stuck bishop and the king behind it.",
+   "squares": [
+    "g7",
+    "g8"
+   ]
+  },
+  "glitch": {
+   "taunt": "A whole pawn, just lying there. Go on.",
+   "gloat": "Enjoy the pawn. It was poisoned. Hee hee.",
+   "rage": "My bishop can't MOVE?! Who put glue there?!"
+  },
+  "short": "Front piece moves, back piece dies.",
+  "voice": "pin-v4",
+  "voiceKeys": {
+   "hook": "pin-v4-hook",
+   "why": "pin-v4-why",
+   "short": "pin-v4-short",
+   "taunt": "bait-taunt-cap6-pawn",
+   "gloat": "bait-gloat-cap2-pawn",
+   "rage": "pin-rage7-bishop"
+  }
+ },
+ {
+  "id": "L604",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1323,
+  "lichess": "ZlGud",
+  "motif": "hanging",
+  "title": "Unguarded",
+  "palaceRoom": "Hanging Buffet",
+  "mascot": "LOOSE LUNCH",
+  "fen": "r1bq1rk1/1p2Q1pp/p1n1Np2/3p4/5B2/1B6/P4PPP/1R2R1K1 b - - 3 21",
+  "arrive": "d4e6",
+  "best": "d8e7",
+  "bait": "c6e7",
+  "bestTol": 45,
+  "hook": "One of his pieces is all alone.",
+  "why": "Count the guards. Zero means it is yours for nothing.",
+  "whyLong": "A loose queen is a free gift. Take gifts. Glitch wanted you busy eating the queen.",
+  "whyTargets": {
+   "prompt": "Tap the piece nobody was guarding.",
+   "squares": [
+    "e7"
+   ]
+  },
+  "glitch": {
+   "taunt": "Psst. Free queen. Grab it. Nobody's looking.",
+   "gloat": "Ha! You ate the queen. Now watch me eat.",
+   "rage": "My lunch! You ate my LUNCH!"
+  },
+  "short": "Zero guards. It is yours.",
+  "voice": "hanging-v2",
+  "voiceKeys": {
+   "hook": "hanging-v2-hook",
+   "why": "hanging-v2-why",
+   "short": "hanging-v2-short",
+   "taunt": "bait-taunt-cap1-queen",
+   "gloat": "bait-gloat-cap1-queen",
+   "rage": "hanging-rage6"
+  }
+ },
+ {
+  "id": "L605",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1325,
+  "lichess": "jpJG9",
+  "motif": "royalFork",
+  "title": "Crown Fork",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "2r2k1b/1q6/p2rpnB1/1p3p2/1PpP1N2/6P1/7Q/5RK1 w - - 0 34",
+  "arrive": "g7h8",
+  "arriveCaptured": "r",
+  "best": "h2h8",
+  "bait": "f4e6",
+  "bestTol": 45,
+  "hook": "Check the king. Bite something else at the same time.",
+  "why": "The king must move first, so the other piece is yours.",
+  "whyLong": "When the king is one of the two targets, he never gets a choice. Glitch wanted you busy eating the pawn.",
+  "whyTargets": {
+   "prompt": "Tap the king and the horse your queen hits.",
+   "squares": [
+    "f8",
+    "f6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Checks are rude. Do something polite.",
+   "gloat": "Yum, the pawn. That was my trap. Hee hee.",
+   "rage": "Royal fork?! I'm telling the Queen!"
+  },
+  "short": "King moves first. The other piece falls.",
+  "voice": "royalFork-v2",
+  "voiceKeys": {
+   "hook": "royalFork-v2-hook",
+   "why": "royalFork-v2-why",
+   "short": "royalFork-v2-short",
+   "taunt": "royalFork-taunt2",
+   "gloat": "bait-gloat-cap4-pawn",
+   "rage": "royalFork-rage3"
+  }
+ },
+ {
+  "id": "L606",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1344,
+  "lichess": "zHBLR",
+  "motif": "attackers",
+  "title": "Kill the Guard",
+  "palaceRoom": "Counting House",
+  "mascot": "GUARD DOWN",
+  "fen": "1k1b4/ppp2pp1/2p2n2/4B2b/8/2N2B2/PP3P1P/6K1 w - - 0 20",
+  "arrive": "g6h5",
+  "arriveCaptured": "p",
+  "best": "e5f6",
+  "bait": "f3h5",
+  "bestTol": 45,
+  "hook": "Something is guarding everything. Remove it.",
+  "why": "Count what it guards. Take the guard and win the rest.",
+  "whyLong": "Take away the horse and his other pieces have no one looking after them. Glitch wanted you busy eating the bishop.",
+  "whyTargets": {
+   "prompt": "Tap the guard your bishop knocks out.",
+   "squares": [
+    "f6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Nothing to count. Nothing at all.",
+   "gloat": "One bishop for you. The whole game for me.",
+   "rage": "Not my horse! It had one job!"
+  },
+  "short": "Take the guard. Win the rest.",
+  "voice": "attackers-v3",
+  "voiceKeys": {
+   "hook": "attackers-v3-hook",
+   "why": "attackers-v3-why",
+   "short": "attackers-v3-short",
+   "taunt": "attackers-taunt3",
+   "gloat": "bait-gloat-cap3-bishop",
+   "rage": "attackers-rage8-horse"
+  }
+ },
+ {
+  "id": "L607",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1347,
+  "lichess": "gQIc0",
+  "motif": "trapped",
+  "title": "Boxed In",
+  "palaceRoom": "Trap Room",
+  "mascot": "NO EXIT",
+  "fen": "1k1r3r/ppp3pp/2nb1p2/3R4/5PBq/8/PPPB1P2/R2Q2K1 w - - 2 21",
+  "arrive": "c8b8",
+  "best": "d5h5",
+  "bait": "d5d6",
+  "bestTol": 45,
+  "hook": "Take away his piece's last escape.",
+  "why": "It cannot run anywhere. Hit it and collect.",
+  "whyLong": "A piece with no squares is already lost. Attack it and wait. The bishop was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the queen with no way out.",
+   "squares": [
+    "h4"
+   ]
+  },
+  "glitch": {
+   "taunt": "My pieces have lots of room. Tons of room.",
+   "gloat": "Enjoy the bishop. It was poisoned. Hee hee.",
+   "rage": "A trap?! On MY board?! Rude!"
+  },
+  "short": "It cannot run. Hit it.",
+  "voice": "trapped-v2",
+  "voiceKeys": {
+   "hook": "trapped-v2-hook",
+   "why": "trapped-v2-why",
+   "short": "trapped-v2-short",
+   "taunt": "trapped-taunt1",
+   "gloat": "bait-gloat-cap2-bishop",
+   "rage": "trapped-rage5"
+  }
+ },
+ {
+  "id": "L608",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1369,
+  "lichess": "k9qiZ",
+  "motif": "counter",
+  "title": "No Running",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "5rk1/3pQp1p/p4Pp1/1p1q4/8/1Pr4P/P3R1P1/4R2K w - - 5 35",
+  "arrive": "h5d5",
+  "best": "e7f8",
+  "bait": "e7f7",
+  "bestTol": 45,
+  "hook": "His attack left something open.",
+  "why": "Hit back harder, and his attack no longer matters.",
+  "whyLong": "Before you run, look for checks and captures of your own. The pawn was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap his queen and the pawn it attacks.",
+   "squares": [
+    "g2",
+    "d5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Eat the pawn. Snacks first, thinking later.",
+   "gloat": "Enjoy the pawn. It was poisoned. Hee hee.",
+   "rage": "I attacked FIRST! That's not fair!"
+  },
+  "short": "Hit back harder. His attack fades.",
+  "voice": "counter-v3",
+  "voiceKeys": {
+   "hook": "counter-v3-hook",
+   "why": "counter-v3-why",
+   "short": "counter-v3-short",
+   "taunt": "bait-taunt-cap5-pawn",
+   "gloat": "bait-gloat-cap2-pawn",
+   "rage": "counter-rage2"
+  }
+ },
+ {
+  "id": "L609",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1374,
+  "lichess": "HGxMi",
+  "motif": "backRank",
+  "title": "Bottom Floor",
+  "palaceRoom": "Back-Rank Basement",
+  "mascot": "BACK DOOR",
+  "fen": "2r3k1/1P3ppp/2Pp4/8/8/4BpPP/2q1nP1K/r4Q2 w - - 0 34",
+  "arrive": "a8a1",
+  "arriveCaptured": "r",
+  "best": "b7c8q",
+  "bait": "f1a1",
+  "bestTol": 45,
+  "hook": "His own pawns locked the door.",
+  "why": "His pawns trap his own king. Land on the back row.",
+  "whyLong": "His pawns stand in front of his king like a wall. The back row is the only way in. Glitch wanted you busy eating the rook.",
+  "whyTargets": {
+   "prompt": "Tap the king with no escape square.",
+   "squares": [
+    "g8"
+   ]
+  },
+  "glitch": {
+   "taunt": "Take the rook. What could possibly go wrong?",
+   "gloat": "Enjoy the rook. It was poisoned. Hee hee.",
+   "rage": "My pawns were supposed to PROTECT me!"
+  },
+  "short": "His pawns trap him. Back row.",
+  "voice": "backRank-v1",
+  "voiceKeys": {
+   "hook": "backRank-v1-hook",
+   "why": "backRank-v1-why",
+   "short": "backRank-v1-short",
+   "taunt": "bait-taunt-cap7-rook",
+   "gloat": "bait-gloat-cap2-rook",
+   "rage": "backRank-rage4"
+  }
+ },
+ {
+  "id": "L610",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1380,
+  "lichess": "ell2g",
+  "motif": "discovery",
+  "title": "Secret Weapon",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "r3k2r/1p2bppp/pqn1pn2/1N1p4/3P2b1/1QN1P1P1/PP3PBP/R1B1K2R w KQkq - 0 12",
+  "arrive": "a7a6",
+  "best": "b5d6",
+  "bait": "c3d5",
+  "bestTol": 45,
+  "hook": "Two attackers are waiting in one line.",
+  "why": "Uncover the laser. He cannot stop two attacks.",
+  "whyLong": "When your piece stands in front of your own laser, move it with a threat. The free pawn was a trap.",
+  "whyTargets": {
+   "prompt": "Tap your hidden queen and the queen it hits.",
+   "squares": [
+    "b3",
+    "b6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Take the pawn. What could possibly go wrong?",
+   "gloat": "Yum, the pawn. That was my trap. Hee hee.",
+   "rage": "A secret weapon?! Nobody told ME!"
+  },
+  "short": "Move it. The laser fires.",
+  "voice": "discovery-v4",
+  "voiceKeys": {
+   "hook": "discovery-v4-hook",
+   "why": "discovery-v4-why",
+   "short": "discovery-v4-short",
+   "taunt": "bait-taunt-cap7-pawn",
+   "gloat": "bait-gloat-cap4-pawn",
+   "rage": "discovery-rage6"
+  }
+ },
+ {
+  "id": "L611",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1382,
+  "lichess": "PHPWR",
+  "motif": "mateThreat",
+  "title": "Final Move",
+  "palaceRoom": "Checkmate Chamber",
+  "mascot": "THE END",
+  "fen": "5k2/pR5R/K7/3r4/1r5B/b4P1P/6P1/8 b - - 19 51",
+  "arrive": "a5a6",
+  "best": "b4a4",
+  "bait": "b4b7",
+  "bestTol": 45,
+  "hook": "Look for the checkmate before the snack.",
+  "why": "Look at every check first. One of them is mate.",
+  "whyLong": "Your rook goes for the king. Grabbing stuff only lets him keep playing. The rook was poisoned cheese.",
+  "whyTargets": {
+   "prompt": "Tap the king you are mating.",
+   "squares": [
+    "a6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Grab stuff! Grabbing is the fun part!",
+   "gloat": "Still breathing! Hee hee. Your turn.",
+   "rage": "The end?! But I had a whole plan!"
+  },
+  "short": "Look at checks. One mates.",
+  "voice": "mateThreat-v2",
+  "voiceKeys": {
+   "hook": "mateThreat-v2-hook",
+   "why": "mateThreat-v2-why",
+   "short": "mateThreat-v2-short",
+   "taunt": "mateThreat-taunt3",
+   "gloat": "mateThreat-gloat2",
+   "rage": "mateThreat-rage5"
+  }
+ },
+ {
+  "id": "L612",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1383,
+  "lichess": "ZqfCB",
+  "motif": "defend",
+  "title": "Brace",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "6r1/pp3k2/2pp1P2/6P1/4PK2/2Pn4/PP6/6R1 w - - 3 32",
+  "arrive": "e5d3",
+  "best": "f4f5",
+  "bait": "f4e3",
+  "bestTol": 45,
+  "hook": "Something of yours is under fire.",
+  "why": "Defend first. The fancy move loses what he attacked.",
+  "whyLong": "Before your own plan, ask what his last move attacked. Here: your pawn. Moving the king just gave him time.",
+  "whyTargets": {
+   "prompt": "Tap his horse and the pawn it attacks.",
+   "squares": [
+    "b2",
+    "d3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Forget my threat. Go do your own thing!",
+   "gloat": "You forgot my threat. I didn't. Ha!",
+   "rage": "My attack bounced off?! Like a rubber ball?!"
+  },
+  "short": "Defend first. Fancy later.",
+  "voice": "defend-v3",
+  "voiceKeys": {
+   "hook": "defend-v3-hook",
+   "why": "defend-v3-why",
+   "short": "defend-v3-short",
+   "taunt": "defend-taunt3",
+   "gloat": "defend-gloat1",
+   "rage": "defend-rage2"
+  }
+ },
+ {
+  "id": "L613",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1385,
+  "lichess": "clTO2",
+  "motif": "defend",
+  "title": "Don't Panic",
+  "palaceRoom": "Shield Room",
+  "mascot": "HOLD IT",
+  "fen": "5r2/8/P7/3P4/4K3/8/6p1/R6k b - - 3 60",
+  "arrive": "a2a1",
+  "best": "f8f1",
+  "bait": "g2g1r",
+  "bestTol": 45,
+  "hook": "He attacks first. Answer without giving anything away.",
+  "why": "His move attacked you. Fix the threat first, then play.",
+  "whyLong": "His rook was hitting your king. The best move deals with that first. Moving the pawn just gave him time.",
+  "whyTargets": {
+   "prompt": "Tap his rook and the king it attacks.",
+   "squares": [
+    "h1",
+    "a1"
+   ]
+  },
+  "glitch": {
+   "taunt": "Be sensible. Move your pawn. Sensible is good.",
+   "gloat": "You played your plan. I played mine better.",
+   "rage": "You defended AND kept everything?! Cheater!"
+  },
+  "short": "Fix his threat first.",
+  "voice": "defend-v1",
+  "voiceKeys": {
+   "hook": "defend-v1-hook",
+   "why": "defend-v1-why",
+   "short": "defend-v1-short",
+   "taunt": "bait-taunt-quiet7-pawn",
+   "gloat": "defend-gloat6",
+   "rage": "defend-rage4"
+  }
+ },
+ {
+  "id": "L614",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1394,
+  "lichess": "eY6Nb",
+  "motif": "discovery",
+  "title": "Surprise Attack",
+  "palaceRoom": "Discovery Observatory",
+  "mascot": "DISCOVERY",
+  "fen": "5r2/1p2bnkp/p3p3/3pP3/3n2P1/3qB2Q/PR1N3P/7K w - - 0 29",
+  "arrive": "g8g7",
+  "arriveCaptured": "n",
+  "best": "e3h6",
+  "bait": "e3d4",
+  "bestTol": 45,
+  "hook": "There's a laser behind your own piece.",
+  "why": "The piece that moves attacks. The piece behind attacks too.",
+  "whyLong": "Your queen was aiming all along. It just needed the road cleared. Glitch wanted you busy eating the horse.",
+  "whyTargets": {
+   "prompt": "Tap your hidden queen and the queen it hits.",
+   "squares": [
+    "h3",
+    "d3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Eat the horse. Snacks first, thinking later.",
+   "gloat": "Enjoy the horse. It was poisoned. Hee hee.",
+   "rage": "A LASER?! Behind your own piece?!"
+  },
+  "short": "Both pieces attack. He saves one.",
+  "voice": "discovery-v3",
+  "voiceKeys": {
+   "hook": "discovery-v3-hook",
+   "why": "discovery-v3-why",
+   "short": "discovery-v3-short",
+   "taunt": "bait-taunt-cap5-horse",
+   "gloat": "bait-gloat-cap2-horse",
+   "rage": "discovery-rage1"
+  }
+ },
+ {
+  "id": "L615",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1397,
+  "lichess": "YcvxH",
+  "motif": "royalFork",
+  "title": "Royal Pain",
+  "palaceRoom": "Fork Hall",
+  "mascot": "TWO HEADS",
+  "fen": "3r4/5p1p/6pk/4R3/5nP1/7P/PP2NK2/8 b - - 1 32",
+  "arrive": "d4e2",
+  "best": "f4d3",
+  "bait": "f4e2",
+  "bestTol": 45,
+  "hook": "The king has company. Bad company for him.",
+  "why": "A royal fork: the check comes first, the free piece comes next.",
+  "whyLong": "Check plus attack is the strongest fork there is. Here it wins his rook. Glitch wanted you busy eating the horse.",
+  "whyTargets": {
+   "prompt": "Tap the king and the rook your horse hits.",
+   "squares": [
+    "f2",
+    "e5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Mmm, horse. Crunchy. Grab it quick!",
+   "gloat": "No check, no fork, no chance. Lovely.",
+   "rage": "The KING and the rook?! Rude! So rude!"
+  },
+  "short": "Check and bite. Collect next move.",
+  "voice": "royalFork-v3",
+  "voiceKeys": {
+   "hook": "royalFork-v3-hook",
+   "why": "royalFork-v3-why",
+   "short": "royalFork-v3-short",
+   "taunt": "bait-taunt-cap8-horse",
+   "gloat": "royalFork-gloat2",
+   "rage": "royalFork-rage7-rook"
+  }
+ },
+ {
+  "id": "L616",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1397,
+  "lichess": "dPhpC",
+  "motif": "skewer",
+  "title": "Run or Lose",
+  "palaceRoom": "Skewer Kitchen",
+  "mascot": "SKEWER STICK",
+  "fen": "8/1n3k2/1P1p4/1N1Np3/4P2p/3K1P1b/7P/8 b - - 7 54",
+  "arrive": "c4d3",
+  "best": "h3f1",
+  "bait": "b7c5",
+  "bestTol": 45,
+  "hook": "His big piece is shielding a friend.",
+  "why": "Hit the front piece. When it steps away, take the back one.",
+  "whyLong": "When the king steps off the line, your bishop eats the horse. That check looked scary and did nothing.",
+  "whyTargets": {
+   "prompt": "Tap the king that must run and the horse behind.",
+   "squares": [
+    "d3",
+    "b5"
+   ]
+  },
+  "glitch": {
+   "taunt": "Straight lines are boring. Try a zigzag.",
+   "gloat": "Both my pieces say thank you.",
+   "rage": "Through the middle?! That's a shish kebab!"
+  },
+  "short": "Poke the front. Take the back.",
+  "voice": "skewer-v4",
+  "voiceKeys": {
+   "hook": "skewer-v4-hook",
+   "why": "skewer-v4-why",
+   "short": "skewer-v4-short",
+   "taunt": "skewer-taunt1",
+   "gloat": "skewer-gloat6",
+   "rage": "skewer-rage1"
+  }
+ },
+ {
+  "id": "L617",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1401,
+  "lichess": "uci1s",
+  "motif": "kingMarch",
+  "title": "Crown Run",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "CROWN RUN",
+  "fen": "8/1p2r1kp/p7/8/P2Kpp1R/2P5/1P3PPP/8 b - - 3 42",
+  "arrive": "h6h4",
+  "best": "e4e3",
+  "bait": "e7d7",
+  "bestTol": 45,
+  "hook": "Push the right pawn and he can't keep up.",
+  "why": "Your pawn is closer to the end than his defenders are.",
+  "whyLong": "A pawn one step from a crown is worth more than most pieces. That check looked scary and did nothing.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that wants a crown.",
+   "squares": [
+    "e4"
+   ]
+  },
+  "glitch": {
+   "taunt": "Just check him. Checks never lose. Trust me.",
+   "gloat": "You checked. I moved. We can do this all day.",
+   "rage": "NOOOO. It reached the end! Who let it?!"
+  },
+  "short": "Push. His guards are too far.",
+  "voice": "kingMarch-v4",
+  "voiceKeys": {
+   "hook": "kingMarch-v4-hook",
+   "why": "kingMarch-v4-why",
+   "short": "kingMarch-v4-short",
+   "taunt": "bait-taunt-chk5",
+   "gloat": "bait-gloat-chk1",
+   "rage": "kingMarch-rage6"
+  }
+ },
+ {
+  "id": "L618",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1422,
+  "lichess": "A0Z4c",
+  "motif": "trapped",
+  "title": "Trap Door",
+  "palaceRoom": "Trap Room",
+  "mascot": "NO EXIT",
+  "fen": "r4rk1/1p2nppp/p1n5/3pPR2/3P2Pq/P2Q3P/1P2N3/5RK1 w - - 3 21",
+  "arrive": "g6e7",
+  "best": "f5h5",
+  "bait": "f5f7",
+  "bestTol": 45,
+  "hook": "Take away his piece's last escape.",
+  "why": "It cannot run anywhere. Hit it and collect.",
+  "whyLong": "A piece with no squares is already lost. Attack it and wait. Glitch wanted you busy eating the pawn.",
+  "whyTargets": {
+   "prompt": "Tap the queen with no way out.",
+   "squares": [
+    "h4"
+   ]
+  },
+  "glitch": {
+   "taunt": "Look at that juicy pawn. Just take it!",
+   "gloat": "The cage was open. I noticed.",
+   "rage": "Every door is locked?! Who has the key?!"
+  },
+  "short": "It cannot run. Hit it.",
+  "voice": "trapped-v2",
+  "voiceKeys": {
+   "hook": "trapped-v2-hook",
+   "why": "trapped-v2-why",
+   "short": "trapped-v2-short",
+   "taunt": "bait-taunt-cap3-pawn",
+   "gloat": "trapped-gloat6",
+   "rage": "trapped-rage3"
+  }
+ },
+ {
+  "id": "L619",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1436,
+  "lichess": "S5iby",
+  "motif": "kingMarch",
+  "title": "Queen Me",
+  "palaceRoom": "Endgame Vault",
+  "mascot": "CROWN RUN",
+  "fen": "8/P1n5/2N2kPK/8/1P6/3p4/8/8 b - - 0 60",
+  "arrive": "a6a7",
+  "best": "d3d2",
+  "bait": "f6f5",
+  "bestTol": 45,
+  "hook": "The last row is closer than it looks.",
+  "why": "The pawn runs, and his pieces are too far to catch it.",
+  "whyLong": "Passed pawns must be pushed. His pieces are too far away to stop it. Glitch wanted you to play it safe.",
+  "whyTargets": {
+   "prompt": "Tap the pawn that wants a crown.",
+   "squares": [
+    "d3"
+   ]
+  },
+  "glitch": {
+   "taunt": "Play it safe. Your king wants a little walk.",
+   "gloat": "Slow and safe. And now I win. Ha!",
+   "rage": "Stop it! Pawns are not allowed to grow up!"
+  },
+  "short": "The pawn runs. Nobody catches it.",
+  "voice": "kingMarch-v2",
+  "voiceKeys": {
+   "hook": "kingMarch-v2-hook",
+   "why": "kingMarch-v2-why",
+   "short": "kingMarch-v2-short",
+   "taunt": "bait-taunt-quiet5-king",
+   "gloat": "bait-gloat-quiet1",
+   "rage": "kingMarch-rage5"
+  }
+ },
+ {
+  "id": "L620",
+  "pack": "ladder",
+  "generated": true,
+  "rung": 6,
+  "rating": 1444,
+  "lichess": "Jcv7e",
+  "motif": "counter",
+  "title": "Counterpunch",
+  "palaceRoom": "Counter Yard",
+  "mascot": "HIT BACK",
+  "fen": "2r4k/3R2p1/p1q1Qp1p/1pp5/4P3/5P1P/1P4P1/6K1 w - - 5 33",
+  "arrive": "c7c6",
+  "best": "d7d8",
+  "bait": "e6c6",
+  "bestTol": 45,
+  "hook": "His attack left something open.",
+  "why": "Hit back harder, and his attack no longer matters.",
+  "whyLong": "Before you run, look for checks and captures of your own. The free queen was a trap.",
+  "whyTargets": {
+   "prompt": "Tap his queen and the queen it attacks.",
+   "squares": [
+    "e6",
+    "c6"
+   ]
+  },
+  "glitch": {
+   "taunt": "Free queen! Free queen! Take it before I change my mind!",
+   "gloat": "You ran. My piece is fine. Thanks for playing.",
+   "rage": "You didn't RUN?! Everybody runs!"
+  },
+  "short": "Hit back harder. His attack fades.",
+  "voice": "counter-v3",
+  "voiceKeys": {
+   "hook": "counter-v3-hook",
+   "why": "counter-v3-why",
+   "short": "counter-v3-short",
+   "taunt": "bait-taunt-cap4-queen",
+   "gloat": "counter-gloat5",
+   "rage": "counter-rage5"
+  }
+ }
+]

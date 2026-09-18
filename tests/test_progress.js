@@ -7,6 +7,9 @@ const S = require("../web/score.js");
 
 const raw = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "encounters.v2.json"), "utf8"));
 const ALL = Array.isArray(raw) ? raw : (raw.encounters || []);
+// These scenarios reason about the hand-authored set ("the two pin fights"); the ladder is
+// generated and covered by its own suites, so it stays out of the fixtures here.
+const POOL = ALL; ALL.splice(0, ALL.length, ...POOL.filter(function (e) { return !e.generated; }));
 const byId = {}; ALL.forEach(function (e) { byId[e.id] = e; });
 const MOTIFS = new Set(ALL.map(function (e) { return e.motif; }));
 
@@ -155,7 +158,37 @@ function run() {
   });
   assert.doesNotThrow(function () { S.progressSummary(null, ALL, TODAY); S.progressSummary({}, [], TODAY); });
 
-  console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, threats, camp days and runs, first-try rate, Monday-to-Sunday week, coach notes in priority order, null-safe");
+  /* ---------- v0.19: rushing ---------- */
+  assert.deepStrictEqual(empty.rush, { moves: 0, rushed: 0, rate: 0 }, "no timed moves is nought, never NaN");
+  assert.ok(!empty.coachNotes.some(function (n) { return n === S.RUSH_NOTE; }));
+  const rusher = statsOf([card("02", 3, 1, false)], {}); rusher.rush = { moves: 10, rushed: 4 };
+  const pr = S.progressSummary(rusher, ALL, TODAY);
+  assert.deepStrictEqual(pr.rush, { moves: 10, rushed: 4, rate: 0.4 }, "rush comes off the profile with a rate");
+  assert.strictEqual(pr.coachNotes[0], "He is moving before he looks. Slow the hand: write the move on the scoresheet first.",
+    "over thirty percent rushed leads the notes");
+  assert.ok(pr.coachNotes.length <= 4);
+  const edge = statsOf([card("02", 3, 1, false)], {}); edge.rush = { moves: 10, rushed: 3 };
+  assert.ok(!S.progressSummary(edge, ALL, TODAY).coachNotes.some(function (n) { return n === S.RUSH_NOTE; }),
+    "exactly thirty percent is not over thirty percent");
+  // the rush note sits alongside the others, it does not push the threat note out
+  const both = statsOf([card("02", 3, 1, false)], {}); both.rush = { moves: 5, rushed: 5 }; both.threats = { asked: 10, found: 4, wrongTaps: 0 };
+  const nb = S.progressSummary(both, ALL, TODAY).coachNotes;
+  assert.strictEqual(nb[0], S.RUSH_NOTE); assert.ok(/attacked/.test(nb[1]), "threat note follows: " + nb[1]);
+  // real recorded moves feed it end to end
+  let live = statsOf([], {});
+  for (let i = 0; i < 4; i++) live = S.recordMove(live, byId["02"], { correct: false, san: "x", t: TODAY, thinkMs: 1500 }).stats;
+  live = S.recordMove(live, byId["02"], { correct: true, san: "y", t: TODAY, thinkMs: 9000 }).stats;
+  const pl = S.progressSummary(live, ALL, TODAY);
+  assert.deepStrictEqual({ m: pl.rush.moves, r: pl.rush.rushed }, { m: 5, r: 4 });
+  assert.strictEqual(pl.coachNotes[0], S.RUSH_NOTE);
+
+  /* cracked cards still count as cards */
+  const cr = statsOf([], { "01": TODAY, "02": TODAY }); cr.cardsEarned["01"].clean = false;
+  const pcr = S.progressSummary(cr, ALL, TODAY);
+  assert.strictEqual(pcr.cards, 2, "a cracked card is still an earned card");
+  assert.strictEqual(pcr.cracked, 1);
+
+  console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, threats, camp days and runs, first-try rate, Monday-to-Sunday week, coach notes in priority order, rushed moves and the scoresheet note, cracked cards still count, null-safe");
 }
 
 run();

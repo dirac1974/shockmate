@@ -330,6 +330,126 @@
   "text": "Two royal heads beat one snack pawn."
  },
  {
+  "key": "attackers-gloat1",
+  "voice": "glitch",
+  "text": "My bodyguard is still on duty. Ha!"
+ },
+ {
+  "key": "attackers-gloat3",
+  "voice": "glitch",
+  "text": "Guard stays, defence stays. Lovely."
+ },
+ {
+  "key": "attackers-gloat4",
+  "voice": "glitch",
+  "text": "You poked the wrong piece. Hee hee."
+ },
+ {
+  "key": "attackers-gloat5",
+  "voice": "glitch",
+  "text": "My defence is perfect. Just like me."
+ },
+ {
+  "key": "attackers-rage1",
+  "voice": "glitch",
+  "text": "You took the BODYGUARD?! That's not allowed!"
+ },
+ {
+  "key": "attackers-rage2",
+  "voice": "glitch",
+  "text": "No guard?! Now everything is loose! NOOOO!"
+ },
+ {
+  "key": "attackers-rage3",
+  "voice": "glitch",
+  "text": "You COUNTED to three?! Nobody counts to three!"
+ },
+ {
+  "key": "attackers-rage4",
+  "voice": "glitch",
+  "text": "My whole defence! Gone! Like a sandcastle!"
+ },
+ {
+  "key": "attackers-rage7-queen",
+  "voice": "glitch",
+  "text": "My queen was GUARDING everything! Who took it?!"
+ },
+ {
+  "key": "attackers-rage8-horse",
+  "voice": "glitch",
+  "text": "Not my horse! It had one job!"
+ },
+ {
+  "key": "attackers-taunt2",
+  "voice": "glitch",
+  "text": "Attack the big stuff! Forget the little guard!"
+ },
+ {
+  "key": "attackers-taunt3",
+  "voice": "glitch",
+  "text": "Nothing to count. Nothing at all."
+ },
+ {
+  "key": "attackers-v1-hook",
+  "voice": "narrator",
+  "text": "One piece is doing all his guarding."
+ },
+ {
+  "key": "attackers-v1-short",
+  "voice": "narrator",
+  "text": "Take the guard first."
+ },
+ {
+  "key": "attackers-v1-why",
+  "voice": "narrator",
+  "text": "Take the guard. Then the piece it protected is loose too."
+ },
+ {
+  "key": "attackers-v2-hook",
+  "voice": "narrator",
+  "text": "Knock out the bodyguard first."
+ },
+ {
+  "key": "attackers-v2-short",
+  "voice": "narrator",
+  "text": "No bodyguard, no defence."
+ },
+ {
+  "key": "attackers-v2-why",
+  "voice": "narrator",
+  "text": "Knock out the bodyguard and everything behind it falls."
+ },
+ {
+  "key": "attackers-v3-hook",
+  "voice": "narrator",
+  "text": "Something is guarding everything. Remove it."
+ },
+ {
+  "key": "attackers-v3-short",
+  "voice": "narrator",
+  "text": "Take the guard. Win the rest."
+ },
+ {
+  "key": "attackers-v3-why",
+  "voice": "narrator",
+  "text": "Count what it guards. Take the guard and win the rest."
+ },
+ {
+  "key": "attackers-v4-hook",
+  "voice": "narrator",
+  "text": "His defence has one weak link."
+ },
+ {
+  "key": "attackers-v4-short",
+  "voice": "narrator",
+  "text": "Take the piece holding it together."
+ },
+ {
+  "key": "attackers-v4-why",
+  "voice": "narrator",
+  "text": "One piece holds his defence together. Take that piece."
+ },
+ {
   "key": "b1-gloat",
   "voice": "glitch",
   "text": "My bishop sits on the corner forever. Nothing happens."
@@ -388,6 +508,561 @@
   "key": "b2-why",
   "voice": "narrator",
   "text": "Keep your bishop. Eat what his cannot guard."
+ },
+ {
+  "key": "backRank-gloat1",
+  "voice": "glitch",
+  "text": "You went snack hunting. The game goes on. And on."
+ },
+ {
+  "key": "backRank-gloat2",
+  "voice": "glitch",
+  "text": "My king stays cozy. Thanks!"
+ },
+ {
+  "key": "backRank-gloat3",
+  "voice": "glitch",
+  "text": "No mate, no problem. Hee hee."
+ },
+ {
+  "key": "backRank-rage1",
+  "voice": "glitch",
+  "text": "MY OWN PAWNS locked the door?!"
+ },
+ {
+  "key": "backRank-rage2",
+  "voice": "glitch",
+  "text": "Trapped in my own basement?! NOOOO!"
+ },
+ {
+  "key": "backRank-rage4",
+  "voice": "glitch",
+  "text": "My pawns were supposed to PROTECT me!"
+ },
+ {
+  "key": "backRank-rage5",
+  "voice": "glitch",
+  "text": "Mate?! On the BACK ROW?! Again?!"
+ },
+ {
+  "key": "backRank-rage6",
+  "voice": "glitch",
+  "text": "I needed ONE little escape square! ONE!"
+ },
+ {
+  "key": "backRank-taunt1",
+  "voice": "glitch",
+  "text": "My king is cozy in bed. Leave him be."
+ },
+ {
+  "key": "backRank-taunt2",
+  "voice": "glitch",
+  "text": "The back row is fine. Totally fine."
+ },
+ {
+  "key": "backRank-taunt3",
+  "voice": "glitch",
+  "text": "Forget my king. Snacks are more fun."
+ },
+ {
+  "key": "backRank-v1-hook",
+  "voice": "narrator",
+  "text": "His own pawns locked the door."
+ },
+ {
+  "key": "backRank-v1-short",
+  "voice": "narrator",
+  "text": "His pawns trap him. Back row."
+ },
+ {
+  "key": "backRank-v1-why",
+  "voice": "narrator",
+  "text": "His pawns trap his own king. Land on the back row."
+ },
+ {
+  "key": "backRank-v2-hook",
+  "voice": "narrator",
+  "text": "His king has no escape square."
+ },
+ {
+  "key": "backRank-v2-short",
+  "voice": "narrator",
+  "text": "No escape square. Back row mates."
+ },
+ {
+  "key": "backRank-v2-why",
+  "voice": "narrator",
+  "text": "The king has no square to run to. The back row is mate."
+ },
+ {
+  "key": "backRank-v3-hook",
+  "voice": "narrator",
+  "text": "Look at his back row. Who guards it?"
+ },
+ {
+  "key": "backRank-v3-short",
+  "voice": "narrator",
+  "text": "Nobody guards the back row. Slide in."
+ },
+ {
+  "key": "backRank-v3-why",
+  "voice": "narrator",
+  "text": "Nobody guards the back row. Slide in and it is over."
+ },
+ {
+  "key": "backRank-v4-hook",
+  "voice": "narrator",
+  "text": "The king is tucked in too tight."
+ },
+ {
+  "key": "backRank-v4-short",
+  "voice": "narrator",
+  "text": "Mate beats a snack."
+ },
+ {
+  "key": "backRank-v4-why",
+  "voice": "narrator",
+  "text": "Mate beats any snack. His own pawns block the exit."
+ },
+ {
+  "key": "bait-gloat-cap1-pawn",
+  "voice": "glitch",
+  "text": "Ha! You ate the pawn. Now watch me eat."
+ },
+ {
+  "key": "bait-gloat-cap1-queen",
+  "voice": "glitch",
+  "text": "Ha! You ate the queen. Now watch me eat."
+ },
+ {
+  "key": "bait-gloat-cap1-rook",
+  "voice": "glitch",
+  "text": "Ha! You ate the rook. Now watch me eat."
+ },
+ {
+  "key": "bait-gloat-cap2-bishop",
+  "voice": "glitch",
+  "text": "Enjoy the bishop. It was poisoned. Hee hee."
+ },
+ {
+  "key": "bait-gloat-cap2-horse",
+  "voice": "glitch",
+  "text": "Enjoy the horse. It was poisoned. Hee hee."
+ },
+ {
+  "key": "bait-gloat-cap2-pawn",
+  "voice": "glitch",
+  "text": "Enjoy the pawn. It was poisoned. Hee hee."
+ },
+ {
+  "key": "bait-gloat-cap2-rook",
+  "voice": "glitch",
+  "text": "Enjoy the rook. It was poisoned. Hee hee."
+ },
+ {
+  "key": "bait-gloat-cap3-bishop",
+  "voice": "glitch",
+  "text": "One bishop for you. The whole game for me."
+ },
+ {
+  "key": "bait-gloat-cap3-horse",
+  "voice": "glitch",
+  "text": "One horse for you. The whole game for me."
+ },
+ {
+  "key": "bait-gloat-cap3-pawn",
+  "voice": "glitch",
+  "text": "One pawn for you. The whole game for me."
+ },
+ {
+  "key": "bait-gloat-cap3-queen",
+  "voice": "glitch",
+  "text": "One queen for you. The whole game for me."
+ },
+ {
+  "key": "bait-gloat-cap3-rook",
+  "voice": "glitch",
+  "text": "One rook for you. The whole game for me."
+ },
+ {
+  "key": "bait-gloat-cap4-bishop",
+  "voice": "glitch",
+  "text": "Yum, the bishop. That was my trap. Hee hee."
+ },
+ {
+  "key": "bait-gloat-cap4-pawn",
+  "voice": "glitch",
+  "text": "Yum, the pawn. That was my trap. Hee hee."
+ },
+ {
+  "key": "bait-gloat-cap4-queen",
+  "voice": "glitch",
+  "text": "Yum, the queen. That was my trap. Hee hee."
+ },
+ {
+  "key": "bait-gloat-chk1",
+  "voice": "glitch",
+  "text": "You checked. I moved. We can do this all day."
+ },
+ {
+  "key": "bait-gloat-chk2",
+  "voice": "glitch",
+  "text": "Big loud check. Nothing happened. Lovely."
+ },
+ {
+  "key": "bait-gloat-quiet1",
+  "voice": "glitch",
+  "text": "Slow and safe. And now I win. Ha!"
+ },
+ {
+  "key": "bait-gloat-quiet2",
+  "voice": "glitch",
+  "text": "You played it safe. Safe for ME."
+ },
+ {
+  "key": "bait-taunt-cap1-pawn",
+  "voice": "glitch",
+  "text": "Psst. Free pawn. Grab it. Nobody's looking."
+ },
+ {
+  "key": "bait-taunt-cap1-queen",
+  "voice": "glitch",
+  "text": "Psst. Free queen. Grab it. Nobody's looking."
+ },
+ {
+  "key": "bait-taunt-cap1-rook",
+  "voice": "glitch",
+  "text": "Psst. Free rook. Grab it. Nobody's looking."
+ },
+ {
+  "key": "bait-taunt-cap2-pawn",
+  "voice": "glitch",
+  "text": "That pawn is begging to be eaten."
+ },
+ {
+  "key": "bait-taunt-cap2-rook",
+  "voice": "glitch",
+  "text": "That rook is begging to be eaten."
+ },
+ {
+  "key": "bait-taunt-cap3-bishop",
+  "voice": "glitch",
+  "text": "Look at that juicy bishop. Just take it!"
+ },
+ {
+  "key": "bait-taunt-cap3-horse",
+  "voice": "glitch",
+  "text": "Look at that juicy horse. Just take it!"
+ },
+ {
+  "key": "bait-taunt-cap3-pawn",
+  "voice": "glitch",
+  "text": "Look at that juicy pawn. Just take it!"
+ },
+ {
+  "key": "bait-taunt-cap3-queen",
+  "voice": "glitch",
+  "text": "Look at that juicy queen. Just take it!"
+ },
+ {
+  "key": "bait-taunt-cap3-rook",
+  "voice": "glitch",
+  "text": "Look at that juicy rook. Just take it!"
+ },
+ {
+  "key": "bait-taunt-cap4-bishop",
+  "voice": "glitch",
+  "text": "Free bishop! Free bishop! Take it before I change my mind!"
+ },
+ {
+  "key": "bait-taunt-cap4-horse",
+  "voice": "glitch",
+  "text": "Free horse! Free horse! Take it before I change my mind!"
+ },
+ {
+  "key": "bait-taunt-cap4-pawn",
+  "voice": "glitch",
+  "text": "Free pawn! Free pawn! Take it before I change my mind!"
+ },
+ {
+  "key": "bait-taunt-cap4-queen",
+  "voice": "glitch",
+  "text": "Free queen! Free queen! Take it before I change my mind!"
+ },
+ {
+  "key": "bait-taunt-cap5-bishop",
+  "voice": "glitch",
+  "text": "Eat the bishop. Snacks first, thinking later."
+ },
+ {
+  "key": "bait-taunt-cap5-horse",
+  "voice": "glitch",
+  "text": "Eat the horse. Snacks first, thinking later."
+ },
+ {
+  "key": "bait-taunt-cap5-pawn",
+  "voice": "glitch",
+  "text": "Eat the pawn. Snacks first, thinking later."
+ },
+ {
+  "key": "bait-taunt-cap5-queen",
+  "voice": "glitch",
+  "text": "Eat the queen. Snacks first, thinking later."
+ },
+ {
+  "key": "bait-taunt-cap5-rook",
+  "voice": "glitch",
+  "text": "Eat the rook. Snacks first, thinking later."
+ },
+ {
+  "key": "bait-taunt-cap6-pawn",
+  "voice": "glitch",
+  "text": "A whole pawn, just lying there. Go on."
+ },
+ {
+  "key": "bait-taunt-cap6-rook",
+  "voice": "glitch",
+  "text": "A whole rook, just lying there. Go on."
+ },
+ {
+  "key": "bait-taunt-cap7-pawn",
+  "voice": "glitch",
+  "text": "Take the pawn. What could possibly go wrong?"
+ },
+ {
+  "key": "bait-taunt-cap7-rook",
+  "voice": "glitch",
+  "text": "Take the rook. What could possibly go wrong?"
+ },
+ {
+  "key": "bait-taunt-cap8-horse",
+  "voice": "glitch",
+  "text": "Mmm, horse. Crunchy. Grab it quick!"
+ },
+ {
+  "key": "bait-taunt-cap8-pawn",
+  "voice": "glitch",
+  "text": "Mmm, pawn. Crunchy. Grab it quick!"
+ },
+ {
+  "key": "bait-taunt-cap8-rook",
+  "voice": "glitch",
+  "text": "Mmm, rook. Crunchy. Grab it quick!"
+ },
+ {
+  "key": "bait-taunt-chk3",
+  "voice": "glitch",
+  "text": "Check! Check! Everybody loves a check!"
+ },
+ {
+  "key": "bait-taunt-chk4-rook",
+  "voice": "glitch",
+  "text": "Poke his king with your rook. He hates that."
+ },
+ {
+  "key": "bait-taunt-chk5",
+  "voice": "glitch",
+  "text": "Just check him. Checks never lose. Trust me."
+ },
+ {
+  "key": "bait-taunt-chk7",
+  "voice": "glitch",
+  "text": "Scare the king! Check first, think never!"
+ },
+ {
+  "key": "bait-taunt-quiet1-king",
+  "voice": "glitch",
+  "text": "Careful, careful. Just move your king somewhere safe."
+ },
+ {
+  "key": "bait-taunt-quiet1-rook",
+  "voice": "glitch",
+  "text": "Careful, careful. Just move your rook somewhere safe."
+ },
+ {
+  "key": "bait-taunt-quiet2-king",
+  "voice": "glitch",
+  "text": "Tuck your king away. Nothing bad ever happens."
+ },
+ {
+  "key": "bait-taunt-quiet2-queen",
+  "voice": "glitch",
+  "text": "Tuck your queen away. Nothing bad ever happens."
+ },
+ {
+  "key": "bait-taunt-quiet2-rook",
+  "voice": "glitch",
+  "text": "Tuck your rook away. Nothing bad ever happens."
+ },
+ {
+  "key": "bait-taunt-quiet3-rook",
+  "voice": "glitch",
+  "text": "Slow and safe. Shuffle your rook. Yawn."
+ },
+ {
+  "key": "bait-taunt-quiet4-bishop",
+  "voice": "glitch",
+  "text": "Your bishop looks nervous. Move it. Quick!"
+ },
+ {
+  "key": "bait-taunt-quiet4-king",
+  "voice": "glitch",
+  "text": "Your king looks nervous. Move it. Quick!"
+ },
+ {
+  "key": "bait-taunt-quiet5-king",
+  "voice": "glitch",
+  "text": "Play it safe. Your king wants a little walk."
+ },
+ {
+  "key": "bait-taunt-quiet6-bishop",
+  "voice": "glitch",
+  "text": "Nothing to see here. Just nudge your bishop."
+ },
+ {
+  "key": "bait-taunt-quiet6-king",
+  "voice": "glitch",
+  "text": "Nothing to see here. Just nudge your king."
+ },
+ {
+  "key": "bait-taunt-quiet7-horse",
+  "voice": "glitch",
+  "text": "Be sensible. Move your horse. Sensible is good."
+ },
+ {
+  "key": "bait-taunt-quiet7-king",
+  "voice": "glitch",
+  "text": "Be sensible. Move your king. Sensible is good."
+ },
+ {
+  "key": "bait-taunt-quiet7-pawn",
+  "voice": "glitch",
+  "text": "Be sensible. Move your pawn. Sensible is good."
+ },
+ {
+  "key": "bait-taunt-quiet7-rook",
+  "voice": "glitch",
+  "text": "Be sensible. Move your rook. Sensible is good."
+ },
+ {
+  "key": "counter-gloat2",
+  "voice": "glitch",
+  "text": "You hid. I kept my stuff. Same as always."
+ },
+ {
+  "key": "counter-gloat3",
+  "voice": "glitch",
+  "text": "Running is my favorite thing you do."
+ },
+ {
+  "key": "counter-gloat5",
+  "voice": "glitch",
+  "text": "You ran. My piece is fine. Thanks for playing."
+ },
+ {
+  "key": "counter-gloat6",
+  "voice": "glitch",
+  "text": "Hide and seek! You hid. I win."
+ },
+ {
+  "key": "counter-rage1",
+  "voice": "glitch",
+  "text": "You hit BACK?! You were supposed to be SCARED!"
+ },
+ {
+  "key": "counter-rage2",
+  "voice": "glitch",
+  "text": "I attacked FIRST! That's not fair!"
+ },
+ {
+  "key": "counter-rage3",
+  "voice": "glitch",
+  "text": "CHECK?! I was in the middle of something!"
+ },
+ {
+  "key": "counter-rage4",
+  "voice": "glitch",
+  "text": "My attack! Ignored! How rude!"
+ },
+ {
+  "key": "counter-rage5",
+  "voice": "glitch",
+  "text": "You didn't RUN?! Everybody runs!"
+ },
+ {
+  "key": "counter-rage6",
+  "voice": "glitch",
+  "text": "Bigger threat?! Mine was big! Mine was HUGE!"
+ },
+ {
+  "key": "counter-taunt1",
+  "voice": "glitch",
+  "text": "Run! Run away! Quick, before it's too late!"
+ },
+ {
+  "key": "counter-taunt2",
+  "voice": "glitch",
+  "text": "Scared yet? You should be. Hide something!"
+ },
+ {
+  "key": "counter-v1-hook",
+  "voice": "narrator",
+  "text": "He attacks you. Hit back harder."
+ },
+ {
+  "key": "counter-v1-short",
+  "voice": "narrator",
+  "text": "Don't run. Hit back bigger."
+ },
+ {
+  "key": "counter-v1-why",
+  "voice": "narrator",
+  "text": "Don't run. Answer his attack with a bigger one."
+ },
+ {
+  "key": "counter-v2-hook",
+  "voice": "narrator",
+  "text": "Don't run. Look for something bigger."
+ },
+ {
+  "key": "counter-v2-short",
+  "voice": "narrator",
+  "text": "Check or capture first."
+ },
+ {
+  "key": "counter-v2-why",
+  "voice": "narrator",
+  "text": "A check or capture first. He has to deal with yours."
+ },
+ {
+  "key": "counter-v3-hook",
+  "voice": "narrator",
+  "text": "His attack left something open."
+ },
+ {
+  "key": "counter-v3-short",
+  "voice": "narrator",
+  "text": "Hit back harder. His attack fades."
+ },
+ {
+  "key": "counter-v3-why",
+  "voice": "narrator",
+  "text": "Hit back harder, and his attack no longer matters."
+ },
+ {
+  "key": "counter-v4-hook",
+  "voice": "narrator",
+  "text": "A check or a capture beats running away."
+ },
+ {
+  "key": "counter-v4-short",
+  "voice": "narrator",
+  "text": "Your threat is bigger. Play it."
+ },
+ {
+  "key": "counter-v4-why",
+  "voice": "narrator",
+  "text": "Running loses time. Your threat is bigger than his."
  },
  {
   "key": "d1-gloat",
@@ -510,6 +1185,231 @@
   "text": "One horse move guards the square and chases the queen."
  },
  {
+  "key": "defend-gloat1",
+  "voice": "glitch",
+  "text": "You forgot my threat. I didn't. Ha!"
+ },
+ {
+  "key": "defend-gloat4",
+  "voice": "glitch",
+  "text": "One question, wrong answer. Lovely."
+ },
+ {
+  "key": "defend-gloat5",
+  "voice": "glitch",
+  "text": "My threat was real. Surprise!"
+ },
+ {
+  "key": "defend-gloat6",
+  "voice": "glitch",
+  "text": "You played your plan. I played mine better."
+ },
+ {
+  "key": "defend-rage1",
+  "voice": "glitch",
+  "text": "You SAW it?! You were supposed to be busy!"
+ },
+ {
+  "key": "defend-rage2",
+  "voice": "glitch",
+  "text": "My attack bounced off?! Like a rubber ball?!"
+ },
+ {
+  "key": "defend-rage3",
+  "voice": "glitch",
+  "text": "Blocked?! By THAT?! Rude!"
+ },
+ {
+  "key": "defend-rage4",
+  "voice": "glitch",
+  "text": "You defended AND kept everything?! Cheater!"
+ },
+ {
+  "key": "defend-rage6",
+  "voice": "glitch",
+  "text": "You asked what I attacked?! Stop ASKING!"
+ },
+ {
+  "key": "defend-taunt2",
+  "voice": "glitch",
+  "text": "Ignore me. My move did nothing. Promise."
+ },
+ {
+  "key": "defend-taunt3",
+  "voice": "glitch",
+  "text": "Forget my threat. Go do your own thing!"
+ },
+ {
+  "key": "defend-v1-hook",
+  "voice": "narrator",
+  "text": "He attacks first. Answer without giving anything away."
+ },
+ {
+  "key": "defend-v1-short",
+  "voice": "narrator",
+  "text": "Fix his threat first."
+ },
+ {
+  "key": "defend-v1-why",
+  "voice": "narrator",
+  "text": "His move attacked you. Fix the threat first, then play."
+ },
+ {
+  "key": "defend-v2-hook",
+  "voice": "narrator",
+  "text": "His last move made a threat. Deal with it."
+ },
+ {
+  "key": "defend-v2-short",
+  "voice": "narrator",
+  "text": "One move keeps everything safe."
+ },
+ {
+  "key": "defend-v2-why",
+  "voice": "narrator",
+  "text": "Answer the attack with the one move that keeps everything."
+ },
+ {
+  "key": "defend-v3-hook",
+  "voice": "narrator",
+  "text": "Something of yours is under fire."
+ },
+ {
+  "key": "defend-v3-short",
+  "voice": "narrator",
+  "text": "Defend first. Fancy later."
+ },
+ {
+  "key": "defend-v3-why",
+  "voice": "narrator",
+  "text": "Defend first. The fancy move loses what he attacked."
+ },
+ {
+  "key": "defend-v4-hook",
+  "voice": "narrator",
+  "text": "Stop. What did his move just attack?"
+ },
+ {
+  "key": "defend-v4-short",
+  "voice": "narrator",
+  "text": "See the threat. Stop it."
+ },
+ {
+  "key": "defend-v4-why",
+  "voice": "narrator",
+  "text": "See his threat, then stop it. Everything else can wait."
+ },
+ {
+  "key": "discovery-gloat1",
+  "voice": "glitch",
+  "text": "The laser stayed hidden. Lucky me."
+ },
+ {
+  "key": "discovery-gloat3",
+  "voice": "glitch",
+  "text": "One attack. Easy to block. Ha!"
+ },
+ {
+  "key": "discovery-gloat5",
+  "voice": "glitch",
+  "text": "Peekaboo? Nope. No peekaboo today."
+ },
+ {
+  "key": "discovery-gloat6",
+  "voice": "glitch",
+  "text": "Traffic jam. Your pieces are stuck. Lovely."
+ },
+ {
+  "key": "discovery-rage1",
+  "voice": "glitch",
+  "text": "A LASER?! Behind your own piece?!"
+ },
+ {
+  "key": "discovery-rage4",
+  "voice": "glitch",
+  "text": "Peekaboo?! I HATE peekaboo!"
+ },
+ {
+  "key": "discovery-rage5",
+  "voice": "glitch",
+  "text": "Who opened the curtain?! Close it! CLOSE IT!"
+ },
+ {
+  "key": "discovery-rage6",
+  "voice": "glitch",
+  "text": "A secret weapon?! Nobody told ME!"
+ },
+ {
+  "key": "discovery-rage7-rook",
+  "voice": "glitch",
+  "text": "My rook! It came out of NOWHERE!"
+ },
+ {
+  "key": "discovery-taunt2",
+  "voice": "glitch",
+  "text": "Nothing hiding here. Nothing at all."
+ },
+ {
+  "key": "discovery-v1-hook",
+  "voice": "narrator",
+  "text": "One of your pieces is hiding behind another."
+ },
+ {
+  "key": "discovery-v1-short",
+  "voice": "narrator",
+  "text": "Step aside. The piece behind fires."
+ },
+ {
+  "key": "discovery-v1-why",
+  "voice": "narrator",
+  "text": "Move the front piece. The one behind it attacks too."
+ },
+ {
+  "key": "discovery-v2-hook",
+  "voice": "narrator",
+  "text": "Move the front piece. Something wakes up."
+ },
+ {
+  "key": "discovery-v2-short",
+  "voice": "narrator",
+  "text": "Step aside. Two attacks at once."
+ },
+ {
+  "key": "discovery-v2-why",
+  "voice": "narrator",
+  "text": "One step aside opens a hidden attack. Two threats at once."
+ },
+ {
+  "key": "discovery-v3-hook",
+  "voice": "narrator",
+  "text": "There's a laser behind your own piece."
+ },
+ {
+  "key": "discovery-v3-short",
+  "voice": "narrator",
+  "text": "Both pieces attack. He saves one."
+ },
+ {
+  "key": "discovery-v3-why",
+  "voice": "narrator",
+  "text": "The piece that moves attacks. The piece behind attacks too."
+ },
+ {
+  "key": "discovery-v4-hook",
+  "voice": "narrator",
+  "text": "Two attackers are waiting in one line."
+ },
+ {
+  "key": "discovery-v4-short",
+  "voice": "narrator",
+  "text": "Move it. The laser fires."
+ },
+ {
+  "key": "discovery-v4-why",
+  "voice": "narrator",
+  "text": "Uncover the laser. He cannot stop two attacks."
+ },
+ {
   "key": "g1-gloat",
   "voice": "glitch",
   "text": "No legal moves! Stalemate! It's a DRAW! Hahaha!"
@@ -630,6 +1530,111 @@
   "text": "Take the square in front of the pawn first. Pushing early lets his king sit in front and hold the draw."
  },
  {
+  "key": "hanging-gloat1",
+  "voice": "glitch",
+  "text": "You walked right past a free meal. Ha!"
+ },
+ {
+  "key": "hanging-gloat2",
+  "voice": "glitch",
+  "text": "My piece was loose and you didn't notice. Hee hee."
+ },
+ {
+  "key": "hanging-gloat3",
+  "voice": "glitch",
+  "text": "Free food, and you ordered the poison. Yum."
+ },
+ {
+  "key": "hanging-gloat5",
+  "voice": "glitch",
+  "text": "You grabbed the wrong plate. My favorite."
+ },
+ {
+  "key": "hanging-rage2",
+  "voice": "glitch",
+  "text": "You COUNTED?! Nobody counts! Stop counting!"
+ },
+ {
+  "key": "hanging-rage3",
+  "voice": "glitch",
+  "text": "I left it out for ONE second!"
+ },
+ {
+  "key": "hanging-rage4",
+  "voice": "glitch",
+  "text": "Free?! It was NOT free! It was expensive!"
+ },
+ {
+  "key": "hanging-rage5",
+  "voice": "glitch",
+  "text": "Who was on guard duty?! NOBODY?!"
+ },
+ {
+  "key": "hanging-rage6",
+  "voice": "glitch",
+  "text": "My lunch! You ate my LUNCH!"
+ },
+ {
+  "key": "hanging-rage7-rook",
+  "voice": "glitch",
+  "text": "NOOOO. That was my WHOLE ROOK!"
+ },
+ {
+  "key": "hanging-taunt1",
+  "voice": "glitch",
+  "text": "My pieces are all guarded. Promise. Cross my heart."
+ },
+ {
+  "key": "hanging-taunt3",
+  "voice": "glitch",
+  "text": "Don't count. Counting is boring."
+ },
+ {
+  "key": "hanging-v1-hook",
+  "voice": "narrator",
+  "text": "Something of his has no guard at all."
+ },
+ {
+  "key": "hanging-v1-short",
+  "voice": "narrator",
+  "text": "No guard. Take it free."
+ },
+ {
+  "key": "hanging-v1-why",
+  "voice": "narrator",
+  "text": "That piece has no guard at all. Take it for free."
+ },
+ {
+  "key": "hanging-v2-hook",
+  "voice": "narrator",
+  "text": "One of his pieces is all alone."
+ },
+ {
+  "key": "hanging-v2-short",
+  "voice": "narrator",
+  "text": "Zero guards. It is yours."
+ },
+ {
+  "key": "hanging-v2-why",
+  "voice": "narrator",
+  "text": "Count the guards. Zero means it is yours for nothing."
+ },
+ {
+  "key": "hanging-v4-hook",
+  "voice": "narrator",
+  "text": "Somebody forgot to protect something."
+ },
+ {
+  "key": "hanging-v4-short",
+  "voice": "narrator",
+  "text": "It is alone. Take it."
+ },
+ {
+  "key": "hanging-v4-why",
+  "voice": "narrator",
+  "text": "He left it alone. Take it before he wakes up."
+ },
+ {
   "key": "k1-gloat",
   "voice": "glitch",
   "text": "Your horse is gone for one pawn. Delicious."
@@ -688,6 +1693,216 @@
   "key": "k2-why",
   "voice": "narrator",
   "text": "Swap horses and keep the bishop. It wins a pawn."
+ },
+ {
+  "key": "kingMarch-gloat1",
+  "voice": "glitch",
+  "text": "Your pawn stayed home. Boring! Lovely!"
+ },
+ {
+  "key": "kingMarch-gloat2",
+  "voice": "glitch",
+  "text": "No crown for you today. Hee hee."
+ },
+ {
+  "key": "kingMarch-gloat4",
+  "voice": "glitch",
+  "text": "Tiny pawn, tiny chance. Ha!"
+ },
+ {
+  "key": "kingMarch-gloat5",
+  "voice": "glitch",
+  "text": "You forgot about the pawn. I didn't."
+ },
+ {
+  "key": "kingMarch-rage1",
+  "voice": "glitch",
+  "text": "A PAWN did that?!"
+ },
+ {
+  "key": "kingMarch-rage2",
+  "voice": "glitch",
+  "text": "A new QUEEN?! Where did she come from?!"
+ },
+ {
+  "key": "kingMarch-rage4",
+  "voice": "glitch",
+  "text": "The pawn got a CROWN?! I want a crown!"
+ },
+ {
+  "key": "kingMarch-rage5",
+  "voice": "glitch",
+  "text": "Stop it! Pawns are not allowed to grow up!"
+ },
+ {
+  "key": "kingMarch-rage6",
+  "voice": "glitch",
+  "text": "NOOOO. It reached the end! Who let it?!"
+ },
+ {
+  "key": "kingMarch-taunt2",
+  "voice": "glitch",
+  "text": "Leave that little pawn alone. It's sleepy."
+ },
+ {
+  "key": "kingMarch-taunt3",
+  "voice": "glitch",
+  "text": "Pawns are slow. Do something fast!"
+ },
+ {
+  "key": "kingMarch-v2-hook",
+  "voice": "narrator",
+  "text": "The last row is closer than it looks."
+ },
+ {
+  "key": "kingMarch-v2-short",
+  "voice": "narrator",
+  "text": "The pawn runs. Nobody catches it."
+ },
+ {
+  "key": "kingMarch-v2-why",
+  "voice": "narrator",
+  "text": "The pawn runs, and his pieces are too far to catch it."
+ },
+ {
+  "key": "kingMarch-v3-hook",
+  "voice": "narrator",
+  "text": "A little pawn wants a big promotion."
+ },
+ {
+  "key": "kingMarch-v3-short",
+  "voice": "narrator",
+  "text": "A new queen beats snacks."
+ },
+ {
+  "key": "kingMarch-v3-why",
+  "voice": "narrator",
+  "text": "A new queen beats any snack on the board."
+ },
+ {
+  "key": "kingMarch-v4-hook",
+  "voice": "narrator",
+  "text": "Push the right pawn and he can't keep up."
+ },
+ {
+  "key": "kingMarch-v4-short",
+  "voice": "narrator",
+  "text": "Push. His guards are too far."
+ },
+ {
+  "key": "kingMarch-v4-why",
+  "voice": "narrator",
+  "text": "Your pawn is closer to the end than his defenders are."
+ },
+ {
+  "key": "mateThreat-gloat1",
+  "voice": "glitch",
+  "text": "You took the snack. I'm still alive. Rude."
+ },
+ {
+  "key": "mateThreat-gloat2",
+  "voice": "glitch",
+  "text": "Still breathing! Hee hee. Your turn."
+ },
+ {
+  "key": "mateThreat-gloat4",
+  "voice": "glitch",
+  "text": "My king lives to annoy you another day."
+ },
+ {
+  "key": "mateThreat-gloat5",
+  "voice": "glitch",
+  "text": "No mate? Then the fight goes on. Forever."
+ },
+ {
+  "key": "mateThreat-gloat6",
+  "voice": "glitch",
+  "text": "Close one. Not close enough. Ha!"
+ },
+ {
+  "key": "mateThreat-rage1",
+  "voice": "glitch",
+  "text": "Mate?! I was offering you FREE stuff!"
+ },
+ {
+  "key": "mateThreat-rage2",
+  "voice": "glitch",
+  "text": "Game OVER?! I wasn't READY!"
+ },
+ {
+  "key": "mateThreat-rage3",
+  "voice": "glitch",
+  "text": "You looked at the CHECKS?! Who does that?!"
+ },
+ {
+  "key": "mateThreat-rage4",
+  "voice": "glitch",
+  "text": "Checkmate?! Take it back! TAKE IT BACK!"
+ },
+ {
+  "key": "mateThreat-rage5",
+  "voice": "glitch",
+  "text": "The end?! But I had a whole plan!"
+ },
+ {
+  "key": "mateThreat-rage6",
+  "voice": "glitch",
+  "text": "NOOOO. My king had nowhere to go!"
+ },
+ {
+  "key": "mateThreat-taunt1",
+  "voice": "glitch",
+  "text": "Ignore my king. He's not important. At all."
+ },
+ {
+  "key": "mateThreat-taunt3",
+  "voice": "glitch",
+  "text": "Grab stuff! Grabbing is the fun part!"
+ },
+ {
+  "key": "mateThreat-v1-hook",
+  "voice": "narrator",
+  "text": "The game can end right now."
+ },
+ {
+  "key": "mateThreat-v1-short",
+  "voice": "narrator",
+  "text": "Mate beats any snack."
+ },
+ {
+  "key": "mateThreat-v1-why",
+  "voice": "narrator",
+  "text": "Checkmate ends the game. No snack is worth more."
+ },
+ {
+  "key": "mateThreat-v2-hook",
+  "voice": "narrator",
+  "text": "Look for the checkmate before the snack."
+ },
+ {
+  "key": "mateThreat-v2-short",
+  "voice": "narrator",
+  "text": "Look at checks. One mates."
+ },
+ {
+  "key": "mateThreat-v2-why",
+  "voice": "narrator",
+  "text": "Look at every check first. One of them is mate."
+ },
+ {
+  "key": "mateThreat-v4-hook",
+  "voice": "narrator",
+  "text": "Checks first. One of them ends everything."
+ },
+ {
+  "key": "mateThreat-v4-short",
+  "voice": "narrator",
+  "text": "Mate first. Snacks never."
+ },
+ {
+  "key": "mateThreat-v4-why",
+  "voice": "narrator",
+  "text": "Mate beats any piece you could grab."
  },
  {
   "key": "o1-gloat",
@@ -870,6 +2085,131 @@
   "text": "Two of you guard e4. Take the horse back."
  },
  {
+  "key": "pin-gloat1",
+  "voice": "glitch",
+  "text": "No glue, no problem. My pieces are free."
+ },
+ {
+  "key": "pin-gloat4",
+  "voice": "glitch",
+  "text": "My pieces wriggled free. Thanks!"
+ },
+ {
+  "key": "pin-gloat6",
+  "voice": "glitch",
+  "text": "Unstuck and unbothered. That's me."
+ },
+ {
+  "key": "pin-rage1",
+  "voice": "glitch",
+  "text": "Glued?! Unglue it! UNGLUE IT!"
+ },
+ {
+  "key": "pin-rage2",
+  "voice": "glitch",
+  "text": "Stuck on a LINE?! Like a bug on a pin?!"
+ },
+ {
+  "key": "pin-rage3",
+  "voice": "glitch",
+  "text": "Pinned! Pinned like a butterfly! NOOOO!"
+ },
+ {
+  "key": "pin-rage4",
+  "voice": "glitch",
+  "text": "A thumbtack?! In MY pieces?! Ouch!"
+ },
+ {
+  "key": "pin-rage5",
+  "voice": "glitch",
+  "text": "Who put glue on my board?! WHO?!"
+ },
+ {
+  "key": "pin-rage6",
+  "voice": "glitch",
+  "text": "It can't move?! It's supposed to MOVE!"
+ },
+ {
+  "key": "pin-rage7-bishop",
+  "voice": "glitch",
+  "text": "My bishop can't MOVE?! Who put glue there?!"
+ },
+ {
+  "key": "pin-rage8-horse",
+  "voice": "glitch",
+  "text": "Move, horse! MOVE! Why won't you move?!"
+ },
+ {
+  "key": "pin-taunt1",
+  "voice": "glitch",
+  "text": "Lines are boring. Look over here instead."
+ },
+ {
+  "key": "pin-taunt2",
+  "voice": "glitch",
+  "text": "My pieces are just standing around. Nothing to see."
+ },
+ {
+  "key": "pin-v1-hook",
+  "voice": "narrator",
+  "text": "Two of his pieces are standing on one line."
+ },
+ {
+  "key": "pin-v1-short",
+  "voice": "narrator",
+  "text": "It is glued. Hit it."
+ },
+ {
+  "key": "pin-v1-why",
+  "voice": "narrator",
+  "text": "The front piece is glued. If it moves, the one behind dies."
+ },
+ {
+  "key": "pin-v2-hook",
+  "voice": "narrator",
+  "text": "Glue something to his king."
+ },
+ {
+  "key": "pin-v2-short",
+  "voice": "narrator",
+  "text": "Pin it, then pile on."
+ },
+ {
+  "key": "pin-v2-why",
+  "voice": "narrator",
+  "text": "Pin it to the bigger piece behind. Then attack it again."
+ },
+ {
+  "key": "pin-v3-hook",
+  "voice": "narrator",
+  "text": "One of his pieces is not allowed to move."
+ },
+ {
+  "key": "pin-v3-short",
+  "voice": "narrator",
+  "text": "Stuck pieces cannot run. Attack."
+ },
+ {
+  "key": "pin-v3-why",
+  "voice": "narrator",
+  "text": "A pinned piece cannot run. Hit it while it is stuck."
+ },
+ {
+  "key": "pin-v4-hook",
+  "voice": "narrator",
+  "text": "Line up. Something is stuck in the middle."
+ },
+ {
+  "key": "pin-v4-short",
+  "voice": "narrator",
+  "text": "Front piece moves, back piece dies."
+ },
+ {
+  "key": "pin-v4-why",
+  "voice": "narrator",
+  "text": "He cannot move the front piece without losing the back one."
+ },
+ {
   "key": "prep-q1",
   "voice": "narrator",
   "text": "What did that move just attack?"
@@ -878,6 +2218,256 @@
   "key": "prep-q2",
   "voice": "narrator",
   "text": "Why is he letting you take that?"
+ },
+ {
+  "key": "royalFork-gloat2",
+  "voice": "glitch",
+  "text": "No check, no fork, no chance. Lovely."
+ },
+ {
+  "key": "royalFork-gloat3",
+  "voice": "glitch",
+  "text": "You forgot the king can be poked. I didn't."
+ },
+ {
+  "key": "royalFork-gloat4",
+  "voice": "glitch",
+  "text": "Crown safe. Everything safe. Bye bye."
+ },
+ {
+  "key": "royalFork-gloat5",
+  "voice": "glitch",
+  "text": "The royal family thanks you for your kindness."
+ },
+ {
+  "key": "royalFork-rage1",
+  "voice": "glitch",
+  "text": "CROWNS?! You forked the CROWN?!"
+ },
+ {
+  "key": "royalFork-rage2",
+  "voice": "glitch",
+  "text": "Check AND a bite?! That's two moves in one!"
+ },
+ {
+  "key": "royalFork-rage3",
+  "voice": "glitch",
+  "text": "Royal fork?! I'm telling the Queen!"
+ },
+ {
+  "key": "royalFork-rage4",
+  "voice": "glitch",
+  "text": "My king ran and left his friend behind!"
+ },
+ {
+  "key": "royalFork-rage5",
+  "voice": "glitch",
+  "text": "The king has to move?! Says WHO?!"
+ },
+ {
+  "key": "royalFork-rage7-bishop",
+  "voice": "glitch",
+  "text": "The KING and the bishop?! Rude! So rude!"
+ },
+ {
+  "key": "royalFork-rage7-rook",
+  "voice": "glitch",
+  "text": "The KING and the rook?! Rude! So rude!"
+ },
+ {
+  "key": "royalFork-taunt2",
+  "voice": "glitch",
+  "text": "Checks are rude. Do something polite."
+ },
+ {
+  "key": "royalFork-v1-hook",
+  "voice": "narrator",
+  "text": "His king and a big piece are standing too close."
+ },
+ {
+  "key": "royalFork-v1-short",
+  "voice": "narrator",
+  "text": "Check him. Take what he leaves."
+ },
+ {
+  "key": "royalFork-v1-why",
+  "voice": "narrator",
+  "text": "Check the king and hit another piece. He must save the king."
+ },
+ {
+  "key": "royalFork-v2-hook",
+  "voice": "narrator",
+  "text": "Check the king. Bite something else at the same time."
+ },
+ {
+  "key": "royalFork-v2-short",
+  "voice": "narrator",
+  "text": "King moves first. The other piece falls."
+ },
+ {
+  "key": "royalFork-v2-why",
+  "voice": "narrator",
+  "text": "The king must move first, so the other piece is yours."
+ },
+ {
+  "key": "royalFork-v3-hook",
+  "voice": "narrator",
+  "text": "The king has company. Bad company for him."
+ },
+ {
+  "key": "royalFork-v3-short",
+  "voice": "narrator",
+  "text": "Check and bite. Collect next move."
+ },
+ {
+  "key": "royalFork-v3-why",
+  "voice": "narrator",
+  "text": "A royal fork: the check comes first, the free piece comes next."
+ },
+ {
+  "key": "royalFork-v4-hook",
+  "voice": "narrator",
+  "text": "A check can do two jobs."
+ },
+ {
+  "key": "royalFork-v4-short",
+  "voice": "narrator",
+  "text": "He saves the king. You eat."
+ },
+ {
+  "key": "royalFork-v4-why",
+  "voice": "narrator",
+  "text": "He has to answer the check, and the second piece falls."
+ },
+ {
+  "key": "skewer-gloat1",
+  "voice": "glitch",
+  "text": "No kebab today. Everybody's safe."
+ },
+ {
+  "key": "skewer-gloat2",
+  "voice": "glitch",
+  "text": "My big piece stays. My little piece stays. Ha!"
+ },
+ {
+  "key": "skewer-gloat3",
+  "voice": "glitch",
+  "text": "Slow and safe. And nothing."
+ },
+ {
+  "key": "skewer-gloat6",
+  "voice": "glitch",
+  "text": "Both my pieces say thank you."
+ },
+ {
+  "key": "skewer-rage1",
+  "voice": "glitch",
+  "text": "Through the middle?! That's a shish kebab!"
+ },
+ {
+  "key": "skewer-rage2",
+  "voice": "glitch",
+  "text": "Kebab?! I'm not a KEBAB!"
+ },
+ {
+  "key": "skewer-rage3",
+  "voice": "glitch",
+  "text": "Stabbed through the middle?! Ouch! OUCH!"
+ },
+ {
+  "key": "skewer-rage6",
+  "voice": "glitch",
+  "text": "Poked in the front, robbed in the back!"
+ },
+ {
+  "key": "skewer-rage7-queen",
+  "voice": "glitch",
+  "text": "My queen was HIDING back there! Unfair!"
+ },
+ {
+  "key": "skewer-rage7-rook",
+  "voice": "glitch",
+  "text": "My rook was HIDING back there! Unfair!"
+ },
+ {
+  "key": "skewer-rage8-horse",
+  "voice": "glitch",
+  "text": "It ran, and you ate my horse?! NOOOO!"
+ },
+ {
+  "key": "skewer-rage8-rook",
+  "voice": "glitch",
+  "text": "It ran, and you ate my rook?! NOOOO!"
+ },
+ {
+  "key": "skewer-taunt1",
+  "voice": "glitch",
+  "text": "Straight lines are boring. Try a zigzag."
+ },
+ {
+  "key": "skewer-taunt3",
+  "voice": "glitch",
+  "text": "Nothing to stab here. Move along."
+ },
+ {
+  "key": "skewer-v1-hook",
+  "voice": "narrator",
+  "text": "Stab through the big piece. Find what hides behind."
+ },
+ {
+  "key": "skewer-v1-short",
+  "voice": "narrator",
+  "text": "Hit the front. Eat the back."
+ },
+ {
+  "key": "skewer-v1-why",
+  "voice": "narrator",
+  "text": "Attack the big piece. It runs, and the one behind dies."
+ },
+ {
+  "key": "skewer-v2-hook",
+  "voice": "narrator",
+  "text": "A big piece stands in front of a smaller one."
+ },
+ {
+  "key": "skewer-v2-short",
+  "voice": "narrator",
+  "text": "Front runs. Back falls."
+ },
+ {
+  "key": "skewer-v2-why",
+  "voice": "narrator",
+  "text": "The front piece must move. The piece behind it falls."
+ },
+ {
+  "key": "skewer-v3-hook",
+  "voice": "narrator",
+  "text": "Poke the front. Take the back."
+ },
+ {
+  "key": "skewer-v3-short",
+  "voice": "narrator",
+  "text": "Big piece runs. Small piece dies."
+ },
+ {
+  "key": "skewer-v3-why",
+  "voice": "narrator",
+  "text": "A skewer is a pin backwards. Big piece runs, small piece dies."
+ },
+ {
+  "key": "skewer-v4-hook",
+  "voice": "narrator",
+  "text": "His big piece is shielding a friend."
+ },
+ {
+  "key": "skewer-v4-short",
+  "voice": "narrator",
+  "text": "Poke the front. Take the back."
+ },
+ {
+  "key": "skewer-v4-why",
+  "voice": "narrator",
+  "text": "Hit the front piece. When it steps away, take the back one."
  },
  {
   "key": "sys-beat",
@@ -998,5 +2588,100 @@
   "key": "t3-why",
   "voice": "narrator",
   "text": "Bring the second rook down. Then the pawn falls."
+ },
+ {
+  "key": "trapped-gloat1",
+  "voice": "glitch",
+  "text": "My piece wriggled out. Bye bye!"
+ },
+ {
+  "key": "trapped-gloat3",
+  "voice": "glitch",
+  "text": "Escaped! Like a sneaky little mouse. Hee hee."
+ },
+ {
+  "key": "trapped-gloat4",
+  "voice": "glitch",
+  "text": "No trap today. Just a party."
+ },
+ {
+  "key": "trapped-gloat6",
+  "voice": "glitch",
+  "text": "The cage was open. I noticed."
+ },
+ {
+  "key": "trapped-rage1",
+  "voice": "glitch",
+  "text": "No way out?! Not even a tiny one?!"
+ },
+ {
+  "key": "trapped-rage3",
+  "voice": "glitch",
+  "text": "Every door is locked?! Who has the key?!"
+ },
+ {
+  "key": "trapped-rage5",
+  "voice": "glitch",
+  "text": "A trap?! On MY board?! Rude!"
+ },
+ {
+  "key": "trapped-rage6",
+  "voice": "glitch",
+  "text": "Stuck! Stuck like gum on a shoe!"
+ },
+ {
+  "key": "trapped-rage8-bishop",
+  "voice": "glitch",
+  "text": "Run, bishop! RUN! Why can't you run?!"
+ },
+ {
+  "key": "trapped-taunt1",
+  "voice": "glitch",
+  "text": "My pieces have lots of room. Tons of room."
+ },
+ {
+  "key": "trapped-v1-hook",
+  "voice": "narrator",
+  "text": "One of his pieces has nowhere to go."
+ },
+ {
+  "key": "trapped-v1-short",
+  "voice": "narrator",
+  "text": "No safe square. Attack it."
+ },
+ {
+  "key": "trapped-v1-why",
+  "voice": "narrator",
+  "text": "His piece has no safe square. Attack it and it dies."
+ },
+ {
+  "key": "trapped-v2-hook",
+  "voice": "narrator",
+  "text": "Take away his piece's last escape."
+ },
+ {
+  "key": "trapped-v2-short",
+  "voice": "narrator",
+  "text": "It cannot run. Hit it."
+ },
+ {
+  "key": "trapped-v2-why",
+  "voice": "narrator",
+  "text": "It cannot run anywhere. Hit it and collect."
+ },
+ {
+  "key": "trapped-v4-hook",
+  "voice": "narrator",
+  "text": "Something of his is stuck in a corner."
+ },
+ {
+  "key": "trapped-v4-short",
+  "voice": "narrator",
+  "text": "Trapped. Attack, do not trade."
+ },
+ {
+  "key": "trapped-v4-why",
+  "voice": "narrator",
+  "text": "No squares to run to. Attack it, don't trade it."
  }
 ]

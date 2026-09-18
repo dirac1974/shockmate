@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.18";
+  const BUILD = "v0.19";
   const Y = window.ShockmateSync, H = window.ShockmateShort;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -25,7 +25,7 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    camp: null, seen: {},
+    camp: null, seen: {}, glitchIdx: {}, thinkAt: 0, lastThinkMs: null, cardNews: null, sittingDays: [0, 0], look: null,
     settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: true, hurry: false, profile: 0, blitz: [false, false], short: [false, false], coach: [null, null], pack: "tactics", day: 1, tournament: false, readAloud: true, seats: 1, syncedAt: 0,
       parent: { name: "", pin: "" },
       sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
@@ -178,6 +178,13 @@
     state.encounters = D.fightsForDay(ALL, day.n); state.index = 0;
     renderDayStrip();
   }
+  // "Rated 600 to 800", "600-800", "600–800": whatever the blurb says, as a short band for the stop.
+  function ratingBand(text) {
+    const m = String(text || "").match(/(\d{3,4})\s*(?:-|–|—|to)\s*(\d{3,4})/);
+    if (m) return m[1] + "–" + m[2];
+    const one = String(text || "").match(/\b(\d{3,4})\+?\b/);
+    return one ? one[0] : "";
+  }
   function renderDayStrip() {
     const host = $("day-strip"); if (!host) return;
     const cur = state.day || 1;
@@ -192,12 +199,20 @@
     host.innerHTML = campChip + prepChip + D.DAYS.map(function (d) {
       const pr = D.dayProgress(state.stats, d.n), open = D.dayUnlocked(state.stats, d.n);
       const cls = ["day-chip"];
+      // Ladder days are rungs, not numbered stops: a rung glyph, and the rating band off the blurb.
+      if (d.ladder) cls.push("ladder");
       if (pr.complete) cls.push("done");
       if (!state.prep && d.n === cur) cls.push("current");
       if (!open) cls.push("locked");
       return '<button class="' + cls.join(" ") + '" data-day="' + d.n + '"' + (open ? "" : " disabled") +
-        '><span class="n">' + (pr.complete ? "✓" : d.n) + '</span><span class="t">' + d.title + '</span><small>' + pr.done + "/" + pr.total + '</small></button>';
+        '><span class="n">' + (pr.complete ? "✓" : d.ladder ? "≡" : d.n) + '</span><span class="t">' + d.title + '</span><small>' +
+        (d.ladder && ratingBand(d.blurb) ? ratingBand(d.blurb) + " · " : "") + pr.done + "/" + pr.total + '</small></button>';
     }).join("");
+    // Keep the day he is on in the middle of the map, so day 20 is not hiding off the right edge.
+    const on = host.querySelector(".day-chip.current");
+    if (on && on.scrollIntoView && document.body.dataset.screen === "screen-title") {
+      try { on.scrollIntoView({ block: "nearest", inline: "center" }); } catch (e) {}
+    }
     Array.prototype.forEach.call(host.querySelectorAll(".day-chip"), function (b) {
       b.onclick = function () {
         const n = Number(b.dataset.day);
@@ -234,6 +249,12 @@
   function toast(msg, ms) { const t = $("toast"); t.hidden = false; t.textContent = msg; clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, ms || 1600); }
   function banner(text, tone) {
     const b = $("banner"); b.className = "banner" + (tone ? " " + tone : ""); b.textContent = text || ""; b.hidden = !text;
+  }
+  // Glitch's reaction to a new moment (look-first, cracked, repaired, pacing): a line and a mood off the
+  // table in score.js, walked in turn so the same line never plays twice in a row.
+  function glitchMoment(kind) {
+    const l = S.glitchLine(kind, state.glitchIdx[kind]); state.glitchIdx[kind] = l.index;
+    glitchSay(l.text, l.mood); return l;
   }
   function glitchSay(text, mood) {
     if (window.ShockmateGlitch) {
@@ -285,6 +306,7 @@
       ? c.name + " claimed " + c.claimed + " this morning. You have taken " + c.drop + " off him today."
       : c.name + " is standing in for Glitch today. He says he is " + c.claimed + ".";
     if ($("btn-start")) $("btn-start").innerHTML = (c.ko ? "Rematch " : "Fight ") + "<span>" + c.name + "</span>";
+    renderPacing();
     const art = $("home-glitch");
     if (art && window.ShockmateGlitch) {
       art.innerHTML = window.ShockmateGlitch.svg(c.ko ? "nervous" : "taunt");
@@ -294,6 +316,19 @@
     if ($("you-name")) $("you-name").textContent = state.seats === 2 ? state.settings.names[0] + " + " + state.settings.names[1] : nm;
     if ($("you-avatar")) $("you-avatar").textContent = state.seats === 2 ? "2" : nm.trim().charAt(0).toUpperCase();
     if ($("you-wins")) $("you-wins").textContent = state.stats.won || 0;
+  }
+  /* Pacing: two days finished in one sitting and the arcade button offers Camp instead, in Glitch's
+     voice, for the rest of the sitting. Soft: the day he picked is one tap away underneath. */
+  function pacingOn() { return S.pacingNudge(state.sittingDays[state.settings.profile], S.campDoneToday(state.stats, now())); }
+  function renderPacing() {
+    const on = pacingOn(), btn = $("btn-start"), any = $("btn-anyway");
+    if (btn && on) btn.innerHTML = "Camp instead?";
+    if (btn) btn.classList.toggle("nudge", on);
+    if (any) { any.hidden = !on || state.seats === 2; any.textContent = (state.prep ? "Prep" : "Day " + (state.day || 1)) + " anyway"; }
+    if (on) {
+      if (!state.pacingLine) state.pacingLine = glitchMoment("pacing");   // one line per sitting, not one per redraw
+      if ($("crony-line")) $("crony-line").textContent = "Glitch: " + state.pacingLine.text;
+    }
   }
   function renderBoss() {
     const box = $("boss"); if (!box) return;
@@ -368,6 +403,8 @@
           tile(p.threats.found + "/" + p.threats.asked, "Threats spotted") +
           tile(p.firstTry.cards ? Math.round(p.firstTryRate * 100) + "%" : "\u2014", "First try") +
           tile(p.thisWeek.campDays + " \u00b7 " + p.thisWeek.cards, "This week: camp \u00b7 cards") +
+          // Wrong moves made in under four seconds, of all timed moves. The parent's number, never the kid's.
+          tile(p.rush.moves ? p.rush.rushed + "/" + p.rush.moves : "\u2014", "Rushed") +
         "</div>" +
         '<p class="prog-line good"><b>Good at:</b> ' + (p.goodAt.length ? esc(p.goodAt.join(", ")) : "nothing yet, keep playing") + "</p>" +
         '<p class="prog-line focus"><b>Focus on:</b> ' + (p.focusOn.length ? esc(p.focusOn.join(", ")) : "nothing flagged") + "</p>" +
@@ -456,6 +493,9 @@
     a.play().catch(function () {});
     return true;
   }
+  // Every per-fight line goes through here. Generated ladder fights carry `voice`, a template key
+  // ("fork-v2"), so a hundred fights share one set of audio; hand-made fights fall back to their id.
+  function voiceKeyFor(enc, kind) { return ((enc && (enc.voice || enc.id)) || "") + "-" + kind; }
   function voice(key) { VOICE.queue = []; return voicePlay(key); }
   function voiceSeq(keys) { if (!keys || !keys.length) return; VOICE.queue = keys.slice(1); voicePlay(keys[0]); }
   function sfx(kind) {
@@ -562,18 +602,31 @@
       setPieces(start, arrive); const dest = sq(arrive.to) && sq(arrive.to).querySelector(".piece"); if (dest) dest.classList.add("pop"); sfx("move");
       await sleep(T(350)); if (stale(nav)) return;
     } else setPieces(start);
-    state.phase = "think";
+    // Look first: in Tournament week and in Camp, one tap on what that move attacked, before the
+    // think window and before the think clock. Brief by rule (S.LOOK); it can never hold him longer.
+    const targets = F.threatTargets(enc);
+    if (S.lookFirst(state.settings, campOn(), enc, targets)) {
+      const seen = await lookFirstGate(enc, targets);
+      if (seen !== "open" || stale(nav)) return;          // he left, or skipped the board from the gate
+    }
+    openThink(enc);
+  }
+  function enterThink() { state.phase = "think"; state.thinkAt = now(); }
+  function openThink(enc) {
+    enterThink();
     const qs = S.prepQuestionsFor(enc);
     // Camp runs the tournament ritual whatever the settings toggle says: the ritual IS the session.
     const ritualOn = state.settings.tournament || campOn();
     if ($("ritual")) { $("ritual").hidden = !ritualOn; $("ritual").textContent = qs.join("   "); }
-    if (ritualOn) voiceSeq([enc.id + "-hook"].concat(qs.map((q, i) => "prep-q" + (i + 1)))); else voice(enc.id + "-hook");
+    if (ritualOn) voiceSeq([voiceKeyFor(enc, "hook")].concat(qs.map((q, i) => "prep-q" + (i + 1)))); else voice(voiceKeyFor(enc, "hook"));
     $("btn-hint").hidden = false; $("btn-skip").hidden = false;
     state.helpThisFight = needsHelp(state.stats) || (state.mode === "duel" && state.duel && state.duel.helpSeat === state.active);
     paintSelection(); startBlitz();
   }
   async function commitMove(move) {
     const enc = current(); state.phase = "busy"; state.selected = null; paintSelection();
+    // Think time: from the think window opening to this tap. Stored per attempt; S.recordMove decides "rushed".
+    state.lastThinkMs = state.thinkAt ? Math.max(0, now() - state.thinkAt) : null; state.thinkAt = 0;
     const start = F.piecesFromList(enc.pieces); const step = F.applyUci(start, move.uci); setPieces(step.pieces, step);
     const dest = sq(step.to) && sq(step.to).querySelector(".piece"); if (dest) dest.classList.add("pop"); sfx("move");
     if (step.captured) explode(step.to, false);
@@ -589,8 +642,8 @@
   }
   async function hitFlow(enc, move, tier, afterMap) {
     const nav = state.nav;
-    banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage"); voice(enc.id + "-rage");
-    state.stats = S.recordAttempt(state.stats, enc, { correct: true, san: move.san, t: now(), hurry: state.settings.hurry }).stats;
+    banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage"); voice(voiceKeyFor(enc, "rage"));
+    state.stats = S.recordAttempt(state.stats, enc, { correct: true, san: move.san, t: now(), hurry: state.settings.hurry, thinkMs: state.lastThinkMs }).stats;
     // `tries` counts the misses so far on this board, so zero means he found it first go.
     if (campOn() && state.camp.stage !== "warm") { state.camp.fights += 1; if (!state.tries) state.camp.firstTry += 1; }
     (state.stats.tiers = state.stats.tiers || []).push(tier); if (state.stats.tiers.length > 8) state.stats.tiers.shift();
@@ -615,8 +668,10 @@
     await whyGate(enc);
     state.stats = S.recordWhy(state.stats, enc, { ok: true, t: now(), hurry: state.settings.hurry }).stats;
     state.ratingBefore = S.glitchRating(state.stats).real; state.rankBefore = S.agentRank(state.stats).index; state.hpBefore = S.bossHp(state.stats, now()).hp;   // read before the card lands, shown on the card screen
-    const earned = state.stats.cardsEarned[enc.id] || { critical: false, tries: 0 };
-    earned.critical = earned.critical || crit; earned.tries = state.tries + 1; earned.t = now(); earned.tier = tier; state.stats.cardsEarned[enc.id] = earned;
+    // A confession win (Glitch showed it, the kid played it) earns a cracked card; a clean win repairs one.
+    const ec = S.earnCard(state.stats.cardsEarned[enc.id], { critical: crit, tries: state.tries + 1, t: now(), tier: tier, guided: state.guided });
+    state.stats.cardsEarned = Object.assign({}, state.stats.cardsEarned); state.stats.cardsEarned[enc.id] = ec.earned;
+    state.cardNews = ec.cracked ? "cracked" : ec.repaired ? "repaired" : null;
     state.stats.battle = S.earnPower(state.stats.battle, crit);
     let hpNow = S.bossHp(state.stats, now());
     const hit = S.resolveHitDamage(state.stats.battle, (state.hpBefore || hpNow.hp) - hpNow.hp, hpNow.dateKey);
@@ -645,8 +700,8 @@
     const nav = state.nav;
     const missRes = S.resolveMiss(state.stats.battle); state.stats.battle = missRes.battle;
     if (missRes.shielded) { banner("TIME SHIELD", "tease"); glitchSay("Hey! Where did my gloat go?", "nervous"); renderPowers(); }
-    else { banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug"); voice(enc.id + "-gloat"); }
-    state.stats = S.recordAttempt(state.stats, enc, { correct: false, san: move.san, t: now() }).stats;
+    else { banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug"); voice(voiceKeyFor(enc, "gloat")); }
+    state.stats = S.recordAttempt(state.stats, enc, { correct: false, san: move.san, t: now(), thinkMs: state.lastThinkMs }).stats;
     (state.stats.tiers = state.stats.tiers || []).push(tier); if (state.stats.tiers.length > 8) state.stats.tiers.shift(); save();
     if (move.uci === enc.tempting && enc.temptingLineUci.length > 1) await playLine(enc.temptingLineUci.slice(1), afterMap);
     else await sleep(600);
@@ -656,12 +711,12 @@
     state.tries += 1;
     if (state.tries === 1) {
       banner("SECOND TRY", "tease"); setPieces(start, F.arriveOf(enc)); clearMarks(); glitchSay("Sweating? Me? Never.", "nervous"); prompt("Try again. Glitch is sweating."); voice("sys-second");
-      state.phase = "think"; paintSelection(); renderPowers(); return;
+      enterThink(); paintSelection(); renderPowers(); return;
     }
     // confession: show the better future, then the kid plays it
     banner("THE BETTER FUTURE", "win"); glitchSay("Fine. FINE. Here is what I was scared of.", "nervous"); setPieces(start, F.arriveOf(enc)); await sleep(500);
     await playLine(enc.bestLineUci, start); finisher(enc); await sleep(800);
-    banner("YOUR TURN", "tease"); setPieces(start, F.arriveOf(enc)); clearMarks(); state.guided = true; state.phase = "think";
+    banner("YOUR TURN", "tease"); setPieces(start, F.arriveOf(enc)); clearMarks(); state.guided = true; enterThink();
     prompt("Now you play it: " + enc.bestSan); paintSelection(); renderPowers();
   }
   function whyGate(enc) {
@@ -716,7 +771,7 @@
     if ($("card-art")) $("card-art").innerHTML = window.ShockmateMotifs ? window.ShockmateMotifs.icon(enc.motif, 86) : "";
     if ($("why-card")) { $("why-card").classList.toggle("crit", !!crit); $("why-card").classList.remove("deal"); void $("why-card").offsetWidth; $("why-card").classList.add("deal"); }
     const short = wantsShort();
-    if (!(short && voice(enc.id + "-short"))) voice(enc.id + "-why");
+    if (!(short && voice(voiceKeyFor(enc, "short")))) voice(voiceKeyFor(enc, "why"));
     $("why-mascot").textContent = enc.mascot; $("why-text").textContent = H.whyFor(enc, short); $("why-long").textContent = enc.whyLong;
     // The words-style kid gets the rule behind the fight, not just the fight. Once per motif per day,
     // so a card he has seen four times does not keep repeating it. The map lives in memory on purpose.
@@ -728,6 +783,17 @@
       if (showRule) state.seen[seen] = true;
     }
     $("glitch-line-2").textContent = enc.glitch.rage;
+    // A cracked or repaired card is said once, the moment it happens, in his register, and Glitch
+    // answers it in his own voice on the card: a gloat for a crack, a tantrum for a repair.
+    const news = state.cardNews; state.cardNews = null;
+    const crackLine = $("card-crack"), cracked = S.cardCracked(state.stats, enc.id);
+    if ($("why-card")) $("why-card").classList.toggle("cracked", cracked);
+    if (crackLine) {
+      crackLine.hidden = !news;
+      crackLine.textContent = news ? coach({ kind: news }) : "";
+      crackLine.classList.toggle("fixed", news === "repaired");
+    }
+    if (news) { const g = glitchMoment(news); $("glitch-line-2").textContent = g.text; }
     $("btn-peek").hidden = !(tier === "good" && state.lastUci !== enc.best);
     const before = state.ratingBefore, after = S.glitchRating(state.stats), fell = (before || after.real) - after.real;
     const rankNow = S.agentRank(state.stats);
@@ -836,7 +902,55 @@
     $("prompt").classList.add("gate-prompt"); renderDots(); voice("prep-q1");
     $("btn-skip").hidden = false;
   }
+  /* ---------- look first: one tap on what Glitch's move attacked, then the think window ----------
+     The Camp warm-up mechanic, cut to one tap. A right tap opens the think window; two wrong taps
+     light the hint; a third shows him the answer and opens it anyway. It never holds him longer. */
+  function lookFirstGate(enc, targets) {
+    return new Promise((resolve) => {
+      state.phase = "threat";
+      state.gate = { targets: targets.slice(), found: [], wrong: 0, resolve: resolve, look: true };
+      banner("LOOK FIRST", "tease");
+      prompt(coach({ kind: "lookFirst" })); $("prompt").classList.add("gate-prompt");
+      $("gate-dots").innerHTML = "<span></span>";
+      voice("prep-q1");
+      $("btn-skip").hidden = false;
+    });
+  }
+  function lookRecord(g, found) {
+    state.stats = S.recordThreat(state.stats, { targets: 1, found: found ? 1 : 0, wrongTaps: g.wrong }).stats; save();
+    const c = state.camp;
+    if (c) { c.threatsAsked += 1; c.threatsFound += found ? 1 : 0; c.wrongTaps += g.wrong; }
+  }
+  function lookDone(found) {
+    const g = state.gate; if (!g || !g.look) return;
+    const nav = state.nav;
+    state.gate = null; state.phase = "busy";
+    lookRecord(g, found);
+    $("prompt").classList.remove("gate-prompt");
+    if (found) { $("gate-dots").innerHTML = '<span class="on"></span>'; banner("SEEN", "win"); prompt(coach({ kind: "lookSeen" })); glitchMoment("lookRight"); }
+    else {
+      g.targets.forEach((t) => sq(t) && sq(t).classList.add("gate-ok"));
+      banner("THERE", "tease"); prompt(coach({ kind: "lookGive" })); glitchMoment("lookGive");
+    }
+    setTimeout(() => {
+      $("gate-dots").innerHTML = "";
+      if (stale(nav)) return;
+      clearMarks(); g.resolve("open");
+    }, T(found ? 700 : 1300));
+  }
+  function lookTap(name) {
+    const g = state.gate;
+    if (g.targets.indexOf(name) >= 0) { g.found.push(name); sq(name).classList.add("gate-ok"); sfx("win"); return lookDone(true); }
+    g.wrong += 1; const el = sq(name); el.classList.remove("nope"); void el.offsetWidth; el.classList.add("nope"); sfx("nope");
+    glitchMoment("lookWrong");
+    if (g.wrong >= S.LOOK.giveAfter) return lookDone(false);
+    if (g.wrong >= S.LOOK.hintAfter) {
+      const hint = g.targets[0]; if (hint && sq(hint)) sq(hint).classList.add("gate-hint");
+      prompt(coach({ kind: "threatHint", count: 1 }));
+    }
+  }
   function threatTap(name) {
+    if (state.gate && state.gate.look) return lookTap(name);
     const g = state.gate, c = state.camp; if (!g || !c) return;
     if (g.targets.indexOf(name) >= 0 && g.found.indexOf(name) < 0) {
       g.found.push(name); sq(name).classList.add("gate-ok"); sq(name).classList.remove("gate-hint"); sfx("win"); renderDots();
@@ -946,6 +1060,10 @@
     const nxt = prep ? null : D.nextDay(day.n);
     const who = state.mode === "solo" ? activeName() : state.settings.names.join(" and ");
 
+    if (pr.complete && !prep && !state.endCounted) {       // per kid; a co-op day counts for both of them
+      (state.mode === "solo" ? [state.active] : [0, 1]).forEach((i) => { state.sittingDays[i] += 1; });
+      state.endCounted = true;
+    }
     const boss = S.bossHp(state.stats, now());
     $("end-title").textContent = pr.complete
       ? (boss.ko ? "KNOCKOUT! You beat " + boss.name + ", " + who + "!" : (prep ? "Prep done, " : "Day " + day.n + " done, ") + who + "!")
@@ -984,7 +1102,7 @@
   function startSession(mode) {
     state.camp = null;
     state.mode = mode || "solo";
-    state.settings.lastPlayed = now(); state.sitting = (state.sitting || 0) + 1;
+    state.settings.lastPlayed = now(); state.sitting = (state.sitting || 0) + 1; state.endCounted = false;
     state.session = { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 };
     useProfile(state.mode === "solo" ? state.settings.profile : 0);
     const dk0 = S.dateKey(now());
@@ -1005,7 +1123,7 @@
     state.mode = "solo"; state.duel = null; state.camp = null; state.phase = "home"; stopBlitz();
     useProfile(state.settings.profile);
     if (leavingCamp) setDay(state.settings.day || 1);   // camp is not a stop on the map; put the map back on a real day
-    renderTeam(); renderPath(); hud(); show("screen-title"); }
+    renderTeam(); renderPath(); hud(); show("screen-title"); renderDayStrip(); }
 
   function renderMini(enc) {
     const host = $("next-mini"); if (!host) return;
@@ -1027,9 +1145,11 @@
       const div = document.createElement("div"); div.className = "room"; div.innerHTML = "<h3>" + name + "</h3>";
       rooms[name].forEach((e) => {
         const c = earned[e.id], f = document.createElement("div");
-        f.className = "fig" + (c ? (c.critical ? " crit" : "") : " locked");
+        const cracked = !!(c && c.clean === false);
+        f.className = "fig" + (c ? (c.critical ? " crit" : "") + (cracked ? " cracked" : "") : " locked");
         const art = window.ShockmateMotifs ? window.ShockmateMotifs.icon(e.motif, 28) : "";
-        f.innerHTML = '<div class="art">' + art + '</div><div class="txt"><b>' + (c ? (c.critical ? "★ " : "") + e.title : "? ? ?") + "</b><small>" + (c ? H.whyFor(e, wantsShort()) : "Beat Glitch on this board to unlock.") + "</small></div>";
+        f.innerHTML = '<div class="art">' + art + '</div><div class="txt"><b>' + (c ? (c.critical ? "★ " : "") + e.title : "? ? ?") + "</b><small>" + (c ? H.whyFor(e, wantsShort()) : "Beat Glitch on this board to unlock.") + "</small>" +
+          (cracked ? '<em class="crack-word">cracked</em>' : "") + "</div>";
         div.appendChild(f);
       });
       root.appendChild(div);
@@ -1169,7 +1289,8 @@
     $("seat-1").onclick = () => { setSeats(1); save(); hud(); };
     $("seat-2").onclick = () => { setSeats(2); save(); hud(); };
     $("btn-names").onclick = () => { $("btn-settings").click(); };
-    $("btn-start").onclick = () => startSession("solo");
+    $("btn-start").onclick = () => (pacingOn() ? startCamp() : startSession("solo"));
+    if ($("btn-anyway")) $("btn-anyway").onclick = () => startSession("solo");
     $("btn-coop").onclick = () => { startSession("coop"); toast(state.settings.names[0] + " starts. Take turns.", 2000); };
     $("btn-duel").onclick = startDuel;
     $("btn-duel-next").onclick = duelNextBoard;
@@ -1289,6 +1410,11 @@
       const el = sq(enc.tempting.slice(2, 4)); if (el) el.classList.add("tempt-glow"); toast("Glitch flinches at THAT one. So don't.", 2000);
     };
     $("btn-skip").onclick = function () {
+      if (state.phase === "threat" && state.gate && state.gate.look) {   // skip the board from the look-first tap: count it honestly
+        const g = state.gate; state.gate = null; state.phase = "busy";
+        lookRecord(g, false); $("gate-dots").innerHTML = ""; $("prompt").classList.remove("gate-prompt");
+        g.resolve("skip"); nextEncounter(); return;
+      }
       if (state.phase === "threat" && state.camp) {      // a warm-up he cannot see: show it, count it honestly, move on
         const g = state.gate, c = state.camp;
         c.threatsAsked += g.targets.length; c.threatsFound += g.found.length; c.wrongTaps += g.wrong;
