@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.25";
+  const BUILD = "v0.25.1";
   const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
   const X = window.ShockmateFlash;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
@@ -565,14 +565,45 @@
   function coachStyle(i) { return S.coachStyleOf(state.settings, i == null ? state.active : i); }
   function coach(ctx) { return S.coachLine(coachStyle(), ctx); }
   function voiceOn() { return !!(state.settings.readAloud !== false && VOICE.manifest); }
+  /* iPad and iPhone Safari only let a page start sound from inside a tap, and every `new Audio()` is a
+     fresh element that needs its own tap. Glitch mostly speaks a beat AFTER a tap (the animation runs
+     first), so on iOS almost every line was silently refused. Fix: ONE audio element for all speech,
+     unlocked by the first tap anywhere (it plays a 60 ms silent clip), then reused by swapping `src`,
+     which iOS allows once an element has been unlocked. A line refused anyway is kept and played on
+     the next tap, so he is late rather than mute. The same first tap resumes the sfx AudioContext. */
+  const SILENT = "data:audio/wav;base64,UklGRgQCAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YeABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA=";
+  function voiceEl() {
+    if (!VOICE.el) { VOICE.el = new Audio(); VOICE.el.preload = "auto"; VOICE.el.setAttribute("playsinline", ""); }
+    return VOICE.el;
+  }
+  function voiceUnlock() {
+    if (VOICE.unlocked) return;
+    const el = voiceEl();
+    try {
+      el.src = SILENT; const p = el.play();
+      const ok = function () { VOICE.unlocked = true; const k = VOICE.pending; VOICE.pending = null; if (k) voicePlay(k); };
+      if (p && p.then) p.then(ok).catch(function () {}); else ok();
+    } catch (e) {}
+    try { if (ac && ac.state === "suspended") ac.resume(); } catch (e) {}
+  }
+  ["pointerdown", "touchend", "keydown"].forEach(function (ev) { document.addEventListener(ev, voiceUnlock, { capture: true, passive: true }); });
   function voicePlay(key) {
     if (!voiceOn()) return false;
     const file = VOICE.manifest.files[key]; if (!file) return false;
-    if (VOICE.current) { try { VOICE.current.pause(); } catch (e) {} }
-    const a = new Audio("voice/" + file); VOICE.current = a;
-    const done = function () { if (VOICE.current !== a) return; VOICE.current = null; const next = VOICE.queue.shift(); if (next) voicePlay(next); };
+    const a = voiceEl(), token = (VOICE.token || 0) + 1; VOICE.token = token; VOICE.current = a;
+    try { a.pause(); } catch (e) {}
+    const done = function () {
+      if (VOICE.token !== token) return; VOICE.current = null;
+      const next = VOICE.queue.shift(); if (next) voicePlay(next);
+    };
     a.onended = done; a.onerror = done;
-    const p = a.play(); if (p && p.catch) p.catch(done);
+    a.src = "voice/" + file;
+    const p = a.play();
+    if (p && p.catch) p.catch(function (err) {
+      // Refused (no tap yet on iOS): keep the line for the next tap instead of dropping it.
+      if (err && err.name === "NotAllowedError") { VOICE.unlocked = false; VOICE.pending = key; VOICE.queue = []; return; }
+      done();
+    });
     return true;
   }
   // Every per-fight line goes through here. Generated ladder fights carry `voice`, a template key
