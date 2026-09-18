@@ -4,7 +4,7 @@ Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines 
 
 **Date:** 2026-09-18
 **Repo:** https://github.com/dirac1974/shockmate
-**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.14 · 23 fights · 6 days`.
+**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.15 · 23 fights · 6 days`.
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
@@ -13,7 +13,7 @@ ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeli
 
 Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the future plays out on the board → why-gate (tap the pieces) → card earned → next fight or cliffhanger.
 
-## Actual state — v0.14 is live
+## Actual state — v0.15 is live
 
 Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistence and family sync landed on top of them, ahead of the plan.
 
@@ -30,6 +30,7 @@ Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistenc
 - A Home button in the top bar returns to the title screen from any screen at any moment. Leaving mid-fight keeps every card already earned and drops only the unfinished fight. A navigation counter stops an animation that is still running from dragging the kid back, and `goHome` releases a why-gate that is waiting on taps. The same counter stops a gate opening behind him when the animation reaches the why-gate after he has already left.
 - The solo entry is named for what it is: the section reads Battle and the button reads Battle plus the name of today opponent. It was headed Practise with a Play button, and the kid asked where the battle button was.
 - Battle layer, at the parent's direction from gate-0 feedback ("it doesn't count as a win", "there is no game", "how do I battle Glitch"). Today's crony is a boss with a health bar; correct moves land as HITs; the floor is a KNOCKOUT. Wins earn Power (cap 5) for four abilities: Double Strike, Glitch's Tell, Time Shield, Overcharge. Gear slots and gear open with rank; each crony has a motif weakness that hits half again as hard. Abilities never touch the board. Every rule resolves through a pure function in `web/score.js` and is held by `tests/test_battle.js`. See `docs/reports/battle.md`.
+- v0.15 game layer (after the parent said it still looked like a standard AI-built UI): home is a VS arena (kid token vs today's crony with a health bar), days are a map path, one arcade FIGHT button docked at the thumb; gear and Glitch's all-time record live in a drawer. Three control kinds only: arcade button, chip, round token. Play has a caption strip under the board and round ability tokens; the card screen deals a trading card; the binder is face-down cards. All game-logic IDs kept.
 - Phase 1 skin: Timeline Split colours, Glitch with five moods, charging bars, critical zoom, path pips, tap-to-skip.
 - Phase 2: co-op, handicapped duel, per-player Blitz, silent adaptive difficulty, collection art.
 - Glitch brags a rating that deflates as cards are earned. It is the only falling number in the app and it belongs to the villain.

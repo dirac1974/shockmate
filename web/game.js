@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.14";
+  const BUILD = "v0.15";
   const Y = window.ShockmateSync, H = window.ShockmateShort;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -172,15 +172,17 @@
     const host = $("day-strip"); if (!host) return;
     const cur = state.day || 1;
     const weak = S.weakestMotifs(state.stats).filter(function (m) { return m.rate < 1; }).slice(0, 2);
-    const prepChip = '<button class="day-chip prep' + (state.prep ? " current" : "") + '" data-day="0"><span class="n">Prep</span>' +
-      (weak.length ? weak.map(function (m) { return S.motifLabel(m.motif); }).join(" + ") : "opening traps") + '</button>';
+    // A map, not a menu: numbered stops on a path. Prep is the side quest at the start.
+    const prepChip = '<button class="day-chip prep' + (state.prep ? " current" : "") + '" data-day="0"><span class="n">★</span>' +
+      '<span class="t">Prep</span><small>' + (weak.length ? weak.map(function (m) { return S.motifLabel(m.motif); }).join(" + ") : "opening traps") + '</small></button>';
     host.innerHTML = prepChip + D.DAYS.map(function (d) {
       const pr = D.dayProgress(state.stats, d.n), open = D.dayUnlocked(state.stats, d.n);
       const cls = ["day-chip"];
-      if (pr.complete) cls.push("done"); else if (d.n === cur) cls.push("current");
+      if (pr.complete) cls.push("done");
+      if (!state.prep && d.n === cur) cls.push("current");
       if (!open) cls.push("locked");
       return '<button class="' + cls.join(" ") + '" data-day="' + d.n + '"' + (open ? "" : " disabled") +
-        '><span class="n">Day ' + d.n + '</span>' + d.title + '</button>';
+        '><span class="n">' + (pr.complete ? "✓" : d.n) + '</span><span class="t">' + d.title + '</span><small>' + pr.done + "/" + pr.total + '</small></button>';
     }).join("");
     Array.prototype.forEach.call(host.querySelectorAll(".day-chip"), function (b) {
       b.onclick = function () { const n = Number(b.dataset.day); if (n === 0) setPrepDay(); else setDay(n); renderPath(); hud(); };
@@ -207,6 +209,7 @@
     document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
     $(id).classList.add("active");
     if ($("btn-home")) $("btn-home").hidden = id === "screen-title";
+    document.body.dataset.screen = id;
   }
   function stale(nav) { return nav !== state.nav; }
   function toast(msg, ms) { const t = $("toast"); t.hidden = false; t.textContent = msg; clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, ms || 1600); }
@@ -256,13 +259,22 @@
     const box = $("crony"); if (!box) return;
     const c = S.dailyChallenger(state.stats, now());
     box.hidden = false;
-    $("crony-name").textContent = "TODAY: " + c.name;
+    $("crony-name").textContent = c.name;
     $("crony-real").textContent = c.real;
     $("crony-fill").style.width = Math.round(c.fraction * 100) + "%";
     $("crony-line").textContent = c.cardsToday
       ? c.name + " claimed " + c.claimed + " this morning. You have taken " + c.drop + " off him today."
       : c.name + " is standing in for Glitch today. He says he is " + c.claimed + ".";
-    if ($("btn-start")) $("btn-start").textContent = c.ko ? "Fight " + c.name + " again" : "Battle " + c.name;
+    if ($("btn-start")) $("btn-start").innerHTML = (c.ko ? "Rematch " : "Fight ") + "<span>" + c.name + "</span>";
+    const art = $("home-glitch");
+    if (art && window.ShockmateGlitch) {
+      art.innerHTML = window.ShockmateGlitch.svg(c.ko ? "nervous" : "taunt");
+      art.dataset.wilt = String(window.ShockmateGlitch.wiltTier(c.fraction));
+    }
+    const nm = state.settings.names[state.settings.profile] || "Player";
+    if ($("you-name")) $("you-name").textContent = state.seats === 2 ? state.settings.names[0] + " + " + state.settings.names[1] : nm;
+    if ($("you-avatar")) $("you-avatar").textContent = state.seats === 2 ? "2" : nm.trim().charAt(0).toUpperCase();
+    if ($("you-wins")) $("you-wins").textContent = state.stats.won || 0;
   }
   function renderBoss() {
     const box = $("boss"); if (!box) return;
@@ -352,7 +364,7 @@
       + " take turns on this phone. You both play White.";
     // During play the board never flips, so the note doubles as "whose go is it" in co-op.
     if ($("turn-note")) $("turn-note").textContent = activeName() + " is White.";  // the co-op turn banner already says whose go it is
-    [0, 1].forEach((i) => { const b = $("prof-" + i); b.textContent = state.settings.names[i]; b.classList.toggle("active", (state.mode === "solo" ? state.settings.profile : state.active) === i); });
+    [0, 1].forEach((i) => { const b = $("prof-" + i); b.textContent = state.settings.names[i]; b.classList.toggle("active", state.seats !== 2 && (state.mode === "solo" ? state.settings.profile : state.active) === i); });
     if ($("build-tag")) $("build-tag").textContent = BUILD + " \u00b7 " + ALL.length + " fights \u00b7 " + D.DAYS.length + " days";
     renderBrag(); renderPath(); renderTeam();
   }
@@ -651,11 +663,13 @@
   function showCard(enc, tier, crit) {
     state.phase = "card"; renderPath(); $("prompt").classList.remove("gate-prompt");
     $("card-title").textContent = crit ? "CRITICAL KNOCKDOWN" : (state.tries > 0 ? "YOU BEAT GLITCH after " + (state.tries + 1) + " tries" : "YOU BEAT GLITCH");
-    if ($("card-spoils")) { $("card-spoils").hidden = false; $("card-spoils").textContent = "Spoils: the " + enc.title + " card"; }
+    if ($("card-spoils")) { $("card-spoils").hidden = false; $("card-spoils").textContent = enc.title; }
+    if ($("card-art")) $("card-art").innerHTML = window.ShockmateMotifs ? window.ShockmateMotifs.icon(enc.motif, 86) : "";
+    if ($("why-card")) { $("why-card").classList.toggle("crit", !!crit); $("why-card").classList.remove("deal"); void $("why-card").offsetWidth; $("why-card").classList.add("deal"); }
     const short = wantsShort();
     if (!(short && voice(enc.id + "-short"))) voice(enc.id + "-why");
     $("why-mascot").textContent = enc.mascot; $("why-text").textContent = H.whyFor(enc, short); $("why-long").textContent = enc.whyLong;
-    $("glitch-line-2").textContent = "Glitch: " + enc.glitch.rage;
+    $("glitch-line-2").textContent = enc.glitch.rage;
     $("btn-peek").hidden = !(tier === "good" && state.lastUci !== enc.best);
     const before = state.ratingBefore, after = S.glitchRating(state.stats), fell = (before || after.real) - after.real;
     const rankNow = S.agentRank(state.stats);
@@ -668,7 +682,7 @@
     const tick = $("brag-tick");
     if (tick) {
       tick.hidden = fell <= 0;
-      tick.textContent = fell > 0 ? "GLITCH'S RATING " + before + " \u2192 " + after.real + "  (\u25bc" + fell + ")" : "";
+      tick.innerHTML = fell > 0 ? "<b>\u2212" + fell + "</b><span>Glitch " + before + " \u2192 " + after.real + "</span>" : "";
     }
     show("screen-card");
   }
@@ -820,7 +834,7 @@
         const c = earned[e.id], f = document.createElement("div");
         f.className = "fig" + (c ? (c.critical ? " crit" : "") : " locked");
         const art = window.ShockmateMotifs ? window.ShockmateMotifs.icon(e.motif, 28) : "";
-        f.innerHTML = '<div class="art">' + art + '</div><div class="txt"><b>' + (c ? (c.critical ? "★ " : "") + e.title : "Locked") + "</b><small>" + (c ? H.whyFor(e, wantsShort()) : "Beat Glitch on this board to unlock.") + "</small></div>";
+        f.innerHTML = '<div class="art">' + art + '</div><div class="txt"><b>' + (c ? (c.critical ? "★ " : "") + e.title : "? ? ?") + "</b><small>" + (c ? H.whyFor(e, wantsShort()) : "Beat Glitch on this board to unlock.") + "</small></div>";
         div.appendChild(f);
       });
       root.appendChild(div);
@@ -853,7 +867,7 @@
     }
     renderSyncState();
   }
-  function switchProfile(i) { state.settings.profile = i; useProfile(i); save(); hud(); }
+  function switchProfile(i) { setSeats(1); state.settings.profile = i; useProfile(i); save(); hud(); }
   function bind() {
     $("prof-0").onclick = () => switchProfile(0); $("prof-1").onclick = () => switchProfile(1);
     $("seat-1").onclick = () => { setSeats(1); save(); hud(); };

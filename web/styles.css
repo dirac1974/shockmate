@@ -37,6 +37,11 @@
   --brass: #c89b3c;
   --brass-dk: #8a6a22;
 
+  /* the kitchen table the set is sitting on */
+  --wood: #d9a066;
+  --wood-dk: #9c6532;
+  --sun-dk: #b87b12;
+
   /* aliases kept so older rules keep resolving */
   --line: var(--hair);
   --muted: var(--ink-2);
@@ -62,7 +67,7 @@ html, body {
   font-weight: 400; font-size: 17px; line-height: 1.5;
   -webkit-text-size-adjust: 100%;
 }
-#app { max-width: 460px; margin: 0 auto; padding: 14px 16px 36px; }
+#app { max-width: 460px; margin: 0 auto; padding: 10px 16px calc(120px + env(safe-area-inset-bottom)); }
 
 h1, h2, h3, .brand, .banner, .future-title, .turn-chip, .step-label, .day-chip, button {
   font-family: "Baloo 2", "Trebuchet MS", sans-serif;
@@ -74,45 +79,6 @@ h3 { font-size: 20px; font-weight: 700; margin: 0 0 6px; }
 .sub, .hint { color: var(--ink-2); font-size: 15px; }
 .actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 10px 0; }
 .actions.stack { flex-direction: column; align-items: stretch; }
-
-/* ---------- top bar ---------- */
-.topbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 2px 0 10px; }
-.brand { font-size: 27px; font-weight: 800; letter-spacing: .3px; }
-.boom { color: var(--ink); } .mate { color: var(--grape); }
-.hud { display: flex; gap: 7px; margin-left: auto; }
-.stat {
-  background: var(--card); border: 2.5px solid var(--ink); border-radius: 12px 14px 11px 15px;
-  padding: 3px 9px; min-width: 56px; text-align: center; box-shadow: 0 3px 0 var(--hair);
-}
-.stat .lbl { display: block; font-size: 10px; color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; }
-.stat span:last-child { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.stat.rank span:last-child { font-size: 13px; }
-.path { display: flex; gap: 5px; align-items: center; width: 100%; justify-content: center; padding: 4px 0; }
-.pip { width: 10px; height: 10px; border-radius: 50%; background: transparent; border: 2px solid var(--hair); }
-.pip.done { background: var(--leaf); border-color: var(--ink); }
-.pip.now { background: var(--sun); border-color: var(--ink); }
-.pip.boss { width: 13px; height: 13px; border-radius: 3px; transform: rotate(45deg); }
-.pip.boss.done { background: var(--sun); border-color: var(--ink); }
-
-/* ---------- buttons: cut from card, pressed with a thumb ---------- */
-button {
-  font: inherit; font-family: "Baloo 2", sans-serif; font-weight: 700; font-size: 18px;
-  cursor: pointer; padding: 11px 17px; min-height: 48px;
-  border: 3px solid var(--ink); border-radius: 16px 20px 15px 19px;
-  background: var(--card); color: var(--ink);
-  box-shadow: 0 5px 0 var(--hair);
-  transition: transform .08s ease, box-shadow .08s ease;
-}
-button:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--hair); }
-.cta { background: var(--sun); box-shadow: 0 5px 0 #b87b12; }
-.cta:active { box-shadow: 0 1px 0 #b87b12; }
-.cta.gold { background: var(--sun); }
-.ghost { background: var(--card); }
-.ghost:disabled { opacity: .42; box-shadow: none; }
-.ghost.danger { color: var(--tomato); }
-.link { background: none; border: 0; box-shadow: none; color: var(--mark); text-decoration: underline; font: inherit; padding: 0; min-height: 0; }
-.prof.active, .seat.active { background: var(--sun); }
-.pack.active { background: var(--leaf); color: var(--card); }
 
 /* ---------- screens ---------- */
 .screen { display: none; }
@@ -352,17 +318,6 @@ select, input[type=number], input[type=text], input[type=password] {
 .boss.ko .boss-row b, .boss.ko .boss-row span { color: #4a463d; }
 .boss.ko .boss-bar i { background: #4a463d; }
 
-/* ---------- power and abilities ---------- */
-.powers { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; width: 100%; }
-.pips { display: flex; gap: 5px; margin-right: 6px; }
-.pips i { width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid var(--ink); background: transparent; display: inline-block; }
-.pips i.on { background: var(--sun); }
-.pw { padding: 7px 11px; font-size: 15px; min-height: 40px; border-radius: 12px 14px 11px 15px; }
-.pw small { color: var(--ink-2); margin-left: 4px; }
-.pw:disabled { opacity: .4; box-shadow: none; }
-.pw.armed { background: var(--sun); }
-.pw.armed::after { content: " \2713"; }
-
 /* ---------- the kid's agent ---------- */
 .agent { margin: 10px auto 0; max-width: 420px; padding: 9px 11px; border-radius: 16px 19px 15px 18px; }
 .agent-row { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; }
@@ -379,22 +334,6 @@ select, input[type=number], input[type=text], input[type=password] {
 .gear-slot.filled { border-style: solid; box-shadow: 0 3px 0 var(--hair); }
 @media (max-width: 400px) { .gear { grid-template-columns: 1fr; } }
 
-/* ---------- lesson days ---------- */
-.days { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 6px 0 2px; }
-.day-chip { border: 2.5px solid var(--ink); background: var(--card); border-radius: 13px 16px 12px 15px;
-  padding: 7px 12px; font-size: 15px; font-weight: 700; min-width: 64px; box-shadow: 0 3px 0 var(--hair); }
-.day-chip .n { display: block; font-size: 11px; color: var(--ink-2); letter-spacing: .06em; }
-.day-chip.current { background: var(--sun); }
-.day-chip.done { background: var(--leaf); color: var(--card); }
-.day-chip.done .n { color: #ffffffbf; }
-.day-chip.done .n::after { content: " \2713"; }
-.day-chip.locked { opacity: .38; box-shadow: none; }
-.day-chip.prep { border-style: dashed; }
-.day-chip.prep.current { border-style: solid; }
-#day-blurb { margin-top: 2px; }
-#btn-home { background: var(--card); }
-#btn-home[hidden] { display: none !important; }
-
 /* ---------- parent progress ---------- */
 .prog-kid { margin: 10px auto; max-width: 480px; padding: 11px 13px; border-radius: 16px 20px 15px 19px; }
 .prog-kid h3 { margin: 0 0 4px; }
@@ -409,6 +348,250 @@ select, input[type=number], input[type=text], input[type=password] {
 .prog-table tr.focus td:last-child { color: var(--tomato); font-weight: 700; }
 .prog-table tr.good td:last-child { color: var(--leaf); font-weight: 700; }
 .prog-table tr.new td { color: var(--ink-2); }
+
+
+/* ============================================================
+   GAME LAYER. The screen is a toy on a table, not a form.
+   Three kinds of control, and only three:
+   - the ARCADE button: one per screen, the thing to do next. Thick, lit, pressable.
+   - CHIPS: choices. Flat clay, the chosen one is filled.
+   - TOKENS: round tools (home, cards, settings, powers). Icons, never sentences.
+   ============================================================ */
+
+/* ---------- top bar: a brand and three tokens, nothing else ---------- */
+.topbar { display: flex; align-items: center; gap: 8px; padding: 2px 0 8px; }
+.brand { font-size: 24px; font-weight: 800; letter-spacing: .3px; line-height: 1; }
+.boom { color: var(--ink); } .mate { color: var(--grape); }
+.hud[hidden] { display: none; }
+.tools { display: flex; gap: 8px; margin-left: auto; }
+
+/* ---------- base button ---------- */
+button {
+  font: inherit; font-family: "Baloo 2", sans-serif; font-weight: 700; font-size: 17px; color: var(--ink);
+  cursor: pointer; border: 3px solid var(--ink); background: var(--card);
+  border-radius: 14px 17px 13px 16px; padding: 8px 14px; min-height: 44px;
+  box-shadow: 0 4px 0 var(--ink); transition: transform .07s ease, box-shadow .07s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+button:disabled { opacity: .4; box-shadow: 0 2px 0 var(--hair); border-color: var(--ink-2); cursor: default; }
+button:disabled:active { transform: none; }
+.link { background: none; border: 0; box-shadow: none; color: var(--ink-2); text-decoration: underline;
+  font: inherit; font-size: 14px; padding: 4px; min-height: 0; border-radius: 0; }
+.link:active { transform: none; box-shadow: none; }
+.ghost { background: var(--card); }
+.ghost.danger { color: var(--tomato); }
+
+/* the arcade button: a lit, domed, thick cap on a dark base */
+.cta {
+  position: relative; background: var(--sun); color: var(--ink);
+  font-weight: 800; font-size: 21px; letter-spacing: .5px; text-transform: uppercase;
+  border-radius: 20px 24px 19px 23px; padding: 12px 22px; min-height: 58px;
+  box-shadow: 0 7px 0 var(--ink), inset 0 -6px 0 var(--sun-dk), inset 0 4px 0 #ffffff80;
+}
+.cta:active { transform: translateY(5px); box-shadow: 0 2px 0 var(--ink), inset 0 -3px 0 var(--sun-dk), inset 0 3px 0 #ffffff80; }
+.cta.big { width: 100%; font-size: 27px; min-height: 72px; padding: 10px 18px; }
+.cta.big span { display: inline-block; background: var(--ink); color: var(--sun); padding: 0 10px 2px; margin-left: 8px;
+  border-radius: 8px 11px 7px 10px; transform: rotate(-2deg); }
+
+/* chips: choices */
+.chip { background: var(--paper-2); box-shadow: 0 3px 0 var(--ink); font-size: 16px; padding: 6px 14px; min-height: 40px; }
+.chip.active, .prof.active, .seat.active { background: var(--ink); color: var(--sun); }
+
+/* tokens: round tools */
+.token { position: relative; width: 46px; height: 46px; min-height: 0; padding: 0; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center; background: var(--card); }
+.token svg, .pw svg { width: 24px; height: 24px; fill: none; stroke: var(--ink); stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
+.token .badge { position: absolute; top: -7px; right: -8px; min-width: 22px; height: 22px; padding: 0 5px;
+  border-radius: 11px; background: var(--leaf); color: var(--card); border: 2.5px solid var(--ink);
+  font-size: 12px; line-height: 17px; font-weight: 800; }
+#btn-home[hidden] { display: none !important; }
+
+/* ---------- home: who is playing ---------- */
+.players { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 4px 0 12px; }
+.players .link { margin-left: auto; }
+.players [hidden] { display: none; }
+
+/* ---------- home: the arena. you on the left, today's crony on the right ---------- */
+.arena {
+  position: relative; display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 4px;
+  padding: 16px 12px 14px; border: 3px solid var(--ink); border-radius: 22px 26px 20px 28px;
+  /* the kitchen table, lit from the window on the left */
+  background:
+    radial-gradient(120% 90% at 10% 0%, #fff4d680 0%, transparent 60%),
+    repeating-linear-gradient(94deg, #0000000d 0 2px, transparent 2px 19px, #ffffff14 19px 21px, transparent 21px 37px),
+    linear-gradient(180deg, var(--wood) 0%, #cf9459 100%);
+  box-shadow: 0 7px 0 var(--wood-dk), 0 7px 0 3px var(--ink);
+}
+.side { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; min-width: 0; }
+.avatar { width: 84px; height: 84px; border-radius: 50%; border: 3.5px solid var(--ink);
+  background: var(--mark); color: var(--card); text-shadow: 0 3px 0 var(--ink);
+  background-image: radial-gradient(60% 45% at 32% 22%, #ffffff55, transparent 70%);
+  font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 44px; line-height: 78px;
+  box-shadow: 0 5px 0 var(--ink); }
+.who { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 19px; line-height: 1.05; color: var(--ink);
+  background: var(--card); border: 2.5px solid var(--ink); border-radius: 9px 12px 8px 11px; padding: 1px 9px;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.foe .who { background: var(--grape); color: var(--card); }
+.ribbon { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 13px; letter-spacing: .06em; text-transform: uppercase;
+  background: var(--leaf); color: var(--card); border: 2.5px solid var(--ink); padding: 0 10px; border-radius: 3px;
+  clip-path: polygon(0 0, 100% 0, 92% 50%, 100% 100%, 0 100%, 8% 50%); padding: 0 16px; }
+.tally { font-size: 13px; font-weight: 700; color: #3b2a14; }
+.vs { align-self: center; font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 46px; line-height: 1;
+  color: var(--sun); -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; transform: rotate(-8deg);
+  text-shadow: 0 4px 0 var(--ink); padding: 0 2px; }
+.foe-art { width: 104px; height: 100px; margin-bottom: -4px; transform-origin: 50% 100%; animation: bob 2.4s ease-in-out infinite; }
+.foe-art .glitch-svg { width: 104px; height: 100px; }
+@keyframes bob { 50% { transform: translateY(-4px) rotate(-2deg); } }
+.foe-art[data-wilt="1"] { transform: scale(1, .96); } .foe-art[data-wilt="2"] { transform: scale(1, .92); filter: saturate(.8); }
+.foe-art[data-wilt="3"] { transform: scale(1, .86) rotate(-6deg); filter: saturate(.55); animation: none; }
+/* his health, as a fighter bar: it only ever drains */
+.hp { width: 100%; height: 14px; border: 2.5px solid var(--ink); border-radius: 4px; background: #3a1f4d; overflow: hidden; }
+.hp i { display: block; height: 100%; background: repeating-linear-gradient(90deg, var(--tomato) 0 10px, #f0624d 10px 12px); transition: width 700ms ease; }
+.hp-n { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 15px; color: var(--ink); line-height: 1; }
+#crony[hidden] { display: flex !important; }
+
+.taunt { position: relative; margin: 14px 4px 6px 38%; background: var(--card); border: 3px solid var(--ink);
+  border-radius: 16px 20px 15px 18px; padding: 6px 11px; font-family: "Patrick Hand", "Comic Sans MS", cursive;
+  font-size: 19px; line-height: 1.2; box-shadow: 0 4px 0 var(--hair); }
+.taunt::before { content: ""; position: absolute; right: 44px; top: -14px; border-left: 9px solid transparent;
+  border-right: 9px solid transparent; border-bottom: 14px solid var(--ink); }
+.taunt:empty { display: none; }
+
+/* ---------- home: the map. numbered stops on a path ---------- */
+.map-wrap { margin: 12px -16px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.map-wrap::-webkit-scrollbar { display: none; }
+.map { position: relative; display: flex; gap: 12px; padding: 8px 16px 10px; width: max-content; }
+.map::before { content: ""; position: absolute; left: 40px; right: 40px; top: 40px; border-top: 4px dashed var(--ink-2); opacity: .5; }
+.day-chip { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  width: 78px; padding: 0; min-height: 0; border: 0; background: none; box-shadow: none; border-radius: 0; }
+.day-chip:active { transform: none; box-shadow: none; }
+.day-chip .n { width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--ink); background: var(--card);
+  display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: var(--ink);
+  box-shadow: 0 5px 0 var(--ink); transition: transform .07s ease; }
+.day-chip:active .n { transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
+.day-chip .t { font-size: 13px; font-weight: 800; line-height: 1.1; color: var(--ink); text-align: center; }
+.day-chip small { font-family: "Atkinson Hyperlegible", sans-serif; font-size: 11px; color: var(--ink-2); line-height: 1.1; text-align: center; }
+.day-chip.done .n { background: var(--leaf); color: var(--card); }
+.day-chip.current .n { background: var(--sun); box-shadow: 0 5px 0 var(--ink); outline: 3px solid var(--ink); outline-offset: 4px; }
+.day-chip.current .t { margin-top: 7px; }
+.day-chip.locked { opacity: .45; }
+.day-chip.locked .n { background: var(--paper-2); border-style: dashed; box-shadow: none; }
+.day-chip.prep .n { border-radius: 14px 17px 13px 16px; transform: rotate(-6deg); background: var(--paper-2); }
+.day-chip.prep.current .n { background: var(--sun); }
+.day-chip:disabled { opacity: .45; box-shadow: none; border: 0; }
+.day-chip.prep .t { margin-top: 5px; }
+.blurb { text-align: center; font-size: 15px; color: var(--ink); margin: 2px 8px 0; }
+
+/* ---------- home: the dock. the one thing to press, where a thumb already is ---------- */
+.dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent 0, var(--paper) 22px); }
+.dock > * { max-width: 428px; margin: 0 auto; }
+body:not([data-screen="screen-title"]) .dock { display: none; }
+.dock [hidden] { display: none !important; }
+.duo { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+.duo .chip { min-height: 58px; font-size: 19px; }
+#two-hint { text-align: center; margin: 6px 0 0; font-size: 13px; }
+
+/* ---------- home: the drawer. everything a kid does not need to see first ---------- */
+.drawer { margin: 16px 0 0; border: 3px solid var(--ink); border-radius: 16px 19px 15px 18px; background: var(--paper-2); }
+.drawer summary { cursor: pointer; list-style: none; font-family: "Baloo 2", sans-serif; font-weight: 700; font-size: 16px; padding: 10px 14px; }
+.drawer summary::-webkit-details-marker { display: none; }
+.drawer summary::after { content: "+"; float: right; font-weight: 800; }
+.drawer[open] summary::after { content: "\2013"; }
+.drawer > :not(summary) { margin-left: 12px; margin-right: 12px; }
+.drawer .agent { margin-top: 0; }
+
+/* ---------- play: slim, the board is the hero ---------- */
+body[data-screen="screen-play"] .brand { font-size: 19px; }
+body[data-screen="screen-play"] .topbar { padding-bottom: 4px; }
+.glitch-row { min-height: 70px; margin: 0 0 6px; }
+#glitch, .glitch-svg { width: 66px; }
+.glitch-svg { height: 66px; }
+.bubble { font-size: 19px; padding: 7px 11px; }
+.path { display: flex; gap: 6px; align-items: center; justify-content: center; margin: 0 0 8px; }
+.pip { width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid var(--ink-2); background: transparent; }
+.pip.done { background: var(--leaf); border-color: var(--ink); }
+.pip.now { background: var(--sun); border-color: var(--ink); transform: scale(1.25); }
+/* the boss stop shares a class with the brass plate; undo the plate here */
+.pip.boss { border-radius: 3px; transform: rotate(45deg); margin: 0 0 0 3px; padding: 0; max-width: none; background: transparent; box-shadow: none; }
+.pip.boss.now { transform: rotate(45deg) scale(1.25); }
+.pip.boss.done { background: var(--sun); border-color: var(--ink); }
+.boss { padding: 5px 11px; margin: 0 auto 8px; }
+.boss-row b { font-size: 14px; } .boss-row span { font-size: 19px; }
+.boss-bar { height: 12px; }
+.boss-bar i { background: repeating-linear-gradient(90deg, #3a2c06 0 10px, #4d3a09 10px 12px); }
+
+/* the prompt is a caption strip fixed to the board's bottom edge */
+.prompt { margin: 14px 2px 6px; padding: 9px 12px; background: var(--ink); color: var(--card);
+  border-radius: 12px 15px 11px 14px; font-weight: 700; font-size: 18px; line-height: 1.3; min-height: 44px; }
+.prompt.gate-prompt { background: var(--sun); color: var(--ink); border: 3px solid var(--ink); font-size: 21px; }
+
+/* ---------- powers: round tokens with a cost, and a charge meter ---------- */
+.powers { display: flex; gap: 10px; justify-content: center; align-items: flex-end; width: 100%; flex-wrap: nowrap; }
+.pips { display: flex; flex-direction: column-reverse; gap: 3px; margin-right: 2px; align-self: center; }
+.pips i { width: 14px; height: 9px; border-radius: 3px; border: 2px solid var(--ink); background: var(--paper-2); display: block; }
+.pips i.on { background: var(--sun); }
+.pw { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 64px; padding: 0; min-height: 0;
+  background: none; border: 0; box-shadow: none; border-radius: 0; font-size: 12px; font-weight: 800; }
+.pw:active { transform: none; box-shadow: none; }
+.pw svg { box-sizing: content-box; width: 26px; height: 26px; padding: 11px; border: 3px solid var(--ink); border-radius: 50%;
+  background: var(--card); box-shadow: 0 4px 0 var(--ink); transition: transform .07s ease; }
+.pw:active svg { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+.pw span { line-height: 1.1; }
+.pw small { font-size: 11px; color: var(--ink-2); font-weight: 700; }
+.pw small::before { content: "\26A1"; margin-right: 1px; }
+.pw:disabled { opacity: .38; box-shadow: none; border: 0; }
+.pw:disabled svg { box-shadow: none; background: var(--paper-2); }
+.pw.armed svg { background: var(--sun); transform: translateY(-3px); }
+.pw.armed span::after { content: " \2713"; }
+.skip { display: block; margin: 12px auto 0; }
+
+
+/* ---------- the card screen: a card being dealt to you ---------- */
+.future-title { font-size: 30px; line-height: 1.05; margin: 4px 0 10px; color: var(--sun);
+  -webkit-text-stroke: 2.5px var(--ink); paint-order: stroke fill; text-shadow: 0 4px 0 var(--ink); transform: rotate(-2deg); }
+.why-card { position: relative; margin: 6px 14px 0; padding: 10px 14px 14px; border-width: 4px;
+  border-radius: 18px; background-color: var(--card); box-shadow: 0 7px 0 var(--ink); }
+.why-card.crit { border-color: var(--ink); background-color: #fff3d6; box-shadow: 0 7px 0 var(--ink), 0 0 0 5px var(--sun), 0 0 0 8px var(--ink); }
+.why-card.deal { animation: deal .45s cubic-bezier(.2,1.4,.4,1); }
+@keyframes deal { from { transform: translateY(40px) rotate(-10deg) scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.card-name { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 15px; color: var(--ink-2); text-align: right; line-height: 1.1; }
+.card-name[hidden] { display: none; }
+.card-art { display: flex; align-items: center; justify-content: center; height: 118px; margin: 10px 0 6px;
+  border: 3px solid var(--ink); border-radius: 10px; color: var(--ink);
+  background: radial-gradient(circle at 50% 60%, #fff 0 30%, transparent 31%), repeating-conic-gradient(from 0deg at 50% 60%, var(--sun) 0 10deg, #f7c465 10deg 20deg); }
+.why-card.crit .card-art { background: radial-gradient(circle at 50% 60%, #fff 0 30%, transparent 31%), repeating-conic-gradient(from 0deg at 50% 60%, var(--tomato) 0 10deg, var(--sun) 10deg 20deg); }
+#why-text { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 23px; line-height: 1.15; margin: 8px 0 4px; }
+.why-long { font-size: 15px; margin: 4px 0 0; }
+.card-foot { display: flex; align-items: flex-start; gap: 10px; margin: 16px 14px 14px; }
+.said { flex: 1; margin: 0; position: relative; background: var(--grape); color: var(--card); border: 3px solid var(--ink);
+  border-radius: 14px 18px 13px 16px; padding: 6px 10px; font-family: "Patrick Hand", "Comic Sans MS", cursive; font-size: 18px; line-height: 1.2; }
+.said:empty { display: none; }
+.brag-tick { margin: 0; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; transform: rotate(6deg);
+  border: 3px solid var(--tomato); border-radius: 8px; padding: 2px 8px; color: var(--tomato); background: var(--card); }
+.brag-tick[hidden] { display: none; }
+.brag-tick b { font-size: 28px; line-height: 1; }
+.brag-tick span { font-size: 11px; font-weight: 700; white-space: nowrap; }
+#screen-card > .cta.big { margin-top: 4px; }
+.actions.quiet { margin-top: 12px; }
+.rank-line { font-family: "Baloo 2", sans-serif; font-size: 18px; }
+
+
+/* ---------- the binder: cards in sleeves, face down until won ---------- */
+.room { padding: 10px 10px 12px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.room h3 { grid-column: 1 / -1; font-size: 18px; margin: 0; }
+.fig { flex-direction: column; align-items: stretch; gap: 4px; margin: 0; padding: 5px; border-radius: 9px; background: var(--card);
+  box-shadow: 0 3px 0 var(--ink); text-align: center; min-width: 0; }
+.fig .art { width: 100%; height: 64px; border-radius: 6px;
+  background: radial-gradient(circle at 50% 55%, #fff 0 34%, transparent 35%), repeating-conic-gradient(from 0deg at 50% 55%, var(--sun) 0 12deg, #f7c465 12deg 24deg); }
+.fig .txt b { font-size: 12px; line-height: 1.1; }
+.fig .txt small { display: none; }
+.fig.crit .art { background: radial-gradient(circle at 50% 55%, #fff 0 34%, transparent 35%), repeating-conic-gradient(from 0deg at 50% 55%, var(--tomato) 0 12deg, var(--sun) 12deg 24deg); color: var(--ink); }
+.fig.locked { opacity: 1; background: var(--grape-deep); box-shadow: 0 3px 0 var(--ink); }
+.fig.locked .art { background: repeating-linear-gradient(45deg, #ffffff14 0 6px, transparent 6px 12px), var(--grape); color: #ffffff40; border-color: var(--ink); }
+.fig.locked .txt b { color: #ffffffa0; }
 
 /* ---------- the quiet window is the contract ---------- */
 @media (prefers-reduced-motion: reduce) {
