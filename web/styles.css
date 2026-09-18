@@ -220,7 +220,7 @@ h3 { font-size: 20px; font-weight: 700; margin: 0 0 6px; }
 .ritual[hidden] { display: none; }
 
 /* ---------- cards and the collection ---------- */
-.why-card, .room, .prog-kid, .agent, .modal-card, .next-peek {
+.why-card, .room, .prog-kid, .agent, .modal-card, .next-peek, .set-card, .gate-card {
   background: var(--card); border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--hair);
   /* cardstock */
   background-image: repeating-linear-gradient(112deg, #00000008 0 2px, transparent 2px 7px);
@@ -605,6 +605,73 @@ body[data-screen="screen-play"] .topbar { padding-bottom: 4px; }
 .fig.locked { opacity: 1; background: var(--grape-deep); box-shadow: 0 3px 0 var(--ink); }
 .fig.locked .art { background: repeating-linear-gradient(45deg, #ffffff14 0 6px, transparent 6px 12px), var(--grape); color: #ffffff40; border-color: var(--ink); }
 .fig.locked .txt b { color: #ffffffa0; }
+
+/* ============================================================
+   THE COACH'S HALF: the gate, Settings, Progress.
+   Same three controls as the kid's half — arcade button, chip, round token — so the parent is not
+   handed a form when the kid was handed a toy. Purple appears here, and only here outside the
+   villain: this half lives behind a PIN, so purple reads as "not for you" rather than as a button.
+   ============================================================ */
+
+/* ---------- the gate: a name, four dots and a keypad of round tokens ---------- */
+.gate-card { max-width: 340px; margin: 26px auto; padding: 18px 16px 14px; border-radius: 20px 24px 18px 26px; text-align: center; }
+.gate-card h2 { margin: 0 0 4px; }
+.gate-card .hint { margin: 0 0 12px; text-align: left; }
+.gate-card label { text-align: left; }
+.gate-card.wrong { animation: shake .35s ease; }
+.pin-dots { display: flex; justify-content: center; gap: 12px; margin: 14px 0 16px; }
+.pin-dots span { width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--ink); background: var(--paper-2); }
+.pin-dots span.on { background: var(--sun); }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; margin: 0 auto 6px; max-width: 250px; }
+.keypad .key { width: 64px; height: 64px; font-size: 26px; font-weight: 800; background: var(--card); }
+.keypad .key.del { font-size: 21px; background: var(--paper-2); }
+#gate-name-row[hidden], #gate-forgot[hidden], #btn-forgot[hidden] { display: none; }
+
+/* ---------- settings: stacked cardstock, one subject per card ---------- */
+.set-card { margin: 12px 0; padding: 12px 14px 14px; border-radius: 16px 20px 15px 19px; }
+.set-card h3 { margin: 0 0 2px; }
+.set-card > .hint { margin: 8px 0 0; }
+.set-card .cta { width: 100%; margin-top: 10px; }
+.player-set { border-top: 2px dashed var(--hair); padding-top: 8px; margin-top: 10px; }
+.player-set:first-of-type { border-top: 0; padding-top: 0; margin-top: 6px; }
+.set-label { display: block; font-family: "Baloo 2", sans-serif; font-weight: 700; font-size: 13px;
+  color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; margin: 10px 0 5px; }
+.chip-row, .chip-pair { display: flex; flex-wrap: wrap; gap: 7px; margin: 6px 0 0; }
+.chip-pair .chip { flex: 1; min-width: 0; }
+.chip.danger { color: var(--tomato); }
+.chip.danger.active { color: var(--card); background: var(--tomato); }
+/* a toggle is a chip that fills when it is on — never a checkbox */
+.chip.toggle::before { content: "\25CB"; margin-right: 6px; font-size: 13px; }
+.chip.toggle.active::before { content: "\25CF"; }
+.stepper { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.stepper .set-label { margin: 0; flex: 1 0 100%; }
+.token.step { width: 44px; height: 44px; font-size: 24px; font-weight: 800; background: var(--paper-2); }
+.step-val { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 26px; min-width: 40px;
+  text-align: center; font-variant-numeric: tabular-nums; }
+#screen-settings .drawer { background: var(--paper-2); margin: 12px 0; }
+#screen-settings > .cta.big { margin-top: 6px; }
+
+/* ---------- progress: a card per kid, four tiles, the coach's notes ---------- */
+.prog-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.prog-who { min-width: 0; flex: 1; }
+.prog-who h3 { margin: 0; line-height: 1.1; }
+.avatar.sm { width: 46px; height: 46px; font-size: 24px; line-height: 40px; flex-shrink: 0; box-shadow: 0 3px 0 var(--ink); }
+.prog-cards { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 22px; line-height: 1;
+  text-align: center; font-variant-numeric: tabular-nums; }
+.prog-cards small { display: block; font-size: 11px; font-weight: 700; color: var(--ink-2); letter-spacing: .06em; text-transform: uppercase; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 8px 0 10px; }
+.tile { background: var(--paper-2); border: 2.5px solid var(--ink); border-radius: 11px 13px 10px 14px; padding: 7px 9px; min-width: 0; }
+.tile b { display: block; font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 19px; line-height: 1.1;
+  font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile small { display: block; font-size: 11px; color: var(--ink-2); letter-spacing: .04em; text-transform: uppercase; line-height: 1.2; }
+.coach-says { margin: 10px 0; padding: 9px 11px 7px; background: var(--card);
+  border: 3px solid var(--grape); border-radius: 12px 15px 11px 14px; }
+.coach-says > b { display: inline-block; background: var(--grape); color: var(--card); font-size: 11px;
+  font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 2px 9px;
+  border: 2.5px solid var(--ink); border-radius: 999px; margin-bottom: 6px; }
+.coach-says p { margin: 5px 0 0; font-size: 15px; line-height: 1.35; }
+.checklist .check-list { margin: 6px 0 10px; padding-left: 22px; }
+.checklist .check-list li { font-size: 16px; font-weight: 700; margin: 4px 0; }
 
 /* ---------- the quiet window is the contract ---------- */
 @media (prefers-reduced-motion: reduce) {

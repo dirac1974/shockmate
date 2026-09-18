@@ -154,69 +154,145 @@
       <div id="palace-rooms" class="rooms"></div>
       <div class="actions"><button id="btn-back-play" class="cta">Back</button></div>
     </section>
+    <section id="screen-gate" class="screen">
+      <div class="gate-card" id="gate-card">
+        <h2 id="gate-title">Who is the coach?</h2>
+        <p class="hint" id="gate-hint"></p>
+        <label id="gate-name-row">What do they call you? <input id="gate-name" type="text" maxlength="16"
+          autocapitalize="words" spellcheck="false" placeholder="Dad" /></label>
+        <div class="pin-dots" id="pin-dots"></div>
+        <div class="keypad" id="keypad">
+          <button type="button" class="token key" data-key="1">1</button>
+          <button type="button" class="token key" data-key="2">2</button>
+          <button type="button" class="token key" data-key="3">3</button>
+          <button type="button" class="token key" data-key="4">4</button>
+          <button type="button" class="token key" data-key="5">5</button>
+          <button type="button" class="token key" data-key="6">6</button>
+          <button type="button" class="token key" data-key="7">7</button>
+          <button type="button" class="token key" data-key="8">8</button>
+          <button type="button" class="token key" data-key="9">9</button>
+          <button type="button" class="token key del" data-key="back" aria-label="Delete">&#9003;</button>
+          <button type="button" class="token key" data-key="0">0</button>
+          <span></span>
+        </div>
+        <div class="actions">
+          <button type="button" class="chip" id="btn-gate-back">Not now</button>
+          <button type="button" class="link" id="btn-forgot">Forgot?</button>
+        </div>
+        <p class="hint" id="gate-forgot" hidden>There is no reset and no email. Restore a backup file — the
+          PIN rides in it — or clear this site's data in the browser and set a new one. The fights and the
+          cards are safe in the backup file.</p>
+      </div>
+    </section>
     <section id="screen-settings" class="screen">
-      <h2>Parent settings</h2>
-      <p class="hint">Names label whose cards are whose. Both kids always play White.</p>
-      <label>First name (starts co-op) <input id="opt-name-0" type="text" maxlength="16" /></label>
-      <label>Second name <input id="opt-name-1" type="text" maxlength="16" /></label>
-      <label>Fights per session <input id="opt-cap" type="number" min="3" max="12" value="6" /></label>
-      <label class="check"><input id="opt-sound" type="checkbox" checked /> Sound</label>
-      <label class="check"><input id="opt-coords" type="checkbox" /> Coordinates</label>
-      <label class="check"><input id="opt-blitz-0" type="checkbox" /> Blitz mode for the first player</label>
-      <label class="check"><input id="opt-blitz-1" type="checkbox" /> Blitz mode for the second player</label>
-      <label class="check"><input id="opt-short-0" type="checkbox" /> Short lines for the first player</label>
-      <label class="check"><input id="opt-short-1" type="checkbox" /> Short lines for the second player</label>
-      <label>Coach style for the first player
-        <select id="opt-coach-0"><option value="numbers">Numbers first</option><option value="words">Reasons first</option></select></label>
-      <label>Coach style for the second player
-        <select id="opt-coach-1"><option value="numbers">Numbers first</option><option value="words">Reasons first</option></select></label>
-      <p class="hint">Numbers first gives counts and short lines. Reasons first gives the principle in
-        full sentences. Camp uses this everywhere it speaks.</p>
-      <label class="check"><input id="opt-tournament" type="checkbox" /> Tournament week: show the two questions before every move</label>
-      <label class="check"><input id="opt-readaloud" type="checkbox" checked /> Read aloud (needs the voice files; silent until they exist)</label>
-      <label class="check"><input id="opt-hurry" type="checkbox" /> Hurry rematch clock (testing)</label>
-      <h3 class="step-label">Backup</h3>
-      <p class="hint">Progress lives on this device only. iOS clears it after about a week
-        without a visit, so add Shockmate to the home screen and keep a backup file.</p>
-      <div class="actions">
-        <button id="btn-export" class="ghost">Save backup file</button>
-        <button id="btn-import" class="ghost">Restore from file</button>
-      </div>
-      <input id="file-import" type="file" accept="application/json,.json" hidden />
+      <h2 id="settings-head">Coach</h2>
+      <p class="hint">Yours, not theirs. The kids' screens never ask for the PIN.</p>
 
-      <h3 class="step-label">Family login (same as the other apps)</h3>
-      <div id="sync-on" hidden>
-        <label>Family code <input id="opt-code" type="text" maxlength="12" autocapitalize="characters"
-          spellcheck="false" placeholder="e.g. ABCD1234" /></label>
-        <div class="actions"><button id="btn-roster" class="ghost">Load family</button></div>
-        <p class="hint" id="roster-state">The same code and 4-digit PINs the spelling and maths apps use.</p>
-        <label>First player <input id="opt-user-0" type="text" list="roster-list" maxlength="15"
-          autocapitalize="none" spellcheck="false" placeholder="username" /></label>
-        <label>First PIN <input id="opt-pin-0" type="text" inputmode="numeric" maxlength="4" placeholder="4 digits" /></label>
-        <label>Second player <input id="opt-user-1" type="text" list="roster-list" maxlength="15"
-          autocapitalize="none" spellcheck="false" placeholder="username" /></label>
-        <label>Second PIN <input id="opt-pin-1" type="text" inputmode="numeric" maxlength="4" placeholder="4 digits" /></label>
-        <datalist id="roster-list"></datalist>
-        <div class="actions"><button id="btn-sync" class="ghost">Sync now</button></div>
-        <p class="hint" id="sync-state">Not synced yet.</p>
-      </div>
-      <div id="sync-off">
-        <p class="hint">Paste this project's API details once per device. They are kept on the
-          device, never in the repo.</p>
-        <label>Supabase URL <input id="opt-url" type="text" autocapitalize="none" spellcheck="false"
-          placeholder="https://xxxx.supabase.co" /></label>
-        <label>Anon key <input id="opt-key" type="password" autocapitalize="none" spellcheck="false"
-          placeholder="paste key" /></label>
-        <div class="actions"><button id="btn-save-api" class="ghost">Save API details</button></div>
+      <div class="set-card">
+        <h3>Players</h3>
+        <div class="player-set">
+          <label>Name (starts co-op) <input id="opt-name-0" type="text" maxlength="16" /></label>
+          <span class="set-label">Coach style</span>
+          <div class="chip-pair" id="opt-coach-0">
+            <button type="button" class="chip" data-coach="numbers">Numbers first</button>
+            <button type="button" class="chip" data-coach="words">Reasons first</button>
+          </div>
+          <div class="chip-row">
+            <button type="button" class="chip toggle" id="opt-short-0" aria-pressed="false">Short lines</button>
+            <button type="button" class="chip toggle" id="opt-blitz-0" aria-pressed="false">Blitz</button>
+          </div>
+        </div>
+        <div class="player-set">
+          <label>Name <input id="opt-name-1" type="text" maxlength="16" /></label>
+          <span class="set-label">Coach style</span>
+          <div class="chip-pair" id="opt-coach-1">
+            <button type="button" class="chip" data-coach="numbers">Numbers first</button>
+            <button type="button" class="chip" data-coach="words">Reasons first</button>
+          </div>
+          <div class="chip-row">
+            <button type="button" class="chip toggle" id="opt-short-1" aria-pressed="false">Short lines</button>
+            <button type="button" class="chip toggle" id="opt-blitz-1" aria-pressed="false">Blitz</button>
+          </div>
+        </div>
+        <p class="hint">Numbers first gives counts and short lines. Reasons first gives the principle in
+          full sentences. Camp uses this everywhere it speaks. Both kids always play White.</p>
       </div>
 
-      <button id="btn-progress" class="ghost">Progress</button>
-      <button id="btn-reset" class="ghost danger">Reset this player</button>
-      <button id="btn-close-settings" class="cta">Done</button>
+      <div class="set-card">
+        <h3>Session</h3>
+        <div class="stepper">
+          <span class="set-label">Fights per session</span>
+          <button type="button" class="token step" id="cap-down" aria-label="Fewer fights">&#8722;</button>
+          <output id="opt-cap" class="step-val">6</output>
+          <button type="button" class="token step" id="cap-up" aria-label="More fights">+</button>
+        </div>
+        <div class="chip-row">
+          <button type="button" class="chip toggle" id="opt-tournament" aria-pressed="false">Tournament week</button>
+          <button type="button" class="chip toggle" id="opt-readaloud" aria-pressed="false">Read aloud</button>
+          <button type="button" class="chip toggle" id="opt-sound" aria-pressed="false">Sound</button>
+          <button type="button" class="chip toggle" id="opt-coords" aria-pressed="false">Coordinates</button>
+          <button type="button" class="chip toggle" id="opt-hurry" aria-pressed="false">Hurry clock</button>
+        </div>
+        <p class="hint">Tournament week puts the two questions in front of every move. Read aloud needs the
+          voice files and stays silent until they exist. The hurry clock is for testing rematches.</p>
+      </div>
+
+      <div class="set-card">
+        <h3>Coach</h3>
+        <label>Your name <input id="opt-parent-name" type="text" maxlength="16" placeholder="Dad" /></label>
+        <div class="chip-row">
+          <button type="button" class="chip" id="btn-change-pin">Change PIN</button>
+          <button type="button" class="chip danger" id="btn-reset">Reset this player</button>
+        </div>
+        <button id="btn-progress" class="cta">Progress</button>
+        <p class="hint">The PIN is a speed bump, not a lock. It keeps a kid out of Settings and Progress,
+          it is stored in clear on this device, and it travels in the backup file.</p>
+      </div>
+
+      <div class="set-card">
+        <h3>Backup</h3>
+        <p class="hint">Progress lives on this device only. iOS clears it after about a week
+          without a visit, so add Shockmate to the home screen and keep a backup file.</p>
+        <div class="chip-row">
+          <button id="btn-export" class="chip">Save backup file</button>
+          <button id="btn-import" class="chip">Restore from file</button>
+        </div>
+        <input id="file-import" type="file" accept="application/json,.json" hidden />
+      </div>
+
+      <details class="drawer">
+        <summary>Family login (same as the other apps)</summary>
+        <div id="sync-on" hidden>
+          <label>Family code <input id="opt-code" type="text" maxlength="12" autocapitalize="characters"
+            spellcheck="false" placeholder="e.g. ABCD1234" /></label>
+          <div class="actions"><button id="btn-roster" class="chip">Load family</button></div>
+          <p class="hint" id="roster-state">The same code and 4-digit PINs the spelling and maths apps use.</p>
+          <label>First player <input id="opt-user-0" type="text" list="roster-list" maxlength="15"
+            autocapitalize="none" spellcheck="false" placeholder="username" /></label>
+          <label>First PIN <input id="opt-pin-0" type="text" inputmode="numeric" maxlength="4" placeholder="4 digits" /></label>
+          <label>Second player <input id="opt-user-1" type="text" list="roster-list" maxlength="15"
+            autocapitalize="none" spellcheck="false" placeholder="username" /></label>
+          <label>Second PIN <input id="opt-pin-1" type="text" inputmode="numeric" maxlength="4" placeholder="4 digits" /></label>
+          <datalist id="roster-list"></datalist>
+          <div class="actions"><button id="btn-sync" class="chip">Sync now</button></div>
+          <p class="hint" id="sync-state">Not synced yet.</p>
+        </div>
+        <div id="sync-off">
+          <p class="hint">Paste this project's API details once per device. They are kept on the
+            device, never in the repo.</p>
+          <label>Supabase URL <input id="opt-url" type="text" autocapitalize="none" spellcheck="false"
+            placeholder="https://xxxx.supabase.co" /></label>
+          <label>Anon key <input id="opt-key" type="password" autocapitalize="none" spellcheck="false"
+            placeholder="paste key" /></label>
+          <div class="actions"><button id="btn-save-api" class="chip">Save API details</button></div>
+        </div>
+      </details>
+
+      <button id="btn-close-settings" class="cta big">Done</button>
     </section>
     <section id="screen-progress" class="screen">
       <h2>Progress</h2>
-      <p class="hint">For the parent. Good at means a high hit rate over more than one try. Focus means a low rate or a fight still waiting to be got right. Both kids always play White.</p>
+      <p class="hint">Good at means a high hit rate over more than one try. Focus means a low rate or a fight still waiting to be got right.</p>
       <div id="progress-root"></div>
       <div class="actions"><button id="btn-progress-back" class="cta">Back to settings</button></div>
     </section>

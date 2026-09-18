@@ -63,13 +63,26 @@ function run() {
   assert.strictEqual(capped.ledger[capped.ledger.length - 1].t, 89, "the newest rows are the ones kept");
 
   // --- backup file round trip, and restoring an old file cannot delete a new card ---
-  const blob = Y.exportBlob({ names: ["Mia", "Leo"] }, [phone, tablet]);
+  const settings = { names: ["Mia", "Leo"], parent: { name: "Dad", pin: "9175" } };
+  const blob = Y.exportBlob(settings, [phone, tablet]);
   const text = JSON.stringify(blob);
   const back = Y.importBlob(text, [{ cardsEarned: { "09": { critical: false, tries: 1, t: 300 } } }, {}]);
   assert.deepStrictEqual(back.names, ["Mia", "Leo"], "names come back too");
   assert.deepStrictEqual(Object.keys(back.profiles[0].cardsEarned).sort(), ["01", "09"], "restore merges, it does not replace");
   assert.throws(() => Y.importBlob('{"app":"something-else"}', []), /not a Shockmate backup/, "a stray json file is refused");
   assert.throws(() => Y.importBlob("not json at all", []), /not a Shockmate backup/);
+
+  // --- the coach rides in the same file: it is the only answer "Forgot?" can give ---
+  assert.deepStrictEqual(blob.parent, { name: "Dad", pin: "9175" }, "the coach's name and PIN are in the file");
+  assert.deepStrictEqual(Y.exportBlob({ names: [] }, []).parent, { name: "", pin: "" }, "no coach set, no coach saved");
+  assert.deepStrictEqual(back.parent, { name: "Dad", pin: "9175" }, "restoring onto a device with no coach adopts his");
+  const held = Y.importBlob(text, [{}, {}], { parent: { name: "Mum", pin: "2468" } });
+  assert.strictEqual(held.parent.pin, "2468", "a PIN set on this device is never blanked by a restore");
+  assert.strictEqual(held.parent.name, "Mum");
+  assert.deepStrictEqual(Y.importBlob(JSON.stringify({ app: "shockmate", profiles: [{}, {}] }), [{}, {}]).parent,
+    { name: "", pin: "" }, "a file written before the coach existed still restores");
+  assert.strictEqual(Y.exportBlob({ parent: { name: "Dad", pin: "91a7 5x" } }, []).parent.pin, "9175",
+    "whatever is in settings, only four digits are written");
 
   // --- transport: the three chess_* rpcs, with the code, name and pin the other apps use ---
   assert.ok(!Y.configured({ url: "", anonKey: "" }), "empty config is off");

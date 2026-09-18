@@ -24,6 +24,13 @@ function statsOf(cards, earned) {
   return st;
 }
 
+/* Camp days are keyed the way score.js keys them, so a synthetic run has to be built with dateKey. */
+function campDays(st, ts, n) {
+  st.camp = { days: {}, total: 0, best: 0, run: 0, last: "" };
+  for (let i = n - 1; i >= 0; i--) st.camp = S.recordCampDay(st.camp, S.dateKey(ts - i * 24 * 60 * 60 * 1000));
+  return st;
+}
+
 function run() {
   /* verdict thresholds */
   assert.strictEqual(S.motifVerdict(null), "new");
@@ -73,7 +80,82 @@ function run() {
   assert.ok(empty.motifs.every(function (m) { return m.verdict === "new"; }), "nothing met means everything is new");
   assert.deepStrictEqual(empty.goodAt, []); assert.deepStrictEqual(empty.focusOn, []);
 
-  console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, null-safe");
+  /* ---------- v0.18: what the parent side now tracks ---------- */
+
+  /* threats: the camp warm-ups, counted in targets rather than boards */
+  const th = statsOf([], {});
+  th.threats = { asked: 10, found: 6, wrongTaps: 2 };
+  const pt = S.progressSummary(th, ALL, TODAY);
+  assert.deepStrictEqual({ asked: pt.threats.asked, found: pt.threats.found, wrongTaps: pt.threats.wrongTaps },
+    { asked: 10, found: 6, wrongTaps: 2 }, "threats come straight off the profile");
+  assert.strictEqual(pt.threats.rate, 0.6, "rate is found over asked");
+  assert.strictEqual(empty.threats.rate, 0, "no warm-ups yet is a rate of nought, not a divide by zero");
+
+  /* camp: days, best run, the run he is on, and whether today is already done */
+  const cs = campDays(statsOf([], {}), TODAY, 4);
+  const pc = S.progressSummary(cs, ALL, TODAY);
+  assert.strictEqual(pc.camp.days, 4, "four calendar days of camp");
+  assert.strictEqual(pc.camp.run, 4); assert.strictEqual(pc.camp.best, 4);
+  assert.strictEqual(pc.camp.doneToday, true, "the run ends today, so today is done");
+  assert.strictEqual(S.progressSummary(campDays(statsOf([], {}), YESTERDAY, 2), ALL, TODAY).camp.doneToday, false,
+    "a run that stopped yesterday has not been done today");
+  assert.deepStrictEqual({ days: empty.camp.days, best: empty.camp.best, run: empty.camp.run, doneToday: empty.camp.doneToday },
+    { days: 0, best: 0, run: 0, doneToday: false });
+
+  /* first try: a card earned with tries > 1 was not found first go */
+  const ft = statsOf([], {});
+  ft.cardsEarned = { a: { t: TODAY, tries: 1 }, b: { t: TODAY, tries: 1 }, c: { t: TODAY, tries: 3 }, d: { t: TODAY, tries: 2 } };
+  const pf = S.progressSummary(ft, ALL, TODAY);
+  assert.strictEqual(pf.firstTryRate, 0.5, "two of four found first go");
+  assert.strictEqual(pf.firstTry.first, 2); assert.strictEqual(pf.firstTry.cards, 4);
+  assert.strictEqual(empty.firstTryRate, 0, "no cards is nought, never NaN");
+  assert.ok(!isNaN(empty.firstTryRate));
+
+  /* this week: Monday to Sunday around ts, not a rolling seven days */
+  const wed = noon(2026, 8, 16), mon = noon(2026, 8, 14), sun = noon(2026, 8, 13), nextMon = noon(2026, 8, 21);
+  assert.strictEqual(S.weekStart(wed), noon(2026, 8, 14) - 12 * 3600 * 1000, "the week starts on Monday midnight");
+  assert.strictEqual(S.weekStart(mon), S.weekStart(wed), "Monday and Wednesday share a week");
+  assert.notStrictEqual(S.weekStart(sun), S.weekStart(mon), "the Sunday before is the week before");
+  const wk = campDays(statsOf([], { x: mon, y: wed, z: sun, w: nextMon }), wed, 1);
+  const pw = S.progressSummary(wk, ALL, wed);
+  assert.strictEqual(pw.thisWeek.cards, 2, "only the cards inside Monday-to-Sunday count");
+  assert.strictEqual(pw.thisWeek.campDays, 1, "the camp day is inside the week");
+  assert.strictEqual(S.progressSummary(wk, ALL, sun).thisWeek.cards, 1, "read from the Sunday before, only that Sunday's card");
+  assert.deepStrictEqual({ c: empty.thisWeek.cards, d: empty.thisWeek.campDays }, { c: 0, d: 0 });
+
+  /* coach notes: two to four plain sentences, in priority order, off this kid's own numbers */
+  assert.ok(empty.coachNotes.length >= 2 && empty.coachNotes.length <= 4, "always two to four");
+  assert.ok(/Camp/.test(empty.coachNotes[0]), "nothing played yet points at Camp: " + empty.coachNotes[0]);
+
+  const missing = statsOf([], {}); missing.threats = { asked: 10, found: 4, wrongTaps: 0 };
+  const nMissing = S.progressSummary(missing, ALL, TODAY).coachNotes;
+  assert.ok(/attacked/.test(nMissing[0]), "a low threat rate leads: " + nMissing[0]);
+  assert.ok(/4 of 10/.test(nMissing[0]), "and it quotes his own count");
+  const thin = statsOf([], {}); thin.threats = { asked: 3, found: 0, wrongTaps: 0 };
+  assert.ok(!/attacked/.test(S.progressSummary(thin, ALL, TODAY).coachNotes[0]),
+    "three targets is too thin to call, so the rule holds its tongue");
+
+  const tappy = statsOf([], {}); tappy.threats = { asked: 8, found: 8, wrongTaps: 9 };
+  const nTappy = S.progressSummary(tappy, ALL, TODAY).coachNotes;
+  assert.ok(/tapping before he looks/.test(nTappy[0]), "wrong taps outnumbering targets leads: " + nTappy[0]);
+
+  const pMotif = S.progressSummary(played, ALL, TODAY);
+  const say = pMotif.coachNotes.filter(function (n) { return /^At the board, say: /.test(n); })[0];
+  assert.ok(say, "a focus motif gives the parent a line to say");
+  assert.ok(say.indexOf(S.PRINCIPLES.fork) >= 0, "and it is the app's own words, so both coach with one voice");
+
+  const runner = campDays(statsOf([], { a: TODAY }), TODAY, 5);
+  const nRun = S.progressSummary(runner, ALL, TODAY).coachNotes;
+  assert.ok(nRun.some(function (n) { return /5 days running/.test(n); }), "a run of three or more is worth keeping: " + nRun.join(" | "));
+  assert.ok(!S.progressSummary(campDays(statsOf([], { a: TODAY }), TODAY, 2), ALL, TODAY).coachNotes
+    .some(function (n) { return /days running/.test(n); }), "two days is not yet a run");
+
+  S.progressSummary(th, ALL, TODAY).coachNotes.concat(nTappy, nRun, empty.coachNotes).forEach(function (n) {
+    assert.strictEqual(typeof n, "string"); assert.ok(n.length > 10, "every note is a sentence, not a label");
+  });
+  assert.doesNotThrow(function () { S.progressSummary(null, ALL, TODAY); S.progressSummary({}, [], TODAY); });
+
+  console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, threats, camp days and runs, first-try rate, Monday-to-Sunday week, coach notes in priority order, null-safe");
 }
 
 run();

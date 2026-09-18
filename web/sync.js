@@ -78,15 +78,27 @@
   function validUser(name) { return normaliseUser(name).length >= 3; }
   function boundSlot(slot) { return !!(slot && validUser(slot.username) && validPin(slot.pin)); }
 
-  function exportBlob(settings, profiles) {
-    return { app: "shockmate", version: 2, savedAt: Date.now(), names: (settings || {}).names || [], profiles: profiles || [] };
+  // The coach's name and PIN ride in the backup file, because "restore a backup" is the only answer
+  // the Forgot? line can give. The PIN is a gate, not a secret, so it travels in clear like everything else.
+  function parentOf(o) {
+    const p = (o && o.parent) || {};
+    return { name: String(p.name || "").trim().slice(0, 16), pin: normalisePin(p.pin) };
   }
-  function importBlob(text, profiles) {
+  function exportBlob(settings, profiles) {
+    return { app: "shockmate", version: 3, savedAt: Date.now(), names: (settings || {}).names || [],
+      parent: parentOf(settings), profiles: profiles || [] };
+  }
+  function importBlob(text, profiles, settings) {
     let blob;
     try { blob = typeof text === "string" ? JSON.parse(text) : text; } catch (e) { throw new Error("That file is not a Shockmate backup."); }
     if (!blob || blob.app !== "shockmate" || !Array.isArray(blob.profiles)) throw new Error("That file is not a Shockmate backup.");
+    // A PIN set on THIS device is never blanked by a restore: an old file must not lock the parent
+    // out of the device he is holding. With nothing set locally, the file's coach is adopted whole.
+    const local = parentOf(settings), incoming = parentOf(blob);
+    const parent = validPin(local.pin) ? { name: local.name || incoming.name, pin: local.pin } : incoming;
     // Import merges: restoring an old backup can never delete a card won since.
-    return { names: blob.names || [], profiles: [0, 1].map((i) => mergeStats((profiles || [])[i], blob.profiles[i])) };
+    return { names: blob.names || [], parent: parent,
+      profiles: [0, 1].map((i) => mergeStats((profiles || [])[i], blob.profiles[i])) };
   }
 
   function configured(cfg) { return !!(cfg && cfg.url && cfg.anonKey); }
@@ -117,7 +129,7 @@
   }
 
   const api = { mergeStats, mergeCard, normaliseCode, normaliseUser, normalisePin, validCode, validPin, validUser,
-    boundSlot, exportBlob, importBlob, configured, roster, pull, push, LEDGER_MAX, TIERS_MAX };
+    boundSlot, exportBlob, importBlob, parentOf, configured, roster, pull, push, LEDGER_MAX, TIERS_MAX };
   root.ShockmateSync = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
