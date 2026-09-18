@@ -1,9 +1,9 @@
 name: tests
 
 # Every push to main and every PR runs the unit and data suites. They are the gate: red blocks the merge.
-# The browser suites (tests/e2e) run too, in their own job, because this is the first machine that can
-# run Playwright at all (Application Control on the family PC blocks it). They are informational until
-# they are brought up to date with the current screens; see docs/CONTINUATION.md.
+# The browser suites (tests/e2e) run in their own job on bundled Chromium, against web/ served over
+# http, with every Supabase call answered by the in-memory fake in tests/e2e/harness.py. See
+# docs/reports/e2e.md.
 
 on:
   push:
@@ -50,6 +50,8 @@ jobs:
           python-version: "3.12"
       - run: pip install playwright chess==1.11.2 && python -m playwright install --with-deps chromium
       - name: Browser suites
+        env:
+          PYTHONUNBUFFERED: "1"
         run: |
           status=0
           for t in tests/e2e/phase*.py; do echo "== $t"; python "$t" || status=1; done
