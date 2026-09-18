@@ -292,3 +292,9 @@ select, input[type=number], input[type=text] { display: block; width: 100%; marg
 /* ---------- home: the way back, on every screen ---------- */
 #btn-home { border-color: var(--cyan, #33e0ff); color: var(--cyan, #33e0ff); }
 #btn-home[hidden] { display: none !important; }
+
+/* ---------- tournament week: the two questions, and the prep chip ---------- */
+.ritual { text-align: center; font-weight: 800; color: var(--gold, #ffcc33); margin: 2px 12px 6px; font-size: 0.95rem; line-height: 1.35; }
+.ritual[hidden] { display: none; }
+.day-chip.prep { border-style: dashed; border-color: var(--magenta, #ff4fa3); color: var(--magenta, #ff4fa3); }
+.day-chip.prep.current { border-style: solid; }

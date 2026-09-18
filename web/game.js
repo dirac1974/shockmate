@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.8.1";
+  const BUILD = "v0.9";
   const Y = window.ShockmateSync;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -25,9 +25,9 @@
     encounters: ALL.filter((e) => e.pack === "tactics"), index: 0, pieces: {}, selected: null, phase: "home",
     tries: 0, guided: false, lastTier: null, lastUci: null, lastCritical: false, gate: null,
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
-    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", day: 1, seats: 1, syncedAt: 0,
+    settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", day: 1, tournament: false, seats: 1, syncedAt: 0,
       sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
-    mode: "solo", pack: "tactics", active: 0, nav: 0, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
+    mode: "solo", pack: "tactics", active: 0, nav: 0, prep: false, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
   };
   const RAGE_TARGET = 4;
@@ -148,7 +148,17 @@
     $("two-hint").textContent = state.settings.names[0] + " and " + state.settings.names[1]
       + " take turns on this phone. You both play White.";
   }
+  function setPrepDay() {
+    state.prep = true; state.day = 0;
+    state.encounters = S.prepFights(state.stats, ALL, 4); state.index = 0;
+    renderDayStrip();
+  }
+  function dayDone() {
+    if (state.prep) { const earned = (state.stats && state.stats.cardsEarned) || {}; return state.encounters.length > 0 && state.encounters.every(function (e) { return !!earned[e.id]; }); }
+    return D.dayProgress(state.stats, state.day || 1).complete;
+  }
   function setDay(n) {
+    state.prep = false;
     const day = D.dayByNumber(Number(n) || 1);
     state.day = day.n; state.settings.day = day.n;
     state.encounters = D.fightsForDay(ALL, day.n); state.index = 0;
@@ -157,7 +167,10 @@
   function renderDayStrip() {
     const host = $("day-strip"); if (!host) return;
     const cur = state.day || 1;
-    host.innerHTML = D.DAYS.map(function (d) {
+    const weak = S.weakestMotifs(state.stats).filter(function (m) { return m.rate < 1; }).slice(0, 2);
+    const prepChip = '<button class="day-chip prep' + (state.prep ? " current" : "") + '" data-day="0"><span class="n">Prep</span>' +
+      (weak.length ? weak.map(function (m) { return S.motifLabel(m.motif); }).join(" + ") : "your misses") + '</button>';
+    host.innerHTML = prepChip + D.DAYS.map(function (d) {
       const pr = D.dayProgress(state.stats, d.n), open = D.dayUnlocked(state.stats, d.n);
       const cls = ["day-chip"];
       if (pr.complete) cls.push("done"); else if (d.n === cur) cls.push("current");
@@ -166,9 +179,11 @@
         '><span class="n">Day ' + d.n + '</span>' + d.title + '</button>';
     }).join("");
     Array.prototype.forEach.call(host.querySelectorAll(".day-chip"), function (b) {
-      b.onclick = function () { setDay(Number(b.dataset.day)); renderPath(); hud(); };
+      b.onclick = function () { const n = Number(b.dataset.day); if (n === 0) setPrepDay(); else setDay(n); renderPath(); hud(); };
     });
-    if ($("day-blurb")) $("day-blurb").textContent = D.dayByNumber(cur).blurb;
+    if ($("day-blurb")) $("day-blurb").textContent = state.prep
+      ? "Four fights picked from what you have missed. Slow down. Ask the two questions."
+      : D.dayByNumber(cur).blurb;
   }
   /* adaptive: rolling tier history decides whether the next fight opens with candidates lit */
   function needsHelp(stats) {
@@ -418,6 +433,7 @@
     const enc = current(); state.selected = null; state.tries = 0; state.guided = false; state.lastTier = null; state.phase = "think";
     setPieces(F.piecesFromList(enc.pieces)); clearMarks(); $("fx").innerHTML = ""; $("board").classList.remove("dim");
     banner(""); glitchSay(enc.glitch.taunt, "taunt"); prompt(enc.hook); $("gate-dots").innerHTML = "";
+    if ($("ritual")) { $("ritual").hidden = !state.settings.tournament; $("ritual").textContent = S.PREP_QUESTIONS.join("   "); }
     $("btn-hint").hidden = false; $("btn-skip").hidden = false; show("screen-play");
     state.helpThisFight = needsHelp(state.stats) || (state.mode === "duel" && state.duel && state.duel.helpSeat === state.active);
     paintSelection(); renderTeam(); startBlitz(); hud(); renderPowers();
@@ -429,7 +445,7 @@
     if (step.captured) explode(step.to, false);
     stopBlitz();
     const tier = state.guided ? "best" : (enc.moves[move.uci] || {}).tier || "blunder";
-    state.lastTier = tier; state.lastUci = move.uci; $("btn-hint").hidden = true; $("btn-skip").hidden = true;
+    state.lastTier = tier; state.lastUci = move.uci; $("btn-hint").hidden = true; $("btn-skip").hidden = true; if ($("ritual")) $("ritual").hidden = true;
     // tease: both futures charge
     banner("SPLITTING TIME…", "tease"); $("board").classList.add("dim"); $("timelines").hidden = false;
     glitchSay("Wait. Wait. Which future is this…", "nervous"); sfx("tease");
@@ -619,23 +635,26 @@
   }
   function nextEncounter() {
     state.session.count += 1;
-    if (D.dayProgress(state.stats, state.day || 1).complete) return endSession();
+    if (dayDone()) return endSession();
     if (state.session.count >= state.settings.cap) return endSession();
     if (state.mode === "coop") { useProfile(state.active === 0 ? 1 : 0); toast(activeName() + "'s turn.", 1600); }
     state.index = pickNext(); startEncounter();
   }
   function endSession() {
     stopBlitz();
-    const day = D.dayByNumber(state.day || 1);
-    const pr = D.dayProgress(state.stats, day.n);
+    const prep = !!state.prep;
+    const day = prep ? { n: 0, title: "Prep" } : D.dayByNumber(state.day || 1);
+    const pr = prep
+      ? { complete: dayDone(), done: state.encounters.filter(function (e) { return !!state.stats.cardsEarned[e.id]; }).length, total: state.encounters.length }
+      : D.dayProgress(state.stats, day.n);
     const rank = S.agentRank(state.stats);
     const c = S.dailyChallenger(state.stats, now());
-    const nxt = D.nextDay(day.n);
+    const nxt = prep ? null : D.nextDay(day.n);
     const who = state.mode === "solo" ? activeName() : state.settings.names.join(" and ");
 
     const boss = S.bossHp(state.stats, now());
     $("end-title").textContent = pr.complete
-      ? (boss.ko ? "KNOCKOUT! You beat " + boss.name + ", " + who + "!" : "Day " + day.n + " done, " + who + "!")
+      ? (boss.ko ? "KNOCKOUT! You beat " + boss.name + ", " + who + "!" : (prep ? "Prep done, " : "Day " + day.n + " done, ") + who + "!")
       : (state.session.won ? "Good run, " + who + "!" : "Paused");
 
     const bits = ["Fights won: " + state.session.won, "Criticals: " + state.session.crits];
@@ -728,7 +747,7 @@
   }
   function renderSettings() {
     $("opt-name-0").value = state.settings.names[0]; $("opt-name-1").value = state.settings.names[1]; $("opt-cap").value = state.settings.cap;
-    $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry;
+    $("opt-sound").checked = state.settings.sound; $("opt-coords").checked = state.settings.coords; $("opt-hurry").checked = state.settings.hurry; if ($("opt-tournament")) $("opt-tournament").checked = !!state.settings.tournament;
     $("opt-blitz-0").checked = !!state.settings.blitz[0]; $("opt-blitz-1").checked = !!state.settings.blitz[1];
     const s = state.settings.sync || {};
     if ($("opt-code")) {
@@ -811,7 +830,7 @@
       state.settings.names = [$("opt-name-0").value.trim() || "Player 1", $("opt-name-1").value.trim() || "Player 2"];
       readLogin();
       state.settings.cap = Math.max(3, Math.min(12, Number($("opt-cap").value) || 6));
-      state.settings.sound = $("opt-sound").checked; state.settings.coords = $("opt-coords").checked; state.settings.hurry = $("opt-hurry").checked;
+      state.settings.sound = $("opt-sound").checked; state.settings.coords = $("opt-coords").checked; state.settings.hurry = $("opt-hurry").checked; if ($("opt-tournament")) state.settings.tournament = $("opt-tournament").checked;
       state.settings.blitz = [$("opt-blitz-0").checked, $("opt-blitz-1").checked];
       save(); hud(); setSeats(state.settings.seats); show("screen-title");
       if (syncOn()) syncNow(true);
