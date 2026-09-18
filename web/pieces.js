@@ -1,8 +1,9 @@
 /* Staunton-style pieces. Same .piece / .glyph wrappers so kick/spin/squash stay intact. */
 (function (root) {
+  /* Vinyl toys: one flat fill, one ink outline, one flat highlight. No gradients, no bevel. */
   function palette(color) {
-    if (color === "w") return { fill: "#fff4d2", shade: "#d8c49a", shine: "#fffdf6", ink: "#2b2358" };
-    return { fill: "#2a2452", shade: "#171238", shine: "#40376f", ink: "#dde5ff" };
+    if (color === "w") return { fill: "#fff6e4", ink: "#2a2118", shine: ".55" };
+    return { fill: "#3a3047", ink: "#2a2118", shine: ".26" };
   }
   /* Conventional Staunton silhouettes, hand-authored on a 45x45 grid.
      Shared foot: a flared base plus a collar, so every piece sits on the square the same way. */
@@ -18,7 +19,11 @@
   function svg(color, role) {
     const p = palette(color);
     const body = BODY[role] || BODY.p;
-    return '<svg class="glyph" viewBox="0 0 45 45" aria-hidden="true"><defs><linearGradient id="g' + color + role + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + p.shine + '"/><stop offset="1" stop-color="' + p.fill + '"/></linearGradient></defs><g fill="url(#g' + color + role + ')" stroke="' + p.ink + '" stroke-width="1.55" stroke-linejoin="round" stroke-linecap="round">' + body + '</g></svg>';
+    return "<svg class=\"glyph\" viewBox=\"0 0 45 45\" aria-hidden=\"true\">"
+      + "<ellipse cx=\"22.5\" cy=\"41.6\" rx=\"13\" ry=\"2.5\" fill=\"#2a2118\" opacity=\".16\"/>"
+      + "<g fill=\"" + p.fill + "\" stroke=\"" + p.ink + "\" stroke-width=\"2.1\" stroke-linejoin=\"round\" stroke-linecap=\"round\">" + body + "</g>"
+      + "<ellipse cx=\"17.4\" cy=\"15.2\" rx=\"3\" ry=\"4.3\" fill=\"#ffffff\" opacity=\"" + p.shine + "\" transform=\"rotate(-18 17.4 15.2)\"/>"
+      + "</svg>";
   }
   const FROM_GLYPH = {"♔":"k","♕":"q","♖":"r","♗":"b","♘":"n","♙":"p","♚":"k","♛":"q","♜":"r","♝":"b","♞":"n","♟":"p"};
   function upgradeBoard() {
