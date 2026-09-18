@@ -90,7 +90,7 @@ MIN_LINES = {
     "score.GLITCH_LINES": {"lookRight": 16, "lookWrong": 16, "lookGive": 10, "cracked": 10, "repaired": 10, "pacing": 10,
                            "campStart": 10, "campWatch": 10, "campSpotted": 10, "campNope": 10,
                            "flashReveal": 10, "flashHide": 10, "flashRight": 10, "flashWrong": 10,
-                           "flashImagine": 10, "flashDone": 10},
+                           "flashImagine": 10, "flashDone": 10, "flashJoke": 10, "flashJokeRight": 10},
     "score.SUGGEST_SAY": {"first": 10, "fresh": 10, "up": 10, "down": 10, "again": 10},
     "play.SAY": {"start": 10, "capture": 16, "check": 16, "quiet": 16, "gloat": 10, "rage": 10, "nervous": 10,
                  "resign": 10, "glitchMated": 10, "kidMated": 10, "stalemate": 10, "repetition": 10, "fifty": 10,

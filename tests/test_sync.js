@@ -47,6 +47,19 @@ function run() {
     assert.ok(m.flash.last12.length <= Y.FLASH_WINDOW);
   });
   assert.strictEqual(Y.mergeStats({}, {}).flash, undefined, "a kid who has never flashed invents no flash");
+  /* The control boards (random positions) and their paired real ones: counters, so the larger side
+     wins, rung by rung, and a phone that never saw one keeps what the other had. */
+  const ctlA = { flash: { items: 6, control: { items: 4, correct: 3, firstLook: 2, byRung: { "10000": { items: 4, correct: 2 } } },
+      paired: { items: 4, correct: 3, byRung: { "10000": { items: 4, correct: 3 } } } } };
+  const ctlB = { flash: { items: 12, control: { items: 3, correct: 3, firstLook: 3, byRung: { "10000": { items: 2, correct: 2 }, "7000": { items: 1, correct: 1 } } } } };
+  [Y.mergeStats(ctlA, ctlB), Y.mergeStats(ctlB, ctlA)].forEach(function (m) {
+    assert.deepStrictEqual([m.flash.control.items, m.flash.control.correct, m.flash.control.firstLook], [4, 3, 3], "control counters take the larger side");
+    assert.deepStrictEqual(m.flash.control.byRung, { "10000": { items: 4, correct: 2 }, "7000": { items: 1, correct: 1 } }, "rung by rung");
+    assert.deepStrictEqual(m.flash.paired, { items: 4, correct: 3, byRung: { "10000": { items: 4, correct: 3 } } }, "paired survives a phone that has none");
+    assert.strictEqual(m.flash.items, 12);
+  });
+  assert.strictEqual(Y.mergeStats(flashA, flashB).flash.control, undefined, "no control data invents none");
+  assert.deepStrictEqual(Y.mergeStats(ctlA, ctlA).flash.control, ctlA.flash.control, "idempotent");
 
   /* Play. Games played and won only ever climb, so two devices take the larger of each; the best
      level beaten takes the higher rung whichever side it came from; `recent` unions by when the
@@ -401,7 +414,7 @@ function run() {
       return Y.pull(cfg, "9XPNE8T5", 0, "1111", offline).then(() => { throw new Error("offline should reject"); },
         (err) => assert.strictEqual(err.code, "offline", "no network is its own quiet failure"));
     })
-    .then(() => console.log("OK sync: household codes typed any way and links, the Yomple roster (deduped), slots and PINs, merge (order-free, idempotent, capped), backup round trip, games and game fights, flash counters and the imagine latch, sm_* and yomple_* rpc shapes, not-found and failure paths"));
+    .then(() => console.log("OK sync: household codes typed any way and links, the Yomple roster (deduped), slots and PINs, merge (order-free, idempotent, capped), backup round trip, games and game fights, flash counters and the imagine latch, sm_* and yomple_* rpc shapes, not-found and failure paths, flash control boards"));
 }
 
 run().catch((err) => { console.error(err); process.exit(1); });

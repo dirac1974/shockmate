@@ -985,6 +985,31 @@
       "Flash finished. I'll be in the fridge.",
       "Over! I need new tricks. Better ones.",
       "Done. Two minutes, and I aged nine thousand years."]),
+    /* The control board, owned up to after he answers. It is a joke on Glitch's side of the table:
+       he made the board up, never the kid got something wrong. */
+    flashJoke: lineTable("smug", "g-flash-joke", [
+      "Ha! That board was nonsense. No real game looks like that.",
+      "Gotcha. I made that one up. Real games have REASONS.",
+      "Surprise! That was a fake board. I scattered it myself.",
+      "Confession: nobody ever played that position. I threw the pieces in the air.",
+      "That board? Total rubbish. I made it in my sleep.",
+      "Ha! Random pieces, random squares. My little joke.",
+      "That was a pretend board. Chess doesn't really look like that.",
+      "Tricked you! That position came out of my sock drawer.",
+      "No game ever looked like that one. I shook the box and poured.",
+      "Fake board! Hard to remember, isn't it? That's the joke.",
+      "I made that board up. Real ones make more sense. Annoyingly."]),
+    flashJokeRight: lineTable("nervous", "g-flash-joke-right", [
+      "You got it anyway? On a NONSENSE board? Suspicious.",
+      "That board was made up, and you STILL found it. Rude.",
+      "I scrambled that one on purpose! How did you do that?",
+      "A fake board, and you remembered it. I need a better joke.",
+      "That was random rubbish. And you got it. Hmph.",
+      "Nobody remembers a made-up board. Nobody! Except you, apparently.",
+      "I invented that board to trick you. It did not trick you.",
+      "Pure nonsense, and you nailed it. I'm checking your pockets.",
+      "My fake board! Found! This is outrageous.",
+      "That board wasn't even real. Fine. Well done. Ugh."]),
     // The blitz hint lands inside the think window, so it is shown and never spoken.
     blitz: lineTable("nervous", "g-fight-blitz", [
       "Too slow! Here, I'll narrow it down. Ugh.",
@@ -1355,8 +1380,88 @@
       used[pick.id] = true;
       items.push({ type: type, id: pick.id, enc: pick, wanted: wanted });
     }
+    const control = o.control ? flashControlSlot(items, o.seed) : null;
     return { items: items, n: items.length, imagine: open, revealMs: flashRevealMs(stats),
-      types: items.map(function (it) { return it.type; }) };
+      types: items.map(function (it) { return it.type; }), control: control };
+  }
+  /* The control board (Chase & Simon). One per Flash drill, never in Camp: the last real item gives
+     up its slot, and a GONE item on a scrambled copy of a real GONE board's piece set goes in at a
+     seeded position 2..5. The drill stays six long and the kid cannot tell which one it was until
+     Glitch owns up. No real GONE item to borrow from, no control that day. Mutates `items`. */
+  const FLASH_CONTROL_MIN = 10;
+  function flashSeed(seed) {
+    const s = String(seed == null ? "" : seed);
+    let n = 2166136261;
+    for (let i = 0; i < s.length; i++) { n ^= s.charCodeAt(i); n = Math.imul(n, 16777619) >>> 0; }
+    n ^= n >>> 16; n = Math.imul(n, 2246822507) >>> 0; n ^= n >>> 13;
+    return n >>> 0;
+  }
+  function flashControlSlot(items, seed) {
+    if (items.length < 3) return null;
+    const keep = items.slice(0, items.length - 1);
+    const gones = keep.map(function (it, i) { return it.type === "gone" ? i : -1; }).filter(function (i) { return i >= 0; });
+    if (!gones.length) return null;
+    const n = flashSeed(seed);
+    const pairAt = gones[n % gones.length];
+    const paired = keep[pairAt];
+    // Slots 2..5, as far as a short drill reaches, and not right beside its paired board if it can
+    // help it: the same piece set twice in a row is a clue.
+    const slots = [];
+    for (let k = 1; k <= Math.min(4, keep.length); k++) slots.push(k);
+    const apart = slots.filter(function (k) { return k !== pairAt && k !== pairAt + 1; });
+    const from = apart.length ? apart : slots;
+    const at = from[(n >>> 8) % from.length];
+    const ctl = { type: "gone", control: true, id: paired.id + "~random", enc: paired.enc, pairedId: paired.id,
+      seed: n, wanted: "gone" };
+    paired.paired = true;
+    items.length = 0;
+    keep.forEach(function (it) { items.push(it); });
+    items.splice(at, 0, ctl);
+    return { at: at, pairedId: paired.id, seed: n };
+  }
+  /* The control's own ledger. Nothing real is touched: not items, not the days, not the run, not the
+     rolling window, not the rung. `control.correct` is found at all; `firstLook` is found on the first
+     tap, which is the number compared with `paired.correct` (also first look, the way recordFlash
+     counts). byRung is keyed by the reveal in ms so a comparison can stay like-for-like later. */
+  function emptyFlashControl() { return { items: 0, correct: 0, firstLook: 0, byRung: {} }; }
+  function emptyFlashPaired() { return { items: 0, correct: 0, byRung: {} }; }
+  function flashControlOf(stats) {
+    const f = (stats && stats.flash) || {};
+    const c = Object.assign(emptyFlashControl(), f.control), p = Object.assign(emptyFlashPaired(), f.paired);
+    c.byRung = Object.assign({}, c.byRung); p.byRung = Object.assign({}, p.byRung);
+    return { control: c, paired: p };
+  }
+  function recordFlashControl(stats, res) {
+    const r = res || {}, next = Object.assign({}, stats || {});
+    const cp = flashControlOf(stats), c = cp.control, p = cp.paired;
+    const rung = String(Math.max(0, Math.round(Number(r.revealMs) || 0)));
+    const first = !!r.correct, found = r.found == null ? first : (!!r.found || first);
+    c.items += 1; if (found) c.correct += 1; if (first) c.firstLook += 1;
+    c.byRung[rung] = Object.assign({ items: 0, correct: 0 }, c.byRung[rung]);
+    c.byRung[rung] = { items: c.byRung[rung].items + 1, correct: c.byRung[rung].correct + (first ? 1 : 0) };
+    if (r.pairedCorrect != null) {
+      const pc = !!r.pairedCorrect;
+      p.items += 1; if (pc) p.correct += 1;
+      p.byRung[rung] = Object.assign({ items: 0, correct: 0 }, p.byRung[rung]);
+      p.byRung[rung] = { items: p.byRung[rung].items + 1, correct: p.byRung[rung].correct + (pc ? 1 : 0) };
+    }
+    next.flash = Object.assign({}, (stats && stats.flash) || {}, { control: c, paired: p });
+    return { stats: next, control: c, paired: p };
+  }
+  function flashRecallGap(stats) {
+    const cp = flashControlOf(stats), c = cp.control, p = cp.paired;
+    return { real: p.items ? p.correct / p.items : 0, random: c.items ? c.firstLook / c.items : 0,
+      n: c.items, pairedN: p.items, enough: c.items >= FLASH_CONTROL_MIN };
+  }
+  // The parent's line on the Flash tile. Percentage points, rounded the way the line shows them.
+  function flashControlText(gap) {
+    const g = gap || { n: 0, enough: false };
+    if (!g.enough) return { line: "Collecting: " + Math.min(g.n || 0, FLASH_CONTROL_MIN) + " of " + FLASH_CONTROL_MIN + " random boards.", note: "" };
+    const real = Math.round(g.real * 100), random = Math.round(g.random * 100), d = real - random;
+    const note = d >= 20 ? "He remembers real positions much better than random ones — the pattern knowledge is building."
+      : d < 10 ? "Real and random about the same so far: he is memorising squares, not patterns yet. That's normal early on."
+      : "A gap is opening.";
+    return { line: "Real boards " + real + "% · random boards " + random + "%", note: note };
   }
 
   /* ---------- progress: what a parent can read off the data ----------
@@ -1510,6 +1615,9 @@
       days: flashDaysDone(stats), best: fl.bestRun || 0, cleanDays: fl.cleanDays || 0,
       unlocked: flashUnlocked(stats), doneToday: flashDoneToday(stats, at),
       revealMs: flashRevealMs(stats), rolling: flashRolling(stats), trend: trend };
+    // Real against random (the control boards). The parent's line only; no kid screen reads it.
+    flash.gap = flashRecallGap(stats);
+    flash.control = flashControlText(flash.gap);
     return {
       rank: agentRank(stats), cards: cards, total: list.length,
       games: games, suggest: suggestLevel(stats), blunderTrend: blunderTrend,
@@ -1541,7 +1649,8 @@
     FLASH_N, FLASH_RUNGS, FLASH_REVEAL_MS, FLASH_FAST_MS, FLASH_WINDOW, FLASH_FAST_AT, FLASH_SLOW_AT, FLASH_CLEAN_DAYS, FLASH_CLEAN_MIN, FLASH_TYPES, flashRung, flashNextRung,
     FLASH_MIX, FLASH_MIX_OPEN, FLASH_TOGETHER, emptyFlash, flashOf, flashRate, flashRolling, flashRevealMs,
     flashDayClean, flashCleanDays, flashUnlocked, flashDoneToday, flashDaysDone, recordFlash, flashOrder, flashPlan,
-    flashTrend, flashNote,
+    flashTrend, flashNote, FLASH_CONTROL_MIN, flashSeed, flashControlSlot, emptyFlashControl, emptyFlashPaired, flashControlOf,
+    recordFlashControl, flashRecallGap, flashControlText,
     tellFree, useTell, bootsFree, useBoots, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;

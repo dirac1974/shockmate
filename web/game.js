@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.26";
+  const BUILD = "v0.27";
   const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
   const X = window.ShockmateFlash;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
@@ -472,6 +472,12 @@
           tile(p.versus.played ? p.versus.played + " \u00b7 " + p.versus.asWhite + "/" + p.versus.asBlack : "\u2014", "Versus \u00b7 W/B") +
           tile(p.bestMoves.length || "\u2014", "Best moves") +
         "</div>" +
+        /* Real boards against random ones (the Flash control, Chase & Simon). The parent's line only:
+           the kid is never told which board was which beyond Glitch owning up to the joke. */
+        (p.flash.items
+          ? '<p class="prog-line flash-gap"><b>Flash, real vs random:</b> ' + esc(p.flash.control.line) +
+            (p.flash.control.note ? " " + esc(p.flash.control.note) : "") + "</p>"
+          : "") +
         (p.bestMove
           ? '<p class="prog-line good"><b>Best moves:</b> ' + p.bestMoves.length + " kept. Latest: " +
             esc(p.bestMove.san) + (p.bestMove.n ? " on move " + p.bestMove.n : "") + ".</p>"
@@ -1193,21 +1199,25 @@
   function flashItems(planItems, style) {
     const out = [];
     (planItems || []).forEach(function (it) {
-      const item = X.makeItem(it.enc, it.type, { style: style });
+      const item = X.itemOf(it, { style: style });
       if (item) { item.enc = it.enc; out.push(item); }
     });
     return out;
   }
   function openFlash(items, style, inCamp) {
     state.flash = { items: items, i: 0, correct: 0, wrong: 0, style: style, inCamp: !!inCamp,
-      revealMs: S.flashRevealMs(state.stats) };
+      revealMs: S.flashRevealMs(state.stats), control: null, paired: null };
     state.encounters = items.map(function (i) { return i.enc; });
     state.index = 0; state.phase = "busy";
   }
   function startFlash() {
     useProfile(state.settings.profile);
     const style = coachStyle(state.active);
-    const plan = S.flashPlan(state.stats, playPool(), S.FLASH_N, { supports: flashSupports(style) });
+    /* One control board a drill (never in Camp): a real GONE board's pieces, scattered. The seed is
+       this kid, today, and how many items he has already answered today, so a replay gets a new one. */
+    const today = S.dateKey(now()), done = (S.flashOf(state.stats).days[today] || { items: 0 }).items;
+    const plan = S.flashPlan(state.stats, playPool(), S.FLASH_N, { supports: flashSupports(style),
+      control: true, seed: activeName() + "|" + today + "|" + done });
     const items = flashItems(plan.items, style);
     if (!items.length) return toast("Flash needs a board or two first. Win a fight.", 2600);
     state.camp = null; state.prep = false; state.day = 0; state.mode = "solo"; state.duel = null;
@@ -1311,7 +1321,8 @@
     }
     g.wrong += 1; g.tried.push(answer);
     if (el) { el.classList.remove("nope"); void el.offsetWidth; el.classList.add("nope"); if (item.kind === "chip") el.disabled = true; }
-    sfx("nope"); glitchMoment("flashWrong");
+    sfx("nope");
+    if (!item.control) glitchMoment("flashWrong");        // the made-up board is his joke, not the kid's miss
     if (g.wrong >= 3) return flashSettle(false);          // the answer on the third; it never holds him longer
     if (g.wrong >= 2) {
       // The hint narrows it: one more square lit, or one more number taken off the chip row.
@@ -1333,13 +1344,34 @@
        board he only found on the third tap is not a board he saw. That is the same rule as a card's
        `tries`, which is why Progress can put Flash accuracy and first-try rate side by side at all. */
     const first = correct && !g.wrong;
-    state.stats = S.recordFlash(state.stats, { type: item.type, correct: first,
-      revealMs: item.reveal ? f.revealMs : 0, t: now() }).stats;
+    if (item.control) {
+      /* The control board touches nothing real: not the counts, not the day, not the run, not the
+         ladder, not Camp. It waits for its paired real board, and the two are written together. */
+      f.control = { correct: first, found: correct };
+    } else {
+      state.stats = S.recordFlash(state.stats, { type: item.type, correct: first,
+        revealMs: item.reveal ? f.revealMs : 0, t: now() }).stats;
+      if (item.paired) f.paired = first;
+      if (first) f.correct += 1; else f.wrong += 1;
+      if (c) { c.flashAsked += 1; c.flashRight += first ? 1 : 0; }
+    }
+    if (f.control && f.paired != null && !f.controlSaved) {
+      f.controlSaved = true;
+      state.stats = S.recordFlashControl(state.stats, { correct: f.control.correct, found: f.control.found,
+        revealMs: f.revealMs, pairedCorrect: f.paired }).stats;
+    }
     save();
-    if (first) f.correct += 1; else f.wrong += 1;
-    if (c) { c.flashAsked += 1; c.flashRight += first ? 1 : 0; }
     $("gate-dots").innerHTML = correct ? '<span class="on"></span>' : "";
-    if (correct) {
+    if (item.control) {
+      // Right or wrong, Glitch owns up. The answer still shows, so the board ends like any other.
+      banner(correct ? "SEEN" : "THERE", "tease");
+      if (!correct) {
+        setPieces(item.position);
+        item.squares.forEach(function (s) { if (sq(s)) sq(s).classList.add("gate-ok"); });
+      }
+      glitchMoment(correct ? "flashJokeRight" : "flashJoke");
+      prompt(correct ? S.coachLine(f.style, { kind: "flashRight" }) : X.answerText(item));
+    } else if (correct) {
       banner("SEEN", "win"); prompt(S.coachLine(f.style, { kind: "flashRight" })); glitchMoment("flashRight");
     } else {
       banner("THERE", "tease");
@@ -1348,11 +1380,12 @@
       prompt(S.coachLine(f.style, { kind: "flashGive" }) + " " + X.answerText(item));
     }
     f.i += 1;
-    setTimeout(function () { if (!stale(nav) && state.flash) flashNext(); }, T(correct ? 900 : 1700));
+    const wait = item.control ? 3000 : correct ? 900 : 1700;   // the joke needs a moment to land
+    setTimeout(function () { if (!stale(nav) && state.flash) flashNext(); }, T(wait));
   }
   function flashEnd() {
     const f = state.flash; if (!f) return;
-    const style = f.style, n = f.items.length, got = f.correct;
+    const style = f.style, n = f.items.filter(function (i) { return !i.control; }).length, got = f.correct;
     flashRingOff(); flashChips(null); clearGhost();
     glitchMoment("flashDone");
     if (f.inCamp) { state.flash = null; return campWarmups(); }
