@@ -1,106 +1,184 @@
 #!/usr/bin/env python3
-"""Phase 0 end-to-end: every fight on a phone viewport, on best, bait+blunder (second try + confession + guided), and good (peek) paths.
-Fails on any console error, page error, or dead end. Run: python3 tests/e2e/phase0.py  (needs: pip install playwright && playwright install chromium)"""
-import asyncio, json, sys
-from pathlib import Path
+"""Phase 0: every hand-authored fight, on a phone viewport, down every path a kid can take.
+
+  - Day 1 from the home screen, on the best move, to the congratulation and on into Day 2.
+  - Every fight that is not `generated`: best; bait -> second try -> blunder -> confession -> guided
+    (a cracked card); and the good-tier move with the peek, where the fight has one.
+  - Ten ladder fights, sampled across the rungs, on the best move.
+Counts come from window.SHOCKMATE_ENCOUNTERS and ShockmateDays, never from a number in this file.
+Run: python tests/e2e/phase0.py
+"""
 from playwright.async_api import async_playwright
-URL = "file://" + str(Path(__file__).resolve().parents[2] / "web" / "index.html") + "?fast=1"
 
-async def phase(pg, want, timeout=15000):
-    await pg.wait_for_function(f"() => window.__shockmate && window.__shockmate.state.phase === '{want}'", timeout=timeout)
+import harness as h
+from harness import move, phase, tap
 
-async def move(pg, uci):
-    await pg.click(f'.sq[data-sq="{uci[:2]}"]'); await pg.click(f'.sq[data-sq="{uci[2:4]}"]')
+LADDER_SAMPLE = 10
 
-async def gate_and_next(pg, enc, expect_next=True):
+
+async def start_fight(pg, fid):
+    await pg.evaluate("""id => {
+        const m = window.__shockmate, s = m.state, e = m.all.find(x => x.id === id);
+        s.mode = 'solo'; s.camp = null; s.prep = false; s.fromGame = false; s.duel = null;
+        s.encounters = [e]; s.index = 0;
+        m.startEncounter();
+    }""", fid)
+    await phase(pg, "think")
+    return await pg.evaluate("window.__shockmate.current()")
+
+
+async def check_gate(pg, enc):
     await phase(pg, "gate")
-    # the gate must show the position the prompt talks about, and every target must hold a piece
     at = enc["whyTargets"].get("at")
-    assert at in ("before", "after"), at
+    assert at in ("before", "after"), (enc["id"], at)
     for s in enc["whyTargets"]["squares"]:
-        assert await pg.eval_on_selector(f'.sq[data-sq="{s}"]', "e => !!e.querySelector('.piece')"), enc["id"] + " gate target " + s + " is empty on screen"
+        assert await pg.eval_on_selector('.sq[data-sq="%s"]' % s, "e => !!e.querySelector('.piece')"), \
+            enc["id"] + " gate target " + s + " is empty on screen"
     if at == "before":
-        assert "REWIND" in (await pg.text_content("#banner")), "a before-gate tells the kid the board stepped back"
-    await pg.click(f'.sq[data-sq="{enc["best"][:2]}"]') if enc["best"][:2] not in enc["whyTargets"]["squares"] else None  # a wrong tap must not break the gate
-    for s in enc["whyTargets"]["squares"]: await pg.click(f'.sq[data-sq="{s}"]')
+        assert "REWIND" in (await pg.text_content("#banner")), enc["id"] + ": a before-gate says the board stepped back"
+    wrong = next((q for q in (enc["best"][:2], enc["bait"][:2], "a1", "h8") if q not in enc["whyTargets"]["squares"]), None)
+    if wrong:
+        await tap(pg, wrong)                     # a wrong tap must not break the gate
+        assert await pg.evaluate("window.__shockmate.state.phase") == "gate", enc["id"]
+    for s in enc["whyTargets"]["squares"]:
+        await tap(pg, s)
     await phase(pg, "card")
+    assert await pg.is_visible("#screen-card.active"), enc["id"]
     assert not await pg.eval_on_selector("#btn-next", "e => e.disabled"), "Next must be enabled after the gate"
-    if expect_next: await pg.click("#btn-next")
 
-async def run():
-    errors = []
-    async with async_playwright() as p:
-        b = await p.chromium.launch(); ctx = await b.new_context(viewport={"width": 390, "height": 844})
-        await ctx.add_init_script('localStorage.setItem("shockmate-v2:settings", JSON.stringify({names:["A","B"],cap:12,sound:false,coords:false,hurry:false,profile:0}))')
-        pg = await ctx.new_page()
-        pg.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
-        pg.on("pageerror", lambda e: errors.append("PAGEERROR " + str(e)))
-        await pg.goto(URL)
-        encs = [e for e in await pg.evaluate("window.SHOCKMATE_ENCOUNTERS") if e["pack"] == "tactics"]
-        assert len(encs) == 12, len(encs)
-        # Path A: Day 1 on the best move, then the congratulation and the step into Day 2
-        assert await pg.is_hidden("#btn-home"), "no way back is offered from the home screen itself"
-        assert "Battle" in (await pg.inner_text("#btn-start")), await pg.inner_text("#btn-start")
-        assert await pg.is_hidden("#step-two") and await pg.is_visible("#btn-start")
-        await pg.click("#seat-2")
-        assert await pg.is_hidden("#btn-start") and await pg.is_hidden("#profiles"), "two-player hides the solo controls"
-        await pg.click("#seat-1"); assert await pg.is_visible("#profiles")
-        # Glitch's bragged rating: his number only ever falls, and never below the floor.
-        assert (await pg.inner_text("#brag-real")) == "1500", "an untested Glitch brags 1500"
-        assert await pg.is_visible('.day-chip[data-day="1"]'), "the home screen offers lesson days"
-        assert await pg.eval_on_selector('.day-chip[data-day="2"]', "e => e.disabled"), "day 2 waits for day 1"
-        await pg.click("#btn-start")
-        day_len = await pg.evaluate("window.__shockmate.state.encounters.length")
-        assert 3 <= day_len <= 4, day_len
-        for i in range(day_len):
-            await phase(pg, "think"); enc = await pg.evaluate("window.__shockmate.current()")
-            await move(pg, enc["best"]); await gate_and_next(pg, enc)
-        await pg.wait_for_selector("#session-end:not([hidden])", timeout=5000)
-        assert not await pg.is_hidden("#btn-home"), "the way back is offered once a fight has started"
-        title = await pg.text_content("#end-title"); assert ("Day 1 done" in title) or ("KNOCKOUT" in title), title
-        summary = await pg.text_content("#session-summary")
-        assert ("Fights won: %d" % day_len) in summary, summary
-        assert "Off Glitch for good" in summary, summary
-        assert "Rank:" in (await pg.text_content("#end-rank")), "the end of a day names his rank"
-        build = await pg.inner_text("#build-tag")
-        assert "fights" in build and "days" in build, build  # the marker a phone can be read from
-        final_rating = int(await pg.evaluate("document.getElementById('brag-real').textContent"))
-        assert 300 <= final_rating < 1500, final_rating
-        # He may carry straight on. The next day is offered, never forced, and never locked.
-        assert not await pg.eval_on_selector("#btn-next-day", "e => e.hidden"), "finishing a day offers the next"
-        assert "Day 2" in (await pg.text_content("#btn-next-day"))
-        assert await pg.eval_on_selector("#end-nudge", "e => e.hidden"), "no nudge on the first day of a sitting"
-        await pg.click("#btn-next-day"); await phase(pg, "think")
-        assert await pg.evaluate("window.__shockmate.state.day") == 2, "the next day actually starts"
-        await pg.reload()
-        # Path B: fresh profile, bait then blunder -> second try -> confession -> guided -> card still earned
-        await pg.click("#prof-1"); await pg.click("#btn-start"); await phase(pg, "think")
+
+async def best_path(pg, fid):
+    enc = await start_fight(pg, fid)
+    await move(pg, enc["best"])
+    await check_gate(pg, enc)
+    title = await pg.text_content("#card-title")
+    assert "BEAT GLITCH" in title or "KNOCKDOWN" in title, (fid, title)
+    assert await pg.evaluate("id => !!window.__shockmate.state.stats.cardsEarned[id]", fid), fid + " card not earned"
+    return enc
+
+
+async def bait_path(pg, fid):
+    await pg.evaluate("id => { delete window.__shockmate.state.stats.cardsEarned[id]; }", fid)
+    enc = await start_fight(pg, fid)
+    await move(pg, enc["bait"])
+    await pg.wait_for_function("() => { const s = window.__shockmate.state; return s.tries === 1 && s.phase === 'think'; }", timeout=20000)
+    assert "SECOND TRY" in (await pg.text_content("#banner")), fid
+    lit = await pg.eval_on_selector_all(".sq.cand", "els => els.map(e => e.dataset.sq)")
+    assert set(enc["candidates"]) <= set(lit), (fid, "second try lights the candidates", enc["candidates"], lit)
+    misses = [u for u, m in enc["moves"].items() if m["tier"] == "blunder"] or \
+             [u for u, m in enc["moves"].items() if m["tier"] not in ("best", "good")]
+    await move(pg, misses[0])
+    await pg.wait_for_function("() => { const s = window.__shockmate.state; return s.guided === true && s.phase === 'think'; }", timeout=20000)
+    assert enc["bestSan"] in (await pg.text_content("#prompt")), fid + ": the confession names the move"
+    await move(pg, enc["bait"])                  # guided mode refuses anything but the best move
+    assert await pg.evaluate("window.__shockmate.state.phase") == "think", fid
+    await move(pg, enc["best"])
+    await check_gate(pg, enc)
+    assert "tries" in (await pg.text_content("#card-title")), fid + ": retry wins are credited"
+    card = await pg.evaluate("id => window.__shockmate.state.stats.cardsEarned[id]", fid)
+    assert card and card.get("clean") is False, (fid, "a confession win is a cracked card", card)
+    assert await pg.is_visible("#card-crack"), fid + ": the crack is said once"
+    assert await pg.eval_on_selector("#why-card", "e => e.classList.contains('cracked')"), fid
+
+
+async def good_path(pg, fid):
+    enc = await pg.evaluate("id => window.__shockmate.all.find(x => x.id === id)", fid)
+    good = next((u for u, m in enc["moves"].items() if m["tier"] == "good"), None)
+    if not good:
+        return False
+    enc = await start_fight(pg, fid)
+    await move(pg, good)
+    await check_gate(pg, enc)
+    assert await pg.is_visible("#btn-peek"), fid + ": peek offered on good tier"
+    card = await pg.evaluate("id => window.__shockmate.state.stats.cardsEarned[id]", fid)
+    assert card and card.get("clean") is not False, (fid, "a clean win repairs the crack", card)
+    await pg.click("#btn-peek")
+    await phase(pg, "card", 20000)
+    return True
+
+
+async def day_one(pg):
+    assert await pg.is_hidden("#btn-home"), "no way back is offered from the home screen itself"
+    assert await pg.is_hidden("#screen-family.active"), "a seeded phone skips 'Set up this phone'"
+    assert await pg.is_visible("#btn-start") and await pg.is_hidden("#step-two")
+    await pg.click("#seat-2")
+    assert await pg.is_hidden("#btn-start") and await pg.is_visible("#step-two"), "two-player swaps the dock"
+    await pg.click("#prof-0")                    # picking a kid is how the phone goes back to one seat
+    assert await pg.is_visible("#btn-start") and await pg.is_hidden("#step-two")
+    assert await pg.is_visible('.day-chip[data-day="1"]'), "the home screen offers lesson days"
+    assert await pg.eval_on_selector('.day-chip[data-day="2"]', "e => e.disabled"), "day 2 waits for day 1"
+    brag0 = int(await pg.text_content("#brag-real"))
+    day_ids = await pg.evaluate("window.ShockmateDays.fightsForDay(window.SHOCKMATE_ENCOUNTERS, 1).map(e => e.id)")
+    await pg.click("#btn-start")
+    await phase(pg, "think")
+    assert sorted(await pg.evaluate("window.__shockmate.state.encounters.map(e => e.id)")) == sorted(day_ids)
+    for _ in day_ids:
+        await phase(pg, "think")
         enc = await pg.evaluate("window.__shockmate.current()")
-        await move(pg, enc["bait"]); await phase(pg, "think")
-        assert await pg.evaluate("window.__shockmate.state.tries") == 1
-        assert await pg.eval_on_selector_all(".sq.cand", "els => els.length") >= 2, "second try lights candidates"
-        blunder = next(u for u, m in enc["moves"].items() if m["tier"] == "blunder")
-        await move(pg, blunder); await phase(pg, "think", 20000)
-        assert await pg.evaluate("window.__shockmate.state.guided") is True
-        await move(pg, enc["bait"])  # guided mode must refuse anything but the best move
-        assert await pg.evaluate("window.__shockmate.state.phase") == "think"
-        await move(pg, enc["best"]); await gate_and_next(pg, enc, expect_next=False)
-        assert "tries" in (await pg.text_content("#card-title")), "retry wins are credited"
-        won = await pg.text_content("#stat-won"); assert won == "1", won
-        # Path C: a good-tier move earns the card and offers the peek
-        await pg.click("#btn-next"); await phase(pg, "think"); enc = await pg.evaluate("window.__shockmate.current()")
-        good = next((u for u, m in enc["moves"].items() if m["tier"] == "good"), None)
-        if good:
-            await move(pg, good); await gate_and_next(pg, enc, expect_next=False)
-            assert not await pg.eval_on_selector("#btn-peek", "e => e.hidden"), "peek offered on good tier"
-            await pg.click("#btn-peek"); await phase(pg, "card")
-        else:
-            await move(pg, enc["best"]); await gate_and_next(pg, enc, expect_next=False)
-        # Collection and settings are reachable and return
-        await pg.click("#btn-collection"); await pg.wait_for_selector("#screen-collection.active"); await pg.click("#btn-back-play")
-        await pg.click("#btn-settings"); await pg.wait_for_selector("#screen-settings.active"); await pg.click("#btn-close-settings")
-        await b.close()
-    assert not errors, errors
-    print("OK e2e phase0: Day 1 best-path to the congratulation and on into Day 2, bait+blunder second try + confession + guided, good-tier peek, no console errors")
+        await move(pg, enc["best"])
+        await check_gate(pg, enc)
+        await pg.click("#btn-next")
+    await pg.wait_for_selector("#session-end:not([hidden])", timeout=10000)
+    assert not await pg.is_hidden("#btn-home"), "the way back is offered once a fight has started"
+    title = await pg.text_content("#end-title")
+    assert "Day 1 done" in title or "KNOCKOUT" in title, title
+    summary = await pg.text_content("#session-summary")
+    assert ("Fights won: %d" % len(day_ids)) in summary, summary
+    assert "Rank:" in (await pg.text_content("#end-rank"))
+    build = await pg.evaluate("document.getElementById('build-tag').textContent")
+    total = await pg.evaluate("window.SHOCKMATE_ENCOUNTERS.length")
+    ndays = await pg.evaluate("window.ShockmateDays.DAYS.length")
+    assert ("%d fights" % total) in build and ("%d days" % ndays) in build, build
+    brag1 = int(await pg.evaluate("document.getElementById('brag-real').textContent"))
+    assert brag1 < brag0, ("Glitch's number only ever falls", brag0, brag1)
+    assert not await pg.eval_on_selector("#btn-next-day", "e => e.hidden"), "finishing a day offers the next"
+    assert "Day 2" in (await pg.text_content("#btn-next-day"))
+    await pg.click("#btn-next-day")
+    await phase(pg, "think")
+    assert await pg.evaluate("window.__shockmate.state.day") == 2, "the next day actually starts"
+    await pg.click("#btn-home")
+    await h.screen(pg, "screen-title")
+    return len(day_ids)
 
-asyncio.run(run())
+
+async def main():
+    httpd, base = h.serve()
+    fake = h.FakeSupabase()
+    try:
+        async with async_playwright() as p:
+            b = await h.launch(p)
+            ph = await h.phone(b, base, fake)
+            pg = ph.page
+            await h.boot(ph)
+            await day_one(pg)
+
+            hand = await pg.evaluate("window.SHOCKMATE_ENCOUNTERS.filter(e => !e.generated).map(e => e.id)")
+            ladder = await pg.evaluate("window.SHOCKMATE_ENCOUNTERS.filter(e => e.generated).map(e => e.id)")
+            assert hand and ladder, (len(hand), len(ladder))
+            goods = 0
+            for fid in hand:
+                await best_path(pg, fid)
+                await bait_path(pg, fid)
+                goods += await good_path(pg, fid)
+            step = max(1, len(ladder) // LADDER_SAMPLE)
+            sample = ladder[::step][:LADDER_SAMPLE]
+            for fid in sample:
+                await best_path(pg, fid)
+
+            # Collection and settings are reachable, behind the coach's keypad, and come back.
+            await pg.click("#btn-home")
+            await pg.click("#btn-collection")
+            await h.screen(pg, "screen-collection")
+            await pg.click("#btn-back-play")
+            await h.unlock_settings(pg)
+            await pg.click("#btn-close-settings")
+            await h.screen(pg, "screen-title")
+            await b.close()
+            ph.check("phase0")
+    finally:
+        httpd.shutdown()
+    print("OK e2e phase0: Day 1 to Day 2 from the map; %d hand-authored fights on best, bait+second try+confession+guided "
+          "(cracked), and %d good-tier peeks; %d ladder fights on best; no console errors" % (len(hand), goods, len(sample)))
+
+
+h.run(main)
