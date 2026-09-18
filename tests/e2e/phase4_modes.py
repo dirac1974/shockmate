@@ -3,7 +3,7 @@
 
   - Camp: three spot-the-attack warm-ups, four fights, two counters from the defence pack, the debrief,
     and the chip reading "done today".
-  - Play vs Sleepy with the real WASM engine: the kid (python-chess, two plies of material) hangs a
+  - Play vs Sleepy with the real WASM engine: the kid (python-chess, three plies of alpha-beta on material) hangs a
     piece on purpose, then plays to Glitch's resignation or to mate; the move he hung comes back as a
     game fight, played through to a card.
   - Versus on one phone: fool's mate between the two kids, two result cards.
@@ -35,7 +35,7 @@ def reply_score(board):
     if board.is_checkmate():
         return 1000
     if board.is_game_over():
-        return -50          # a draw is a loss here: the test wants a win
+        return -50
     worst = None
     for m in board.legal_moves:
         board.push(m)
@@ -45,13 +45,34 @@ def reply_score(board):
     return worst
 
 
+def negamax(board, depth, alpha, beta):
+    """Alpha-beta over material from the side to move; mates beat everything, draws are worth -50."""
+    if board.is_checkmate():
+        return -1000 - depth
+    if board.is_stalemate() or board.is_insufficient_material() or board.is_repetition(2):
+        return -50 if board.turn == chess.WHITE else 50
+    if depth == 0:
+        return material(board) * (1 if board.turn == chess.WHITE else -1)
+    moves = sorted(board.legal_moves, key=lambda m: (not board.is_capture(m), not board.gives_check(m)))
+    best = -10000
+    for m in moves:
+        board.push(m)
+        v = -negamax(board, depth - 1, -beta, -alpha)
+        board.pop()
+        if v > best:
+            best = v
+        alpha = max(alpha, v)
+        if alpha >= beta:
+            break
+    return best
+
+
 def best_move(board, rng):
+    """Three plies of alpha-beta: enough to take what Sleepy leaves and never walk into a short mate."""
     scored = []
     for m in board.legal_moves:
         board.push(m)
-        s = reply_score(board) + (0.3 if board.is_check() else 0) + rng.random() * 0.1
-        if board.can_claim_threefold_repetition() or board.is_repetition(2):
-            s -= 2
+        s = -negamax(board, 2, -10000, 10000) + rng.random() * 0.1
         board.pop()
         scored.append((s, m))
     return max(scored, key=lambda x: x[0])[1]
@@ -136,7 +157,7 @@ async def play_sleepy(b, base, fake):
         if await pg.is_visible("#screen-gameover.active"):
             break
         board = chess.Board(await pg.evaluate("window.__shockmate.state.game.chess.fen()"))
-        m = hanging_move(board) if kid_moves in (2, 4) else None
+        m = hanging_move(board) if kid_moves == 2 else None
         if m:
             hung.append(m.uci())
         else:
