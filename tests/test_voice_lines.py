@@ -2,6 +2,7 @@
 """The extracted voice lines must stay in step with the encounters and with the two questions in
 web/score.js, and generate.py must dry-run without a key. Run: python tests/test_voice_lines.py"""
 import json
+import re
 import pathlib
 import subprocess
 import sys
@@ -71,13 +72,89 @@ def main() -> None:
     for k in ("sys-ko", "sys-second"):
         assert k in by_key, f"{k} is played by game.js and must exist"
 
+    glitch_n = glitch_tables(by_key, files)
+
     # Dry run needs no key and must succeed.
-    dry = subprocess.run([sys.executable, "tools/voice/generate.py", "--dry-run"], cwd=ROOT, capture_output=True, text=True)
+    dry = subprocess.run([sys.executable, "tools/voice/generate.py", "--dry-run"], cwd=ROOT, capture_output=True,
+                         text=True, encoding="utf-8", errors="replace")
     assert dry.returncode == 0, dry.stderr
     assert "Nothing was sent" in dry.stdout
 
     chars = sum(len(l["text"]) for l in lines)
-    print(f"OK voice lines: {len(lines)} lines in step with {len(encs)} encounters ({len(templates)} ladder templates) and PREP_QUESTIONS, {chars} characters, dry run clean")
+    print(f"OK voice lines: {len(lines)} lines in step with {len(encs)} encounters ({len(templates)} ladder templates), "
+          f"PREP_QUESTIONS and {glitch_n} Glitch table lines, {chars} characters, no placeholders, dry run clean")
+
+
+# Parent request (v0.23): enough lines per moment that a sitting does not repeat itself.
+MIN_LINES = {
+    "score.GLITCH_LINES": {"lookRight": 16, "lookWrong": 16, "lookGive": 10, "cracked": 10, "repaired": 10, "pacing": 10,
+                           "campStart": 10, "campWatch": 10, "campSpotted": 10, "campNope": 10},
+    "score.SUGGEST_SAY": {"first": 10, "fresh": 10, "up": 10, "down": 10, "again": 10},
+    "play.SAY": {"start": 10, "capture": 16, "check": 16, "quiet": 16, "gloat": 10, "rage": 10, "nervous": 10,
+                 "resign": 10, "glitchMated": 10, "kidMated": 10, "stalemate": 10, "repetition": 10, "fifty": 10,
+                 "material": 10, "quit": 10},
+    "versus.SAY": {"start": 10, "turn": 16, "blunder": 16, "great": 16, "check": 16, "capture": 16, "quiet": 16,
+                   "won": 10, "lost": 10, "drew": 10, "mate": 10, "stalemate": 10, "repetition": 10, "fifty": 10,
+                   "material": 10, "invite": 10, "waiting": 10, "unfinished": 10, "same": 10, "resign": 10},
+}
+PLACEHOLDER = re.compile(r"\{[a-z]+\}")
+
+
+def node_json(src: str):
+    out = subprocess.run(["node", "-e", src], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=True)
+    return json.loads(out.stdout)
+
+
+def glitch_tables(by_key: dict, files) -> int:
+    """Every line in every Glitch table speaks under a key that lines.json and the manifest both hold,
+    with the same (name-free) words; game.js only ever says Glitch lines out of those tables."""
+    spoken = node_json("console.log(JSON.stringify(require('./tools/voice/glitch_lines.js').all()))")
+    assert len({l["key"] for l in spoken}) == len(spoken), "Glitch table keys must be unique"
+    for l in spoken:
+        k = l["key"]
+        assert not PLACEHOLDER.search(l["text"]) and "{" not in l["text"], f"{k} speaks a runtime placeholder: {l['text']}"
+        assert k in by_key, f"{k} ({l['table']}) missing from lines.json; re-run extract_lines.py"
+        assert by_key[k]["text"] == l["text"], f"{k} drifted from {l['table']}"
+        assert by_key[k]["voice"] == l["voice"], f"{k} should be spoken by {l['voice']}"
+        if k.startswith("g-"):
+            assert l["voice"] == "glitch", f"{k} is a Glitch line"
+        if files is not None:
+            assert files.get(k) == f"{k}.mp3", f"{k} has no audio in web/voice/manifest.json; re-run generate.py"
+    for l in by_key.values():
+        assert not PLACEHOLDER.search(l["text"]), f"{l['key']} speaks a runtime placeholder"
+
+    # Shown lines may carry {name}/{level}/{prev}; only then do they need a separate spoken half.
+    tables = node_json("""
+      const S = require('./web/score.js'), P = require('./web/play.js'), V = require('./web/versus.js');
+      const pick = (o) => Object.fromEntries(Object.entries(o).map(([k, t]) => [k, { lines: t.lines, speak: t.speak, silent: !!t.silent }]));
+      console.log(JSON.stringify({ 'score.GLITCH_LINES': pick(S.GLITCH_LINES), 'score.SUGGEST_SAY': pick(S.SUGGEST_SAY),
+        'play.SAY': pick(P.SAY), 'versus.SAY': pick(V.SAY) }));
+    """)
+    for group, mins in MIN_LINES.items():
+        for kind, n in mins.items():
+            got = len(tables[group][kind]["lines"])
+            assert got >= n, f"{group}.{kind} has {got} lines; the parent asked for at least {n}"
+    for group, kinds in tables.items():
+        for kind, t in kinds.items():
+            assert len(t["speak"]) == len(t["lines"]), f"{group}.{kind} speak/lines out of step"
+            for shown, say in zip(t["lines"], t["speak"]):
+                for ph in PLACEHOLDER.findall(shown):
+                    assert ph in ("{name}", "{level}", "{prev}"), f"{group}.{kind}: unknown placeholder {ph}"
+                if PLACEHOLDER.search(shown) and not t["silent"]:
+                    assert say, f"{group}.{kind}: '{shown}' needs a name-free spoken half"
+
+    # game.js says Glitch lines only out of the tables, so every one of them has a key.
+    game = (ROOT / "web" / "game.js").read_text(encoding="utf-8")
+    assert not re.search(r"glitchSay\(\s*\"", game), "game.js has a literal Glitch line; put it in a table"
+    assert not re.search(r"famLine\(\s*\"[^\"]*\s", game), "game.js has a literal family-card line; put it in a table"
+    assert not re.search(r"toast\(\s*\"Glitch: [^\"]+\"", game), "game.js has a literal Glitch toast; put it in a table"
+    for kind in set(re.findall(r"glitchMoment\(\s*\"(\w+)\"", game)):
+        assert kind in tables["score.GLITCH_LINES"], f"glitchMoment('{kind}') has no table"
+    for kind in set(re.findall(r"playSay\(\s*\"(\w+)\"", game)):
+        assert kind in tables["play.SAY"], f"playSay('{kind}') has no table"
+    for kind in set(re.findall(r"versusSay\(\s*\"(\w+)\"", game)):
+        assert kind in tables["versus.SAY"], f"versusSay('{kind}') has no table"
+    return len(spoken)
 
 
 if __name__ == "__main__":
