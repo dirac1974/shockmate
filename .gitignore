@@ -3,3 +3,6 @@
 __pycache__/
 .venv/
 node_modules/
+
+# Lichess puzzle db lives outside the repo (~/tools/lichess); never commit a copy
+lichess_db_puzzle*

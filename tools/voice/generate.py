@@ -58,6 +58,18 @@ def synth(key: str, voice_id: str, model: str, text: str) -> bytes:
     raise RuntimeError("unreachable")
 
 
+def aliases(files: dict) -> dict:
+    """Ladder fights share audio per template (voiceKeys). The game asks for "<id>-hook" etc., so map
+    each fight's own key onto its template's file; no game code has to know about templates."""
+    data = json.loads((ROOT / "data" / "encounters.v2.json").read_text(encoding="utf-8"))
+    out = {}
+    for e in data if isinstance(data, list) else data.get("encounters", []):
+        for kind, key in (e.get("voiceKeys") or {}).items():
+            if key in files:
+                out[f"{e['id']}-{kind}"] = files[key]
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry-run", action="store_true", help="list what would be generated and the character total; send nothing")
@@ -119,6 +131,7 @@ def main() -> int:
         time.sleep(args.sleep)
 
     files = {l["key"]: f"{l['key']}.mp3" for l in json.loads(LINES.read_text(encoding="utf-8")) if (out / f"{l['key']}.mp3").exists()}
+    files.update(aliases(files))
     manifest = {
         "files": files,
         "voices": voices,

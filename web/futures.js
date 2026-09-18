@@ -317,10 +317,13 @@
     return { plan: plan, events: events, hit: plan.hit, endOcc: occKey(board) };
   }
 
+  // A decoy must read as a different reason. Templated ladder whys can repeat word for word, so skip
+  // any other fight whose why is the same text, not just the same id.
   function decoyWhy(encounters, enc) {
-    const others = (encounters || []).filter((e) => e.id !== enc.id);
+    const others = (encounters || []).filter((e) => e.id !== enc.id && e.why !== enc.why);
     if (!others.length) return "The snack was actually fine.";
-    return others[enc.id.charCodeAt(1) % others.length].why;
+    const seed = (enc.id.charCodeAt(1) || 0) + (enc.id.charCodeAt(2) || 0);
+    return others[seed % others.length].why;
   }
 
   const api = {

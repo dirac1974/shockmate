@@ -62,13 +62,27 @@
     return { id: id, attempts: 0, founds: 0, misses: 0, whys: 0, hits: 0, lastFound: null, lastCorrect: null, lastSan: "", why: "", mastered: false };
   }
   function touchFigurine(next, enc, mastered) {
-    const fig = next.figurines.find((f) => f.id === enc.id);
+    const at = next.figurines.findIndex((f) => f.id === enc.id);
+    const fig = at >= 0 ? (next.figurines[at] = Object.assign({}, next.figurines[at])) : null;   // copy: the recorders are pure
     if (fig) { fig.seen = (fig.seen || 0) + 1; fig.mastered = !!mastered; fig.why = enc.why; }
     else next.figurines.push({ id: enc.id, title: enc.title, room: enc.palaceRoom, mascot: enc.mascot, why: enc.why, mastered: !!mastered, seen: 1 });
   }
   function pushLedger(next, row) {
     next.ledger.push(row);
     if (next.ledger.length > LEDGER_MAX) next.ledger = next.ledger.slice(-LEDGER_MAX);
+  }
+  /* Think time. The clock starts when the think window opens after Glitch's arriving move and stops
+     on the tap that commits the move. A rushed move is a WRONG move made in under four seconds: a fast
+     right move is a kid who saw it, and is never counted against him. Only timed attempts count, so
+     profiles from before the clock existed are not diluted. Both numbers only ever climb. */
+  const RUSH_MS = 4000;
+  function thinkMsOf(attempt) {
+    const v = attempt && attempt.thinkMs;
+    return typeof v === "number" && isFinite(v) && v >= 0 ? Math.round(v) : null;
+  }
+  function rushOf(stats) {
+    const r = Object.assign({ moves: 0, rushed: 0 }, (stats && stats.rush) || {});
+    return { moves: r.moves, rushed: r.rushed, rate: r.moves ? r.rushed / r.moves : 0 };
   }
   function recordMove(stats, enc, attempt) {
     const next = Object.assign({}, stats);
@@ -77,6 +91,13 @@
     next.ledger = (stats.ledger || []).slice();
     const correct = !!attempt.correct;
     const card = Object.assign({}, cardOf(next, enc.id));
+    const thinkMs = thinkMsOf(attempt);
+    if (thinkMs !== null) {
+      const rush = { moves: rushOf(stats).moves + 1, rushed: rushOf(stats).rushed };
+      card.thinkMs = thinkMs;
+      if (!correct && thinkMs < RUSH_MS) { rush.rushed += 1; card.rushed = (card.rushed || 0) + 1; }
+      next.rush = rush;
+    }
     card.attempts += 1; card.lastSan = attempt.san || ""; card.why = enc.why;
     card.title = enc.title; card.motif = enc.motif; card.bestSan = enc.bestSan; card.lastFound = correct;
     if (correct) {
@@ -87,8 +108,32 @@
       if (card.hits >= 2) card.mastered = true;
     } else { card.misses += 1; card.lastCorrect = false; card.mastered = false; scheduleAfterFail(card, attempt.t || 0); next.misses = (next.misses || 0) + 1; next.streak = 0; }
     next.cards[enc.id] = card; touchFigurine(next, enc, card.mastered);
-    pushLedger(next, { id: enc.id, title: enc.title, motif: enc.motif, san: attempt.san || "", bestSan: enc.bestSan, correct: correct, kind: "move", why: enc.why, t: attempt.t || 0 });
-    return { stats: next, card: card, correct: correct };
+    pushLedger(next, { id: enc.id, title: enc.title, motif: enc.motif, san: attempt.san || "", bestSan: enc.bestSan, correct: correct, kind: "move", why: enc.why, t: attempt.t || 0, thinkMs: thinkMs });
+    return { stats: next, card: card, correct: correct, rushed: !correct && thinkMs !== null && thinkMs < RUSH_MS };
+  }
+  /* Cracked cards. A card won on the confession path (Glitch showed the answer, the kid played it) is
+     still earned and still counts everywhere, but it is cracked. A later win on that board without the
+     confession repairs it. That is the ONLY transition: clean never goes back to cracked, and a card
+     from before the field existed reads as clean, so nothing on screen ever goes down. */
+  function earnCard(prev, opts) {
+    const o = opts || {}, had = !!prev;
+    const e = Object.assign({ critical: false, tries: 0 }, prev || {});
+    e.critical = !!(e.critical || o.critical);
+    if (o.tries != null) e.tries = o.tries;
+    if (o.t != null) e.t = o.t;
+    if (o.tier != null) e.tier = o.tier;
+    const wasClean = had && prev.clean !== false;
+    const repaired = had && prev.clean === false && !o.guided;
+    e.clean = wasClean || !o.guided;
+    return { earned: e, cracked: !e.clean && !had, repaired: repaired };
+  }
+  function cardCracked(stats, id) {
+    const e = ((stats && stats.cardsEarned) || {})[id];
+    return !!(e && e.clean === false);
+  }
+  function crackedIds(stats) {
+    const earned = (stats && stats.cardsEarned) || {};
+    return Object.keys(earned).filter(function (id) { return earned[id] && earned[id].clean === false; });
   }
   function recordAttempt(stats, enc, attempt) { return recordMove(stats, enc, attempt); }
   function recordWhy(stats, enc, result) {
@@ -345,6 +390,8 @@
   function strongestMotifs(stats) { return weakestMotifs(stats).slice().reverse(); }
   // `prefer` names packs to reach for straight after the misses, ahead of the weak motifs. Camp passes
   // ["defence"] so a defence pack, once it exists, leads the drill. Left out, the order is unchanged.
+  // Cracked cards lead, ahead of misses: a board he only won because Glitch confessed is the one he
+  // most needs to win clean, and winning it clean is the only way the crack goes.
   function prepFights(stats, encounters, n, avoid, prefer) {
     const want = n || 4, all = encounters || [], skip = {};
     (avoid || []).forEach(function (id) { skip[id] = true; });
@@ -354,6 +401,7 @@
     const picked = [], seen = {};
     const take = function (e) { if (!seen[e.id] && picked.length < want) { seen[e.id] = true; picked.push(e); } };
     const missed = function (e) { const c = cards[e.id]; return !!(c && c.lastCorrect !== true && c.attempts > 0); };
+    all.forEach(function (e) { if (earned[e.id] && earned[e.id].clean === false) take(e); });
     weak.forEach(function (mo) { all.forEach(function (e) { if (e.motif === mo && missed(e)) take(e); }); });
     all.forEach(function (e) { if (missed(e)) take(e); });
     (prefer || []).forEach(function (pk) { list.forEach(function (e) { if (e.pack === pk && !cards[e.id]) take(e); }); });
@@ -380,6 +428,36 @@
     return !!(m && m.san && m.san.indexOf("x") >= 0);
   }
   function prepQuestionsFor(enc) { return offersBait(enc) ? PREP_QUESTIONS.slice() : PREP_QUESTIONS.slice(0, 1); }
+
+  /* Look first. In Tournament week and inside Camp, a fight whose arriving move attacks something opens
+     with one tap on what it attacked, before the think window and before the think clock. Outside
+     those it stays off: normal days are fast by design. The targets come from futures.js
+     (threatTargets), passed in or carried on the fight, so this file never has to read a board. */
+  function lookFirst(settings, inCamp, enc, targets) {
+    const t = targets != null ? targets : enc && (enc.threatTargets || enc.targets);
+    const n = Array.isArray(t) ? t.length : Math.max(0, Number(t) || 0);
+    if (!enc || !n) return false;
+    return !!(inCamp || (settings && settings.tournament));
+  }
+  // The look-first gate never holds him longer than this: one hint after two wrong taps, and on the
+  // third wrong tap it shows him the answer and opens the think window anyway.
+  const LOOK = { hintAfter: 2, giveAfter: 3 };
+
+  /* Glitch reacts to every new moment the way he reacts in a fight: a line and a mood. Three or more
+     variants each, and glitchLine walks them in turn so the same line never plays twice in a row. */
+  const GLITCH_LINES = {
+    lookRight: { mood: "nervous", lines: ["You SAW that? Nobody sees that.", "Who told you to look? Stop looking.", "Ugh. Eyes open. That is cheating.", "Fine, you spotted it. Doesn't mean you'll stop it."] },
+    lookWrong: { mood: "smug", lines: ["Wrong one. Keep guessing.", "Nope. Not even close.", "Ha! Look again. Or don't.", "Warm. No, cold. Freezing."] },
+    lookGive: { mood: "smug", lines: ["There. THAT is what I hit. Too slow.", "I'll show you, since you can't see it.", "My move, my target. Write that down."] },
+    cracked: { mood: "smug", lines: ["Ha! Cracked. That one's still half mine.", "Cracked! I had to SHOW you. Still counts as mine.", "A cracked card. I'm keeping the other half."] },
+    repaired: { mood: "rage", lines: ["You fixed it?! That crack was MINE!", "No no no. Clean? Without my help?!", "My crack! You patched my beautiful crack!"] },
+    pacing: { mood: "taunt", lines: ["Two days already? Your hand is faster than your eyes. Camp instead?", "Keep rushing. I LOVE it when you rush. Or... Camp?", "Speed is my favourite thing about you. Camp first, if you dare."] },
+  };
+  function glitchLine(kind, prev) {
+    const g = GLITCH_LINES[kind]; if (!g) return { text: "", mood: "taunt", index: -1 };
+    const i = typeof prev === "number" && prev >= 0 ? (prev + 1) % g.lines.length : 0;
+    return { text: g.lines[i], mood: g.mood, index: i };
+  }
 
   /* ---------- camp: one tournament-prep session a day, per kid ----------
      Fixed shape, about eight minutes: three "spot the attack" warm-ups (the defend habit), four prep
@@ -484,6 +562,11 @@
       const lead = label ? "The thing that cost you most today was " + label + "." : "You got through every board today without a miss to fix.";
       return lead + " " + (c.principle || PRINCIPLES.counting);
     }
+    if (kind === "lookFirst") return s === "numbers" ? "Look first. Tap what he attacked." : "Look first. What did that move just attack? Tap it.";
+    if (kind === "lookSeen") return "Seen. Now your move.";
+    if (kind === "lookGive") return s === "numbers" ? "That is what he attacked. Now your move." : "That is what his move attacked. Now your move.";
+    if (kind === "cracked") return s === "numbers" ? "Cracked card. Clean win repairs it." : "Card earned, but cracked. Win it clean to repair it.";
+    if (kind === "repaired") return s === "numbers" ? "Repaired. Clean win." : "Repaired. You won it clean this time.";
     if (kind === "say") {
       const q = c.question || PREP_QUESTIONS[0];
       if (s === "numbers") return "Tomorrow, say this every move: “" + q + "”";
@@ -631,12 +714,16 @@
   /* Two to four sentences a parent can act on tonight, in priority order. Nothing here is advice in
      general; every line is a reading of this kid's own numbers. The principle line deliberately uses
      the same words the app says on the card, so the parent and the app coach with one voice. */
+  const RUSH_NOTE = "He is moving before he looks. Slow the hand: write the move on the scoresheet first.";
   function coachNotes(parts) {
     const t = parts.threats, c = parts.camp, ft = parts.firstTry, notes = [];
+    const rush = parts.rush || { moves: 0, rushed: 0, rate: 0 };
     if (!parts.cards && !t.asked && !parts.attempts) {
       return ["Nothing played yet. Sit through one Camp with him: three spot checks, four fights, two counters.",
         "This page fills itself in from that."];
     }
+    // Rushing is what loses him tournament games, so when the clock says so it leads.
+    if (rush.moves > 0 && rush.rate > 0.3) notes.push(RUSH_NOTE);
     if (t.asked >= 4 && t.rate < 0.7) {
       notes.push("He is not looking at what the last move attacked — " + t.found + " of " + t.asked +
         " spotted. Make him answer that out loud before he touches a piece.");
@@ -673,19 +760,26 @@
     const focus = motifs.filter(function (m) { return m.verdict === "focus"; });
     const cards = Object.keys((stats && stats.cardsEarned) || {}).length;
     const attempts = motifs.reduce(function (a, m) { return a + (m.attempts || 0); }, 0);
+    const rush = rushOf(stats);
     return {
       rank: agentRank(stats), cards: cards, total: list.length,
       kos: b.kos, power: b.power, knockedOff: knockedOff(stats), motifs: motifs, byDay: cardsByDay(stats, 14, ts),
       goodAt: motifs.filter(function (m) { return m.verdict === "good"; }).map(function (m) { return m.label; }),
       focusOn: focus.map(function (m) { return m.label; }),
-      threats: threats, camp: camp, firstTry: ft, firstTryRate: ft.rate, thisWeek: week,
-      coachNotes: coachNotes({ threats: threats, camp: camp, firstTry: ft, cards: cards, attempts: attempts,
+      threats: threats, camp: camp, firstTry: ft, firstTryRate: ft.rate, thisWeek: week, rush: rush,
+      cracked: crackedIds(stats).length,
+      coachNotes: coachNotes({ threats: threats, camp: camp, firstTry: ft, cards: cards, attempts: attempts, rush: rush,
         focusMotif: focus.length ? focus[0].motif : null }),
     };
   }
 
+  /* Pacing. Two finished days in one sitting and the home button offers Camp instead, for the rest of
+     that sitting. Soft: the day is still one tap away. Off once Camp is already done today. */
+  function pacingNudge(daysThisSitting, campDone) { return (daysThisSitting || 0) >= 2 && !campDone; }
+
   const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, prepSource, PREP_QUESTIONS, offersBait, prepQuestionsFor, motifVerdict, cardsByDay, progressSummary,
     weekStart, firstTryRate, thisWeek, coachNotes,
+    RUSH_MS, RUSH_NOTE, rushOf, earnCard, cardCracked, crackedIds, lookFirst, LOOK, GLITCH_LINES, glitchLine, pacingNudge,
     normalisePin, validPin, parentOf, parentSet, parentGate,
     PRINCIPLES, principleFor, MOTIF_LABEL, defaultCoachStyle, coachStyleOf, coachLine,
     emptyThreats, threatsOf, recordThreat, threatRate, campOf, campDoneToday, campDaysDone, recordCampDay, campPlan, campDebrief,

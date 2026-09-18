@@ -8,7 +8,7 @@
 
   const LEDGER_MAX = 40, TIERS_MAX = 8, CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   const COUNTERS = ["hits", "misses", "streak", "bestStreak", "won", "criticals"];
-  const CARD_COUNTERS = ["attempts", "founds", "misses", "whys", "hits"];
+  const CARD_COUNTERS = ["attempts", "founds", "misses", "whys", "hits", "rushed"];
 
   function bigger(a, b) { return (Number(a) || 0) >= (Number(b) || 0) ? (Number(a) || 0) : (Number(b) || 0); }
   function later(a, b) { return (Number(a) || 0) >= (Number(b) || 0) ? a : b; }
@@ -44,7 +44,9 @@
       const x = (a.cardsEarned || {})[id], y = (b.cardsEarned || {})[id];
       if (!x || !y) { out.cardsEarned[id] = Object.assign({}, x || y); return; }
       out.cardsEarned[id] = { critical: !!(x.critical || y.critical), tries: bigger(x.tries, y.tries), t: later(x.t, y.t),
-        tier: ((x.t || 0) >= (y.t || 0) ? (x.tier || y.tier) : (y.tier || x.tier)) || undefined };
+        tier: ((x.t || 0) >= (y.t || 0) ? (x.tier || y.tier) : (y.tier || x.tier)) || undefined,
+        // A crack only ever repairs: a clean win on either device wins the merge.
+        clean: x.clean !== false || y.clean !== false };
     });
 
     const seen = {};
@@ -65,6 +67,19 @@
     Object.keys(Object.assign({}, ba.bonus, bb.bonus)).forEach((k) => {
       out.battle.bonus[k] = bigger((ba.bonus || {})[k], (bb.bonus || {})[k]);
     });
+    // Camp, threat spotting and rush are running counts: two devices take the larger of each, so a
+    // sync never loses a morning's practice to whichever device happened to push last.
+    const larger = (x, y, keys) => { const o = Object.assign({}, x, y); keys.forEach((k) => { o[k] = bigger((x || {})[k], (y || {})[k]); }); return o; };
+    if (a.threats || b.threats) out.threats = larger(a.threats, b.threats, ["asked", "found", "wrongTaps"]);
+    if (a.rush || b.rush) out.rush = larger(a.rush, b.rush, ["moves", "rushed"]);
+    if (a.camp || b.camp) {
+      const ca = a.camp || {}, cb = b.camp || {}, days = {};
+      Object.keys(Object.assign({}, ca.days, cb.days)).forEach((k) => { days[k] = bigger((ca.days || {})[k], (cb.days || {})[k]); });
+      const lastA = String(ca.last || ""), lastB = String(cb.last || "");
+      out.camp = Object.assign({}, ca, cb, { days: days, total: Object.keys(days).length,
+        best: bigger(ca.best, cb.best), last: lastA >= lastB ? lastA : lastB,
+        run: lastA === lastB ? bigger(ca.run, cb.run) : (lastA > lastB ? (ca.run || 0) : (cb.run || 0)) });
+    }
     return out;
   }
 

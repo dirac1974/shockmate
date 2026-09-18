@@ -38,20 +38,30 @@ def main() -> None:
     ).stdout)
 
     lines: list[dict] = []
+    seen: dict[str, str] = {}
 
     def add(key: str, voice: str, text) -> None:
         text = (text or "").strip()
-        if text:
-            lines.append({"key": key, "voice": voice, "text": text})
+        if not text:
+            return
+        if key in seen:  # a template shared by several ladder fights: record it once
+            assert seen[key] == text, f"voice key {key} carries two different texts"
+            return
+        seen[key] = text
+        lines.append({"key": key, "voice": voice, "text": text})
 
     for e in encounters:
         g = e.get("glitch") or {}
-        add(f"{e['id']}-hook", "narrator", e.get("hook"))
-        add(f"{e['id']}-why", "narrator", e.get("why"))
-        add(f"{e['id']}-short", "narrator", short.get(e["id"]))
-        add(f"{e['id']}-taunt", "glitch", g.get("taunt"))
-        add(f"{e['id']}-gloat", "glitch", g.get("gloat"))
-        add(f"{e['id']}-rage", "glitch", g.get("rage"))
+        # Hand fights speak under their id. Generated ladder fights speak under their template keys
+        # (voiceKeys, from tools/build_ladder.py), so one recording serves every fight on a template.
+        vk = e.get("voiceKeys") or {}
+        key = lambda kind: vk.get(kind) or f"{e['id']}-{kind}"
+        add(key("hook"), "narrator", e.get("hook"))
+        add(key("why"), "narrator", e.get("why"))
+        add(key("short"), "narrator", e.get("short") if e.get("generated") else short.get(e["id"]))
+        add(key("taunt"), "glitch", g.get("taunt"))
+        add(key("gloat"), "glitch", g.get("gloat"))
+        add(key("rage"), "glitch", g.get("rage"))
     for i, q in enumerate(PREP_QUESTIONS, 1):
         add(f"prep-q{i}", "narrator", q)
     for k, v in SYSTEM.items():

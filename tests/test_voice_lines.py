@@ -28,15 +28,35 @@ def main() -> None:
         ["node", "-e", "console.log(JSON.stringify(require('./web/short-lines.js').SHORT))"],
         cwd=ROOT, capture_output=True, text=True, check=True,
     ).stdout)
+    # Hand fights speak under their id; generated ladder fights under their template keys
+    # (enc.voiceKeys, rooted at enc.voice), shared by every fight on that template.
+    manifest_path = ROOT / "web" / "voice" / "manifest.json"
+    files = json.loads(manifest_path.read_text(encoding="utf-8")).get("files", {}) if manifest_path.exists() else None
+    templates = set()
     for e in encs:
-        for kind, voice in (("hook", "narrator"), ("why", "narrator"), ("taunt", "glitch"), ("gloat", "glitch"), ("rage", "glitch")):
-            k = f"{e['id']}-{kind}"
+        vk = e.get("voiceKeys") or {}
+        if e.get("generated"):
+            assert e.get("voice") and vk, f"{e['id']} is generated but has no voice / voiceKeys"
+            for kind in ("hook", "why", "short"):
+                assert vk[kind] == f"{e['voice']}-{kind}", f"{e['id']} {kind} key must hang off voice {e['voice']}"
+            templates.add(e["voice"])
+        key = lambda kind: vk.get(kind) or f"{e.get('voice') or e['id']}-{kind}"
+        for kind, voice in (("hook", "narrator"), ("why", "narrator"), ("short", "narrator"), ("taunt", "glitch"), ("gloat", "glitch"), ("rage", "glitch")):
+            k = key(kind)
             assert k in by_key, f"{k} missing; re-run extract_lines.py"
             assert by_key[k]["voice"] == voice, f"{k} should be spoken by {voice}"
-        assert by_key[f"{e['id']}-hook"]["text"] == e["hook"].strip(), f"{e['id']} hook drifted from the data"
-        assert by_key[f"{e['id']}-why"]["text"] == e["why"].strip(), f"{e['id']} why drifted from the data"
-        assert f"{e['id']}-short" in by_key, f"{e['id']}-short missing; re-run extract_lines.py"
-        assert by_key[f"{e['id']}-short"]["text"] == short[e["id"]], f"{e['id']} short line drifted from web/short-lines.js"
+        assert by_key[key("hook")]["text"] == e["hook"].strip(), f"{e['id']} hook drifted from the data"
+        assert by_key[key("why")]["text"] == e["why"].strip(), f"{e['id']} why drifted from the data"
+        want_short = e["short"] if e.get("generated") else short[e["id"]]
+        assert by_key[key("short")]["text"] == want_short, f"{e['id']} short line drifted from its source"
+        g = e["glitch"]
+        for kind in ("taunt", "gloat", "rage"):
+            assert by_key[key(kind)]["text"] == g[kind].strip(), f"{e['id']} {kind} drifted from the data"
+        # The game asks the manifest for "<id>-<kind>"; generate.py aliases ladder fights onto their template.
+        if files is not None and e.get("generated"):
+            for kind in ("hook", "why", "short", "taunt", "gloat", "rage"):
+                if vk[kind] in files:
+                    assert files.get(f"{e['id']}-{kind}") == files[vk[kind]], f"manifest lacks the alias {e['id']}-{kind}; re-run generate.py"
 
     # The two questions in the game and in the audio must be the same words.
     out = subprocess.run(
@@ -57,7 +77,7 @@ def main() -> None:
     assert "Nothing was sent" in dry.stdout
 
     chars = sum(len(l["text"]) for l in lines)
-    print(f"OK voice lines: {len(lines)} lines in step with {len(encs)} encounters and PREP_QUESTIONS, {chars} characters, dry run clean")
+    print(f"OK voice lines: {len(lines)} lines in step with {len(encs)} encounters ({len(templates)} ladder templates) and PREP_QUESTIONS, {chars} characters, dry run clean")
 
 
 if __name__ == "__main__":

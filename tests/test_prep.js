@@ -7,6 +7,9 @@ const S = require("../web/score.js");
 
 const raw = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "encounters.v2.json"), "utf8"));
 const ALL = Array.isArray(raw) ? raw : (raw.encounters || []);
+// These scenarios reason about the hand-authored set ("the two pin fights"); the ladder is
+// generated and covered by its own suites, so it stays out of the fixtures here.
+const POOL = ALL; ALL.splice(0, ALL.length, ...POOL.filter(function (e) { return !e.generated; }));
 const byId = {}; ALL.forEach(function (e) { byId[e.id] = e; });
 
 // A card as recordMove writes it. Cards carry their motif, so prep needs no join.
@@ -97,6 +100,29 @@ function run() {
   assert.ok(offered > 5 && offered < ALL.length, "some fights offer bait and some do not: " + offered);
   assert.strictEqual(S.prepQuestionsFor(null).length, 1, "null-safe");
 
+  /* cracked cards lead, ahead of misses, and a clean card never does */
+  const crackSt = statsOf([card("02", 3, 1, false), card("05", 4, 1, false)], ["07", "11", "01"]);
+  crackSt.cardsEarned["11"].clean = false;   // won only through the confession
+  crackSt.cardsEarned["07"].clean = true;
+  const cp = S.prepFights(crackSt, ALL, 4);
+  assert.strictEqual(cp[0].id, "11", "the cracked card comes first: " + cp.map(function (e) { return e.id; }));
+  assert.strictEqual(cp[1].id, "05", "then the misses, weakest motif first");
+  assert.strictEqual(cp[2].id, "02");
+  assert.ok(!cp.some(function (e) { return e.id === "07" || e.id === "01"; }), "clean cards are not drilled while cracks and misses remain");
+  // even on the day he is on: a crack is a thing to fix, like a miss
+  const day1c = statsOf([], ["01"]); day1c.cardsEarned["01"].clean = false;
+  assert.strictEqual(S.prepFights(day1c, ALL, 4, D.dayByNumber(1).ids)[0].id, "01", "a crack leads even on today's day");
+  // more cracks than slots: all cracks, in data order, no misses squeezed in
+  const many = statsOf([card("02", 3, 1, false)], ["01", "03", "04", "05", "06"]);
+  ["01", "03", "04", "05", "06"].forEach(function (id) { many.cardsEarned[id].clean = false; });
+  const mp4 = S.prepFights(many, ALL, 4);
+  assert.ok(mp4.every(function (e) { return many.cardsEarned[e.id] && many.cardsEarned[e.id].clean === false; }));
+  // a profile with no clean field anywhere (every card before v0.19) behaves exactly as before
+  assert.deepStrictEqual(S.prepFights(st, ALL, 4).map(function (e) { return e.id; }), prep.map(function (e) { return e.id; }));
+  // the ladder, when present, changes nothing about the order: generated fights are just more fights
+  const ladder = ALL.concat([Object.assign({}, byId["02"], { id: "L1", pack: "ladder", generated: true, rating: 700 })]);
+  assert.strictEqual(S.prepFights(crackSt, ladder, 4)[0].id, "11");
+
   /* n is respected */
   assert.strictEqual(S.prepFights(st, ALL, 2).length, 2);
 
@@ -104,7 +130,7 @@ function run() {
   assert.doesNotThrow(function () { S.motifStats(null); S.weakestMotifs(null); S.prepFights(null, ALL, 4); });
   assert.strictEqual(S.prepFights(null, ALL, 4).length, 4);
 
-  console.log("OK prep: motif stats aggregate and rank, prep picks misses in weakest motifs first then unseen, fresh and perfect profiles still get a day, null-safe");
+  console.log("OK prep: motif stats aggregate and rank, prep picks misses in weakest motifs first then unseen, fresh and perfect profiles still get a day, cracked cards first, null-safe");
 }
 
 run();
