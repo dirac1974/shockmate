@@ -194,30 +194,42 @@ function plan() {
 /* ---------- the adaptive reveal ---------- */
 function reveal() {
   let st = S.emptyStats();
-  assert.strictEqual(S.flashRevealMs(st), 5000, "a new kid gets the full five seconds");
+  assert.deepStrictEqual(S.FLASH_RUNGS, [10000, 7000, 5000, 3000], "ten seconds down to three, four rungs");
+  assert.strictEqual(S.flashRevealMs(st), 10000, "a new kid gets the full ten seconds");
+  const rec = function (s, ok) { return S.recordFlash(s, { type: "recall", correct: ok, revealMs: S.flashRevealMs(s), t: T0 }).stats; };
   // Eleven right is not yet a window.
-  for (let i = 0; i < 11; i++) st = S.recordFlash(st, { type: "recall", correct: true, revealMs: 5000, t: T0 }).stats;
+  for (let i = 0; i < 11; i++) st = rec(st, true);
   assert.strictEqual(S.flashRolling(st).n, 11);
-  assert.strictEqual(S.flashRevealMs(st), 5000, "eleven items is not the twelve the rule asks for");
-  st = S.recordFlash(st, { type: "gone", correct: true, revealMs: 5000, t: T0 }).stats;
-  assert.strictEqual(S.flashRevealMs(st), 3000, "twelve at 100 percent shortens the window");
-  // Three misses in the window drops it to 9/12 = 75 percent, under the bar, and it goes back up.
-  for (let i = 0; i < 3; i++) st = S.recordFlash(st, { type: "recall", correct: false, revealMs: 3000, t: T0 }).stats;
-  assert.strictEqual(S.flashRolling(st).n, 12, "the window never grows past twelve");
-  assert.ok(Math.abs(S.flashRolling(st).rate - 0.75) < 1e-9);
-  assert.strictEqual(S.flashRevealMs(st), 5000, "under the bar, he gets his five seconds back");
-  // Exactly the bar is the bar: 10 of 12 is over it, 9 of 12 is not.
+  assert.strictEqual(S.flashRevealMs(st), 10000, "eleven items is not the twelve the rule asks for");
+  st = rec(st, true);
+  assert.strictEqual(S.flashRevealMs(st), 7000, "twelve at 100 percent steps down one rung, not to the floor");
+  assert.strictEqual(S.flashRolling(st).n, 0, "a step empties the window, so the next decision is made at the new speed");
+  // A weak window at 7 s steps back up; a middling one holds and keeps rolling.
+  for (let i = 0; i < 12; i++) st = rec(st, i < 5);
+  assert.strictEqual(S.flashRevealMs(st), 10000, "5 of 12 is under half: back up a rung");
+  for (let i = 0; i < 12; i++) st = rec(st, i < 8);
+  assert.strictEqual(S.flashRevealMs(st), 10000, "8 of 12 is between the bars: hold");
+  assert.strictEqual(S.flashRolling(st).n, 12, "a held rung keeps its window rolling");
+  // Down the whole ladder on strong windows, then the floor holds.
+  st = S.emptyStats();
+  [7000, 5000, 3000, 3000].forEach(function (ms) {
+    for (let i = 0; i < 12; i++) st = rec(st, i < 10);
+    assert.strictEqual(S.flashRevealMs(st), ms, "10 of 12 steps down to " + ms);
+  });
+  assert.ok(S.FLASH_FAST_MS >= 3000, "the window never goes below three seconds");
+  // Exactly the bar is the bar: 10 of 12 steps down, 9 of 12 holds; there is no rung above ten seconds.
   const window12 = function (nRight) {
     let s = S.emptyStats();
-    for (let i = 0; i < 12; i++) s = S.recordFlash(s, { type: "recall", correct: i < nRight, revealMs: 5000, t: T0 }).stats;
+    for (let i = 0; i < 12; i++) s = rec(s, i < nRight);
     return S.flashRevealMs(s);
   };
-  assert.strictEqual(window12(10), 3000, "10 of 12 is over eighty percent");
-  assert.strictEqual(window12(9), 5000, "9 of 12 is not");
-  assert.strictEqual(window12(12), 3000);
-  // The floor holds whatever the rule says.
-  assert.ok(S.FLASH_FAST_MS >= 3000, "the window never goes below three seconds");
-  [0, 6, 12].forEach(function (n) { assert.ok(window12(n) >= 3000); });
+  assert.strictEqual(window12(10), 7000, "10 of 12 is over eighty percent");
+  assert.strictEqual(window12(9), 10000, "9 of 12 is not");
+  assert.strictEqual(window12(0), 10000, "there is no rung above ten seconds");
+  // Old profiles without a rung read as rung 0; a nonsense rung is clamped.
+  assert.strictEqual(S.flashRevealMs({ flash: { items: 3 } }), 10000);
+  assert.strictEqual(S.flashRevealMs({ flash: { rung: 99 } }), 3000);
+  assert.strictEqual(S.flashRevealMs({ flash: { rung: -4 } }), 10000);
 }
 
 /* ---------- the counters, and the rung that unlocks ---------- */

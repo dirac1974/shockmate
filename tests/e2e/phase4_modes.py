@@ -117,7 +117,7 @@ async def flash(b, base, fake):
     assert len(set(plan["ids"])) == 6, ("no board is asked about twice", plan)
     assert "imagine" not in plan["types"], ("the hard rung is shut on a fresh profile", plan)
     assert plan["types"].count("gone") >= 2, plan
-    assert plan["reveal"] == 5000, plan
+    assert plan["reveal"] == 10000, plan   # a new kid starts at the top of the ladder
     # The reveal window really is a window: the board goes up, then it goes away.
     await pg.wait_for_function("() => Object.keys(window.__shockmate.state.pieces).length > 4")
     assert not await pg.is_hidden("#flash-ring"), "the ring counts the reveal down without a digit"

@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.24";
+  const BUILD = "v0.25";
   const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
   const X = window.ShockmateFlash;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
@@ -3112,7 +3112,7 @@
       if (nxt) { setDay(nxt); save(); startSession(state.mode === "coop" ? "coop" : "solo"); }
       else goHome();
     };
-    // Tap to skip an animation — but never the flash reveal: the five seconds ARE the exercise.
+    // Tap to skip an animation — but never the flash reveal: the reveal IS the exercise.
     document.querySelector(".board-wrap").addEventListener("click", function () { if (state.phase === "busy" && !flashOn()) skipAhead(); }, true);
   }
   function selfTest() {

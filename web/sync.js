@@ -97,7 +97,7 @@
       out.flash = Object.assign({}, fa, fb, {
         items: bigger(fa.items, fb.items), correct: bigger(fa.correct, fb.correct), fast: bigger(fa.fast, fb.fast),
         run: bigger(fa.run, fb.run), bestRun: bigger(fa.bestRun, fb.bestRun), cleanDays: bigger(fa.cleanDays, fb.cleanDays),
-        imagineOpen: !!(fa.imagineOpen || fb.imagineOpen),
+        imagineOpen: !!(fa.imagineOpen || fb.imagineOpen), rung: bigger(fa.rung, fb.rung),   // the ladder is skill: the higher rung wins
         days: days, byType: byType, last12: (lead.last12 || []).slice(-FLASH_WINDOW),
       });
     }
