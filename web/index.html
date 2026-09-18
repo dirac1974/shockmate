@@ -16,76 +16,78 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body data-screen="screen-title">
   <div id="app">
     <header class="topbar">
       <div class="brand"><span class="boom">SHOCK</span><span class="mate">MATE</span></div>
-      <div class="hud">
-        <div class="stat"><span class="lbl">Won</span><span id="stat-won">0</span></div>
-        <div class="stat"><span class="lbl">Criticals</span><span id="stat-crit">0</span></div>
-        <div class="stat"><span class="lbl">Cards</span><span id="stat-cards">0</span></div>
-        <div class="stat"><span class="lbl">Rank</span><span id="stat-rank">Rookie</span></div>
+      <div class="hud" hidden>
+        <span id="stat-won">0</span><span id="stat-crit">0</span><span id="stat-rank">Rookie</span>
       </div>
-      <button id="btn-home" class="ghost" hidden>Home</button>
-      <button id="btn-collection" class="ghost">Cards</button>
-      <button id="btn-settings" class="ghost">Settings</button>
-      <div class="path" id="path"></div>
+      <nav class="tools">
+        <button id="btn-home" class="token" hidden aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg></button>
+        <button id="btn-collection" class="token" aria-label="Cards"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3.5" width="12" height="16" rx="2" transform="rotate(8 13 11.5)"/><rect x="4" y="5" width="12" height="16" rx="2"/></svg><b class="badge" id="stat-cards">0</b></button>
+        <button id="btn-settings" class="token" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button>
+      </nav>
     </header>
     <section id="screen-title" class="screen active">
-      <h1>Beat Glitch.</h1>
-      <p class="lead">Glitch dangles bait on every board. Find the move he is scared of.</p>
-      <p class="white-note">You are always White. Glitch is always Black. You always move first.</p>
-      <div class="brag" id="brag">
-        <div class="brag-row"><b>GLITCH'S RATING</b><span id="brag-real">2400</span></div>
-        <div class="brag-bar"><i id="brag-fill"></i></div>
-        <p class="hint" id="brag-line">Glitch says he is 2400. He has not been tested yet.</p>
-      </div>
-      <div class="brag crony" id="crony">
-        <div class="brag-row"><b id="crony-name">TODAY'S CRONY</b><span id="crony-real">800</span></div>
-        <div class="brag-bar"><i id="crony-fill"></i></div>
-        <p class="hint" id="crony-line"></p>
-      </div>
-      <div class="agent" id="agent">
-        <div class="agent-row"><b>YOUR AGENT</b><span id="agent-rank">Rookie</span></div>
-        <p class="hint" id="agent-next"></p>
-        <div class="gear" id="gear-slots"></div>
+      <div class="players" id="profiles">
+        <button id="prof-0" class="chip prof">Player 1</button>
+        <button id="prof-1" class="chip prof">Player 2</button>
+        <button id="seat-2" class="chip seat">Both</button>
+        <button id="seat-1" class="chip seat" hidden>Just me</button>
+        <button id="btn-names" class="link">names</button>
       </div>
 
-      <p class="step-label">Who is here?</p>
-      <div class="actions" id="seats">
-        <button id="seat-1" class="ghost seat active">Just me</button>
-        <button id="seat-2" class="ghost seat">Two of us</button>
-      </div>
-
-      <div id="step-solo">
-        <p class="step-label">Playing as</p>
-        <div class="actions" id="profiles">
-          <button id="prof-0" class="ghost prof">Player 1</button>
-          <button id="prof-1" class="ghost prof">Player 2</button>
+      <div class="arena">
+        <div class="side you">
+          <div class="avatar" id="you-avatar">P</div>
+          <b class="who" id="you-name">Player 1</b>
+          <span class="ribbon" id="agent-rank">Rookie</span>
+          <span class="tally"><span id="you-wins">0</span> wins</span>
         </div>
-        <p class="hint">Your cards are saved under this name — it is not your colour.
-          <button id="btn-names" class="link">Change names</button>
-        </p>
-      </div>
-
-      <div id="step-two" hidden>
-        <p class="step-label">Two of us, one phone</p>
-        <div class="actions">
-          <button id="btn-coop" class="ghost">Team up vs Glitch</button>
-          <button id="btn-duel" class="ghost">Duel</button>
+        <div class="vs" aria-hidden="true">VS</div>
+        <div class="side foe" id="crony">
+          <div class="foe-art" id="home-glitch"></div>
+          <b class="who" id="crony-name">STATIC</b>
+          <div class="hp"><i id="crony-fill"></i></div>
+          <span class="hp-n"><span id="crony-real">800</span></span>
         </div>
-        <p class="hint" id="two-hint">Take turns on this phone. You both play White.</p>
+      </div>
+      <p class="taunt" id="crony-line"></p>
+
+      <div class="map-wrap">
+        <div class="days map" id="day-strip"></div>
+      </div>
+      <p class="blurb" id="day-blurb"></p>
+
+      <div class="dock">
+        <button id="btn-start" class="cta big">Fight</button>
+        <div id="step-two" hidden>
+          <div class="duo">
+            <button id="btn-coop" class="cta">Team up</button>
+            <button id="btn-duel" class="chip">Duel</button>
+          </div>
+          <p class="hint" id="two-hint">Take turns on this phone. You both play White.</p>
+        </div>
+        <div id="step-solo" hidden></div>
       </div>
 
-      <p class="step-label">Battle</p>
-      <div class="actions" id="packs">
-        <div class="days" id="day-strip"></div>
-        <p class="hint" id="day-blurb"></p>
-      </div>
-
-      <button id="btn-start" class="cta">Start the battle</button>
-      <p class="hint" id="title-due">Sessions are short on purpose.</p>
-      <p class="hint build" id="build-tag"></p>
+      <details class="drawer">
+        <summary>Loadout and Glitch's record</summary>
+        <div class="agent" id="agent">
+          <div class="agent-row"><b>YOUR GEAR</b></div>
+          <p class="hint" id="agent-next"></p>
+          <div class="gear" id="gear-slots"></div>
+        </div>
+        <div class="brag" id="brag">
+          <div class="brag-row"><b>GLITCH, ALL TIME</b><span id="brag-real">2400</span></div>
+          <div class="brag-bar"><i id="brag-fill"></i></div>
+          <p class="hint" id="brag-line">Glitch says he is 2400. He has not been tested yet.</p>
+        </div>
+        <p class="hint">You are always White. Glitch is always Black. You always move first.</p>
+        <p class="hint" id="title-due">Sessions are short on purpose.</p>
+        <p class="hint build" id="build-tag"></p>
+      </details>
     </section>
     <section id="screen-play" class="screen">
       <div class="glitch-row">
@@ -101,6 +103,7 @@
         <div class="rage"><b>GLITCH RAGE</b><i><span id="rage-fill"></span></i></div>
       </div>
       <div class="blitz" id="blitz" hidden><i><span id="blitz-fill"></span></i></div>
+      <div class="path" id="path"></div>
       <div class="banner" id="banner" hidden></div>
       <div class="board-wrap">
         <div id="board" class="board" aria-label="Chess board"></div>
@@ -110,36 +113,38 @@
         <div class="tl you"><b>YOU</b><i><span></span></i></div>
         <div class="tl him"><b>GLITCH</b><i><span></span></i></div>
       </div>
-      <p id="turn-note">You are White.</p>
       <div class="prompt" id="prompt">Your move.</div>
+      <p id="turn-note" hidden>You are White.</p>
       <div class="ritual" id="ritual" hidden></div>
       <div class="gate-dots" id="gate-dots"></div>
       <div class="actions">
         <div class="powers" id="powers">
           <div class="pips" id="power-pips" aria-label="Power"></div>
-          <button id="btn-hint" class="ghost pw" data-ability="tell">Glitch's Tell <small>1</small></button>
-          <button class="ghost pw" data-ability="double">Double Strike <small>2</small></button>
-          <button class="ghost pw" data-ability="shield">Time Shield <small>1</small></button>
-          <button class="ghost pw" data-ability="overcharge">Overcharge <small>3</small></button>
+          <button id="btn-hint" class="pw" data-ability="tell"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><span>Tell</span><small>1</small></button>
+          <button class="pw" data-ability="double"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20 14 10M14 10l1-5 5-1-1 5-5 1"/><path d="M10 20l6-6"/></svg><span>Double</span><small>2</small></button>
+          <button class="pw" data-ability="shield"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.6 7.5 9 4.3-1.4 7.5-4.5 7.5-9V6Z"/></svg><span>Shield</span><small>1</small></button>
+          <button class="pw" data-ability="overcharge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 2.5 5 13.5h6l-1.5 8 8.5-11h-6Z"/></svg><span>Charge</span><small>3</small></button>
         </div>
-        <button id="btn-skip" class="ghost">Skip</button>
+        <button id="btn-skip" class="link skip">skip this board</button>
       </div>
     </section>
     <section id="screen-card" class="screen">
       <div class="future-title" id="card-title">You beat Glitch</div>
-      <p class="spoils" id="card-spoils" hidden></p>
       <div class="why-card" id="why-card">
-        <div class="mascot" id="why-mascot">TWO HEADS</div>
+        <div class="card-head"><span class="mascot" id="why-mascot">TWO HEADS</span><span class="card-name" id="card-spoils" hidden></span></div>
+        <div class="card-art" id="card-art"></div>
         <p id="why-text"></p>
         <p class="why-long" id="why-long"></p>
-        <p class="why-long" id="glitch-line-2"></p>
         <p class="rank-line" id="card-rank" hidden></p>
+      </div>
+      <div class="card-foot">
+        <p class="said" id="glitch-line-2"></p>
         <p class="brag-tick" id="brag-tick" hidden></p>
       </div>
-      <div class="actions">
-        <button id="btn-next" class="cta">Next fight</button>
-        <button id="btn-peek" class="ghost" hidden>Show the biggest one</button>
-        <button id="btn-replay" class="ghost">Replay both futures</button>
+      <button id="btn-next" class="cta big">Next fight</button>
+      <div class="actions quiet">
+        <button id="btn-peek" class="chip" hidden>Show the biggest one</button>
+        <button id="btn-replay" class="chip">Replay both futures</button>
       </div>
     </section>
     <section id="screen-collection" class="screen">
