@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.7";
+  const BUILD = "v0.8";
   const Y = window.ShockmateSync;
   const GLYPH = { wr: "♖", wn: "♘", wb: "♗", wq: "♕", wk: "♔", wp: "♙", br: "♜", bn: "♞", bb: "♝", bq: "♛", bk: "♚", bp: "♟" };
   const FAST = /[?&]fast=1/.test(location.search);
@@ -27,7 +27,7 @@
     session: { count: 0, reviews: 0, won: 0, crits: 0, rage: 0 }, waiters: new Set(),
     settings: { names: ["Player 1", "Player 2"], cap: 6, sound: true, coords: false, hurry: false, profile: 0, blitz: [false, false], pack: "tactics", day: 1, seats: 1, syncedAt: 0,
       sync: { url: "", anonKey: "", code: "", players: [{ username: "", pin: "" }, { username: "", pin: "" }] } },
-    mode: "solo", pack: "tactics", active: 0, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
+    mode: "solo", pack: "tactics", active: 0, nav: 0, profiles: [null, null], duel: null, blitzTimer: null, speed: 1,
     stats: null,
   };
   const RAGE_TARGET = 4;
@@ -182,7 +182,12 @@
   function now() { return Date.now(); }
 
   /* ---------- ui helpers ---------- */
-  function show(id) { document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active")); $(id).classList.add("active"); }
+  function show(id) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+    $(id).classList.add("active");
+    if ($("btn-home")) $("btn-home").hidden = id === "screen-title";
+  }
+  function stale(nav) { return nav !== state.nav; }
   function toast(msg, ms) { const t = $("toast"); t.hidden = false; t.textContent = msg; clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, ms || 1600); }
   function banner(text, tone) {
     const b = $("banner"); b.className = "banner" + (tone ? " " + tone : ""); b.textContent = text || ""; b.hidden = !text;
@@ -236,6 +241,7 @@
     $("crony-line").textContent = c.cardsToday
       ? c.name + " claimed " + c.claimed + " this morning. You have taken " + c.drop + " off him today."
       : c.name + " is standing in for Glitch today. He says he is " + c.claimed + ".";
+    if ($("btn-start")) $("btn-start").textContent = c.ko ? "Fight " + c.name + " again" : "Battle " + c.name;
   }
   function renderBoss() {
     const box = $("boss"); if (!box) return;
@@ -432,6 +438,7 @@
     else await missFlow(enc, move, tier, start, step.pieces);
   }
   async function hitFlow(enc, move, tier, afterMap) {
+    const nav = state.nav;
     banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage");
     state.stats = S.recordAttempt(state.stats, enc, { correct: true, san: move.san, t: now(), hurry: state.settings.hurry }).stats;
     (state.stats.tiers = state.stats.tiers || []).push(tier); if (state.stats.tiers.length > 8) state.stats.tiers.shift();
@@ -477,10 +484,12 @@
     state.stats.won = (state.stats.won || 0) + 1; state.session.won += 1;
     if (state.mode !== "solo") { state.session.rage = Math.min(RAGE_TARGET, state.session.rage + 1); renderTeam(); }
     save(); hud();
+    if (stale(nav)) return;                                  // he left; his card is saved, the screen stays home
     if (state.mode === "duel") return duelSeatDone(enc, true);
     showCard(enc, tier, crit);
   }
   async function missFlow(enc, move, tier, start, afterMap) {
+    const nav = state.nav;
     const missRes = S.resolveMiss(state.stats.battle); state.stats.battle = missRes.battle;
     if (missRes.shielded) { banner("TIME SHIELD", "tease"); glitchSay("Hey! Where did my gloat go?", "nervous"); renderPowers(); }
     else { banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug"); }
@@ -489,6 +498,7 @@
     if (move.uci === enc.tempting && enc.temptingLineUci.length > 1) await playLine(enc.temptingLineUci.slice(1), afterMap);
     else await sleep(600);
     await sleep(500);
+    if (stale(nav)) return;
     if (state.mode === "duel") return duelSeatDone(enc, false);
     state.tries += 1;
     if (state.tries === 1) {
@@ -669,7 +679,12 @@
     }
     state.index = pickNext(-1); startEncounter();
   }
-  function goHome() { state.mode = "solo"; state.duel = null; state.phase = "home"; stopBlitz(); useProfile(state.settings.profile); renderTeam(); renderPath(); hud(); show("screen-title"); }
+  function goHome() {
+    // Leave at any moment. Cards already earned are saved; only the unfinished fight is dropped.
+    state.nav += 1; skipAhead();
+    if (state.gate) { const r = state.gate.resolve; state.gate = null; r(); }   // release a why-gate waiting on taps
+    document.querySelectorAll(".modal").forEach((m) => { m.hidden = true; });
+    state.mode = "solo"; state.duel = null; state.phase = "home"; stopBlitz(); useProfile(state.settings.profile); renderTeam(); renderPath(); hud(); show("screen-title"); }
 
   function renderMini(enc) {
     const host = $("next-mini"); if (!host) return;
@@ -749,6 +764,7 @@
       banner("YOUR FUTURE", "win"); glitchSay(enc.glitch.rage, "rage"); prompt(enc.bestSan + " — the move Glitch fears."); clearMarks();
       await playLine(enc.bestLineUci, start); finisher(enc); await sleep(900); showCard(enc, state.lastTier || "best", false);
     };
+    $("btn-home").onclick = goHome;
     $("btn-collection").onclick = function () { renderCollection(); show("screen-collection"); };
     $("btn-back-play").onclick = function () { show(state.phase === "card" ? "screen-card" : state.phase === "duel" ? "screen-duel" : state.phase === "think" || state.phase === "gate" ? "screen-play" : "screen-title"); };
     $("btn-settings").onclick = function () { renderSettings(); show("screen-settings"); };

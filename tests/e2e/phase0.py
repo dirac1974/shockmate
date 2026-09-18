@@ -39,6 +39,8 @@ async def run():
         encs = [e for e in await pg.evaluate("window.SHOCKMATE_ENCOUNTERS") if e["pack"] == "tactics"]
         assert len(encs) == 12, len(encs)
         # Path A: Day 1 on the best move, then the congratulation and the step into Day 2
+        assert await pg.is_hidden("#btn-home"), "no way back is offered from the home screen itself"
+        assert "Battle" in (await pg.inner_text("#btn-start")), await pg.inner_text("#btn-start")
         assert await pg.is_hidden("#step-two") and await pg.is_visible("#btn-start")
         await pg.click("#seat-2")
         assert await pg.is_hidden("#btn-start") and await pg.is_hidden("#profiles"), "two-player hides the solo controls"
@@ -54,6 +56,7 @@ async def run():
             await phase(pg, "think"); enc = await pg.evaluate("window.__shockmate.current()")
             await move(pg, enc["best"]); await gate_and_next(pg, enc)
         await pg.wait_for_selector("#session-end:not([hidden])", timeout=5000)
+        assert not await pg.is_hidden("#btn-home"), "the way back is offered once a fight has started"
         title = await pg.text_content("#end-title"); assert ("Day 1 done" in title) or ("KNOCKOUT" in title), title
         summary = await pg.text_content("#session-summary")
         assert ("Fights won: %d" % day_len) in summary, summary

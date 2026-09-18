@@ -288,3 +288,7 @@ select, input[type=number], input[type=text] { display: block; width: 100%; marg
 .gear-slot .pick button.on { border-color: var(--gold, #ffcc33); color: var(--gold, #ffcc33); }
 .gear-slot.filled { border-style: solid; border-color: var(--gold, #ffcc33); }
 @media (max-width: 400px) { .gear { grid-template-columns: 1fr; } }
+
+/* ---------- home: the way back, on every screen ---------- */
+#btn-home { border-color: var(--cyan, #33e0ff); color: var(--cyan, #33e0ff); }
+#btn-home[hidden] { display: none !important; }
