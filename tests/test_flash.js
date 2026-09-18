@@ -359,12 +359,176 @@ function progress() {
   assert.doesNotThrow(function () { S.flashTrend(null, T0); S.flashNote(null); });
 }
 
+/* ---------- the control board (Chase & Simon) ----------
+   One GONE item a drill on a real board's pieces scattered at random. It must look like a board, be
+   the same pieces, never be the real position, and never touch a single real Flash number. */
+function sameSet(a, b) {
+  const bag = function (m) { return Object.keys(m).map(function (sq) { return m[sq].color + m[sq].role; }).sort().join(","); };
+  return bag(a) === bag(b);
+}
+function adjacent(a, b) {
+  return Math.max(Math.abs(a.charCodeAt(0) - b.charCodeAt(0)), Math.abs(Number(a[1]) - Number(b[1]))) <= 1;
+}
+function randomBoards() {
+  ALL.forEach(function (enc) {
+    const real = X.mapOf(enc);
+    [1, 2, "Ben|2026-09-18|0"].forEach(function (seed) {
+      const r = X.randomBoard(real, seed);
+      assert.ok(r, enc.id + ": a random board always forms (seed " + seed + ")");
+      assert.ok(sameSet(r, real), enc.id + ": exactly the same pieces, nothing added or lost");
+      assert.strictEqual(Object.keys(r).length, Object.keys(real).length, "one piece a square");
+      assert.ok(X.movedShare(r, real) >= X.CONTROL_MOVED, enc.id + ": at least 70% of pieces moved");
+      assert.notDeepStrictEqual(r, real, "never the real position");
+      Object.keys(r).forEach(function (sq) {
+        assert.ok(/^[a-h][1-8]$/.test(sq), sq);
+        if (r[sq].role === "p") assert.ok(sq[1] !== "1" && sq[1] !== "8", enc.id + ": a pawn on " + sq);
+      });
+      const wk = F.findKing(r, "w"), bk = F.findKing(r, "b");
+      if (wk && bk) assert.ok(!adjacent(wk, bk), enc.id + ": kings side by side");
+      [["w", "b"], ["b", "w"]].forEach(function (c) {
+        const k = F.findKing(r, c[0]);
+        if (k) assert.strictEqual(X.attackersOf(r, k, c[1]).length, 0, enc.id + ": the " + c[0] + " king is in check");
+      });
+      assert.ok(X.randomBoardLegal(r));
+      assert.deepStrictEqual(X.randomBoard(real, seed), r, "the same seed is the same board");
+    });
+    assert.notDeepStrictEqual(X.randomBoard(real, 1), X.randomBoard(real, 2), enc.id + ": a new seed is a new board");
+  });
+  // A list works as well as a map, and nonsense is refused rather than drawn.
+  const list = [{ color: "w", role: "k", sq: "e1" }, { color: "b", role: "k", sq: "e8" }, { color: "w", role: "p", sq: "e2" }];
+  assert.ok(X.randomBoard(list, 5));
+  assert.strictEqual(X.randomBoard({}, 1), null);
+  assert.strictEqual(X.randomBoard(null, 1), null);
+  assert.strictEqual(X.randomBoardLegal({ e1: { color: "w", role: "k" }, e2: { color: "b", role: "k" } }), false, "kings apart");
+  assert.strictEqual(X.randomBoardLegal({ a1: { color: "w", role: "k" }, h8: { color: "b", role: "k" }, c8: { color: "w", role: "p" } }), false, "no pawn on the back rank");
+  assert.strictEqual(X.randomBoardLegal({ a1: { color: "w", role: "k" }, h8: { color: "b", role: "k" }, a5: { color: "b", role: "r" } }), false, "no king in check");
+
+  // The item: the real GONE question on the scattered board, never a king.
+  STYLES.forEach(function (style) {
+    const it = X.makeControl(byId["01"], 42, { style: style });
+    const real = X.makeItem(byId["01"], "gone", { style: style });
+    assert.ok(it.control && it.type === "gone" && it.kind === "tap" && it.reveal, "a GONE tap item with a reveal");
+    assert.strictEqual(it.question, real.question, "the same words as a real GONE item");
+    assert.strictEqual(it.style, real.style, "and the same coach line");
+    assert.strictEqual(it.pairedId, "01");
+    assert.notStrictEqual(it.encId, "01", "its own id, so a drill still has six different ones");
+    assert.ok(it.position[it.squares[0]], "the answer square had a piece on it");
+    assert.notStrictEqual(it.position[it.squares[0]].role, "k", "a king never vanishes");
+    assert.ok(!it.hidden[it.squares[0]] && Object.keys(it.hidden).length === Object.keys(it.position).length - 1);
+    assert.ok(X.check(it, it.squares[0]));
+  });
+}
+
+function controlPlan() {
+  STYLES.forEach(function (style) {
+    ["a", "b", "c", "d", "Ben|2026-09-18|0", "Sam|2026-09-19|6"].forEach(function (seed) {
+      const st = statsOf(["01", "02", "03"]);
+      const p = S.flashPlan(st, ALL, S.FLASH_N, { supports: supportsFor(style), control: true, seed: seed });
+      assert.strictEqual(p.items.length, 6, "six items, control included: the drill is the same length");
+      const ctl = p.items.filter(function (i) { return i.control; });
+      assert.strictEqual(ctl.length, 1, "exactly one control a drill");
+      const at = p.items.indexOf(ctl[0]);
+      assert.ok(at >= 1 && at <= 4, "at slot 2..5, got " + (at + 1));
+      assert.strictEqual(ctl[0].type, "gone");
+      const paired = p.items.filter(function (i) { return i.paired; });
+      assert.strictEqual(paired.length, 1, "paired with exactly one real item");
+      assert.strictEqual(paired[0].type, "gone", "a real GONE item");
+      assert.strictEqual(paired[0].id, ctl[0].pairedId, "whose piece set it borrows");
+      assert.strictEqual(ctl[0].enc, paired[0].enc);
+      assert.strictEqual(new Set(p.items.map(function (i) { return i.id; })).size, 6, "six different ids");
+      assert.deepStrictEqual(S.flashPlan(st, ALL, S.FLASH_N, { supports: supportsFor(style), control: true, seed: seed }).control, p.control,
+        "the same session places the same control");
+      const items = X.build(p, { style: style });
+      assert.strictEqual(items.length, 6, "every planned item builds, the control too");
+      assert.strictEqual(items.filter(function (i) { return i.control; }).length, 1);
+      assert.strictEqual(items.filter(function (i) { return i.paired; }).length, 1);
+      assert.ok(sameSet(items.filter(function (i) { return i.control; })[0].position, items.filter(function (i) { return i.paired; })[0].position),
+        "the control's pieces are its paired board's pieces");
+    });
+  });
+  // Camp's warm-up never asks for one, and a plan without the flag has none.
+  const camp = S.campPlan(statsOf([]), ALL, { supports: supportsFor("words") });
+  assert.strictEqual(camp.flash.length, 2);
+  assert.ok(camp.flash.every(function (i) { return !i.control && !i.paired; }), "no control in Camp's warm-up");
+  assert.ok(S.flashPlan(statsOf([]), ALL, 6, { supports: supportsFor("words") }).items.every(function (i) { return !i.control; }));
+  // No real GONE board to borrow from: no control that day, and still six real items.
+  const noGone = S.flashPlan(statsOf([]), ALL, 6, { supports: function (e, t) { return t === "recall"; }, control: true, seed: "x" });
+  assert.strictEqual(noGone.items.length, 6);
+  assert.strictEqual(noGone.control, null);
+  assert.ok(noGone.items.every(function (i) { return !i.control; }), "skip the control that day");
+  // Too few boards for a drill: no control either.
+  assert.ok(S.flashPlan(statsOf([]), HAND.slice(0, 2), 6, { supports: supportsFor("words"), control: true, seed: 1 }).items.every(function (i) { return !i.control; }));
+}
+
+function controlLedger() {
+  // A kid with a real history, in the middle of a rung.
+  let st = statsOf([]);
+  for (let i = 0; i < 9; i++) st = S.recordFlash(st, { type: i % 2 ? "gone" : "recall", correct: i % 3 !== 0, revealMs: 10000, t: T0 }).stats;
+  const snapshot = JSON.parse(JSON.stringify(st));
+  const realOf = function (s) { const f = Object.assign({}, s.flash); delete f.control; delete f.paired; return f; };
+  const r = S.recordFlashControl(st, { correct: false, revealMs: 10000, pairedCorrect: true });
+  assert.deepStrictEqual(st, snapshot, "recording never mutates the stats it was handed");
+  assert.deepStrictEqual(realOf(r.stats), realOf(st), "not one real Flash field moved: items, correct, byType, days, run, last12, rung");
+  Object.keys(r.stats).forEach(function (k) { if (k !== "flash") assert.deepStrictEqual(r.stats[k], st[k], k + " moved"); });
+  assert.deepStrictEqual(S.flashOf(r.stats).rung, S.flashOf(st).rung);
+  assert.strictEqual(S.flashRevealMs(r.stats), S.flashRevealMs(st));
+  assert.deepStrictEqual(S.flashRolling(r.stats), S.flashRolling(st));
+  assert.strictEqual(S.flashRate(r.stats), S.flashRate(st), "a wrong control answer does not dent his accuracy");
+  assert.deepStrictEqual(r.stats.flash.control, { items: 1, correct: 0, firstLook: 0, byRung: { "10000": { items: 1, correct: 0 } } });
+  assert.deepStrictEqual(r.stats.flash.paired, { items: 1, correct: 1, byRung: { "10000": { items: 1, correct: 1 } } });
+  // Found on a later tap counts as found, not as a first look; the counters only climb.
+  let s2 = S.recordFlashControl(r.stats, { correct: false, found: true, revealMs: 7000, pairedCorrect: false }).stats;
+  s2 = S.recordFlashControl(s2, { correct: true, revealMs: 7000, pairedCorrect: true }).stats;
+  assert.deepStrictEqual([s2.flash.control.items, s2.flash.control.correct, s2.flash.control.firstLook], [3, 2, 1]);
+  assert.deepStrictEqual(s2.flash.control.byRung["7000"], { items: 2, correct: 1 });
+  assert.deepStrictEqual([s2.flash.paired.items, s2.flash.paired.correct], [3, 2]);
+  assert.deepStrictEqual(realOf(s2), realOf(st));
+  // A real item after a control leaves the control alone too.
+  const s3 = S.recordFlash(s2, { type: "gone", correct: true, revealMs: 10000, t: T0 }).stats;
+  assert.deepStrictEqual([s3.flash.control, s3.flash.paired], [s2.flash.control, s2.flash.paired]);
+  assert.doesNotThrow(function () { S.recordFlashControl(null, null); S.flashRecallGap(null); S.flashControlOf(undefined); });
+
+  // The gap, and when it is enough to say anything.
+  assert.deepStrictEqual(S.flashRecallGap(statsOf([])), { real: 0, random: 0, n: 0, pairedN: 0, enough: false });
+  let g = statsOf([]);
+  for (let i = 0; i < 9; i++) g = S.recordFlashControl(g, { correct: i < 4, revealMs: 10000, pairedCorrect: i < 8 }).stats;
+  let gap = S.flashRecallGap(g);
+  assert.strictEqual(gap.n, 9);
+  assert.strictEqual(gap.enough, false, "nine random boards is not enough");
+  assert.strictEqual(S.flashControlText(gap).line, "Collecting: 9 of 10 random boards.");
+  assert.strictEqual(S.flashControlText(gap).note, "");
+  g = S.recordFlashControl(g, { correct: true, revealMs: 10000, pairedCorrect: false }).stats;
+  gap = S.flashRecallGap(g);
+  assert.deepStrictEqual([gap.n, gap.enough, gap.real, gap.random], [10, true, 0.8, 0.5]);
+  const txt = function (real, random) { return S.flashControlText({ enough: true, n: 10, real: real, random: random }); };
+  assert.strictEqual(txt(0.8, 0.45).line, "Real boards 80% · random boards 45%");
+  assert.ok(/pattern knowledge is building/.test(txt(0.8, 0.45).note), "35 points");
+  assert.ok(/pattern knowledge is building/.test(txt(0.7, 0.5).note), "20 points is much better");
+  assert.strictEqual(txt(0.69, 0.5).note, "A gap is opening.", "19 points");
+  assert.strictEqual(txt(0.6, 0.5).note, "A gap is opening.", "10 points");
+  assert.ok(/memorising squares, not patterns yet/.test(txt(0.59, 0.5).note), "9 points");
+  assert.ok(/memorising squares/.test(txt(0.4, 0.6).note), "random better than real reads as the same");
+  assert.strictEqual(S.flashControlText(null).line, "Collecting: 0 of 10 random boards.");
+
+  // Progress carries both, for the parent only.
+  const p = S.progressSummary(g, ALL, T0);
+  assert.strictEqual(p.flash.control.line, "Real boards 80% · random boards 50%");
+  assert.ok(/pattern knowledge is building/.test(p.flash.control.note), "30 points: " + p.flash.control.note);
+  assert.strictEqual(p.flash.items, 0, "the control boards are not Flash items on the tile");
+  const one = S.recordFlashControl(statsOf([]), { correct: false, revealMs: 10000, pairedCorrect: true }).stats;
+  assert.strictEqual(S.progressSummary(one, ALL, T0).flash.control.line, "Collecting: 1 of 10 random boards.");
+}
+
 generators();
 plan();
 reveal();
 counters();
 progress();
+randomBoards();
+controlPlan();
+controlLedger();
 console.log("OK flash: recall/gone/imagine built on all " + ALL.length + " real fights with answers that are on the board they are asked about, "
   + "imagine answers computed after applyUci, a deterministic question per fight, six items with no repeats and a difficulty mix, "
   + "his own material first, the 12-item 80 percent reveal rule with a 3 s floor, counters that only climb, three clean days to unlock, "
-  + "the Progress tile and the two-week Flash-against-first-try note");
+  + "the Progress tile and the two-week Flash-against-first-try note, "
+  + "and one seeded control board a drill (same pieces, scattered legally, 70% moved) whose ledger never touches a real number");

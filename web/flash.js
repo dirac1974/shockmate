@@ -1,6 +1,6 @@
 /* Flash: the board-vision drill, minus the screen. Every generator here is pure — given a fight it
    hands back one position, one question and one answer that is either a square on that board or a
-   number between one and four. No DOM, no clock, no randomness: the same fight asks the same
+   number between one and four. No DOM, no clock, no unseeded randomness: the same fight asks the same
    question every morning, so tests/test_flash.js can hold the whole of it and a kid can build a
    memory of what a board asks him.
 
@@ -147,10 +147,112 @@
       variant: q.key, question: q.question, style: line(style, "flashLook") });
   }
   function supports(enc, type, opts) { return !!makeItem(enc, type, opts); }
+
+  /* ---------- CONTROL: the board no game ever reached ----------
+     Chase & Simon: masters recall real positions far better than beginners, and scrambled ones no
+     better. So one GONE item a drill is a real board's exact piece set scattered onto random squares.
+     If he recalls random boards as well as real ones, he is memorising squares; a gap is pattern
+     knowledge. Light legality only, so it LOOKS like a board: one piece a square, no pawn on the back
+     ranks, kings apart and neither in check. Seeded and pure: the same session gets the same board. */
+  const CONTROL_MOVED = 0.7;              // at least this share of pieces must stand somewhere new
+  const CONTROL_TRIES = 400;
+  function rng(seed) {
+    let a = (Number(seed) >>> 0) || 0x9e3779b9;
+    return function () {
+      a = (a + 0x6d2b79f5) >>> 0;
+      let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function seedNum(seed) {
+    if (typeof seed === "number" && isFinite(seed)) return Math.abs(Math.floor(seed));
+    const s = String(seed == null ? "" : seed);
+    let n = 2166136261;
+    for (let i = 0; i < s.length; i++) { n ^= s.charCodeAt(i); n = Math.imul(n, 16777619) >>> 0; }
+    return n;
+  }
+  function listOf(pieces) {
+    if (Array.isArray(pieces)) return pieces.map(function (p) { return { color: p.color, role: p.role, sq: p.sq || null }; });
+    return Object.keys(pieces || {}).sort().map(function (sq) { return { color: pieces[sq].color, role: pieces[sq].role, sq: sq }; });
+  }
+  function squareName(i) { return String.fromCharCode(97 + (i % 8)) + (1 + Math.floor(i / 8)); }
+  function kingsApart(a, b) {
+    return Math.max(Math.abs(a.charCodeAt(0) - b.charCodeAt(0)), Math.abs(Number(a[1]) - Number(b[1]))) > 1;
+  }
+  function inCheck(map, color) {
+    const k = F.findKing(map, color);
+    return !!k && attackersOf(map, k, color === "w" ? "b" : "w").length > 0;
+  }
+  function movedShare(map, orig) {
+    const sqs = Object.keys(orig || {});
+    if (!sqs.length) return 1;
+    const stayed = sqs.filter(function (sq) { return map[sq] && map[sq].color === orig[sq].color && map[sq].role === orig[sq].role; }).length;
+    return 1 - stayed / sqs.length;
+  }
+  function randomBoardLegal(map) {
+    const wk = F.findKing(map, "w"), bk = F.findKing(map, "b");
+    if (wk && bk && !kingsApart(wk, bk)) return false;
+    if (Object.keys(map).some(function (sq) { return map[sq].role === "p" && (sq[1] === "1" || sq[1] === "8"); })) return false;
+    return !inCheck(map, "w") && !inCheck(map, "b");
+  }
+  function randomBoard(pieces, seed) {
+    const list = listOf(pieces);
+    if (!list.length || list.length > 32) return null;
+    const orig = {}; list.forEach(function (p) { if (p.sq) orig[p.sq] = { color: p.color, role: p.role }; });
+    // Kings first (they have the strictest rule), then pawns (they have the fewest squares).
+    const rank = { k: 0, p: 1 };
+    const order = list.slice().sort(function (a, b) { return (rank[a.role] == null ? 2 : rank[a.role]) - (rank[b.role] == null ? 2 : rank[b.role]); });
+    const rand = rng(seedNum(seed));
+    for (let t = 0; t < CONTROL_TRIES; t++) {
+      const map = {};
+      let ok = true;
+      for (let i = 0; i < order.length && ok; i++) {
+        const p = order[i], free = [];
+        const other = p.role === "k" ? F.findKing(map, p.color === "w" ? "b" : "w") : null;
+        for (let s = 0; s < 64; s++) {
+          const sq = squareName(s);
+          if (map[sq]) continue;
+          if (p.role === "p" && (sq[1] === "1" || sq[1] === "8")) continue;
+          if (other && !kingsApart(sq, other)) continue;
+          free.push(sq);
+        }
+        if (!free.length) { ok = false; break; }
+        map[free[Math.floor(rand() * free.length)]] = { color: p.color, role: p.role };
+      }
+      if (ok && randomBoardLegal(map) && movedShare(map, orig) >= CONTROL_MOVED) return map;
+    }
+    return null;
+  }
+  // The control item: the real GONE question, asked of the scattered board. Same words, same coach
+  // line, same ring; only `control` and the id say what it is, and the kid never reads either.
+  function makeControl(enc, seed, opts) {
+    const o = opts || {}, style = o.style === "numbers" ? "numbers" : "words";
+    const real = mapOf(enc);
+    if (!enc || !enc.id || !Object.keys(real).length) return null;
+    const map = randomBoard(real, seed);
+    if (!map) return null;
+    const sq = goneSquare({ id: enc.id + "~random" + seedNum(seed) }, map);
+    if (!sq) return null;
+    const hidden = F.clonePieces(map);
+    delete hidden[sq];
+    return { encId: enc.id + "~random", pairedId: enc.id, control: true, type: "gone", position: map, kind: "tap",
+      reveal: true, title: "", motif: "", hidden: hidden, squares: [sq], count: null,
+      gone: { sq: sq, role: map[sq].role, color: map[sq].color, name: ROLE[map[sq].role] || "piece" },
+      question: "Which piece is gone? Tap its square.",
+      style: line(style, "flashGone") };
+  }
+  function itemOf(it, opts) {
+    if (!it) return null;
+    const item = it.control ? makeControl(it.enc, it.seed, opts) : makeItem(it.enc, it.type, opts);
+    if (item && it.paired) item.paired = true;
+    return item;
+  }
   // A plan from score.js, turned into drawable items. Anything that will not build is dropped rather
   // than patched: a question with no honest answer is worse than one fewer question.
   function build(plan, opts) {
-    return ((plan && plan.items) || []).map(function (it) { return makeItem(it.enc, it.type, opts); })
+    return ((plan && plan.items) || []).map(function (it) { return itemOf(it, opts); })
       .filter(function (it) { return !!it; });
   }
   // One tap or one chip. A tap item accepts any of its answer squares, because it asks for one.
@@ -169,7 +271,8 @@
   const CHIPS = [1, 2, 3, 4];
 
   const api = { ROLE, MAX_COUNT, ARROW_MS, CHIPS, mapOf, seedOf, attackersOf,
-    recallTap, recallCount, goneSquare, imagineOf, makeItem, supports, build, check, hintFor, answerText };
+    recallTap, recallCount, goneSquare, imagineOf, makeItem, supports, build, check, hintFor, answerText,
+    CONTROL_MOVED, randomBoard, randomBoardLegal, movedShare, makeControl, itemOf, seedNum };
   root.ShockmateFlash = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis,

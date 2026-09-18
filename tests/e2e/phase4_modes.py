@@ -112,8 +112,12 @@ async def flash(b, base, fake):
     await pg.wait_for_function("() => !!window.__shockmate.state.flash")
     plan = await pg.evaluate("() => { const f = window.__shockmate.state.flash;"
                              " return { n: f.items.length, types: f.items.map(i => i.type), reveal: f.revealMs,"
-                             " kinds: f.items.map(i => i.kind), ids: f.items.map(i => i.encId) }; }")
+                             " kinds: f.items.map(i => i.kind), ids: f.items.map(i => i.encId),"
+                             " control: f.items.map(i => !!i.control), paired: f.items.map(i => !!i.paired) }; }")
     assert plan["n"] == 6, plan
+    # One random board (the Chase & Simon control) in slots 2..5, paired with one real GONE board.
+    assert plan["control"].count(True) == 1 and 1 <= plan["control"].index(True) <= 4, plan
+    assert plan["paired"].count(True) == 1 and plan["types"][plan["paired"].index(True)] == "gone", plan
     assert len(set(plan["ids"])) == 6, ("no board is asked about twice", plan)
     assert "imagine" not in plan["types"], ("the hard rung is shut on a fresh profile", plan)
     assert plan["types"].count("gone") >= 2, plan
@@ -121,13 +125,23 @@ async def flash(b, base, fake):
     # The reveal window really is a window: the board goes up, then it goes away.
     await pg.wait_for_function("() => Object.keys(window.__shockmate.state.pieces).length > 4")
     assert not await pg.is_hidden("#flash-ring"), "the ring counts the reveal down without a digit"
-    items = await h.flash_drill(pg, 6, wrong_on=1)
+    wrong_on = next(k for k in range(6) if not plan["control"][k])
+    items = await h.flash_drill(pg, 6, wrong_on=wrong_on, wrong_control=True)
     await pg.wait_for_selector("#session-end:not([hidden])")
     assert "Flash done" in (await pg.text_content("#end-title"))
     st = await pg.evaluate("window.__shockmate.state.stats.flash")
-    assert st["items"] == 6, st
-    assert st["correct"] == 5, ("one wrong answer, honestly counted", st)
-    assert st["byType"]["gone"]["items"] >= 2, st
+    lines = await pg.evaluate("window.ShockmateScore.GLITCH_LINES.flashJoke.lines")
+    joke = [i for i in items if i.get("control")][0]["joke"]
+    assert joke in lines, ("Glitch owns up to the random board", joke)
+    # The random board was missed three times over, and not one real number noticed.
+    assert st["items"] == 5, ("five real items; the control is not one of them", st)
+    assert st["correct"] == 4, ("one wrong real answer, honestly counted; the wrong control is not", st)
+    assert st["rung"] == 0 and st["last12"] == [1 if k != wrong_on else 0 for k in range(6) if not plan["control"][k]], st
+    assert st["byType"]["gone"]["items"] >= 1, st
+    assert st["control"]["items"] == 1 and st["control"]["firstLook"] == 0 and st["control"]["correct"] == 0, st
+    assert st["paired"]["items"] == 1, st
+    summary = await pg.text_content("#session-summary")
+    assert "4/5" in summary or "look at twice" in summary, ("the debrief counts the five real boards", summary)
     await pg.click("#btn-end-ok")
     await h.screen(pg, "screen-title")
     assert "done today" in (await pg.text_content('.day-chip[data-day="-2"]'))

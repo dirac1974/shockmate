@@ -387,12 +387,21 @@ async def look_first(pg):
     return False
 
 
-async def flash_item(pg, wrong_first=False):
-    """Answer whatever Flash item is up. Returns the item. One tap, or one chip."""
+async def flash_item(pg, wrong_first=False, wrong_control=False):
+    """Answer whatever Flash item is up. Returns the item. One tap, or one chip.
+    The control board (a random position, item["control"]) is a GONE tap like any other; with
+    wrong_control it is missed all three times, and item["joke"] is the line Glitch owned up with."""
     await pg.wait_for_function("() => { const s = window.__shockmate.state;"
                                " return s.phase === 'flash' && s.gate && s.gate.flash; }")
     item = await pg.evaluate("window.__shockmate.state.gate.item")
     i = await pg.evaluate("window.__shockmate.state.flash.i")
+    if item.get("control") and wrong_control:
+        bad = [f + r for f in "abcdefgh" for r in "12345678" if f + r not in item["squares"]]
+        for k in range(3):
+            await tap(pg, bad[k])
+        await pg.wait_for_function("n => { const s = window.__shockmate.state; return !s.flash || s.flash.i >= n; }", arg=i + 1)
+        item["joke"] = await pg.text_content("#glitch-line")
+        return item
     if wrong_first:
         if item["kind"] == "chip":
             bad = next(n for n in (1, 2, 3, 4) if n != item["count"])
@@ -405,12 +414,14 @@ async def flash_item(pg, wrong_first=False):
     else:
         await tap(pg, item["squares"][0])
     await pg.wait_for_function("n => { const s = window.__shockmate.state; return !s.flash || s.flash.i >= n; }", arg=i + 1)
+    if item.get("control"):
+        item["joke"] = await pg.text_content("#glitch-line")
     return item
 
 
-async def flash_drill(pg, n, wrong_on=-1):
+async def flash_drill(pg, n, wrong_on=-1, wrong_control=False):
     """Answer n Flash items in a row. Returns the items."""
-    return [await flash_item(pg, wrong_first=(i == wrong_on)) for i in range(n)]
+    return [await flash_item(pg, wrong_first=(i == wrong_on), wrong_control=wrong_control) for i in range(n)]
 
 
 async def win_fight(pg, answer_look=True):

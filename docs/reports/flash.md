@@ -37,4 +37,16 @@ the blunder trend, and after two weeks a coach note says whether the two are cli
 **Verified.** Chrome 375×812, caches cleared, marker `v0.24`: both registers, the imagine rung,
 the hint, Camp's warm-up, the Progress tile, no console errors. Every suite green.
 
+## Control boards (v0.27)
+
+Chase & Simon: masters recall real positions far better than beginners, but random ones no better.
+So each Flash drill (never Camp) swaps one of its six slots, at a seeded slot 2–5, for a GONE item on
+a random board: the exact pieces of a real GONE board in the same drill, scattered with light
+legality (kings apart, neither in check, no pawns on the back ranks, ≥ 70% moved). Same question,
+reveal and ring. After he answers, Glitch owns up (`flash-joke`, or grudging credit if he got it).
+
+It touches no real counter, rung or window and is never a miss. `stats.flash.control` and
+`stats.flash.paired` hold the like-for-like pair; after ten random boards the parent's Flash line
+reads "Real boards 80% · random boards 45%" with a note on the gap.
+
 **Deferred.** No binder entry. One imagine item per drill. Counts stop at four.

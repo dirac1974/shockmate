@@ -2575,6 +2575,111 @@
   "text": "Picture it, then tell me what it bites."
  },
  {
+  "key": "g-flash-joke-1",
+  "voice": "glitch",
+  "text": "Ha! That board was nonsense. No real game looks like that."
+ },
+ {
+  "key": "g-flash-joke-10",
+  "voice": "glitch",
+  "text": "Fake board! Hard to remember, isn't it? That's the joke."
+ },
+ {
+  "key": "g-flash-joke-11",
+  "voice": "glitch",
+  "text": "I made that board up. Real ones make more sense. Annoyingly."
+ },
+ {
+  "key": "g-flash-joke-2",
+  "voice": "glitch",
+  "text": "Gotcha. I made that one up. Real games have REASONS."
+ },
+ {
+  "key": "g-flash-joke-3",
+  "voice": "glitch",
+  "text": "Surprise! That was a fake board. I scattered it myself."
+ },
+ {
+  "key": "g-flash-joke-4",
+  "voice": "glitch",
+  "text": "Confession: nobody ever played that position. I threw the pieces in the air."
+ },
+ {
+  "key": "g-flash-joke-5",
+  "voice": "glitch",
+  "text": "That board? Total rubbish. I made it in my sleep."
+ },
+ {
+  "key": "g-flash-joke-6",
+  "voice": "glitch",
+  "text": "Ha! Random pieces, random squares. My little joke."
+ },
+ {
+  "key": "g-flash-joke-7",
+  "voice": "glitch",
+  "text": "That was a pretend board. Chess doesn't really look like that."
+ },
+ {
+  "key": "g-flash-joke-8",
+  "voice": "glitch",
+  "text": "Tricked you! That position came out of my sock drawer."
+ },
+ {
+  "key": "g-flash-joke-9",
+  "voice": "glitch",
+  "text": "No game ever looked like that one. I shook the box and poured."
+ },
+ {
+  "key": "g-flash-joke-right-1",
+  "voice": "glitch",
+  "text": "You got it anyway? On a NONSENSE board? Suspicious."
+ },
+ {
+  "key": "g-flash-joke-right-10",
+  "voice": "glitch",
+  "text": "That board wasn't even real. Fine. Well done. Ugh."
+ },
+ {
+  "key": "g-flash-joke-right-2",
+  "voice": "glitch",
+  "text": "That board was made up, and you STILL found it. Rude."
+ },
+ {
+  "key": "g-flash-joke-right-3",
+  "voice": "glitch",
+  "text": "I scrambled that one on purpose! How did you do that?"
+ },
+ {
+  "key": "g-flash-joke-right-4",
+  "voice": "glitch",
+  "text": "A fake board, and you remembered it. I need a better joke."
+ },
+ {
+  "key": "g-flash-joke-right-5",
+  "voice": "glitch",
+  "text": "That was random rubbish. And you got it. Hmph."
+ },
+ {
+  "key": "g-flash-joke-right-6",
+  "voice": "glitch",
+  "text": "Nobody remembers a made-up board. Nobody! Except you, apparently."
+ },
+ {
+  "key": "g-flash-joke-right-7",
+  "voice": "glitch",
+  "text": "I invented that board to trick you. It did not trick you."
+ },
+ {
+  "key": "g-flash-joke-right-8",
+  "voice": "glitch",
+  "text": "Pure nonsense, and you nailed it. I'm checking your pockets."
+ },
+ {
+  "key": "g-flash-joke-right-9",
+  "voice": "glitch",
+  "text": "My fake board! Found! This is outrageous."
+ },
+ {
   "key": "g-flash-reveal-1",
   "voice": "glitch",
   "text": "Memorise THAT. Go on."

@@ -100,6 +100,17 @@
         imagineOpen: !!(fa.imagineOpen || fb.imagineOpen), rung: bigger(fa.rung, fb.rung),   // the ladder is skill: the higher rung wins
         days: days, byType: byType, last12: (lead.last12 || []).slice(-FLASH_WINDOW),
       });
+      /* The control boards and their paired real ones (Chase & Simon): the parent's comparison only.
+         Every counter climbs, so each takes the larger side, rung by rung. */
+      const ledger = (x, y, keys) => {
+        const o = {}, by = {};
+        keys.forEach((k) => { o[k] = bigger((x || {})[k], (y || {})[k]); });
+        Object.keys(Object.assign({}, (x || {}).byRung, (y || {}).byRung)).forEach((k) => { by[k] = pair(((x || {}).byRung || {})[k], ((y || {}).byRung || {})[k]); });
+        o.byRung = by;
+        return o;
+      };
+      if (fa.control || fb.control) out.flash.control = ledger(fa.control, fb.control, ["items", "correct", "firstLook"]);
+      if (fa.paired || fb.paired) out.flash.paired = ledger(fa.paired, fb.paired, ["items", "correct"]);
     }
     /* Play. Games played and won are the kid's numbers, so two devices take the larger of each and
        `bestLevelWon` takes the higher rung — a phone that never saw Tuesday's win cannot undo it.
