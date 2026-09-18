@@ -4,7 +4,7 @@ Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines 
 
 **Date:** 2026-09-18
 **Repo:** https://github.com/dirac1974/shockmate
-**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.15 · 23 fights · 6 days`.
+**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.16 · 23 fights · 6 days`.
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
@@ -13,14 +13,14 @@ ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeli
 
 Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the future plays out on the board → why-gate (tap the pieces) → card earned → next fight or cliffhanger.
 
-## Actual state — v0.15 is live
+## Actual state — v0.16 is live
 
 Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistence and family sync landed on top of them, ahead of the plan.
 
 - Pages serves `main` / root and rebuilds in about 35 seconds. Verify a deploy by the home-screen build marker, never by eye.
 - All suites green on the live commit: `tests/test_*.js` (8) and `tests/test_*.py` (2).
 - `tests/e2e/*.py` did NOT run. Application Control on David's PC blocks the greenlet DLL that Playwright loads. The e2e suite currently has no machine to run on.
-- Data is generated: edit `data/encounters.src.json`, `openings.src.json` or `endgames.src.json`, run `python tools/build_encounters.py`. Stockfish 19 lives at `~/tools/stockfish/stockfish/stockfish-windows-x86-64-universal.exe` on David's PC and the script finds it (or `--sf`, or `STOCKFISH`). `--arrive-only` refreshes only the arriving moves, no engine. Never hand-edit `v2.json` or `web/encounters.js`.
+- Data is generated: edit `data/encounters.src.json`, `openings.src.json` or `endgames.src.json`, run `python tools/build_encounters.py`. Stockfish 19 lives at `~/tools/stockfish/stockfish/stockfish-windows-x86-64-universal.exe` on David's PC and the script finds it (or `--sf`, or `STOCKFISH`). `--arrive-only` refreshes only the arriving moves, no engine. v0.16 is the first full re-score with Stockfish 19 on this PC. Never hand-edit `v2.json` or `web/encounters.js`.
 - Every fight opens on Glitch's arriving move (`arrive` in the source; opening fights use their last move), shaded like any chess site; every move after it is shaded too. The build proves each one legal and landing on the exact fight. Tournament week asks question 2 only when the bait is a capture (`S.prepQuestionsFor`).
 - Six lesson days cover all 23 fights and deliberately mix packs, so a session cannot dead-end inside one pack. Days are picked on the home screen; `pack` survives only as a data label.
 - A session is now a day. It ends when the day's fights are done, and finishing one offers the next straight away. Nothing is locked; a second day in one sitting gets a soft line about coming back tomorrow.
