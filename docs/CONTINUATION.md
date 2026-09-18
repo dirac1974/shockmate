@@ -17,7 +17,7 @@ Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the 
 
 Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistence and family sync landed on top of them, ahead of the plan.
 
-- Live at `1189ad0`. Pages serves `main` / root and rebuilds in about 40 seconds. Verify a deploy by the home-screen build marker, never by eye.
+- Live at `364f67f`, marker `v0.8.1 · 23 fights · 6 days`. Pages serves `main` / root and rebuilds in about 35 seconds. Verify a deploy by the home-screen build marker, never by eye.
 - Six suites green on the live commit: `test_futures.js`, `test_score.js`, `test_sync.js`, `test_days.js`, `test_battle.js`, `test_encounters.py`.
 - `tests/e2e/*.py` did NOT run. Application Control on David's PC blocks the greenlet DLL that Playwright loads. The e2e suite currently has no machine to run on.
 - Data is generated: edit `data/encounters.src.json`, `openings.src.json` or `endgames.src.json`, run `python3 tools/build_encounters.py --sf <stockfish>`. Never hand-edit `v2.json` or `web/encounters.js`.
@@ -47,12 +47,14 @@ Engine is judge. Animation is teacher. No eval numbers on screen. No loot, no pu
 
 1. **Gate 0 — both kids, six fights each, on a phone.** David. Blocking everything. Add the site to the home screen first, so iOS stops clearing cards after a week and the app works with no signal. Note every place anyone got stuck or bored. That note is the input to Phase 3, not a formality.
 2. **Prove the family sync once, with a backup first.** David, because it needs credentials. `web/sync.js` and `supabase/migrations/0001_shockmate_sync.sql` have never run against the live project. Save a backup file, then family code, then Sync now, on two devices, and confirm a card earned on one appears on the other.
-3. **Give the e2e suite a home.** QA. Put the four unit suites plus Playwright in GitHub Actions on push to `main`. Today a red e2e test is invisible, because the only machine that runs it is blocked by policy. This is the one engineering task that does not wait on gate 0.
+3. **Give the e2e suite a home.** QA. Put the four unit suites plus Playwright in GitHub Actions on push to `main`. Today a red e2e test is invisible, because the only machine that runs it is blocked by policy. This is the one engineering task that does not wait on gate 0. On 2026-09-18 a live run of the deployed page found a gate defect that all six green suites missed, which is the argument for CI in one sentence.
 4. **Phase 3 "Grow", rescoped.** Openings and endgames already shipped, so what remains of PLAN §7 Phase 3 is: parent weekly summary, tablet layout, recorded Glitch voice lines, and a second tactics pack including two "bait is real" fights. Do not open a branch until gate 0 is reported.
 
 ## Release ritual
 
 Bump `BUILD` in `web/game.js` and `CACHE` in `web/sw.js` together, or phones keep the cached shell. Push `main`, wait for Pages, then confirm the marker on the live page. Work built in a cloud sandbox arrives as a git bundle, because that sandbox has no GitHub credentials and cannot push; a source zip is not enough, since it carries no history.
+
+**Getting the new build to actually load is harder than it looks, and one reload does not prove anything.** Two caches serve the old script: the service worker re-registers on every load and serves its cached copy, and the origin sends cache-control max-age=600, so the browser holds `game.js` for ten minutes on its own. A ?v= query only freshens `index.html`, because the script tags ask for `game.js` with no query. From the page console: unregister every shockmate service worker, delete every shockmate cache, re-fetch each file with cache set to reload under its canonical URL, then load the page twice. On a phone, remove the home-screen icon and re-add it. Always gate a runtime check on the marker reading the expected version, or the check silently exercises the old build and reports a false result. That happened three times on 2026-09-18 and produced two false failures.
 
 ## Links
 
