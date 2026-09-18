@@ -258,7 +258,30 @@
   }
   function recordKo(battle) { const b = battleOf({ battle: battle }); b.kos += 1; return b; }
 
-  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
+  /* Ability resolution. Pure, so the rules live in one place and the tests can hold them to it.
+     None of these looks at the board. They only touch damage, the Critical roll, or Glitch's gloat. */
+  function resolveHitDamage(battle, dmg, dateKey) {
+    let b = battleOf({ battle: battle });
+    const base = Math.max(0, Math.round(dmg));
+    if (!b.next.double) return { battle: b, dmg: base, doubled: false };
+    b = addBonus(disarm(b, "double"), dateKey, base);   // the second strike is the same blow again
+    return { battle: b, dmg: base * 2, doubled: true };
+  }
+  function resolveCritical(battle, tier, guided, lastCritical, isBoss, roll) {
+    let b = battleOf({ battle: battle });
+    const eligible = tier === "best" && !guided;      // a guided win was shown the answer; it cannot crit
+    const forced = eligible && b.next.overcharge;
+    const natural = eligible && !lastCritical && (!!isBoss || roll < 1 / 6);
+    if (forced) b = disarm(b, "overcharge");
+    return { battle: b, crit: forced || natural, forced: forced };
+  }
+  function resolveMiss(battle) {
+    const b = battleOf({ battle: battle });
+    if (!b.next.shield) return { battle: b, shielded: false };
+    return { battle: disarm(b, "shield"), shielded: true };
+  }
+
+  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, cardsOnDay, dateKey, RANKS, CRONIES, emptyStats, cardOf, recordMove, recordAttempt, recordWhy, reasonsKept, needsRetry, canAdvance, pickNextIndex, historyRows, scheduleAfterKeep, scheduleAfterFail, dueReviews, pickWalkTarget, intervalList, INTERVALS, LEDGER_MAX, emptyDuel, recordDuelSeat, duelVerdict };
   root.ShockmateScore = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

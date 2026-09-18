@@ -86,7 +86,43 @@ function run() {
   const legacy = Y.mergeStats(statsWith(["01"]), statsWith(["02"]));
   assert.strictEqual(legacy.battle.power, 0, "two saves without a battle record merge to defaults, not to a crash");
 
-  console.log("OK battle: boss health floors and KOs, power climbs and caps and only falls on spend, abilities arm and disarm, merge keeps power, KOs, bonus and card tiers");
+  /* Ability resolution is pure. These are the rules the game wiring must obey, and none of them looks at the board. */
+  const plain = S.resolveHitDamage(S.emptyBattle(), 85, KEY);
+  assert.strictEqual(plain.dmg, 85, "without Double Strike, damage passes through");
+  assert.ok(!plain.doubled);
+  assert.strictEqual(plain.battle.bonus[KEY] || 0, 0);
+  assert.strictEqual(S.resolveHitDamage(S.emptyBattle(), -20, KEY).dmg, 0, "damage never goes negative");
+
+  const armedDouble = S.armAbility(S.earnPower(S.earnPower(S.emptyBattle(), false), false), "double");
+  const dbl = S.resolveHitDamage(armedDouble, 85, KEY);
+  assert.strictEqual(dbl.dmg, 170, "Double Strike doubles the blow");
+  assert.ok(dbl.doubled);
+  assert.ok(!dbl.battle.next.double, "Double Strike disarms after one hit");
+  assert.strictEqual(dbl.battle.bonus[KEY], 85, "the second strike lands on the boss as bonus damage");
+
+  const threePower = S.earnPower(S.earnPower(S.earnPower(S.emptyBattle(), false), false), false);
+  const oc = S.armAbility(threePower, "overcharge");
+  assert.ok(oc.next.overcharge, "three power buys Overcharge");
+  const forced = S.resolveCritical(oc, "best", false, true, false, 0.99);
+  assert.ok(forced.crit && forced.forced, "Overcharge forces a Critical past the back-to-back guard and a bad roll");
+  assert.ok(!forced.battle.next.overcharge, "Overcharge disarms after it fires");
+  const guidedWin = S.resolveCritical(oc, "best", true, false, false, 0.0);
+  assert.ok(!guidedWin.crit && !guidedWin.forced, "a guided win was shown the answer and cannot crit, even Overcharged");
+  assert.ok(guidedWin.battle.next.overcharge, "Overcharge is kept when it could not fire");
+  assert.ok(!S.resolveCritical(oc, "good", false, false, false, 0.0).crit, "only a best move can crit");
+
+  assert.ok(S.resolveCritical(S.emptyBattle(), "best", false, false, false, 0.1).crit, "a low roll crits naturally");
+  assert.ok(!S.resolveCritical(S.emptyBattle(), "best", false, false, false, 0.9).crit, "a high roll does not");
+  assert.ok(S.resolveCritical(S.emptyBattle(), "best", false, false, true, 0.9).crit, "boss boards always crit");
+  assert.ok(!S.resolveCritical(S.emptyBattle(), "best", false, true, false, 0.1).crit, "no natural back-to-back Criticals");
+
+  const shielded = S.resolveMiss(S.armAbility(S.earnPower(S.emptyBattle(), false), "shield"));
+  assert.ok(shielded.shielded, "Time Shield absorbs a miss");
+  assert.ok(!shielded.battle.next.shield, "the shield is spent by one miss");
+  assert.ok(!S.resolveMiss(S.emptyBattle()).shielded, "no shield, nothing absorbed");
+  assert.ok(!S.resolveMiss(shielded.battle).shielded, "a spent shield does not absorb twice");
+
+  console.log("OK battle: boss health floors and KOs, power climbs and caps and only falls on spend, abilities arm and disarm, Double Strike / Overcharge / Time Shield resolve by the rules, merge keeps power, KOs, bonus and card tiers");
 }
 
 run();

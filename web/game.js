@@ -246,6 +246,16 @@
     $("boss-hp").textContent = b.ko ? "DOWN" : String(b.hp);
     $("boss-fill").style.width = Math.round(Math.max(0, Math.min(1, b.fraction)) * 100) + "%";
   }
+  function renderPowers() {
+    const host = $("powers"); if (!host) return;
+    const b = S.battleOf(state.stats), pips = $("power-pips");
+    if (pips) { let h = ""; for (let i = 0; i < S.POWER_CAP; i++) h += '<i class="' + (i < b.power ? "on" : "") + '"></i>'; pips.innerHTML = h; }
+    Array.prototype.forEach.call(host.querySelectorAll(".pw"), function (btn) {
+      const id = btn.dataset.ability, armed = id !== "tell" && !!b.next[id];
+      btn.classList.toggle("armed", armed);
+      btn.disabled = state.phase !== "think" || (!armed && !S.canAfford(b, id));
+    });
+  }
   function prompt(text) { $("prompt").textContent = text; }
   function hud() {
     $("stat-won").textContent = state.stats.won || 0;
@@ -373,7 +383,7 @@
     banner(""); glitchSay(enc.glitch.taunt, "taunt"); prompt(enc.hook); $("gate-dots").innerHTML = "";
     $("btn-hint").hidden = false; $("btn-skip").hidden = false; show("screen-play");
     state.helpThisFight = needsHelp(state.stats) || (state.mode === "duel" && state.duel && state.duel.helpSeat === state.active);
-    paintSelection(); renderTeam(); startBlitz(); hud();
+    paintSelection(); renderTeam(); startBlitz(); hud(); renderPowers();
   }
   async function commitMove(move) {
     const enc = current(); state.phase = "busy"; state.selected = null; paintSelection();
@@ -398,7 +408,9 @@
     if (move.uci === enc.best && enc.bestLineUci.length > 1) map = await playLine(enc.bestLineUci.slice(1), afterMap);
     else await sleep(350);
     const fin = finisher(enc); await sleep(500);
-    const crit = tier === "best" && !state.guided && !state.lastCritical && (enc.boss || Math.random() < 1 / 6);
+    const critRes = S.resolveCritical(state.stats.battle, tier, state.guided, state.lastCritical, enc.boss, Math.random());
+    state.stats.battle = critRes.battle; const crit = critRes.crit;
+    if (critRes.forced) toast("OVERCHARGE!", 1400);
     state.lastCritical = crit;
     if (crit) {
       banner("CRITICAL!", "crit"); sfx("crit"); document.querySelector(".board-wrap").classList.add("zoom");
@@ -414,9 +426,13 @@
     state.ratingBefore = S.glitchRating(state.stats).real; state.rankBefore = S.agentRank(state.stats).index; state.hpBefore = S.bossHp(state.stats, now()).hp;   // read before the card lands, shown on the card screen
     const earned = state.stats.cardsEarned[enc.id] || { critical: false, tries: 0 };
     earned.critical = earned.critical || crit; earned.tries = state.tries + 1; earned.t = now(); earned.tier = tier; state.stats.cardsEarned[enc.id] = earned;
-    const hpNow = S.bossHp(state.stats, now());
-    const dmg = Math.max(0, (state.hpBefore || hpNow.hp) - hpNow.hp);
-    banner((crit ? "CRITICAL HIT!  -" : "HIT!  -") + dmg, crit ? "crit" : "win");
+    state.stats.battle = S.earnPower(state.stats.battle, crit);
+    let hpNow = S.bossHp(state.stats, now());
+    const hit = S.resolveHitDamage(state.stats.battle, (state.hpBefore || hpNow.hp) - hpNow.hp, hpNow.dateKey);
+    state.stats.battle = hit.battle; hpNow = S.bossHp(state.stats, now());
+    const dmg = hit.dmg;
+    banner((hit.doubled ? "DOUBLE STRIKE!  -" : crit ? "CRITICAL HIT!  -" : "HIT!  -") + dmg, (crit || hit.doubled) ? "crit" : "win");
+    renderPowers();
     renderBoss(); await sleep(650);
     if (hpNow.ko && state.koShown !== hpNow.dateKey) {
       state.koShown = hpNow.dateKey;
@@ -432,7 +448,9 @@
     showCard(enc, tier, crit);
   }
   async function missFlow(enc, move, tier, start, afterMap) {
-    banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug");
+    const missRes = S.resolveMiss(state.stats.battle); state.stats.battle = missRes.battle;
+    if (missRes.shielded) { banner("TIME SHIELD", "tease"); glitchSay("Hey! Where did my gloat go?", "nervous"); renderPowers(); }
+    else { banner("GLITCH'S FUTURE", "miss"); glitchSay(enc.glitch.gloat, "smug"); }
     state.stats = S.recordAttempt(state.stats, enc, { correct: false, san: move.san, t: now() }).stats;
     (state.stats.tiers = state.stats.tiers || []).push(tier); if (state.stats.tiers.length > 8) state.stats.tiers.shift(); save();
     if (move.uci === enc.tempting && enc.temptingLineUci.length > 1) await playLine(enc.temptingLineUci.slice(1), afterMap);
@@ -442,13 +460,13 @@
     state.tries += 1;
     if (state.tries === 1) {
       banner("SECOND TRY", "tease"); setPieces(start); clearMarks(); glitchSay("Sweating? Me? Never.", "nervous"); prompt("Try again. Glitch is sweating.");
-      state.phase = "think"; paintSelection(); return;
+      state.phase = "think"; paintSelection(); renderPowers(); return;
     }
     // confession: show the better future, then the kid plays it
     banner("THE BETTER FUTURE", "win"); glitchSay("Fine. FINE. Here is what I was scared of.", "nervous"); setPieces(start); await sleep(500);
     await playLine(enc.bestLineUci, start); finisher(enc); await sleep(800);
     banner("YOUR TURN", "tease"); setPieces(start); clearMarks(); state.guided = true; state.phase = "think";
-    prompt("Now you play it: " + enc.bestSan); paintSelection();
+    prompt("Now you play it: " + enc.bestSan); paintSelection(); renderPowers();
   }
   function whyGate(enc) {
     return new Promise((resolve) => {
@@ -747,9 +765,22 @@
       if (!confirm("Reset " + state.settings.names[state.settings.profile] + "'s cards and progress?")) return;
       state.profiles[state.active] = freshStats(); state.stats = state.profiles[state.active]; save(); hud(); toast("Reset done");
     };
+    Array.prototype.forEach.call(document.querySelectorAll('#powers .pw[data-ability]'), function (btn) {
+      const id = btn.dataset.ability; if (id === "tell") return;   // the Tell has its own handler below
+      btn.onclick = function () {
+        if (state.phase !== "think") return;
+        const a = S.abilityById(id), b = S.battleOf(state.stats);
+        if (b.next[id]) { toast(a.name + " is already armed.", 1400); return; }
+        if (!S.canAfford(b, id)) { toast(a.name + " needs " + a.cost + " power. Win a fight.", 1800); return; }
+        state.stats.battle = S.armAbility(b, id); save(); renderPowers();
+        toast(a.name + " armed. " + a.blurb, 2200);
+      };
+    });
     $("btn-hint").onclick = function () {
       if (state.phase !== "think") return; const enc = current();
-      const el = sq(enc.tempting.slice(2, 4)); if (el) el.classList.add("tempt-glow"); toast("Glitch wants THAT one. So don't.", 2000);
+      if (!S.canAfford(state.stats.battle, "tell")) { toast("Glitch's Tell needs 1 power. Win a fight.", 1800); return; }
+      state.stats.battle = S.armAbility(state.stats.battle, "tell"); save(); renderPowers();
+      const el = sq(enc.tempting.slice(2, 4)); if (el) el.classList.add("tempt-glow"); toast("Glitch flinches at THAT one. So don't.", 2000);
     };
     $("btn-skip").onclick = function () { if (state.phase !== "think") return; nextEncounter(); };
     $("btn-end-ok").onclick = function () { $("session-end").hidden = true; goHome(); };
