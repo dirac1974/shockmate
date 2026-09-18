@@ -72,6 +72,10 @@
             <button id="btn-coop" class="cta">Team up</button>
             <button id="btn-duel" class="chip">Duel</button>
           </div>
+          <div class="play-row versus-row">
+            <button id="btn-versus" class="cta play">Play each other</button>
+            <button id="btn-versus-resume" class="chip" hidden>Resume</button>
+          </div>
           <p class="hint" id="two-hint">Take turns on this phone. You both play White.</p>
         </div>
         <div id="step-solo" hidden></div>
@@ -106,6 +110,11 @@
       <div class="team" id="team" hidden>
         <div class="turn-chip" id="turn-chip"></div>
         <div class="rage"><b>GLITCH RAGE</b><i><span id="rage-fill"></span></i></div>
+      </div>
+      <!-- versus: whose go it is, and a meter that only ever fills. No clock, no time control. -->
+      <div class="versus-turn" id="versus-turn" hidden>
+        <div class="turn-chip" id="versus-chip"></div>
+        <div class="think-meter" id="think-meter" aria-hidden="true"><i><span id="think-fill"></span></i></div>
       </div>
       <div class="blitz" id="blitz" hidden><i><span id="blitz-fill"></span></i></div>
       <div class="path" id="path"></div>
@@ -175,6 +184,33 @@
       </div>
       <button id="btn-fight-now" class="cta big">Fight it now</button>
       <div class="actions quiet"><button id="btn-fight-later" class="chip">Later</button></div>
+    </section>
+    <section id="screen-versus-pre" class="screen">
+      <div class="glitch-row">
+        <div id="vs-glitch"></div>
+        <div class="bubble" id="vs-line"></div>
+      </div>
+      <div class="set-card pre-card">
+        <h3>Who is White?</h3>
+        <div class="vs-seats" id="vs-seats">
+          <div class="vs-seat white"><span class="vs-role">WHITE · moves first</span><b id="vs-white-name">Player 1</b></div>
+          <div class="vs-seat black"><span class="vs-role">BLACK</span><b id="vs-black-name">Player 2</b></div>
+        </div>
+        <div class="chip-row"><button id="btn-vs-swap" class="chip">Swap colours</button></div>
+        <p class="hint" id="vs-why"></p>
+        <p class="hint">The board turns round to whoever is to move, so slide the phone across and play
+          from your own side. Glitch is only the referee — he does not get a move.</p>
+      </div>
+      <div class="actions stack">
+        <button id="btn-vs-go" class="cta big">Start</button>
+        <button id="btn-vs-back" class="link">not now</button>
+      </div>
+    </section>
+    <section id="screen-versus-over" class="screen">
+      <div class="future-title" id="vs-over-title">Game over</div>
+      <p class="sub" id="vs-over-sub"></p>
+      <div id="vs-cards"></div>
+      <div class="actions quiet"><button id="btn-vs-done" class="chip">Done</button></div>
     </section>
     <section id="screen-card" class="screen">
       <div class="future-title" id="card-title">You beat Glitch</div>
@@ -383,6 +419,8 @@
   <!-- play.js is pure and tiny and the binder needs its text tables; vendor/chess.js and engine.js
        are 650 KB of Stockfish and are fetched only when Play is opened (see loadEngine in game.js). -->
   <script src="play.js"></script>
+  <!-- versus.js is pure too, and the result cards and Progress read its tables, so it is not lazy. -->
+  <script src="versus.js"></script>
   <script src="game.js"></script>
   <script>
     if ("serviceWorker" in navigator && location.protocol !== "file:") {

@@ -7,7 +7,7 @@
   // summing would double-count the fights both devices already saw.
 
   const LEDGER_MAX = 40, TIERS_MAX = 8, CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const GAMES_RECENT = 10, GAME_FIGHTS_MAX = 20;
+  const GAMES_RECENT = 10, GAME_FIGHTS_MAX = 20, BEST_MOVES_MAX = 20;
   // The rungs, weakest first. Mirrors S.LEVELS in score.js; kept here so merging never has to load
   // the game's own rules. If a rung is ever added there, add it here too.
   const LEVEL_ORDER = ["sleepy", "rookie", "cadet", "agent", "marshal"];
@@ -108,6 +108,32 @@
         bestLevelWon: rung(ga.bestLevelWon) >= rung(gb.bestLevelWon) ? (ga.bestLevelWon || null) : (gb.bestLevelWon || null),
       });
     }
+    /* Versus. Same rule as Play and for the same reason: every counter only ever climbs, so two
+       devices take the larger of each rather than summing a game both of them saw. `results` is this
+       kid's own win/draw/loss row — there is no head-to-head anywhere to merge — and `recent` unions
+       by when the game ended. */
+    if (a.versus || b.versus) {
+      const va = a.versus || {}, vb = b.versus || {};
+      const ra = va.results || {}, rb = vb.results || {};
+      const rows = {};
+      [].concat(va.recent || [], vb.recent || []).forEach((r) => {
+        if (r) rows[(r.t || 0) + "|" + (r.colour || "") + "|" + (r.result || "")] = r;
+      });
+      out.versus = Object.assign({}, va, vb, {
+        played: bigger(va.played, vb.played), asWhite: bigger(va.asWhite, vb.asWhite), asBlack: bigger(va.asBlack, vb.asBlack),
+        results: { win: bigger(ra.win, rb.win), draw: bigger(ra.draw, rb.draw), loss: bigger(ra.loss, rb.loss) },
+        recent: Object.keys(rows).map((k) => rows[k]).sort((x, y) => (y.t || 0) - (x.t || 0)).slice(0, GAMES_RECENT),
+      });
+    }
+    // His best moments. Union, newest first, one per move, capped — the same shape as the binder.
+    if (a.bestMoves || b.bestMoves) {
+      const seenBest = {};
+      out.bestMoves = [].concat(a.bestMoves || [], b.bestMoves || [])
+        .filter((m) => m && m.san)
+        .sort((x, y) => (y.t || 0) - (x.t || 0))
+        .filter((m) => { const k = (m.t || 0) + "|" + m.san + "|" + (m.fen || ""); if (seenBest[k]) return false; seenBest[k] = 1; return true; })
+        .slice(0, BEST_MOVES_MAX);
+    }
     // Fights made out of his own games. Union, newest first, one per position, capped like a binder.
     if (a.gameFights || b.gameFights) {
       const seen = {};
@@ -182,7 +208,7 @@
 
   const api = { mergeStats, mergeCard, normaliseCode, normaliseUser, normalisePin, validCode, validPin, validUser,
     boundSlot, exportBlob, importBlob, parentOf, configured, roster, pull, push, LEDGER_MAX, TIERS_MAX,
-    GAMES_RECENT, GAME_FIGHTS_MAX, LEVEL_ORDER };
+    GAMES_RECENT, GAME_FIGHTS_MAX, BEST_MOVES_MAX, LEVEL_ORDER };
   root.ShockmateSync = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

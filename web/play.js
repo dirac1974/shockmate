@@ -359,7 +359,9 @@
     const o = opts || {};
     if (!o.Chess) throw new Error("gameFights needs a Chess");
     const bar = o.bar == null ? BAR : o.bar, cap = o.cap == null ? FIGHT_CAP : o.cap;
-    const stamp = o.t || Date.now(), who = o.profile == null ? 0 : o.profile;
+    // `tag` letters the ids apart so a board out of a game against Glitch and a board out of a game
+    // against a sibling can never collide in the same binder room.
+    const stamp = o.t || Date.now(), who = o.profile == null ? 0 : o.profile, tag = o.tag || "G";
     const rows = (records || [])
       .filter(function (r) { return r && r.fen && r.bait && r.bait.uci && r.best && r.best.uci && r.best.uci !== r.bait.uci; })
       .map(function (r) { return Object.assign({}, r, { drop: dropOf(r.before, r.after) }); })
@@ -370,7 +372,7 @@
       if (seen[rows[i].fen]) continue;
       let fight = null;
       try { fight = buildFight(rows[i], { Chess: o.Chess, F: o.F, t: stamp, level: o.level,
-        id: "G" + who + stamp + (out.length + 1) }); } catch (e) { fight = null; }
+        id: tag + who + stamp + (out.length + 1) }); } catch (e) { fight = null; }
       if (!fight) continue;
       seen[rows[i].fen] = true; out.push(fight);
     }

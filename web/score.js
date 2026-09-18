@@ -517,6 +517,53 @@
       here.name + " again. You did not finish him off last time.");
   }
 
+  /* ---------- versus: the two kids, on one phone ----------
+     Everything a versus game leaves behind belongs to ONE kid. There is deliberately no field here
+     that pairs the two of them — no opponent name, no head-to-head, no "wins against". `results` is
+     this kid's own scoresheet, the way a tournament crosstable row is his and not his opponent's,
+     and every counter only ever climbs.
+
+     None of it reaches suggestLevel. Which crony a kid is offered is about his chess; his sibling
+     has nothing to do with it, and a Sunday of losing to a brother must not send him down a rung. */
+  const VERSUS_RECENT = 10, BEST_MOVES_MAX = 20;
+  function emptyVersus() { return { played: 0, asWhite: 0, asBlack: 0, results: { win: 0, draw: 0, loss: 0 }, recent: [] }; }
+  function versusOf(stats) {
+    const v = Object.assign(emptyVersus(), (stats && stats.versus) || {});
+    v.results = Object.assign({ win: 0, draw: 0, loss: 0 }, v.results);
+    v.recent = (v.recent || []).slice();
+    return v;
+  }
+  function bestMovesOf(stats) { return ((stats && stats.bestMoves) || []).slice(); }
+  // Newest first, one per move, capped like a binder room. Nothing is dropped for being old until
+  // twenty newer ones have arrived.
+  function storeBestMoves(list, fresh, cap) {
+    const max = cap == null ? BEST_MOVES_MAX : cap, out = [], seen = {};
+    [].concat(fresh || [], list || [])
+      .filter(function (m) { return m && m.san; })
+      .sort(function (a, b) { return (b.t || 0) - (a.t || 0); })
+      .forEach(function (m) {
+        const k = (m.t || 0) + "|" + m.san + "|" + (m.fen || "");
+        if (seen[k] || out.length >= max) return;
+        seen[k] = 1; out.push(m);
+      });
+    return out;
+  }
+  function recordVersus(stats, res) {
+    const r = res || {}, next = Object.assign({}, stats || {});
+    const v = versusOf(stats);
+    const colour = r.colour === "b" ? "b" : "w";
+    const result = r.result === "win" || r.result === "draw" ? r.result : "loss";
+    const row = { colour: colour, result: result, blunders: Math.max(0, Math.round(r.blunders || 0)),
+      matched: Math.max(0, Math.round(r.matched || 0)), moves: Math.max(0, Math.round(r.moves || 0)), t: r.t || Date.now() };
+    v.played += 1;
+    if (colour === "w") v.asWhite += 1; else v.asBlack += 1;
+    v.results[result] += 1;
+    v.recent = [row].concat(v.recent).slice(0, VERSUS_RECENT);
+    next.versus = v;
+    if (r.bestMoves && r.bestMoves.length) next.bestMoves = storeBestMoves(bestMovesOf(stats), r.bestMoves, BEST_MOVES_MAX);
+    return { stats: next, versus: v, row: row };
+  }
+
   // Why Prep holds what it holds, for the chip and the blurb: his misses, or traps while he has none.
   function prepSource(stats) {
     const cards = (stats && stats.cards) || {};
@@ -871,9 +918,13 @@
     // rather than drawn as a zero, so an abandoned game cannot flatter the line.
     const blunderTrend = games.recent.filter(function (r) { return (r.moves || 0) > 0; })
       .slice(0, 10).reverse().map(function (r) { return { level: r.level, blunders: r.blunders || 0, moves: r.moves || 0 }; });
+    /* Versus and best moments are this kid's own row and nothing else. progressSummary is called once
+       per profile and never sees the other one, which is what keeps a scoreboard from existing. */
+    const versus = versusOf(stats), bestMoves = bestMovesOf(stats);
     return {
       rank: agentRank(stats), cards: cards, total: list.length,
       games: games, suggest: suggestLevel(stats), blunderTrend: blunderTrend,
+      versus: versus, bestMoves: bestMoves, bestMove: bestMoves[0] || null,
       gameFights: ((stats && stats.gameFights) || []).length,
       kos: b.kos, power: b.power, knockedOff: knockedOff(stats), motifs: motifs, byDay: cardsByDay(stats, 14, ts),
       goodAt: motifs.filter(function (m) { return m.verdict === "good"; }).map(function (m) { return m.label; }),
@@ -892,6 +943,7 @@
   const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, prepSource, PREP_QUESTIONS, offersBait, prepQuestionsFor, motifVerdict, cardsByDay, progressSummary,
     weekStart, firstTryRate, thisWeek, coachNotes,
     LEVELS, levelIndex, levelById, levelAt, levelName, emptyGames, gamesOf, recordGame, gameBlunderRate, suggestLevel, GAMES_RECENT,
+    VERSUS_RECENT, BEST_MOVES_MAX, emptyVersus, versusOf, bestMovesOf, storeBestMoves, recordVersus,
     RUSH_MS, RUSH_NOTE, rushOf, earnCard, cardCracked, crackedIds, lookFirst, LOOK, GLITCH_LINES, glitchLine, pacingNudge,
     normalisePin, validPin, parentOf, parentSet, parentGate,
     PRINCIPLES, principleFor, MOTIF_LABEL, defaultCoachStyle, coachStyleOf, coachLine,

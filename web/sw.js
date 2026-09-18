@@ -1,9 +1,9 @@
 // Offline shell. Bump CACHE when any listed file changes, or phones keep the old copy.
-const CACHE = "shockmate-v21";   // bump with BUILD in game.js, or phones keep the old shell
+const CACHE = "shockmate-v22";   // bump with BUILD in game.js, or phones keep the old shell
 const SHELL = [
   "./", "./index.html", "./styles.css", "./game.js", "./encounters.js", "./futures.js",
   "./score.js", "./days.js", "./sync.js", "./sync-config.js", "./glitch.js", "./motifs.js", "./pieces.js", "./short-lines.js",
-  "./play.js", "./engine.js",
+  "./play.js", "./versus.js", "./engine.js",
   // Play is lazy in the page but eager in the shell: the install is the one moment there is
   // certainly a network, and a game started on the bus has to work without one.
   "./vendor/chess.js", "./vendor/stockfish.wasm.js", "./vendor/stockfish.wasm",

@@ -60,6 +60,35 @@ function run() {
   assert.strictEqual(Y.mergeStats({}, {}).games, undefined, "a profile that has never played a game invents none");
   assert.strictEqual(Y.mergeStats({}, {}).gameFights, undefined);
 
+  /* Versus. Same rule again: every counter only ever climbs, so two devices take the larger of each
+     rather than summing a game they both saw, and best moments union newest first and cap. There is
+     nothing head-to-head to merge here, because there is nothing head-to-head stored. */
+  const vsA = { versus: { played: 4, asWhite: 2, asBlack: 2, results: { win: 2, draw: 1, loss: 1 },
+      recent: [{ colour: "w", result: "win", blunders: 1, moves: 30, t: 300 }, { colour: "b", result: "loss", blunders: 4, moves: 26, t: 100 }] },
+    bestMoves: [{ t: 300, san: "Qxf7", fen: "fen-a", gain: 320, vs: "sibling" },
+      { t: 100, san: "Nd5", fen: "fen-shared", gain: 180, vs: "sibling" }] };
+  const vsB = { versus: { played: 6, asWhite: 3, asBlack: 3, results: { win: 1, draw: 3, loss: 2 },
+      recent: [{ colour: "w", result: "draw", blunders: 0, moves: 40, t: 400 }, { colour: "b", result: "loss", blunders: 4, moves: 26, t: 100 }] },
+    bestMoves: [{ t: 400, san: "Rxe8", fen: "fen-b", gain: 260, vs: "sibling" },
+      { t: 100, san: "Nd5", fen: "fen-shared", gain: 180, vs: "sibling" }] };
+  [Y.mergeStats(vsA, vsB), Y.mergeStats(vsB, vsA)].forEach(function (m) {
+    assert.strictEqual(m.versus.played, 6, "versus games played takes the larger side, never the sum");
+    assert.deepStrictEqual([m.versus.asWhite, m.versus.asBlack], [3, 3], "and so does each colour");
+    assert.deepStrictEqual([m.versus.results.win, m.versus.results.draw, m.versus.results.loss], [2, 3, 2],
+      "his own win, draw and loss counts each take the larger side and never go down");
+    assert.strictEqual(m.versus.recent.length, 3, "the same game on both devices is one row");
+    assert.deepStrictEqual(m.versus.recent.map(function (r) { return r.t; }), [400, 300, 100], "newest first");
+    assert.strictEqual(m.bestMoves.length, 3, "best moments union, one per move");
+    assert.strictEqual(m.bestMoves[0].san, "Rxe8", "newest first here as well");
+    assert.ok(m.bestMoves.every(function (b) { return b.vs === "sibling"; }), "and none of them names the other kid");
+  });
+  const bestA = [], bestB = [];
+  for (let i = 0; i < 15; i++) { bestA.push({ t: i, san: "a" + i, fen: "a" + i }); bestB.push({ t: 100 + i, san: "b" + i, fen: "b" + i }); }
+  assert.strictEqual(Y.mergeStats({ bestMoves: bestA }, { bestMoves: bestB }).bestMoves.length, Y.BEST_MOVES_MAX,
+    "and the list they live in is capped at twenty");
+  assert.strictEqual(Y.mergeStats({}, {}).versus, undefined, "a profile that has never played his sibling invents none");
+  assert.strictEqual(Y.mergeStats({}, {}).bestMoves, undefined);
+
   // --- the family login shared with the other kid apps ---
   assert.strictEqual(Y.normaliseCode("abcd 1234"), "ABCD1234", "codes are read out in caps");
   assert.strictEqual(Y.normaliseUser("  Mia_B "), "mia_b", "usernames are lowercase");

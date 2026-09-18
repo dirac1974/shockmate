@@ -211,6 +211,30 @@ function run() {
   assert.strictEqual(pg.gameFights, 2, "and how many of his own boards are waiting");
   assert.ok(pg.suggest.level && pg.suggest.reason, "the suggestion line is always there for the parent");
 
+  /* the versus row: his own games against his sibling, his own colours, his own best moments. It is
+     called once per profile and can only ever see one of them, and it is asserted here that nothing
+     it returns could be read as a score between the two kids. */
+  assert.strictEqual(noGames.versus.played, 0, "a kid who has never played his sibling still renders");
+  assert.deepStrictEqual(noGames.bestMoves, []);
+  assert.strictEqual(noGames.bestMove, null);
+  let vsStats = statsOf([], {});
+  vsStats = S.recordVersus(vsStats, { colour: "w", result: "win", blunders: 2, matched: 11, moves: 30, t: TODAY,
+    bestMoves: [{ t: TODAY, san: "Qxf7#", fen: "fen-x", gain: 900, vs: "sibling", n: 8 }] }).stats;
+  vsStats = S.recordVersus(vsStats, { colour: "b", result: "loss", blunders: 4, matched: 6, moves: 26, t: TODAY + 1 }).stats;
+  const pv = S.progressSummary(vsStats, ALL, TODAY);
+  assert.deepStrictEqual([pv.versus.played, pv.versus.asWhite, pv.versus.asBlack], [2, 1, 1], "his own row, both colours");
+  assert.strictEqual(pv.versus.results.win, 1, "and a later loss takes the win away from nobody");
+  assert.strictEqual(pv.bestMoves.length, 1, "his best moments are kept");
+  assert.strictEqual(pv.bestMove.san, "Qxf7#", "and the most recent one is the one Progress names");
+  assert.strictEqual(pv.bestMove.vs, "sibling", "nothing stored ever names the other kid");
+  // The guarantee, stated as an assertion: there is no field anywhere in a kid's Progress row that
+  // pairs his numbers with his sibling's.
+  const json = JSON.stringify(pv);
+  ["headToHead", "head_to_head", "scoreboard", "standings", "tally", "crosstable", "vsWins", "againstSibling", "opponent"]
+    .forEach(function (k) { assert.ok(json.indexOf('"' + k + '"') < 0, "Progress must not hold a field called " + k); });
+  assert.deepStrictEqual(S.suggestLevel(vsStats), S.suggestLevel(statsOf([], {})),
+    "and versus never moves which crony he is offered");
+
   console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, threats, camp days and runs, first-try rate, Monday-to-Sunday week, coach notes in priority order, rushed moves and the scoresheet note, cracked cards still count, the Games tile and the blunder trend, null-safe");
 }
 
