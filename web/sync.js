@@ -225,8 +225,48 @@
     const u = String(param(search, "u") || "").trim().toLowerCase();
     return /^[a-z0-9][a-z0-9-]{0,39}$/.test(u) ? u : null;
   }
+  // ?me=0 / ?me=1: which of the two slots this phone plays as. Written into the URL after a join,
+  // so the URL alone is a login. Null when absent or not a slot.
+  function slotFromSearch(search) {
+    const raw = param(search, "me");
+    if (raw == null || String(raw).trim() === "") return null;
+    const n = Number(String(raw).trim());
+    return validSlot(n) ? n : null;
+  }
   function shareUrl(code) { return SITE + "?family=" + normaliseCode(code); }
   function shareText(code) { return "Join our Shockmate family: " + normaliseCode(code) + " " + shareUrl(code); }
+
+  /* ---------- what this browser will do with a login ----------
+     Storage is the only place a join lives, and on a phone it is not promised: iOS evicts a site's
+     script-written storage after about a week unused, Private Browsing starts empty every time, and
+     a page opened inside Messages, Instagram or Facebook gets its own jar that is thrown away with
+     the sheet. None of that is detectable by name, so measure what can be measured — whether a write
+     comes back, and whether the user agent admits to being someone else's browser — and say so. */
+  const INAPP_RE = /(FBAN|FBAV|FB_IAB|FBIOS|Instagram|Line\/|Twitter|MicroMessenger|WeChat|WhatsApp|Snapchat|Pinterest|LinkedInApp|TikTok|musical_ly|GSA\/)/i;
+  // A write that does not read back is the honest test: Safari with storage blocked throws, and some
+  // in-app views accept the write and drop it.
+  function storageWorks(store) {
+    try {
+      const k = "shockmate-probe";
+      store.setItem(k, "1");
+      const ok = store.getItem(k) === "1";
+      store.removeItem(k);
+      return ok;
+    } catch (e) { return false; }
+  }
+  function browserFacts(nav, store) {
+    const n = nav || {}, ua = String(n.userAgent || "");
+    // iPadOS calls itself Macintosh; the touch points give it away.
+    const ios = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && (n.maxTouchPoints || 0) > 1);
+    const inApp = INAPP_RE.test(ua);
+    return {
+      ios: ios, inApp: inApp, storage: storageWorks(store),
+      // Real Safari on iOS sets navigator.standalone: false in a tab, true from a Home Screen icon.
+      // An embedded web view leaves it undefined, which is the second way to spot one.
+      standalone: n.standalone === true,
+      canAddToHome: ios && n.standalone === false && !inApp,
+    };
+  }
 
   /* ---------- the household's kids, from Yomple ----------
      yomple_family_players answers per app table; the same kid shows up in several apps, sometimes as
@@ -407,7 +447,8 @@
   }
 
   const api = { mergeStats, mergeCard, normaliseCode, normalisePin, validCode, validPin, validSlot, cleanName,
-    codeFromSearch, yompleUser, shareUrl, shareText, syncSlots, joined, mintCode, buildRoster, freeSlot,
+    codeFromSearch, yompleUser, slotFromSearch, shareUrl, shareText, syncSlots, joined, mintCode, buildRoster, freeSlot,
+    storageWorks, browserFacts,
     CODE_ALPHABET, CODE_MAX, WORDS, YOMPLE_TABLES, ROSTER_MAX, SITE,
     exportBlob, importBlob, parentOf, configured, rpc, auth, familyCreate, familyAdopt, familyRoster,
     yompleKids, yompleRegister, lookupFamily, pull, push, rename,

@@ -2,7 +2,6 @@
   "name": "Shockmate — Beat Glitch",
   "short_name": "Shockmate",
   "description": "Chess tactics, openings and endgames as short fights against Glitch.",
-  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

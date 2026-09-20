@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>Shockmate — Beat Glitch</title>
+  <!-- The manifest deliberately has no start_url. A manifest cannot carry a per-family code, and a
+       start_url would override the address the page was showing when it was pinned; without one the
+       spec says the install keeps the document URL, so an Add to Home Screen taken while signed in
+       captures ?family=CODE&me=SLOT and the icon opens already signed in. -->
   <link rel="manifest" href="./manifest.webmanifest" />
   <meta name="theme-color" content="#fbf3e4" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -29,6 +33,11 @@
         <button id="btn-settings" class="token" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button>
       </nav>
     </header>
+    <!-- One line about staying signed in, shown only when it is true of this browser. Never a block. -->
+    <div class="app-note" id="app-note" hidden>
+      <p id="app-note-text"></p>
+      <button type="button" id="btn-note-close" class="link">got it</button>
+    </div>
     <section id="screen-title" class="screen active">
       <div class="players" id="profiles">
         <button id="prof-0" class="chip prof">Player 1</button>
