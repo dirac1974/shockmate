@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.27";
+  const BUILD = "v0.28";
   const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
   const X = window.ShockmateFlash;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
@@ -178,6 +178,52 @@
       state.profiles.forEach((p, i) => localStorage.setItem(KEY + ":p" + i, JSON.stringify(p)));
     } catch (e) {}
   }
+
+  /* ---------- staying signed in on a phone ----------
+     A join lives in localStorage, and on iOS localStorage is a loan: it is cleared after about a
+     week without a visit, it starts empty in Private Browsing, and a link opened inside Messages or
+     Instagram gets a jar that is thrown away with the sheet. That is why one parent retyped the
+     family code every single morning while the server had his join all along.
+     So the URL carries the login too. After a join the address becomes ?family=CODE&me=SLOT, which
+     costs nothing, and which a bookmark — above all an Add to Home Screen icon, the only durable
+     thing iOS gives a web app — freezes forever. A wiped phone opening that icon knows who it is and
+     asks for one PIN, not a code, a roster and a PIN. */
+  const BROWSER = Y.browserFacts(navigator, (function () { try { return window.localStorage; } catch (e) { return null; } })());
+  const FORGETS_LINE = "This browser forgets logins. Open in Safari to stay signed in.";
+  const ADD_HOME_LINE = "Add this to your Home Screen to stay signed in: tap Share, then Add to Home Screen.";
+  function stampIdentity() {
+    const f = fam();
+    if (!Y.joined(f)) return;
+    try {
+      const q = new URLSearchParams(location.search);
+      // The hub's own params did their job on arrival; the canonical pair replaces them.
+      ["f", "u", "from"].forEach(function (k) { q.delete(k); });
+      q.set("family", f.code); q.set("me", String(f.me));
+      const next = location.pathname + "?" + q.toString() + location.hash;
+      if (next !== location.pathname + location.search + location.hash) history.replaceState(null, "", next);
+    } catch (e) {}
+  }
+  // A note is said once and waved away for good, best effort: on a phone whose storage does not work
+  // the dismissal cannot be remembered either, and a line that comes back is better than a silent loss.
+  function noteSeen(id) { try { return localStorage.getItem(KEY + ":note:" + id) === "1"; } catch (e) { return false; } }
+  function note(id, text) {
+    const host = $("app-note"); if (!host || !text || noteSeen(id)) return;
+    $("app-note-text").textContent = text; host.dataset.note = id; host.hidden = false;
+  }
+  function noteHide() {
+    const host = $("app-note"); if (!host) return;
+    try { if (host.dataset.note) localStorage.setItem(KEY + ":note:" + host.dataset.note, "1"); } catch (e) {}
+    host.hidden = true;
+  }
+  // Said on arrival when the browser is one that will lose the join, and after a join on an iPhone
+  // that could pin the page instead. Never a block: the fights work either way.
+  function warnIfForgetful() { if (!BROWSER.storage || BROWSER.inApp) note("forgets", FORGETS_LINE); }
+  function afterJoin() {
+    stampIdentity();
+    if (!BROWSER.storage || BROWSER.inApp) return note("forgets", FORGETS_LINE);
+    if (BROWSER.canAddToHome) note("addhome", ADD_HOME_LINE);
+  }
+
   function activeName() { return state.settings.names[state.active]; }
   function setSeats(n) {
     // Seats answer "how many people are holding this phone", never "which colour am I".
@@ -2208,10 +2254,12 @@
     famState("");
     show("screen-family");
   }
-  function openFamily(from, code) {
+  // `slot` is the ?me= from the URL: this phone has been here before and the link remembers which kid
+  // it is, so the roster step is skipped and he is asked for his PIN and nothing else.
+  function openFamily(from, code, slot) {
     Object.assign(FAM, { step: "choose", mode: "new", from: from || "first", names: ["", ""], pins: ["", ""], kid: 0,
       typed: "", first: "", code: "", roster: [], players: [], free: 0, pick: null, pickName: "", busy: false, me: 0,
-      user: Y.yompleUser(location.search) });
+      want: Y.validSlot(slot) ? slot : null, user: Y.yompleUser(location.search) });
     if (!Y.configured(syncCfg())) { toast("Family sync is not set up on this build.", 2600); return goHome(); }
     famShow("choose");
     $("fam-code-input").value = code || "";
@@ -2302,6 +2350,7 @@
         roster: kids.map(function (k, i) { return { slot: i, name: k.name }; }), skipped: false };
       kids.forEach(function (k, i) { state.settings.names[i] = k.name; });
       state.settings.profile = 0; useProfile(0); save(); hud();
+      afterJoin();
       syncNow(true);
       famLine("famMade");
       renderFamCode(); famShow("code-card");
@@ -2321,7 +2370,7 @@
     }).join("");
     Array.prototype.forEach.call(host.querySelectorAll("button[data-me]"), function (b) {
       b.onclick = function () {
-        const slot = Number(b.dataset.me); fam().me = slot; state.settings.profile = slot; useProfile(slot); save(); hud(); renderFamCode();
+        const slot = Number(b.dataset.me); fam().me = slot; state.settings.profile = slot; useProfile(slot); save(); hud(); stampIdentity(); renderFamCode();
       };
     });
   }
@@ -2355,6 +2404,11 @@
       FAM.code = r.code; FAM.players = r.players; FAM.free = r.free; FAM.roster = r.roster;
       famLine("famFound");
       renderFamRoster();
+      // The URL named the slot, so the roster has already been answered once on this phone: go
+      // straight to his PIN. The list is built anyway, so "not now" still steps back to it.
+      const want = FAM.want; FAM.want = null;
+      const mine = want == null ? null : FAM.roster.filter(function (e) { return e.slot === want; })[0];
+      if (mine) return famChoose(mine);
       famShow("pick");
     }).catch(function (err) {
       FAM.busy = false;
@@ -2431,6 +2485,7 @@
     applyRoster(FAM.players);
     state.profiles[slot] = Object.assign(freshStats(), Y.mergeStats(state.profiles[slot], remote || {}));
     state.settings.profile = slot; setSeats(1); useProfile(slot); save(); hud();
+    afterJoin();
     syncNow(true);
     toast("This phone is " + state.settings.names[slot] + "'s now.", 2400);
     FAM.from === "settings" ? (renderSettings(), show("screen-settings")) : goHome();
@@ -3072,6 +3127,7 @@
   }
 
   function bind() {
+    if ($("btn-note-close")) $("btn-note-close").onclick = noteHide;
     $("prof-0").onclick = () => switchProfile(0); $("prof-1").onclick = () => switchProfile(1);
     $("seat-1").onclick = () => { setSeats(1); save(); hud(); };
     $("seat-2").onclick = () => { setSeats(2); save(); hud(); };
@@ -3272,10 +3328,15 @@
   }
   load(); bind(); hud(); selfTest();
   // First launch, or a ?family=CODE share link: the one-tap setup card. "Skip" is remembered.
+  // With ?me=SLOT as well — which is what this phone wrote into its own URL the last time it joined,
+  // and what a Home Screen icon kept — the code and the roster are already answered: one PIN screen.
   (function firstRun() {
-    const link = Y.codeFromSearch(location.search);
-    if (link && !(fam().code === link && familyJoined())) return openFamily("first", link);
+    warnIfForgetful();
+    const link = Y.codeFromSearch(location.search), slot = Y.slotFromSearch(location.search);
+    if (link && fam().code === link && familyJoined()) return stampIdentity();
+    if (link) return openFamily("first", link, slot);
     if (!Y.validCode(fam().code) && !fam().skipped) return openFamily("first");
+    stampIdentity();
   })();
   restartLivePoller();
   // Back from the background: ask the server straight away rather than waiting out a poll.
