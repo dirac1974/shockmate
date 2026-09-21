@@ -1,0 +1,40 @@
+# Professional pass — review and plan, 2026-09-20
+
+Reviewed at `37af535` (v0.29 live). All 17 unit and data suites green, CI green on every recent PR, the
+live build serves `v0.29`. The product is far ahead of PLAN §7; what is missing is the layer around the
+product that a stranger, a second family, or a future maintainer would expect.
+
+## What was found
+
+| Area | State at v0.29 | Why it matters |
+| --- | --- | --- |
+| Update path | The service worker precaches with `cache.addAll`, which honours the origin's ten-minute `max-age`; the "quiet refresh" fetch does too. A new build can install a stale `game.js` into a fresh cache, and the page never says a new version exists. | This is the documented recurring pain: three false verifications on one day. Families would just see old bugs. |
+| Failure handling | 67 `catch` blocks, no global net. A thrown error mid-fight leaves the screen frozen with no way out except a reload. | A kid with a frozen board has no Home button and no words. |
+| Diagnostics | Only the build marker on the home screen. | The parent cannot say what went wrong on a phone. |
+| README | Describes v0.2: 12 fights, Stockfish 17, "double-click index.html". | The first thing anyone reads is false. |
+| Licences | Vendored stockfish.js is GPL-3, chess.js BSD-2, fonts OFL, puzzle database CC0; no notice in the repo root, no licence for Shockmate's own code. | Distribution of GPL code needs the notice; the repo's own licence is the owner's call. |
+| Developer entry point | No `package.json`; CI runs a shell loop that a contributor has to copy by hand. | One `npm test` is what people expect. |
+| Accessibility | 25 aria attributes, no `:focus-visible` style, live regions absent, no page description. | Tablet keyboards and screen readers get nothing; the tests are cheap. |
+| Layout | One media query (`max-width: 400px`). The app is a 420px column at any width. | Fine on phones, wasteful on an iPad. Phase 3 item, not urgent. |
+| Code shape | `web/game.js` is 3,421 lines and every screen; the logic modules beside it are pure and tested. | Safe today because e2e covers the screens; a split is maintenance, not product. |
+| Client secrets | PINs in clear in localStorage; the family code in the URL by design. | Named in the security review; the parent's decision, not the app's. |
+
+## v0.30 — shipped by this pass
+
+1. **The update actually lands.** `sw.js` installs the shell with `cache: "reload"` so a new worker never inherits a stale file, and refreshes in the background with `cache: "no-cache"` so the origin is revalidated rather than the browser cache. When a new worker takes over a page that already had one, the page shows "Shockmate updated. Reload" and one tap reloads. First visits never see it.
+2. **A safety net.** `window.error` and `unhandledrejection` are caught once: the Home button is shown, a toast says what to do, and the last fault (build, time, message) is kept under `shockmate-v2:fault` and shown to the coach at the foot of Settings. Nothing is sent anywhere.
+3. **README rewritten** for what the app is now, with the local run recipe, the test gate, the data and voice pipelines, and the product rules.
+4. **`THIRD_PARTY.md`** lists every vendored and generated dependency with its licence. Shockmate's own licence is left for the owner (see below).
+5. **`package.json`** with `npm test` (every unit and data suite plus the syntax check) and `npm start` (the same local server as `.claude/launch.json`); CI calls `npm test` so there is one definition.
+6. **Accessibility floor**: `:focus-visible` ring in ink with a hard offset (rule 1 kept), `aria-live` on the toast and banner, a page description.
+7. **`tests/e2e/phase5_update.py`** proves 1 and 2 in a real browser: service workers allowed, a local server sending Pages' `max-age=600`, build A loaded twice, build B shipped, the note appears, one tap runs B; a thrown error and a rejected promise reach the coach. It runs in CI with the other browser suites.
+8. **phase4 no longer races on a slow machine.** It failed on untouched `main` here twice, on two different Flash assertions, because `?fast=1` clamps the Flash pauses to 20 ms and the harness read the joke line and the reveal ring off the DOM after they had already been replaced. The app records `item.joke` and `state.flash.ring`; the suite reads those. CI had always been fast enough to hide it.
+9. Docs brought current: `AGENTS.md` assignment, `CONTINUATION.md`, PLAN §7 status.
+
+## Next, in order
+
+1. **Gate 0 with the kids** is still unreported and still blocks any new phase. Unchanged.
+2. **Owner decisions** from the security review: a licence for the repo; whether PINs become mandatory; whether rejoin sits behind the PIN.
+3. **Tablet layout**: at 700px and wider, board left, caption and abilities right, same tokens. One media query and no new controls. Verify at 1024×768 and 820×1180 with the harness.
+4. **Split `game.js` by screen** behind the existing e2e: `home.js`, `fight.js`, `camp.js`, `family.js`, `settings.js`. Mechanical, no behaviour change, one PR per file.
+5. **Weekly coach summary** shareable as text from Progress, so the parent can send it without opening the app.

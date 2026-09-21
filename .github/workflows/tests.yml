@@ -27,17 +27,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install chess==1.11.2
-      - name: JavaScript suites
-        run: |
-          set -e
-          for t in tests/test_*.js; do echo "== $t"; node "$t"; done
-      - name: Python suites
-        run: |
-          set -e
-          python tests/test_encounters.py
-          python tests/test_voice_lines.py
-      - name: Syntax check the shipped scripts
-        run: for f in web/*.js; do node --check "$f"; done
+      - name: Unit and data suites, syntax check (the same npm test a contributor runs)
+        run: npm test
 
   e2e:
     runs-on: ubuntu-latest
@@ -51,7 +42,4 @@ jobs:
       - name: Browser suites
         env:
           PYTHONUNBUFFERED: "1"
-        run: |
-          status=0
-          for t in tests/e2e/phase*.py; do echo "== $t"; python "$t" || status=1; done
-          exit $status
+        run: npm run e2e

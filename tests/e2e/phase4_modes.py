@@ -13,7 +13,7 @@
   - Tournament week: the look-first tap before a fight, wrong then right.
 Run: python tests/e2e/phase4_modes.py
 """
-import random, time
+import random, re, time
 
 import chess
 from playwright.async_api import async_playwright
@@ -123,8 +123,11 @@ async def flash(b, base, fake):
     assert plan["types"].count("gone") >= 2, plan
     assert plan["reveal"] == 10000, plan   # a new kid starts at the top of the ladder
     # The reveal window really is a window: the board goes up, then it goes away.
-    await pg.wait_for_function("() => Object.keys(window.__shockmate.state.pieces).length > 4")
-    assert not await pg.is_hidden("#flash-ring"), "the ring counts the reveal down without a digit"
+    # Under ?fast=1 the 10 s window is 20 ms, so the ring is read off the flash state, not the DOM.
+    ring = await pg.evaluate("() => new Promise(res => { const t = setInterval(() => { const f = window.__shockmate.state.flash;"
+                             " if (f && f.ring) { clearInterval(t); res(f.ring); } }, 5); })")
+    assert ring["ms"] == 10000 and not ring["ghost"], ("the ring counts the full reveal down", ring)
+    assert not re.search(r"\d", await pg.text_content("#flash-ring") or ""), "the ring counts the reveal down without a digit"
     wrong_on = next(k for k in range(6) if not plan["control"][k])
     items = await h.flash_drill(pg, 6, wrong_on=wrong_on, wrong_control=True)
     await pg.wait_for_selector("#session-end:not([hidden])")
