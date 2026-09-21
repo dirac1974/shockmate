@@ -35,9 +35,12 @@ product that a stranger, a second family, or a future maintainer would expect.
 
 Two media queries, no new controls, no DOM change. A tablet on its side (700px and wider with the height to match, landscape) lays the fight out as a grid: board left in a 380 to 520px column, everything said about it on the right in the phone's own top-to-bottom order. Held upright it keeps the phone's column at 640px with the board up to 560px, because half a screen of empty paper under a side-by-side fight is worse than a bigger board. A phone on its side keeps the phone layout. Every other screen stays a centred 460px column. `tests/e2e/phase6_tablet.py` proves it at 1024×768, 820×1180, 390×844 and 844×390: board bigger, nothing scrolls sideways, powers and prompt on screen, a square still answers, the binder still a column; `SHOTS=1` writes screenshots to `tests/e2e/shots/` (ignored). The boss row also gained a gap so a long crony name never touches his rating.
 
+## v0.32 — the coach's week as a message
+
+On Progress, under each kid's Coach says, one chip: "Share Ada's week". It builds a plain-text message from that kid's row alone (`S.weeklySummary` in `score.js`: rank and cards, this week's cards and camp days, first-try rate, threats, Flash, rushed moves, games, good at, focus on, the first coach note) and hands it to the system share sheet, or the clipboard, or shows it in the toast. One kid per message, built from one profile, so a scoreboard cannot exist here either. Numbers appear only where Progress already shows them. Held by `tests/test_progress.js` and a Progress step in `tests/e2e/phase2.py`.
+
 ## Next, in order
 
 1. **Gate 0 with the kids** is still unreported and still blocks any new phase. Unchanged.
 2. **Owner decisions** from the security review: a licence for the repo; whether PINs become mandatory; whether rejoin sits behind the PIN.
 3. **Split `game.js` by screen** behind the existing e2e: `home.js`, `fight.js`, `camp.js`, `family.js`, `settings.js`. Mechanical, no behaviour change, one PR per file.
-4. **Weekly coach summary** shareable as text from Progress, so the parent can send it without opening the app.

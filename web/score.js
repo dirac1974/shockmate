@@ -1639,6 +1639,29 @@
     };
   }
 
+  /* ---------- the coach's week, as text ----------
+     What the parent sends to the other parent, a grandparent or a coach without opening the app. One
+     kid per message, his own numbers only: it is built from one profile and never sees the other,
+     which is what keeps a scoreboard from existing here too. Plain text, short lines, no markup, and a
+     number only where the parent already sees it on Progress. */
+  function pct(r) { return Math.round((r || 0) * 100) + "%"; }
+  function weeklySummary(stats, encounters, name, ts) {
+    const p = progressSummary(stats || emptyStats(), encounters, ts), at = ts || Date.now();
+    const who = String(name || "").trim() || "Player";
+    const lines = [who + " on Shockmate, week of " + dateKey(weekStart(at))];
+    lines.push("Rank " + p.rank.title + ". " + p.cards + " of " + p.total + " cards.");
+    lines.push("This week: " + p.thisWeek.cards + " cards, " + p.thisWeek.campDays + " camp days.");
+    if (p.firstTry.cards) lines.push("First try: " + pct(p.firstTryRate) + " of " + p.firstTry.cards + " cards.");
+    if (p.threats.asked) lines.push("Threats spotted: " + p.threats.found + " of " + p.threats.asked + ".");
+    if (p.flash.items) lines.push("Flash: " + pct(p.flash.rate) + " over " + p.flash.days + " days.");
+    if (p.rush.moves) lines.push("Rushed: " + p.rush.rushed + " of " + p.rush.moves + " timed moves.");
+    if (p.games.played) lines.push("Games against Glitch: " + p.games.played + " played, " + p.games.wins + " won.");
+    lines.push("Good at: " + (p.goodAt.length ? p.goodAt.join(", ") : "nothing yet") + ".");
+    lines.push("Focus on: " + (p.focusOn.length ? p.focusOn.join(", ") : "nothing flagged") + ".");
+    if (p.coachNotes.length) lines.push("Coach says: " + p.coachNotes[0]);
+    return lines.join("\n");
+  }
+
   /* Pacing. Two finished days in one sitting and the home button offers Camp instead, for the rest of
      that sitting. Soft: the day is still one tap away. Off once Camp is already done today. */
   function pacingNudge(daysThisSitting, campDone) { return (daysThisSitting || 0) >= 2 && !campDone; }
@@ -1687,7 +1710,7 @@
     return { profiles: ps, names: ns };
   }
 
-  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, prepSource, PREP_QUESTIONS, offersBait, prepQuestionsFor, motifVerdict, cardsByDay, progressSummary,
+  const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, prepSource, PREP_QUESTIONS, offersBait, prepQuestionsFor, motifVerdict, cardsByDay, progressSummary, weeklySummary,
     weekStart, firstTryRate, thisWeek, coachNotes,
     LEVELS, levelIndex, levelById, levelAt, levelName, emptyGames, gamesOf, recordGame, gameBlunderRate, suggestLevel, GAMES_RECENT,
     VERSUS_RECENT, BEST_MOVES_MAX, emptyVersus, versusOf, bestMovesOf, storeBestMoves, recordVersus,

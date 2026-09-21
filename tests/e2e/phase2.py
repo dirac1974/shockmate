@@ -35,6 +35,23 @@ async def main():
             for d in h.COACH_PIN:
                 await pg.click('#keypad .key[data-key="%s"]' % d)
             await h.screen(pg, "screen-settings")
+            # Progress, and the coach's week as a message: one chip per kid, built from that kid's row only.
+            # The system share sheet is real on a desktop Chrome and would sit open forever, so it is
+            # replaced with one that records what it was handed: that is the message the parent sends.
+            await pg.click("#btn-progress")
+            await h.screen(pg, "screen-progress")
+            chips = await pg.locator("button[data-share-week]").count()
+            assert chips == 2, ("one share chip per kid", chips)
+            assert "Test" not in (await pg.text_content("#progress-root")), "the coach's own name is not a kid's row"
+            await pg.evaluate("navigator.share = d => { window.__shared = d; return Promise.resolve(); }")
+            await pg.click('button[data-share-week="1"]')
+            await pg.wait_for_function("() => !!window.__shared")
+            shared = await pg.evaluate("window.__shared")
+            names = await pg.evaluate("window.__shockmate.state.settings.names")
+            assert shared["text"].startswith(names[1] + " on Shockmate, week of ") and names[0] not in shared["text"], ("one kid per message", shared)
+            assert "Focus on: " in shared["text"] and "<" not in shared["text"], shared
+            await pg.click("#btn-progress-back")
+            await h.screen(pg, "screen-settings")
             await pg.click("#opt-blitz-0")
             await pg.click("#btn-close-settings")
             await h.screen(pg, "screen-title")
@@ -111,7 +128,7 @@ async def main():
             ph.check("phase2")
     finally:
         httpd.shutdown()
-    print("OK e2e phase2: coach keypad wrong-then-right, blitz per kid from Settings, co-op alternation + rage + "
+    print("OK e2e phase2: coach keypad wrong-then-right, Progress with one share-the-week chip per kid, blitz per kid from Settings, co-op alternation + rage + "
           "separate collections, duel hot-seat + verdict, mixed-pack lesson day, card art for every fight")
 
 

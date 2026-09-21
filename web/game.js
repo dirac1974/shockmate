@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.31";
+  const BUILD = "v0.32";
   const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
   const X = window.ShockmateFlash;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
@@ -518,8 +518,17 @@
   // profile still shows up. Everything here is derived; nothing is written.
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
   function tile(value, label) { return '<div class="tile"><b>' + esc(value) + "</b><small>" + esc(label) + "</small></div>"; }
+  // One kid's week as a message, from his own profile only. It goes wherever the phone can send text.
+  function shareWeek(i) {
+    const st = state.profiles[i] || freshStats(), name = state.settings.names[i] || ("Player " + (i + 1));
+    return shareText(S.weeklySummary(st, ALL, name, now()), "Copied. Paste it into a message.");
+  }
   function renderProgress() {
     const root = $("progress-root"); if (!root) return;
+    root.onclick = function (ev) {
+      const b = ev.target && ev.target.closest ? ev.target.closest("button[data-share-week]") : null;
+      if (b) shareWeek(Number(b.dataset.shareWeek));
+    };
     const firsts = [];
     let html = "";
     [0, 1].forEach(function (i) {
@@ -578,6 +587,7 @@
         // kid's world, so purple here reads as "not for you" rather than as a friendly control.
         '<div class="coach-says"><b>Coach says</b>' +
           p.coachNotes.map(function (n) { return "<p>" + esc(n) + "</p>"; }).join("") + "</div>" +
+        '<div class="chip-row"><button type="button" class="chip" data-share-week="' + i + '">Share ' + esc(name) + "’s week</button></div>" +
         '<div class="prog-bars" title="cards earned per day, last 14 days">' +
           p.byDay.map(function (d) { return '<i style="height:' + Math.round(4 + 36 * d.n / max) + 'px" title="' + esc(d.key) + ": " + d.n + '"></i>'; }).join("") +
         "</div>" +
@@ -2412,14 +2422,16 @@
       };
     });
   }
-  function shareFamily(code) {
-    const text = Y.shareText(code);
+  function shareFamily(code) { return shareText(Y.shareText(code), "Copied. Paste it to the other phone."); }
+  // The system share sheet where there is one, the clipboard where there is not, the text itself as
+  // the last resort. Used for the family link and for the coach's week.
+  function shareText(text, copiedLine) {
     const copy = function () {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         // A clipboard write can hang waiting on a permission; after a second and a half, show the text.
         const slow = new Promise(function (r) { setTimeout(function () { r("slow"); }, 1500); });
         return Promise.race([navigator.clipboard.writeText(text).then(function () { return "ok"; }), slow])
-          .then(function (how) { toast(how === "ok" ? "Copied. Paste it to the other phone." : text, how === "ok" ? 2400 : 6000); },
+          .then(function (how) { toast(how === "ok" ? copiedLine : text, how === "ok" ? 2400 : 6000); },
             function () { toast(text, 6000); });
       }
       toast(text, 6000); return Promise.resolve();

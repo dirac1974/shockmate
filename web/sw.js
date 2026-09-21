@@ -1,5 +1,5 @@
 // Offline shell. Bump CACHE when any listed file changes, or phones keep the old copy.
-const CACHE = "shockmate-v32";   // bump with BUILD in game.js, or phones keep the old shell
+const CACHE = "shockmate-v33";   // bump with BUILD in game.js, or phones keep the old shell
 const SHELL = [
   "./", "./index.html", "./styles.css", "./game.js", "./encounters.js", "./futures.js",
   "./score.js", "./flash.js", "./days.js", "./sync.js", "./sync-config.js", "./glitch.js", "./motifs.js", "./pieces.js", "./short-lines.js",
