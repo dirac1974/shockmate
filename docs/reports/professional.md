@@ -39,8 +39,11 @@ Two media queries, no new controls, no DOM change. A tablet on its side (700px a
 
 On Progress, under each kid's Coach says, one chip: "Share Ada's week". It builds a plain-text message from that kid's row alone (`S.weeklySummary` in `score.js`: rank and cards, this week's cards and camp days, first-try rate, threats, Flash, rushed moves, games, good at, focus on, the first coach note) and hands it to the system share sheet, or the clipboard, or shows it in the toast. One kid per message, built from one profile, so a scoreboard cannot exist here either. Numbers appear only where Progress already shows them. Held by `tests/test_progress.js` and a Progress step in `tests/e2e/phase2.py`.
 
+## Split — `game.js` in thirteen parts
+
+`web/game.js` is one closure of 3,400 lines, and a true module split would have meant rewriting every cross-reference between 275 functions with no product gain and real regression risk. So the split is at the source: `src/game/00-core.js` to `99-boot.js` are slices of that one file, cut at the section banners (ui, board, fight, camp, flash, play, versus, family, live, home, coach, boot), and `tools/build_game.js` concatenates them into `web/game.js` with a generated notice on top. `npm test` refuses a stale or hand-edited `web/game.js`, the same discipline `encounters.js` already has. The shipped file is byte-identical apart from that notice, so no BUILD bump. A part can grow into a real module later, one at a time, behind the browser suites.
+
 ## Next, in order
 
 1. **Gate 0 with the kids** is still unreported and still blocks any new phase. Unchanged.
 2. **Owner decisions** from the security review: a licence for the repo; whether PINs become mandatory; whether rejoin sits behind the PIN.
-3. **Split `game.js` by screen** behind the existing e2e: `home.js`, `fight.js`, `camp.js`, `family.js`, `settings.js`. Mechanical, no behaviour change, one PR per file.
