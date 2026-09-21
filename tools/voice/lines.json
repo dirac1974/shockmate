@@ -2075,6 +2075,26 @@
   "text": "A family. Two phones, twice the trouble. Share that code."
  },
  {
+  "key": "g-family-mine-1",
+  "voice": "glitch",
+  "text": "Hold on. Which pile of cards is yours?"
+ },
+ {
+  "key": "g-family-mine-2",
+  "voice": "glitch",
+  "text": "Two players on this phone. Point at yourself."
+ },
+ {
+  "key": "g-family-mine-3",
+  "voice": "glitch",
+  "text": "I've lost track. Which one of these is you?"
+ },
+ {
+  "key": "g-family-mine-4",
+  "voice": "glitch",
+  "text": "Before I hand over the cards: which lot is yours?"
+ },
+ {
   "key": "g-family-missing-1",
   "voice": "glitch",
   "text": "That code? Never heard of it. Check the letters."

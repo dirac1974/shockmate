@@ -11,6 +11,9 @@
     reaches A through Sync now. Nothing on the join path registers anything with Yomple.
   - Start a family: phone D has no code; the kids' names and PINs, a minted WORD-XXXX code that is
     made in Shockmate and registered with Yomple.
+  - A join keeps progress: the phone's profile order is not the family's slot order. Sarah's cards
+    are in local profile 1 and the family gives her slot 0; they must move with her and the other
+    kid's must stay his. With two nameless piles of cards the phone asks instead of guessing.
   - Offline: with the service worker installed and the network gone, a reload still loads every fight.
 All Supabase traffic goes to harness.FakeSupabase; both phones share it.
 Run: python tests/e2e/phase3_family.py
@@ -219,6 +222,80 @@ async def family(b, base, fake):
     await d.ctx.close()
 
 
+def some_cards(n, tag):
+    """A local profile with n earned cards, one a day, ids that say whose they are."""
+    day = 86400000
+    return {"cardsEarned": {"%s%d" % (tag, i): {"critical": False, "tries": 1, "t": 1700000000000 + i * day}
+                            for i in range(n)},
+            "games": {"played": 3, "wins": 2, "draws": 0, "losses": 1, "byLevel": {}, "recent": [], "bestLevelWon": None}}
+
+
+def seed_family(fake, code, players):
+    fake.families[code] = {"name": "Family",
+                           "players": {s: {"name": n, "pin": p, "progress": {}} for s, (n, p) in players.items()}}
+
+
+async def join_keeps_progress(b, base, fake):
+    """The slot order is the family's; the profile order is this phone's. They need not agree.
+
+    Sarah has been playing as "Player 2" on this phone — her cards are in local profile 1 — and the
+    family gives her slot 0, where the other kid's cards sit. The join must carry hers into slot 0
+    and leave his in the other index, under his own name. Then the same phone, with two nameless
+    piles of cards, must ask instead of guessing.
+    """
+    code = "BIRCH-K7Q2"
+    seed_family(fake, code, {0: ("Sarah", "1111")})
+    ph = await h.phone(b, base, fake, settings={"names": ["Alex", "Sarah"], "family": {"skipped": False}},
+                       profiles=[some_cards(5, "a"), some_cards(12, "s")])
+    pg = ph.page
+    await h.boot(ph, "family=" + code.lower())
+    await pg.wait_for_selector("#fam-pick:not([hidden])")
+    await pg.click('#fam-roster button[data-slot="0"]')
+    await pg.wait_for_function("() => document.getElementById('fam-pin-title').textContent === 'Sarah, type your PIN'")
+    await h.fam_pin(pg, "1111")
+    await h.screen(pg, "screen-title")
+    assert await pg.is_hidden("#fam-mine"), "her name was on profile 1: nothing to ask"
+
+    earned = "i => Object.keys(window.__shockmate.state.profiles[i].cardsEarned)"
+    mine, theirs = await pg.evaluate(earned, 0), await pg.evaluate(earned, 1)
+    assert len(mine) == 12 and mine[0].startswith("s"), ("her twelve cards are in her slot", mine)
+    assert len(theirs) == 5 and theirs[0].startswith("a"), ("his five are untouched in the other", theirs)
+    assert await pg.evaluate("window.__shockmate.state.settings.names") == ["Sarah", "Alex"], "his name went with his cards"
+    assert await pg.evaluate("window.__shockmate.state.settings.profile") == 0
+    assert await pg.text_content("#prof-0") == "Sarah" and await pg.text_content("#prof-1") == "Alex", "the home chips follow"
+    await h.unlock_settings(pg)
+    assert await pg.input_value("#opt-name-0") == "Sarah" and await pg.input_value("#opt-name-1") == "Alex"
+    await pg.click("#btn-close-settings")
+    assert fake.families[code]["players"][0]["progress"]["cardsEarned"].get("s0"), "her cards reached her slot on the server"
+    ph.check("join keeps progress")
+    await ph.ctx.close()
+
+    # Two piles of cards and two placeholder names: the phone cannot tell, so it asks.
+    two = "CEDAR-K7Q2"
+    seed_family(fake, two, {0: ("Kit", "3333")})
+    amb = await h.phone(b, base, fake, settings={"names": ["Player 1", "Player 2"], "family": {"skipped": False}},
+                        profiles=[some_cards(5, "a"), some_cards(12, "s")])
+    pa = amb.page
+    await h.boot(amb, "family=" + two.lower())
+    await pa.wait_for_selector("#fam-pick:not([hidden])")
+    await pa.click('#fam-roster button[data-slot="0"]')
+    await h.fam_pin(pa, "3333")
+    await pa.wait_for_selector("#fam-mine:not([hidden])")
+    assert await pa.text_content("#fam-mine-title") == "Which of these is yours, Kit?"
+    chips = await pa.eval_on_selector_all("#fam-mine-list button[data-mine]", "els => els.map(e => e.textContent)")
+    assert chips == ["Player 15 cards · 3 games", "Player 212 cards · 3 games"], chips
+    assert await pa.is_visible("#btn-fam-mine-fresh"), "starting fresh is always on offer"
+    assert await pa.evaluate("window.__shockmate.state.settings.family.code") == "", "nothing is joined until he answers"
+    await pa.click('#fam-mine-list button[data-mine="1"]')
+    await h.screen(pa, "screen-title")
+    mine, theirs = await pa.evaluate(earned, 0), await pa.evaluate(earned, 1)
+    assert len(mine) == 12 and mine[0].startswith("s"), ("the pile he picked is his slot's", mine)
+    assert len(theirs) == 5 and theirs[0].startswith("a"), ("the pile he did not pick is still there", theirs)
+    assert await pa.evaluate("window.__shockmate.state.settings.names") == ["Kit", "Player 1"]
+    amb.check("join asks when it cannot tell")
+    await amb.ctx.close()
+
+
 async def main():
     httpd, base = h.serve()
     fake = h.FakeSupabase()
@@ -227,12 +304,14 @@ async def main():
             b = await h.launch(p)
             await backup_and_offline(b, base, fake)
             await family(b, base, fake)
+            await join_keeps_progress(b, base, fake)
             await b.close()
     finally:
         httpd.shutdown()
     print("OK e2e phase3: backup save/restore round trip and merge; join by Yomple household code (not found, roster "
           "from Yomple, new kid makes a PIN, hub link marks the kid, existing kid's wrong PIN refused then right); a card "
-          "won on C reaches A by sync; start a family mints and registers a code; offline reload loads every fight")
+          "won on C reaches A by sync; start a family mints and registers a code; a join carries the kid's own cards into "
+          "his slot whatever index they were in and asks him when two piles are nameless; offline reload loads every fight")
 
 
 h.run(main)

@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.28";
+  const BUILD = "v0.29";
   const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
   const X = window.ShockmateFlash;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
@@ -71,6 +71,15 @@
     const f = fam(); if (!rows || !rows.length) return;
     f.roster = rows.map((r) => ({ slot: r.slot, name: r.name }));
     rows.forEach((r) => { if (r.name) state.settings.names[r.slot] = r.name; });
+    showNames();
+  }
+  // Whatever is on screen follows the names in settings. Without this, a roster rename landing while
+  // Settings is open leaves the old name in the box, and closing Settings writes it back over the
+  // rename — and pushes it to the family. The home chips are the same names and follow too.
+  function showNames() {
+    if ($("opt-name-0")) $("opt-name-0").value = state.settings.names[0];
+    if ($("opt-name-1")) $("opt-name-1").value = state.settings.names[1];
+    [0, 1].forEach((i) => { const b = $("prof-" + i); if (b) b.textContent = state.settings.names[i]; });
   }
 
   // One round trip per slot this phone can sync: pull the other phone's copy, merge both ways, push
@@ -2232,8 +2241,10 @@
      registers it with Yomple so the other apps take it too. Skip keeps the phone local. The coach PIN
      is a different thing and never leaves the phone. */
   const FAM = { step: "choose", mode: "new", from: "first", names: ["", ""], pins: ["", ""], kid: 0,
-    typed: "", first: "", code: "", roster: [], players: [], free: 0, pick: null, pickName: "", user: null, busy: false, me: 0 };
-  const FAM_STEPS = ["choose", "names", "pin", "code-card", "pick"];
+    typed: "", first: "", code: "", roster: [], players: [], free: 0, pick: null, pickName: "", user: null, busy: false, me: 0,
+    // The join waiting on "which of these is yours": {slot, pin, remote}, or null when nothing is asked.
+    ask: null };
+  const FAM_STEPS = ["choose", "names", "pin", "code-card", "pick", "mine"];
   function yompleCfg() { return window.SHOCKMATE_YOMPLE && window.SHOCKMATE_YOMPLE.url ? window.SHOCKMATE_YOMPLE : null; }
   const FAM_NOT_FOUND = "No family has that code. Check it with whoever set it up. Codes look like MAPLE-K7Q2; it is the same code your other apps use.";
   function famOffline(err) { return err && err.code === "offline" ? "No connection. Try again with signal." : String((err && err.message) || err); }
@@ -2258,7 +2269,7 @@
   // it is, so the roster step is skipped and he is asked for his PIN and nothing else.
   function openFamily(from, code, slot) {
     Object.assign(FAM, { step: "choose", mode: "new", from: from || "first", names: ["", ""], pins: ["", ""], kid: 0,
-      typed: "", first: "", code: "", roster: [], players: [], free: 0, pick: null, pickName: "", busy: false, me: 0,
+      typed: "", first: "", code: "", roster: [], players: [], free: 0, pick: null, pickName: "", busy: false, me: 0, ask: null,
       want: Y.validSlot(slot) ? slot : null, user: Y.yompleUser(location.search) });
     if (!Y.configured(syncCfg())) { toast("Family sync is not set up on this build.", 2600); return goHome(); }
     famShow("choose");
@@ -2478,18 +2489,71 @@
       famShake(famOffline(err));
     });
   }
+  /* ---------- the join keeps his cards ----------
+     A kid's progress lives in whichever local profile he has been playing as, and that need not be
+     the slot the family gives him: "Player 2" on this phone can be slot 0 in the family. Matching by
+     index would leave his cards in his brother's slot, where the brother inherits them on the next
+     join. So his local profile is found by name and moved to his slot before the merge — by swapping,
+     so the other kid's cards travel with the other index. When a name cannot answer it, he is asked. */
   function famEnter(slot, pin, remote) {
+    const who = FAM.pickName || ((FAM.players.filter(function (p) { return p.slot === slot; })[0] || {}).name) || "";
+    const idx = S.pickLocalProfile(state.settings.names, state.profiles, slot, who);
+    if (idx === null) return famAsk(slot, pin, remote, who);
+    famLand(slot, pin, remote, idx);
+  }
+  function summaryLine(s) {
+    const one = function (n, w) { return n + " " + w + (n === 1 ? "" : "s"); };
+    return one(s.cards, "card") + " · " + one(s.games, "game");
+  }
+  // One screen, one question. Both chips stay tappable whatever he picks; nothing is deleted here.
+  function famAsk(slot, pin, remote, who) {
+    FAM.ask = { slot: slot, pin: pin, remote: remote || {} };
+    $("fam-mine-title").textContent = "Which of these is yours, " + who + "?";
+    const host = $("fam-mine-list");
+    host.innerHTML = [0, 1].map(function (i) {
+      return '<button type="button" class="cta play" data-mine="' + i + '">' + esc(state.settings.names[i]) +
+        "<small>" + summaryLine(S.profileSummary(state.profiles[i])) + "</small></button>";
+    }).join("");
+    Array.prototype.forEach.call(host.querySelectorAll("button[data-mine]"), function (b) {
+      b.onclick = function () { famMine(Number(b.dataset.mine)); };
+    });
+    $("btn-fam-mine-fresh").onclick = function () { famMine(null); };
+    famLine("famMine");
+    famShow("mine");
+  }
+  function famMine(idx) {
+    const a = FAM.ask; if (!a) return;
+    FAM.ask = null;
+    famLand(a.slot, a.pin, a.remote, idx);
+  }
+  // `idx` is the local profile that is his, or null for "neither of these": the slot then starts from
+  // the family's copy alone, and anything that was sitting in that slot is parked, never dropped.
+  function famLand(slot, pin, remote, idx) {
     const code = FAM.code, was = fam(), same = was.code === code;
     const pins = same ? was.pins.slice() : ["", ""]; pins[slot] = pin;
+    const placed = S.placeLocal(state.profiles, state.settings.names, idx, slot);
+    state.profiles = placed.profiles; state.settings.names = placed.names;
+    if (idx === null) keepAside(slot);
+    const local = idx === null ? freshStats() : state.profiles[slot];
     state.settings.family = { code: code, me: slot, pins: pins, roster: FAM.players.slice(), skipped: false };
     applyRoster(FAM.players);
-    state.profiles[slot] = Object.assign(freshStats(), Y.mergeStats(state.profiles[slot], remote || {}));
+    state.profiles[slot] = Object.assign(freshStats(), Y.mergeStats(local, remote || {}));
     state.settings.profile = slot; setSeats(1); useProfile(slot); save(); hud();
     afterJoin();
     syncNow(true);
     toast("This phone is " + state.settings.names[slot] + "'s now.", 2400);
     FAM.from === "settings" ? (renderSettings(), show("screen-settings")) : goHome();
     restartLivePoller();
+  }
+  // "Neither of these is mine" must still not lose what was in that slot: it is copied aside under
+  // its own key with the name it had, so a parent who picked wrong has somewhere to get it back from.
+  function keepAside(slot) {
+    const p = state.profiles[slot], s = S.profileSummary(p);
+    if (!s.cards && !s.games) return;
+    try {
+      localStorage.setItem(KEY + ":p" + slot + ":kept",
+        JSON.stringify({ name: state.settings.names[slot], t: Date.now(), stats: p }));
+    } catch (e) {}
   }
   function bindFamily() {
     if (!$("screen-family")) return;
@@ -2517,6 +2581,8 @@
     $("btn-fam-done").onclick = function () { famLeave(); };
     $("btn-fam-back").onclick = function () {
       if (FAM.busy) return;
+      // Backing out of the chooser drops the join, not the cards: nothing has been moved yet.
+      if (FAM.step === "mine") { FAM.ask = null; famShow("pick"); return; }
       if (FAM.step === "pin" && FAM.mode !== "new") { FAM.first = ""; famShow("pick"); return; }
       if (FAM.step === "choose" || FAM.from === "settings" || FAM.step === "code-card") return famLeave();
       FAM.first = ""; famShow("choose");
