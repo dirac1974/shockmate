@@ -28,6 +28,11 @@ self.addEventListener("activate", (e) => {
     .then(() => self.clients.claim()));
 });
 
+// The page asks which shell it is being served; the answer is what tells it a new build landed.
+self.addEventListener("message", (e) => {
+  if (e.data === "shell?" && e.source) e.source.postMessage({ shell: CACHE });
+});
+
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;                      // never cache a sync POST

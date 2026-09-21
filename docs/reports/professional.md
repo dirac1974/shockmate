@@ -21,7 +21,7 @@ product that a stranger, a second family, or a future maintainer would expect.
 
 ## v0.30 — shipped by this pass
 
-1. **The update actually lands.** `sw.js` installs the shell with `cache: "reload"` so a new worker never inherits a stale file, and refreshes in the background with `cache: "no-cache"` so the origin is revalidated rather than the browser cache. When a new worker takes over a page that already had one, the page shows "Shockmate updated. Reload" and one tap reloads. First visits never see it.
+1. **The update actually lands.** `sw.js` installs the shell with `cache: "reload"` so a new worker never inherits a stale file, and refreshes in the background with `cache: "no-cache"` so the origin is revalidated rather than the browser cache. When a new worker takes over a page that already had one, the page shows "Shockmate updated. Reload" and one tap reloads. First visits never see it. (v0.32: detection is a handshake, the page asking the worker its shell name and comparing with the remembered one, after the takeover event alone lost a race once on CI.)
 2. **A safety net.** `window.error` and `unhandledrejection` are caught once: the Home button is shown, a toast says what to do, and the last fault (build, time, message) is kept under `shockmate-v2:fault` and shown to the coach at the foot of Settings. Nothing is sent anywhere.
 3. **README rewritten** for what the app is now, with the local run recipe, the test gate, the data and voice pipelines, and the product rules.
 4. **`THIRD_PARTY.md`** lists every vendored and generated dependency with its licence. Shockmate's own licence is left for the owner (see below).

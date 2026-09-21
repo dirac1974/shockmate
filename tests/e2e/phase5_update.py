@@ -75,13 +75,20 @@ async def main():
         await page.reload()
         await page.wait_for_function("window.__shockmate && window.__shockmate.BUILD")
         print("1c. after the bump, this load ran", await page.evaluate("window.__shockmate.BUILD"), "(cached shell, expected A)")
-        await page.wait_for_function("!document.getElementById('app-note').hidden && !document.getElementById('btn-note-act').hidden", timeout=20000)
+        await page.wait_for_function("!document.getElementById('app-note').hidden && !document.getElementById('btn-note-act').hidden", timeout=30000)
         text = await page.evaluate("document.getElementById('app-note-text').textContent")
         print("1d. note shown:", repr(text), "| Reload button visible")
         assert "updated" in text
         await page.click("#btn-note-act")
         await page.wait_for_function("window.__shockmate && window.__shockmate.BUILD === 'v0.30-B'", timeout=15000)
         print("1e. after Reload the page runs", await page.evaluate("window.__shockmate.BUILD"), "| note hidden:", await page.evaluate("document.getElementById('app-note').hidden"))
+        # Opened again on B: the same build is not an update. And the remembered shell name is B's.
+        await page.reload()
+        await page.wait_for_function("window.__shockmate && window.__shockmate.BUILD === 'v0.30-B'")
+        await page.wait_for_timeout(800)
+        assert await page.evaluate("document.getElementById('app-note').hidden"), "opening the same build again is not an update"
+        assert await page.evaluate("localStorage.getItem('shockmate-v2:shell')") == "shockmate-check-B"
+        print("1f. a second open of B says nothing; remembered shell is B")
 
         # 2. the safety net
         await page.evaluate("document.getElementById('btn-home').hidden = true")
