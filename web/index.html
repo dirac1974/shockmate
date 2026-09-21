@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>Shockmate — Beat Glitch</title>
+  <meta name="description" content="Chess tactics, openings and endgames as short fights against Glitch, for kids around 400 Chess.com. Engine-scored, offline, two players on one phone." />
   <!-- The manifest deliberately has no start_url. A manifest cannot carry a per-family code, and a
        start_url would override the address the page was showing when it was pinned; without one the
        spec says the install keeps the document URL, so an Add to Home Screen taken while signed in
@@ -36,6 +37,7 @@
     <!-- One line about staying signed in, shown only when it is true of this browser. Never a block. -->
     <div class="app-note" id="app-note" hidden>
       <p id="app-note-text"></p>
+      <button type="button" id="btn-note-act" class="chip" hidden>Reload</button>
       <button type="button" id="btn-note-close" class="link">got it</button>
     </div>
     <section id="screen-title" class="screen active">
@@ -140,7 +142,7 @@
       </div>
       <div class="blitz" id="blitz" hidden><i><span id="blitz-fill"></span></i></div>
       <div class="path" id="path"></div>
-      <div class="banner" id="banner" hidden></div>
+      <div class="banner" id="banner" hidden aria-live="polite"></div>
       <!-- Flash: the reveal window as a ring that empties. No digits: a number counting down is a
            number on screen going down, and it would be the only one in the app. -->
       <div class="flash-ring" id="flash-ring" hidden aria-hidden="true">
@@ -395,6 +397,7 @@
         </div>
       </div>
 
+      <p class="hint build" id="diag"></p>
       <button id="btn-close-settings" class="cta big">Done</button>
     </section>
     <section id="screen-family" class="screen">
@@ -468,7 +471,7 @@
         <button id="btn-duel-home" class="ghost">Done</button>
       </div>
     </section>
-    <div id="toast" class="toast" hidden></div>
+    <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
     <div id="session-end" class="modal" hidden>
       <div class="modal-card">
         <h2 id="end-title">Mission complete</h2>
@@ -504,6 +507,13 @@
   <script src="game.js"></script>
   <script>
     if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      // A worker taking over a page that already had one means a new build just installed. A first
+      // visit has no controller yet, so the takeover there is not an update and says nothing.
+      var hadWorker = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener("controllerchange", function () {
+        if (hadWorker) window.dispatchEvent(new Event("shockmate:updated"));
+        hadWorker = true;
+      });
       window.addEventListener("load", function () {
         navigator.serviceWorker.register("./sw.js").catch(function () {});
       });

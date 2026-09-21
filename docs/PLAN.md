@@ -243,7 +243,7 @@ Four phases, each ending in something the kids can play. A phase does not start 
 | 2 · Return | Path map, bosses, collection, cliffhanger end, in-session Glitch rematches from `dueReviews`, co-op mode, duel handicap, Blitz toggle | Both kids come back unprompted on day 2 and day 4. Rematch fights are not recognized as "review." |
 | 3 · Grow | Pack 2 (12 fights incl. two "bait is real"), parent weekly summary, voice lines, tablet layout | Parent summary matches what the kids report. No new dead ends. |
 
-**Status (2026-09-17):** Phases 0, 1 and 2 are built and live at `1189ad0`. None of their gates has been run with the kids, so no phase is signed off. Openings, endgames, offline install and family sync shipped early, inside v0.6, ahead of the line below.
+**Status (2026-09-20):** Phases 0, 1 and 2 are built and live; v0.30 adds the professional layer (update path, safety net, README, notices, `npm test`, accessibility floor; see `docs/reports/professional.md`). None of the gates has been run with the kids, so no phase is signed off. Openings, endgames, offline install, family sync, Play, Versus, Camp, Flash and voice all shipped ahead of the line below.
 
 **Out of scope until the Phase 3 gate:** accounts, chat, online play, Chess.com sync, 3D. Openings and endgames shipped early and are no longer out of scope.
 

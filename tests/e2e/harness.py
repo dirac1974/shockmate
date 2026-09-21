@@ -400,7 +400,10 @@ async def flash_item(pg, wrong_first=False, wrong_control=False):
         for k in range(3):
             await tap(pg, bad[k])
         await pg.wait_for_function("n => { const s = window.__shockmate.state; return !s.flash || s.flash.i >= n; }", arg=i + 1)
-        item["joke"] = await pg.text_content("#glitch-line")
+        # The app keeps the line on the item: under ?fast=1 the next board's reveal line replaces the
+        # bubble 20 ms after this one, sooner than a round trip on a slow machine.
+        item["joke"] = await pg.evaluate("i => { const f = window.__shockmate.state.flash; const it = f && f.items[i];"
+                                  " return (it && it.joke) || document.getElementById('glitch-line').textContent; }", i)
         return item
     if wrong_first:
         if item["kind"] == "chip":
@@ -415,7 +418,8 @@ async def flash_item(pg, wrong_first=False, wrong_control=False):
         await tap(pg, item["squares"][0])
     await pg.wait_for_function("n => { const s = window.__shockmate.state; return !s.flash || s.flash.i >= n; }", arg=i + 1)
     if item.get("control"):
-        item["joke"] = await pg.text_content("#glitch-line")
+        item["joke"] = await pg.evaluate("i => { const f = window.__shockmate.state.flash; const it = f && f.items[i];"
+                                  " return (it && it.joke) || document.getElementById('glitch-line').textContent; }", i)
     return item
 
 

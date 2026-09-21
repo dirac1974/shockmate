@@ -6,7 +6,7 @@
   const FILES = "abcdefgh", KEY = "shockmate-v2";
   // Read this off the home screen to tell what a phone actually loaded — Pages and the
   // service worker both cache, so "I don't see the new screen" is usually a stale copy.
-  const BUILD = "v0.29";
+  const BUILD = "v0.30";
   const Y = window.ShockmateSync, H = window.ShockmateShort, P = window.ShockmatePlay, V = window.ShockmateVersus, L = window.ShockmateLive;
   const X = window.ShockmateFlash;
   const E = () => window.ShockmateEngine;          // lazily loaded: it is 650 KB of Stockfish
@@ -222,7 +222,31 @@
   function noteHide() {
     const host = $("app-note"); if (!host) return;
     try { if (host.dataset.note) localStorage.setItem(KEY + ":note:" + host.dataset.note, "1"); } catch (e) {}
-    host.hidden = true;
+    host.hidden = true; if ($("btn-note-act")) $("btn-note-act").hidden = true;
+  }
+  // A new build installed underneath this page (sw.js took over). Never remembered as seen: the next
+  // build has to be able to say it again. "got it" keeps the old build until the next open.
+  function noteUpdate() {
+    const host = $("app-note"); if (!host) return;
+    $("app-note-text").textContent = "Shockmate updated."; host.dataset.note = ""; host.hidden = false;
+    const act = $("btn-note-act"); if (act) act.hidden = false;
+  }
+  /* ---------- the safety net ----------
+     Nothing in here should ever throw, but a phone that does throw must not freeze a kid on a board
+     with no way out. The fault is kept for the coach (Settings foot), the Home button is shown, and one
+     toast says what to do. Nothing is sent anywhere. */
+  function recordFault(text) {
+    const fault = { build: BUILD, at: new Date().toISOString(), text: String(text || "unknown").slice(0, 300) };
+    try { localStorage.setItem(KEY + ":fault", JSON.stringify(fault)); } catch (e) {}
+    if (state.faulted) return;
+    state.faulted = true; setTimeout(function () { state.faulted = false; }, 4000);
+    try { const h = $("btn-home"); if (h) h.hidden = false; toast("Something went wrong. Tap Home to keep going.", 3200); } catch (e) {}
+  }
+  function lastFault() { try { return JSON.parse(localStorage.getItem(KEY + ":fault") || "null"); } catch (e) { return null; } }
+  function renderDiag() {
+    const el = $("diag"); if (!el) return;
+    const f = lastFault();
+    el.textContent = "Build " + BUILD + (f ? " \u00b7 last problem " + String(f.at).slice(0, 16).replace("T", " ") + " (" + f.build + "): " + f.text : " \u00b7 no problems recorded on this phone");
   }
   // Said on arrival when the browser is one that will lose the join, and after a join on an iPhone
   // that could pin the page instead. Never a block: the fights work either way.
@@ -1289,6 +1313,8 @@
   function flashRing(ms, ghost) {
     const box = $("flash-ring"), run = $("flash-ring-run"); if (!box || !run) return;
     box.hidden = false; box.classList.toggle("ghost", !!ghost);
+    // The window is a fact of the drill, kept where a test can read it: under ?fast=1 the ring is gone in 20 ms.
+    if (state.flash) state.flash.ring = { ms: ms, ghost: !!ghost, at: now() };
     run.style.transition = "none"; run.style.strokeDashoffset = "0";
     void run.getBoundingClientRect();
     run.style.transition = "stroke-dashoffset " + Math.max(60, T(ms)) + "ms linear";
@@ -1424,7 +1450,8 @@
         setPieces(item.position);
         item.squares.forEach(function (s) { if (sq(s)) sq(s).classList.add("gate-ok"); });
       }
-      glitchMoment(correct ? "flashJokeRight" : "flashJoke");
+      // Kept on the item: the next board's line replaces the bubble after the pause, and under ?fast=1 that is 20 ms.
+      item.joke = glitchMoment(correct ? "flashJokeRight" : "flashJoke").text;
       prompt(correct ? S.coachLine(f.style, { kind: "flashRight" }) : X.answerText(item));
     } else if (correct) {
       banner("SEEN", "win"); prompt(S.coachLine(f.style, { kind: "flashRight" })); glitchMoment("flashRight");
@@ -3116,7 +3143,7 @@
       // Shows the style in force, which is the short-lines default until the parent picks one.
       setPair("opt-coach-" + i, coachStyle(i));
     });
-    renderFamilyCard();
+    renderFamilyCard(); renderDiag();
   }
   function switchProfile(i) { setSeats(1); state.settings.profile = i; useProfile(i); save(); hud(); }
 
@@ -3194,6 +3221,7 @@
 
   function bind() {
     if ($("btn-note-close")) $("btn-note-close").onclick = noteHide;
+    if ($("btn-note-act")) $("btn-note-act").onclick = function () { location.reload(); };
     $("prof-0").onclick = () => switchProfile(0); $("prof-1").onclick = () => switchProfile(1);
     $("seat-1").onclick = () => { setSeats(1); save(); hud(); };
     $("seat-2").onclick = () => { setSeats(2); save(); hud(); };
@@ -3392,6 +3420,9 @@
     if (errors.length) console.error("self-test failed", errors);
     else console.log("Shockmate self-test passed: " + ALL.length + " fights across " + PACKS.length + " packs.");
   }
+  window.addEventListener("error", function (ev) { recordFault(ev.message || (ev.error && ev.error.message)); });
+  window.addEventListener("unhandledrejection", function (ev) { const r = ev.reason; recordFault(r && (r.message || r)); });
+  window.addEventListener("shockmate:updated", noteUpdate);
   load(); bind(); hud(); selfTest();
   // First launch, or a ?family=CODE share link: the one-tap setup card. "Skip" is remembered.
   // With ?me=SLOT as well — which is what this phone wrote into its own URL the last time it joined,

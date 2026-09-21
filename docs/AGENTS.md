@@ -2,9 +2,9 @@
 
 One Lead session in Claude Code (Opus) runs each phase and spawns subagents with hard file ownership. The Lead is the only agent that merges, pushes, tags, or edits `docs/`. Full spec: `docs/PLAN.md`. Session state: `docs/CONTINUATION.md`.
 
-## Current assignment (2026-09-17)
+## Current assignment (2026-09-20)
 
-v0.7 (lesson days, rank, daily crony, and the battle layer: boss health, powers, gear, motif weaknesses) plus a Home button reachable from every screen, is live at `364f67f` as v0.8.1. Nothing is in flight. The next move is not a build task. It is gate 0: a real session with both kids, six fights each, on a phone. Do not open a phase branch until David reports it. The one job that does not wait is QA putting the suites into GitHub Actions, because `tests/e2e/` currently has no machine that can run it. See "Next places" in `docs/CONTINUATION.md`.
+v0.30 is the professional pass: an update path that lands on phones, a safety net for thrown errors, a current README, third-party notices, `npm test` as the one gate, and an accessibility floor. See `docs/reports/professional.md` for the review and the ordered list of what comes next. Gate 0 (a real session with both kids) is still unreported and still blocks any new phase. CI runs every suite, unit and browser, on every PR; both jobs block a merge.
 
 ## Roles and ownership
 
@@ -21,7 +21,7 @@ A subagent that needs a change in a file it does not own writes the request in i
 ## Working rules
 
 1. Read `docs/CONTINUATION.md` and `docs/PLAN.md` before touching code.
-2. Run `node tests/test_futures.js`, `node tests/test_score.js`, `python3 tests/test_encounters.py` before every commit. Red blocks the commit.
+2. Run `npm test` before every commit, and `npm run e2e` before a merge. Red blocks the commit.
 3. Small commits, imperative subject, body says what was ambiguous and what you chose. Credit "Claude", never a model name.
 4. Verify every screen at 390×844 with Playwright before calling it done.
 5. When the spec is ambiguous, choose the option that removes a way for a kid to get stuck. Do not ask David unless the question is in PLAN §9.
