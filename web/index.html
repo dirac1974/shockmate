@@ -507,15 +507,22 @@
   <script src="game.js"></script>
   <script>
     if ("serviceWorker" in navigator && location.protocol !== "file:") {
-      // A worker taking over a page that already had one means a new build just installed. A first
-      // visit has no controller yet, so the takeover there is not an update and says nothing.
-      var hadWorker = !!navigator.serviceWorker.controller;
-      navigator.serviceWorker.addEventListener("controllerchange", function () {
-        if (hadWorker) window.dispatchEvent(new Event("shockmate:updated"));
-        hadWorker = true;
-      });
+      // "Updated" is a fact, not an event: the page asks whichever worker controls it for its shell
+      // name and compares that with the name it remembered last time. Watching only for the takeover
+      // event lost a race on a fast machine, where the new worker could install and take over before
+      // this script had attached its listener, and the phone never heard. A first visit remembers a
+      // name and says nothing.
+      var known = null; try { known = localStorage.getItem("shockmate-v2:shell"); } catch (e) {}
+      function shell(msg) {
+        var name = msg && msg.shell; if (!name) return;
+        if (known && known !== name) window.dispatchEvent(new Event("shockmate:updated"));
+        known = name; try { localStorage.setItem("shockmate-v2:shell", name); } catch (e) {}
+      }
+      function ask() { var c = navigator.serviceWorker.controller; if (c) c.postMessage("shell?"); }
+      navigator.serviceWorker.addEventListener("message", function (ev) { shell(ev.data); });
+      navigator.serviceWorker.addEventListener("controllerchange", ask);
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./sw.js").catch(function () {});
+        navigator.serviceWorker.register("./sw.js").then(ask).catch(function () {});
       });
     }
   </script>

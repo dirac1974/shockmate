@@ -254,7 +254,21 @@ function run() {
   assert.deepStrictEqual(S.suggestLevel(vsStats), S.suggestLevel(statsOf([], {})),
     "and versus never moves which crony he is offered");
 
-  console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, threats, camp days and runs, first-try rate, Monday-to-Sunday week, coach notes in priority order, rushed moves and the scoresheet note, cracked cards still count, the Games tile and the blunder trend, the Flash tile beside first-try, null-safe");
+  // The coach's week as text: one kid, his own numbers, nothing the screen does not already show.
+  const fresh = S.weeklySummary(S.emptyStats(), ALL, "Sam", Date.UTC(2026, 8, 21));
+  assert.ok(/^Sam on Shockmate, week of \d{4}-\d{1,2}-\d{1,2}\n/.test(fresh), fresh);
+  assert.ok(fresh.indexOf("0 of " + ALL.length + " cards") > 0 && fresh.indexOf("Good at: nothing yet.") > 0 && fresh.indexOf("Focus on: nothing flagged.") > 0, fresh);
+  assert.ok(!/NaN|undefined|null|%/.test(fresh), "a fresh week has no rates to show: " + fresh);
+  const t0 = Date.now();
+  const weekPlayed = S.weeklySummary(statsOf([{ id: "01", motif: byId["01"].motif, attempts: 1, hits: 1, misses: 0 },
+    { id: "02", motif: byId["02"].motif, attempts: 2, hits: 1, misses: 1 }], { "01": t0, "02": t0 }), ALL, "Sam", t0);
+  assert.ok(/First try: \d+% of 2 cards\./.test(weekPlayed), weekPlayed);
+  assert.ok(weekPlayed.indexOf("This week: 2 cards") > 0 && weekPlayed.indexOf("Coach says: ") > 0, weekPlayed);
+  assert.ok(weekPlayed.split("\n").every(function (l) { return l.length <= 140; }), "short lines: " + weekPlayed);
+  assert.ok(S.weeklySummary(null, ALL, "", t0).indexOf("Player on Shockmate") === 0, "null-safe, unnamed");
+  assert.ok(weekPlayed.indexOf("<") < 0 && weekPlayed.indexOf("*") < 0, "plain text, no markup");
+
+  console.log("OK progress: verdict bands, cards by local day over 14 days, one row per motif sorted focus to good, good-at and focus-on lists, threats, camp days and runs, first-try rate, Monday-to-Sunday week, coach notes in priority order, rushed moves and the scoresheet note, cracked cards still count, the Games tile and the blunder trend, the Flash tile beside first-try, the week as one kid's plain-text message, null-safe");
 }
 
 run();

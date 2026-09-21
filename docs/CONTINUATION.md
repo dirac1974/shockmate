@@ -4,7 +4,7 @@ Read this first in a new session, then `docs/PLAN.md`. `docs/AGENTS.md` defines 
 
 **Date:** 2026-09-20
 **Repo:** https://github.com/dirac1974/shockmate
-**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.31 · 152 fights · 32 days`.
+**Live:** https://dirac1974.github.io/shockmate/ — marker `v0.32 · 152 fights · 32 days`.
 **Source of truth:** GitHub `main`. There is no other copy. Anything not on `main` does not exist.
 
 ## What the game is
@@ -13,13 +13,14 @@ ADHD chess trainer for two kids (8 and 10) at about 400 Chess.com. Theme: Timeli
 
 Core loop: think (quiet) → move → tease (0.7 s) → verdict by tier → the future plays out on the board → why-gate (tap the pieces) → card earned → next fight or cliffhanger.
 
-## Actual state — v0.31 is live
+## Actual state — v0.32 is live
 
 Phases 0, 1 and 2 are built, merged and deployed. Openings, endgames, persistence and family sync landed on top of them, ahead of the plan.
 
 - Pages serves `main` / root and rebuilds in about 35 seconds. Verify a deploy by the home-screen build marker, never by eye.
+- v0.32 coach's week (2026-09-21): a "Share <kid>'s week" chip per kid on Progress builds a plain-text message from that kid's row only (`S.weeklySummary`) and shares, copies or shows it (`shareText` in game.js, shared with the family link). Held by `test_progress.js` and phase2.
 - v0.31 tablet layout (2026-09-21): landscape tablet = grid, board left and words right; upright tablet = 640px column with a 560px board; phones unchanged; `tests/e2e/phase6_tablet.py` holds it at four sizes. See `docs/reports/professional.md`.
-- v0.30 professional pass (2026-09-20). `sw.js` installs the shell with `cache: "reload"` and refreshes with `cache: "no-cache"`, so a new worker never inherits the origin's ten-minute-old `game.js`; when a new worker takes over a page that already had one, the app-note says "Shockmate updated." with a Reload button (`noteUpdate`, event `shockmate:updated` from the inline script in `index.html`). `window.error` and `unhandledrejection` go to `recordFault`: Home button shown, one toast, the fault kept under `shockmate-v2:fault` and shown at the foot of Settings (`renderDiag`). README rewritten, `THIRD_PARTY.md` added, `package.json` with `npm test` / `npm run e2e` / `npm start` over `tools/run_suites.js`; CI calls the same scripts. `:focus-visible` ring, `aria-live` on toast and banner, a page description. `tests/e2e/phase5_update.py` proves the update path and the fault net in a real browser with the worker allowed and Pages' cache header. Review and ordered next steps: `docs/reports/professional.md`.
+- v0.30 professional pass (2026-09-20). `sw.js` installs the shell with `cache: "reload"` and refreshes with `cache: "no-cache"`, so a new worker never inherits the origin's ten-minute-old `game.js`; the app-note says "Shockmate updated." with a Reload button (`noteUpdate`, event `shockmate:updated` from the inline script in `index.html`). Since v0.32 the page asks the controlling worker its shell name (`postMessage("shell?")`, answered from `sw.js`) and compares it with `shockmate-v2:shell` from last time; watching only the takeover event lost a race on a fast machine (CI, once in three runs) where the new worker took over before the listener existed. `window.error` and `unhandledrejection` go to `recordFault`: Home button shown, one toast, the fault kept under `shockmate-v2:fault` and shown at the foot of Settings (`renderDiag`). README rewritten, `THIRD_PARTY.md` added, `package.json` with `npm test` / `npm run e2e` / `npm start` over `tools/run_suites.js`; CI calls the same scripts. `:focus-visible` ring, `aria-live` on toast and banner, a page description. `tests/e2e/phase5_update.py` proves the update path and the fault net in a real browser with the worker allowed and Pages' cache header. Review and ordered next steps: `docs/reports/professional.md`.
 - All suites green on the live commit: 15 `tests/test_*.js` and 2 `tests/test_*.py`, via `npm test`.
 - `tests/e2e/*.py` did NOT run. Application Control on David's PC blocks the greenlet DLL that Playwright loads. The e2e suite currently has no machine to run on.
 - Data is generated: edit `data/encounters.src.json`, `openings.src.json` or `endgames.src.json`, run `python tools/build_encounters.py`. Stockfish 19 lives at `~/tools/stockfish/stockfish/stockfish-windows-x86-64-universal.exe` on David's PC and the script finds it (or `--sf`, or `STOCKFISH`). `--arrive-only` refreshes only the arriving moves, no engine. v0.16 is the first full re-score with Stockfish 19 on this PC. Never hand-edit `v2.json` or `web/encounters.js`.

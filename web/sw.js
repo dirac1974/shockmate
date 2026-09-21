@@ -1,5 +1,5 @@
 // Offline shell. Bump CACHE when any listed file changes, or phones keep the old copy.
-const CACHE = "shockmate-v32";   // bump with BUILD in game.js, or phones keep the old shell
+const CACHE = "shockmate-v33";   // bump with BUILD in game.js, or phones keep the old shell
 const SHELL = [
   "./", "./index.html", "./styles.css", "./game.js", "./encounters.js", "./futures.js",
   "./score.js", "./flash.js", "./days.js", "./sync.js", "./sync-config.js", "./glitch.js", "./motifs.js", "./pieces.js", "./short-lines.js",
@@ -26,6 +26,11 @@ self.addEventListener("activate", (e) => {
   e.waitUntil(caches.keys()
     .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
     .then(() => self.clients.claim()));
+});
+
+// The page asks which shell it is being served; the answer is what tells it a new build landed.
+self.addEventListener("message", (e) => {
+  if (e.data === "shell?" && e.source) e.source.postMessage({ shell: CACHE });
 });
 
 self.addEventListener("fetch", (e) => {
