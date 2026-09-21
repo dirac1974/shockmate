@@ -12,7 +12,7 @@ v0.30 is the professional pass: an update path that lands on phones, a safety ne
 | --- | --- | --- | --- |
 | Lead | `main` | `docs/`, `README.md`, merges, tags, GitHub Pages | Feature code directly |
 | Data | `data/v2-schema` | `data/`, `tools/build_encounters.py`, `tests/test_encounters.py`, generated `web/encounters.js` | `web/game.js`, `web/styles.css` |
-| Arena | `arena/state-machine` | `web/game.js`, `web/futures.js`, `web/score.js`, `tests/test_futures.js`, `tests/test_score.js` | Data files, theme CSS |
+| Arena | `arena/state-machine` | `src/game/*.js` (generated into `web/game.js` by `npm run build:game`), `web/futures.js`, `web/score.js`, `tests/test_futures.js`, `tests/test_score.js` | Data files, theme CSS |
 | Theme (Phase 1+) | `theme/timeline-split` | `web/styles.css`, `web/pieces.js`, `web/glitch.js`, `web/sfx/`, markup in `web/index.html` | Game logic, data |
 | QA | `qa/e2e` | `tests/e2e/`, Playwright config, GitHub issues | Fixes in files it does not own (file an issue to the owner) |
 

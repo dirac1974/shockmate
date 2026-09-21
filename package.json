@@ -8,7 +8,9 @@
   "engines": { "node": ">=18" },
   "scripts": {
     "start": "python -m http.server 8765 --directory web",
-    "test": "npm run test:js && npm run test:py && npm run check",
+    "build:game": "node tools/build_game.js",
+    "check:game": "node tools/build_game.js --check",
+    "test": "npm run check:game && npm run test:js && npm run test:py && npm run check",
     "test:js": "node tools/run_suites.js js",
     "test:py": "python tests/test_encounters.py && python tests/test_voice_lines.py",
     "check": "node tools/run_suites.js check",

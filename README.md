@@ -37,7 +37,7 @@ That serves `web/` at http://localhost:8765/ (plain `python -m http.server`, no 
 ## The test gate
 
 ```
-npm test          # 15 Node suites, 2 Python suites, syntax check of every shipped script
+npm test          # game.js freshness, 15 Node suites, 2 Python suites, syntax check of every shipped script
 npm run e2e       # 6 Playwright suites, phone and tablet sizes, faked backend, fails on any console error
 ```
 
@@ -47,7 +47,7 @@ every PR and push to `main`, and both block a merge.
 
 ## Data
 
-Fights are generated, never hand-edited in their shipped form:
+`web/game.js` is generated from `src/game/` (see Layout). Fights are generated too, never hand-edited in their shipped form:
 
 ```
 python tools/build_encounters.py     # data/*.src.json -> data/encounters.v2.json + web/encounters.js
@@ -70,7 +70,7 @@ Reads `ELEVENLABS_API_KEY` from the environment, skips unchanged lines by text h
 
 ## Release
 
-Bump `BUILD` in `web/game.js` and `CACHE` in `web/sw.js` together. Merge to `main`; Pages rebuilds in
+Bump `BUILD` in `src/game/00-core.js` and `CACHE` in `web/sw.js` together, then `npm run build:game`. Merge to `main`; Pages rebuilds in
 about a minute. A phone that already has the app shows "Shockmate updated" with a Reload button the next
 time it opens, and one tap loads the new build.
 
@@ -78,7 +78,7 @@ time it opens, and one tap loads the new build.
 
 | Path | What |
 | --- | --- |
-| `web/game.js` | Every screen and the state machine |
+| `src/game/*.js` | Every screen and the state machine, one part per screen; `npm run build:game` concatenates them into `web/game.js`, which is generated and never hand-edited |
 | `web/score.js`, `futures.js`, `days.js`, `flash.js`, `play.js`, `versus.js`, `live.js`, `sync.js` | Pure logic, each with a suite in `tests/` |
 | `web/encounters.js`, `short-lines.js`, `motifs.js`, `glitch.js`, `pieces.js` | Generated or static content |
 | `web/sw.js`, `manifest.webmanifest` | Offline shell and install |
