@@ -911,6 +911,12 @@
       "Nope. Nobody lives there. Try again.",
       "Wrong code. Even I can't find that family.",
       "Hmm. That one's not real. Ask a grown-up."]),
+    // Two lots of cards on one phone and no name to tell them apart: only the kid knows.
+    famMine: lineTable("taunt", "g-family-mine", [
+      "Hold on. Which pile of cards is yours?",
+      "Two players on this phone. Point at yourself.",
+      "I've lost track. Which one of these is you?",
+      "Before I hand over the cards: which lot is yours?"]),
     famOther: lineTable("taunt", "g-family-other", [
       "Someone new? Tell me your name.",
       "Not on the list? Type your name. I'll learn it.",
@@ -1637,11 +1643,56 @@
      that sitting. Soft: the day is still one tap away. Off once Camp is already done today. */
   function pacingNudge(daysThisSitting, campDone) { return (daysThisSitting || 0) >= 2 && !campDone; }
 
+  /* ---------- which local profile is this kid's ----------
+     A phone holds two local profiles; a family holds two slots, and the two orders need not agree.
+     A kid who has been Player 2 on this phone can be given slot 0 when he joins, and matching by
+     index instead of by name puts his cards in his brother's slot — where the brother, joining next,
+     inherits them. So the join asks the names first, falls back to the slot only when the other
+     local profile has nothing that could be lost, and otherwise hands the question to the kid.
+     Pure: the caller does the moving (placeLocal) and the merging. */
+  const LOCAL_PLACEHOLDER = /^player\s*[12]$/i;
+  function localName(n) {
+    const t = String(n == null ? "" : n).trim();
+    return LOCAL_PLACEHOLDER.test(t) ? "" : t;          // a name nobody typed is not a name
+  }
+  function sameLocalName(a, b) {
+    const x = localName(a), y = localName(b);
+    return !!x && !!y && x.toLowerCase() === y.toLowerCase();
+  }
+  // What a chooser chip has to say to be worth tapping: how much is in there.
+  function profileSummary(profile) {
+    const earned = (profile && profile.cardsEarned) || {}, ids = Object.keys(earned), days = {};
+    ids.forEach(function (id) { const t = earned[id] && earned[id].t; if (t) days[dateKey(t)] = 1; });
+    return { cards: ids.length, games: gamesOf(profile).played, days: Object.keys(days).length };
+  }
+  function profileEmpty(profile) { const s = profileSummary(profile); return !s.cards && !s.games; }
+  function pickLocalProfile(names, profiles, slot, kidName) {
+    const mine = slot === 1 ? 1 : 0, other = mine === 1 ? 0 : 1;
+    const list = names || [], ps = profiles || [];
+    const hit = [0, 1].filter(function (i) { return sameLocalName(list[i], kidName); });
+    if (hit.length === 1) return hit[0];
+    if (hit.length === 2) return mine;                        // both carry his name: his own slot answers it
+    if (sameLocalName(list[mine], list[other])) return mine;  // the names cannot tell them apart
+    if (profileEmpty(ps[other])) return mine;                 // the other holds nothing that could be lost
+    return null;                                              // ask him
+  }
+  // Swap, never overwrite: his cards go to his slot and whatever was there goes to the other index
+  // under its own name, so the second kid to join still finds his own progress waiting.
+  function placeLocal(profiles, names, idx, slot) {
+    const ps = (profiles || []).slice(), ns = (names || []).slice();
+    const to = slot === 1 ? 1 : 0;
+    if ((idx !== 0 && idx !== 1) || idx === to) return { profiles: ps, names: ns };
+    const p = ps[to]; ps[to] = ps[idx]; ps[idx] = p;
+    const n = ns[to]; ns[to] = ns[idx]; ns[idx] = n;
+    return { profiles: ps, names: ns };
+  }
+
   const api = { glitchRating, ratingTaunt, agentRank, rankedUp, dailyChallenger, knockedOff, ABILITIES, POWER_CAP, emptyBattle, battleOf, bossHp, earnPower, abilityById, canAfford, armAbility, disarm, addBonus, recordKo, resolveHitDamage, resolveCritical, resolveMiss, GEAR, SLOTS, slotsUnlocked, gearUnlocked, gearById, hasGear, equipGear, unequipGear, motifLabel, resolveWeakness, motifStats, weakestMotifs, strongestMotifs, prepFights, prepSource, PREP_QUESTIONS, offersBait, prepQuestionsFor, motifVerdict, cardsByDay, progressSummary,
     weekStart, firstTryRate, thisWeek, coachNotes,
     LEVELS, levelIndex, levelById, levelAt, levelName, emptyGames, gamesOf, recordGame, gameBlunderRate, suggestLevel, GAMES_RECENT,
     VERSUS_RECENT, BEST_MOVES_MAX, emptyVersus, versusOf, bestMovesOf, storeBestMoves, recordVersus,
     RUSH_MS, RUSH_NOTE, rushOf, earnCard, cardCracked, crackedIds, lookFirst, LOOK, GLITCH_LINES, glitchLine, pacingNudge,
+    localName, sameLocalName, profileSummary, profileEmpty, pickLocalProfile, placeLocal,
     lineTable, lineKey, spokenLine, fillLine, pickLine, LINE_WINDOW, SUGGEST_SAY, levelSayKey,
     normalisePin, validPin, parentOf, parentSet, parentGate,
     PRINCIPLES, principleFor, MOTIF_LABEL, defaultCoachStyle, coachStyleOf, coachLine,

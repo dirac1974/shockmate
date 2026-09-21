@@ -861,6 +861,9 @@ body[data-play="1"] .gate-dots:empty { display: none; }
 .fam-other[hidden] { display: none !important; }
 .fam-other { display: flex; flex-direction: column; gap: 10px; }
 .fam-roster { display: flex; flex-direction: column; gap: 12px; }
+/* "Which of these is yours": the name, then what is in there, because the count is what decides it. */
+#fam-mine-list .cta { display: flex; flex-direction: column; gap: 2px; line-height: 1.15; }
+#fam-mine-list .cta small { font-size: 14px; font-weight: 700; opacity: .8; }
 .fam-state { text-align: center; min-height: 1.2em; }
 .live-row { margin-top: 8px; }
 .live-row > .chip.live { flex: 1 1 auto; min-height: 52px; font-weight: 800; background: var(--grape); color: #fff; }
