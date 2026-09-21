@@ -38,7 +38,7 @@ That serves `web/` at http://localhost:8765/ (plain `python -m http.server`, no 
 
 ```
 npm test          # 15 Node suites, 2 Python suites, syntax check of every shipped script
-npm run e2e       # 5 Playwright suites at phone size, faked backend, fails on any console error
+npm run e2e       # 6 Playwright suites, phone and tablet sizes, faked backend, fails on any console error
 ```
 
 Python needs `pip install chess playwright`; the browser suites use installed Chrome on Windows and

@@ -6,3 +6,6 @@ node_modules/
 
 # Lichess puzzle db lives outside the repo (~/tools/lichess); never commit a copy
 lichess_db_puzzle*
+
+# screenshots from SHOTS=1 python tests/e2e/phase6_tablet.py
+tests/e2e/shots/

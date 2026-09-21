@@ -339,7 +339,7 @@ select, input[type=number], input[type=text], input[type=password] {
   background: linear-gradient(176deg, #e8d08a 0%, var(--brass) 18%, #d9b45e 52%, var(--brass-dk) 100%);
   box-shadow: 0 4px 0 #6b5216, inset 0 1px 0 #ffffff6b;
 }
-.boss-row { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; }
+.boss-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-weight: 700; }
 .boss-row b { font-family: "Baloo 2", sans-serif; color: #3a2c06; letter-spacing: .04em; }
 .boss-row span { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 21px; color: #2b2005; font-variant-numeric: tabular-nums; }
 .boss-bar { height: 8px; border: 2px solid #6b5216; border-radius: 4px; background: #00000026; overflow: hidden; margin-top: 5px; }
@@ -879,3 +879,33 @@ body[data-play="1"] .gate-dots:empty { display: none; }
 .live-invite .li-actions { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; }
 .live-invite .li-actions .cta { flex: 1 1 auto; }
 .live-invite.same { border-color: var(--tomato); }
+
+/* ---------- a tablet on the table ----------
+   From 700px wide with the height to match (an iPad either way up, a laptop; never a phone on its side),
+   the fight opens like the travel set does: board on the left, everything said about it on the right.
+   Same tokens, same controls, nothing new to learn. The right column keeps the phone's top-to-bottom
+   order, so the eye path a kid learnt on the phone still reads. Other screens stay a centred column:
+   a card, a binder and Settings are the right width already. */
+@media (min-width: 700px) and (min-height: 600px) and (orientation: landscape) {
+  body[data-screen="screen-play"] #app { max-width: 960px; }
+  #screen-play.active {
+    display: grid;
+    grid-template-columns: minmax(380px, 520px) minmax(300px, 1fr);
+    grid-auto-rows: min-content;
+    column-gap: 28px;
+    align-items: start;
+  }
+  #screen-play > * { grid-column: 2; min-width: 0; }
+  #screen-play > .board-wrap {
+    grid-column: 1; grid-row: 1 / span 40;
+    width: min(100%, calc(100vh - 170px)); margin: 0;
+  }
+  #screen-play > .glitch-row { min-height: 84px; }
+  #screen-play > .prompt { margin-top: 6px; }
+}
+/* Held upright, a tablet keeps the phone's column, only wider, and the board takes the room: a bigger
+   board is what a tablet is for, and half a screen of empty paper under a side-by-side fight is not. */
+@media (min-width: 700px) and (orientation: portrait) {
+  body[data-screen="screen-play"] #app { max-width: 640px; }
+  #screen-play > .board-wrap { width: min(100%, 560px, calc(100vh - 420px)); }
+}
