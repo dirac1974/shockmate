@@ -31,10 +31,13 @@ product that a stranger, a second family, or a future maintainer would expect.
 8. **phase4 no longer races on a slow machine.** It failed on untouched `main` here twice, on two different Flash assertions, because `?fast=1` clamps the Flash pauses to 20 ms and the harness read the joke line and the reveal ring off the DOM after they had already been replaced. The app records `item.joke` and `state.flash.ring`; the suite reads those. CI had always been fast enough to hide it.
 9. Docs brought current: `AGENTS.md` assignment, `CONTINUATION.md`, PLAN §7 status.
 
+## v0.31 — tablet layout
+
+Two media queries, no new controls, no DOM change. A tablet on its side (700px and wider with the height to match, landscape) lays the fight out as a grid: board left in a 380 to 520px column, everything said about it on the right in the phone's own top-to-bottom order. Held upright it keeps the phone's column at 640px with the board up to 560px, because half a screen of empty paper under a side-by-side fight is worse than a bigger board. A phone on its side keeps the phone layout. Every other screen stays a centred 460px column. `tests/e2e/phase6_tablet.py` proves it at 1024×768, 820×1180, 390×844 and 844×390: board bigger, nothing scrolls sideways, powers and prompt on screen, a square still answers, the binder still a column; `SHOTS=1` writes screenshots to `tests/e2e/shots/` (ignored). The boss row also gained a gap so a long crony name never touches his rating.
+
 ## Next, in order
 
 1. **Gate 0 with the kids** is still unreported and still blocks any new phase. Unchanged.
 2. **Owner decisions** from the security review: a licence for the repo; whether PINs become mandatory; whether rejoin sits behind the PIN.
-3. **Tablet layout**: at 700px and wider, board left, caption and abilities right, same tokens. One media query and no new controls. Verify at 1024×768 and 820×1180 with the harness.
-4. **Split `game.js` by screen** behind the existing e2e: `home.js`, `fight.js`, `camp.js`, `family.js`, `settings.js`. Mechanical, no behaviour change, one PR per file.
-5. **Weekly coach summary** shareable as text from Progress, so the parent can send it without opening the app.
+3. **Split `game.js` by screen** behind the existing e2e: `home.js`, `fight.js`, `camp.js`, `family.js`, `settings.js`. Mechanical, no behaviour change, one PR per file.
+4. **Weekly coach summary** shareable as text from Progress, so the parent can send it without opening the app.
